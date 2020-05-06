@@ -40,6 +40,16 @@ jobs:
     - name: Build
       run: ninja -C ${SRC_DIR_PATH}/build
 
+
+    - name: Show build artifacts
+      run: tree ${SRC_DIR_PATH}/build
+
+    - name: Upload binary
+      uses: actions/upload-artifact@v1
+      with:
+        name: VVVVVV-${{ matrix.os }}Binary
+        path: desktop_version/build/VVVVVV
+
   build-win:
     name: Build (windows-latest)
 
@@ -64,3 +74,9 @@ jobs:
       run: |
         cd $env:SRC_DIR_PATH
         cmake --build .
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: VVVVVV-Windows
+        path: desktop_version/build/VVVVVV.exe
