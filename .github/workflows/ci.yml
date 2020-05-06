@@ -45,7 +45,7 @@ jobs:
       if: startsWith(matrix.os, 'ubuntu')
       uses: actions/upload-artifact@v1
       with:
-        name: VVVVVV-MP-Linux-binary-$(date -Idate)
+        name: VVVVVV-MP-Linux-binary
         path: desktop_version/build/VVVVVV
 
 
@@ -55,14 +55,14 @@ jobs:
         mkdir -pv ${SRC_DIR_PATH}/build/VVVVVV-app/VVVVVV-MP.app/Contents/MacOS/
         mkdir -pv ${SRC_DIR_PATH}/build/VVVVVV-app/VVVVVV-MP.app/Contents/Resources
         mv -v ${SRC_DIR_PATH}/build/VVVVVV ${SRC_DIR_PATH}/build/VVVVVV-app/VVVVVV-MP.app/Contents/MacOS/VVVVVV
-        tar -czvf VVVVVV-MP-macOS-$(date -Idate).tgz ${SRC_DIR_PATH}/build/VVVVVV-app/VVVVVV-MP.app
+        tar -czvf VVVVVV-MP-macOS.tgz ${SRC_DIR_PATH}/build/VVVVVV-app/VVVVVV-MP.app
 
     - name: Upload .app (macOS)
       if: startsWith(matrix.os, 'macos')
       uses: actions/upload-artifact@v1
       with:
-        name: VVVVVV-MP-macOS-$(date -Idate)
-        path: VVVVVV-MP-macOS-$(date -Idate).tgz
+        name: VVVVVV-MP-macOS
+        path: VVVVVV-MP-macOS.tgz
 
 
   build-win:
@@ -93,5 +93,5 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: VVVVVV-MP-Windows-$(date -Idate)
+        name: VVVVVV-MP-Windows
         path: desktop_version/Debug/VVVVVV.exe
