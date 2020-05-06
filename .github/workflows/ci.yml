@@ -41,9 +41,6 @@ jobs:
       run: ninja -C ${SRC_DIR_PATH}/build
 
 
-    - name: Show build artifacts
-      run: tree ${SRC_DIR_PATH}/build
-
     - name: Upload binary
       uses: actions/upload-artifact@v1
       with:
