@@ -7,6 +7,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 OPTION(ENABLE_WARNINGS "Enable compilation warnings" ON)
 OPTION(ENABLE_WERROR "Treat compilation warnings as errors" OFF)
 
+SET(CUSTOM_LEVEL_SUPPORT ENABLED CACHE STRING "Optionally disable playing and/or editing of custom levels")
+SET_PROPERTY(CACHE CUSTOM_LEVEL_SUPPORT PROPERTY STRINGS ENABLED NO_EDITOR DISABLED)
+
 # Architecture Flags
 IF(APPLE)
 	# Wow, Apple is a huge jerk these days huh?
@@ -56,13 +59,13 @@ INCLUDE_DIRECTORIES(
 	../third_party/tinyxml
 	../third_party/physfs
 	../third_party/lodepng
+	../third_party/utfcpp/source
 )
 
 # Source Lists
 SET(VVV_SRC
 	src/BinaryBlob.cpp
 	src/BlockV.cpp
-	src/editor.cpp
 	src/Ent.cpp
 	src/Entity.cpp
 	src/FileSystemUtils.cpp
@@ -79,6 +82,7 @@ SET(VVV_SRC
 	src/Music.cpp
 	src/Otherlevel.cpp
 	src/preloader.cpp
+	src/Render.cpp
 	src/Screen.cpp
 	src/Script.cpp
 	src/Scripts.cpp
@@ -86,7 +90,6 @@ SET(VVV_SRC
 	src/Spacestation2.cpp
 	src/TerminalScripts.cpp
 	src/Textbox.cpp
-	src/titlerender.cpp
 	src/Tower.cpp
 	src/UtilityClass.cpp
 	src/WarpClass.cpp
@@ -95,6 +98,10 @@ SET(VVV_SRC
 	src/SteamNetwork.c
 	src/GOGNetwork.c
 )
+IF(NOT CUSTOM_LEVEL_SUPPORT STREQUAL "DISABLED")
+	LIST(APPEND VVV_SRC src/editor.cpp)
+ENDIF()
+
 SET(XML_SRC
 	../third_party/tinyxml/tinystr.cpp
 	../third_party/tinyxml/tinyxml.cpp
@@ -135,6 +142,29 @@ IF(ENABLE_WARNINGS)
 			-Wall $<$<BOOL:${ENABLE_WERROR}>:-Werror>>
 		$<$<CXX_COMPILER_ID:MSVC>:
 			/W4 $<$<BOOL:${ENABLE_WERROR}>:/WX>>)
+ENDIF()
+
+IF(CUSTOM_LEVEL_SUPPORT STREQUAL "NO_EDITOR")
+	ADD_DEFINITIONS(-DNO_EDITOR)
+ELSEIF(CUSTOM_LEVEL_SUPPORT STREQUAL "DISABLED")
+	ADD_DEFINITIONS(-DNO_CUSTOM_LEVELS -DNO_EDITOR)
+ENDIF()
+
+IF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	SET(SUPPORTS_IMPLICIT_FALLTHROUGH 1)
+ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	IF(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0)
+		SET(SUPPORTS_IMPLICIT_FALLTHROUGH 1)
+	ELSE()
+		SET(SUPPORTS_IMPLICIT_FALLTHROUGH 0)
+	ENDIF()
+ELSE()
+	SET(SUPPORTS_IMPLICIT_FALLTHROUGH 0)
+ENDIF()
+
+
+IF(SUPPORTS_IMPLICIT_FALLTHROUGH)
+	TARGET_COMPILE_OPTIONS(VVVVVV PRIVATE -Werror=implicit-fallthrough)
 ENDIF()
 
 # Library information
