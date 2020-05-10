@@ -66,32 +66,27 @@ jobs:
 
 
   build-win:
-    name: Build (windows-latest)
+    name: Build (Ubuntu + MinGW64)
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v1
 
-    - name: Install dependencies (Windows)
-      run: |
-        vcpkg install sdl2 sdl2-mixer
+    - name: Install Nix
+      uses: cachix/install-nix-action@v6
 
-    - name: CMake configure
-      run: |
-        cd $env:SRC_DIR_PATH
-        $env:LDFLAGS =  "/LIBPATH:$env:VCPKG_INSTALLATION_ROOT\installed\x86-windows\lib "
-        $env:LDFLAGS += "/LIBPATH:$env:VCPKG_INSTALLATION_ROOT\installed\x86-windows\lib\manual-link"
-        cmake -G "Visual Studio 16 2019" -A Win32 `
-              -DSDL2_INCLUDE_DIRS="$env:VCPKG_INSTALLATION_ROOT\installed\x86-windows\include\SDL2" `
-              -DSDL2_LIBRARIES="SDL2;SDL2main;SDL2_mixer" .
     - name: Build
       run: |
-        cd $env:SRC_DIR_PATH
-        cmake --build .
+        cd $SRC_DIR_PATH
+        mkdir -p build
+        nix-shell --arg cross true --run './build.sh'
+
+    - name: ls everything because I give this 10% chance of working immediately
+      run: pwd && ls -R
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:
         name: VVVVVV-MP-Windows
-        path: desktop_version/Debug/VVVVVV.exe
+        path: desktop_version/build/VVVVVV.exe
