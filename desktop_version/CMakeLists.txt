@@ -176,7 +176,16 @@ ADD_LIBRARY(lodepng-static STATIC ${PNG_SRC})
 TARGET_LINK_LIBRARIES(VVVVVV physfs-static tinyxml-static lodepng-static)
 
 # SDL2 Dependency (Detection pulled from FAudio)
-if (DEFINED SDL2_INCLUDE_DIRS AND DEFINED SDL2_LIBRARIES)
+if (DEFINED SDL2_INCLUDE_DIRS AND DEFINED SDL2_LIBRARIES AND (MINGW OR MSYS))
+	message(STATUS "Building using MinGW SDL libraries")
+
+	# mingw-std-threads
+	add_subdirectory(../third_party/mingw-std-threads ${CMAKE_CURRENT_BINARY_DIR}/mingw-std-threads)
+
+	target_include_directories(VVVVVV PUBLIC "$<BUILD_INTERFACE:${SDL2_INCLUDE_DIRS}>")
+	target_link_libraries(VVVVVV SDL2_mixer mingw32 winmm vorbisfile vorbis ${SDL2_LIBRARIES} shlwapi mingw_stdthreads)
+
+elseif (DEFINED SDL2_INCLUDE_DIRS AND DEFINED SDL2_LIBRARIES)
 	message(STATUS "Using pre-defined SDL2 variables SDL2_INCLUDE_DIRS and SDL2_LIBRARIES")
 	target_include_directories(VVVVVV PUBLIC "$<BUILD_INTERFACE:${SDL2_INCLUDE_DIRS}>")
 	target_link_libraries(VVVVVV ${SDL2_LIBRARIES})
