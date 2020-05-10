@@ -62,6 +62,8 @@ INCLUDE_DIRECTORIES(
 	../third_party/utfcpp/source
 )
 
+include(sdl2-config OPTIONAL)
+
 # Source Lists
 SET(VVV_SRC
 	src/BinaryBlob.cpp
