@@ -19,8 +19,6 @@ cd build/
 if [ -z "$dont_build" ]; then
 
     cmake -G Ninja \
-        ${debug:+-DCMAKE_BUILD_TYPE=Debug} \
-        ${debug:--DCMAKE_BUILD_TYPE=RelWithDebInfo} \
         ${windows:+-DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain.cmake -DCMAKE_MODULE_PATH="$CMAKE_MODULE_PATH"} \
         "$@" \
         ..
