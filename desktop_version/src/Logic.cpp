@@ -102,6 +102,7 @@ void gamecompletelogic2()
         game.deletequick();
         int tmp=music.currentsong;
         music.currentsong=4;
+        obj.flags[67] = true;
         game.savetele();
         music.currentsong=tmp;
         //Return to game
@@ -395,6 +396,7 @@ void gamelogic()
                     if (game.swnmessage == 0) music.playef(25);
                     game.swnmessage = 1;
                     game.swnrecord = game.swntimer;
+                    game.savestats();
                 }
             }
         }
@@ -1378,4 +1380,12 @@ void gamelogic()
 
     if (game.teleport_to_new_area)
         script.teleport();
+
+#if !defined(NO_CUSTOM_LEVELS)
+    if (game.shouldreturntoeditor)
+    {
+        game.shouldreturntoeditor = false;
+        game.returntoeditor();
+    }
+#endif
 }

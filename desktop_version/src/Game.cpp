@@ -117,7 +117,6 @@ void Game::init(void)
 {
     mutebutton = 0;
     infocus = true;
-    paused = false;
     muted = false;
     musicmuted = false;
     musicmutebutton = 0;
@@ -136,7 +135,6 @@ void Game::init(void)
 
     teleportscript = "";
     savemystats = false;
-    menukludge = false;
     quickrestartkludge = false;
 
     tapleft = 0;
@@ -231,11 +229,6 @@ void Game::init(void)
     playcustomlevel=0;
     customleveltitle="";
     createmenu(Menu::mainmenu);
-
-    wasintimetrial = false;
-    wasinintermission = false;
-    wasinnodeathmode = false;
-    wasincustommode = false;
 
     deathcounts = 0;
     gameoverdelay = 0;
@@ -376,6 +369,15 @@ void Game::init(void)
     playrx = 0;
     playry = 0;
     playgc = 0;
+
+    fadetomenu = false;
+    fadetomenudelay = 0;
+    fadetolab = false;
+    fadetolabdelay = 0;
+
+#if !defined(NO_CUSTOM_LEVELS)
+    shouldreturntoeditor = false;
+#endif
 
     /* Terry's Patrons... */
     superpatrons.push_back("Anders Ekermo");
@@ -1337,44 +1339,7 @@ void Game::updatestate()
             if(graphics.fademode == 1)	state++;
             break;
         case 81:
-            gamestate = TITLEMODE;
-            graphics.fademode = 4;
-            music.play(6);
-            graphics.backgrounddrawn = false;
-            map.tdrawback = true;
-            graphics.flipmode = false;
-            //Don't be stuck on the summary screen,
-            //or "who do you want to play the level with?"
-            //or "do you want cutscenes?"
-            //or the confirm-load-quicksave menu
-            if (wasintimetrial)
-            {
-                returntomenu(Menu::timetrials);
-            }
-            else if (wasinintermission)
-            {
-                returntomenu(Menu::intermissionmenu);
-            }
-            else if (wasinnodeathmode)
-            {
-                returntomenu(Menu::playmodes);
-            }
-            else if (wasincustommode)
-            {
-                returntomenu(Menu::levellist);
-            }
-            else if (save_exists() || anything_unlocked())
-            {
-                returntomenu(Menu::play);
-            }
-            else
-            {
-                createmenu(Menu::mainmenu);
-            }
-            wasintimetrial = false;
-            wasinintermission = false;
-            wasinnodeathmode = false;
-            wasincustommode = false;
+            quittomenu();
             state = 0;
             break;
 
@@ -1505,10 +1470,7 @@ void Game::updatestate()
             if(graphics.fademode == 1)	state++;
             break;
         case 97:
-            gamestate = GAMEMODE;
-            graphics.fademode = 4;
-            startscript = true;
-            newscript="returntolab";
+            returntolab();
             state = 0;
             break;
 
@@ -3323,8 +3285,6 @@ void Game::updatestate()
             //Activating a teleporter (long version for level complete)
             i = obj.getplayer();
             obj.entities[i].colour = 102;
-
-            obj.flags[67] = true;
 
             state++;
             statedelay = 30;
@@ -7045,7 +7005,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 }
                 else
                 {
-                    option("start");
+                    option("new game");
                 }
                 //ok, secret lab! no notification, but test:
                 if (unlock[8])
@@ -7359,3 +7319,96 @@ bool Game::save_exists()
 {
     return telesummary != "" || quicksummary != "";
 }
+
+void Game::quittomenu()
+{
+    gamestate = TITLEMODE;
+    graphics.fademode = 4;
+    music.play(6);
+    graphics.backgrounddrawn = false;
+    map.tdrawback = true;
+    graphics.flipmode = false;
+    //Don't be stuck on the summary screen,
+    //or "who do you want to play the level with?"
+    //or "do you want cutscenes?"
+    //or the confirm-load-quicksave menu
+    if (intimetrial)
+    {
+        returntomenu(Menu::timetrials);
+    }
+    else if (inintermission)
+    {
+        returntomenu(Menu::intermissionmenu);
+    }
+    else if (nodeathmode)
+    {
+        returntomenu(Menu::playmodes);
+    }
+    else if (map.custommode)
+    {
+        returntomenu(Menu::levellist);
+    }
+    else if (save_exists() || anything_unlocked())
+    {
+        returntomenu(Menu::play);
+    }
+    else
+    {
+        createmenu(Menu::mainmenu);
+    }
+    script.hardreset();
+}
+
+void Game::returntolab()
+{
+    gamestate = GAMEMODE;
+    graphics.fademode = 4;
+    map.gotoroom(119, 107);
+    int player = obj.getplayer();
+    if (player > -1)
+    {
+        obj.entities[player].xp = 132;
+        obj.entities[player].yp = 137;
+    }
+    gravitycontrol = 0;
+
+    savepoint = 0;
+    saverx = 119;
+    savery = 107;
+    savex = 132;
+    savey = 137;
+    savegc = 0;
+    if (player > -1)
+    {
+        savedir = obj.entities[player].dir;
+    }
+
+    music.play(11);
+}
+
+#if !defined(NO_CUSTOM_LEVELS)
+void Game::returntoeditor()
+{
+    game.gamestate = EDITORMODE;
+
+    graphics.textboxremove();
+    game.hascontrol = true;
+    game.advancetext = false;
+    game.completestop = false;
+    game.state = 0;
+    graphics.showcutscenebars = false;
+    graphics.fademode = 0;
+
+    graphics.backgrounddrawn=false;
+    music.fadeout();
+    //If warpdir() is used during playtesting, we need to set it back after!
+    for (int j = 0; j < ed.maxheight; j++)
+    {
+        for (int i = 0; i < ed.maxwidth; i++)
+        {
+           ed.level[i+(j*ed.maxwidth)].warpdir=ed.kludgewarpdir[i+(j*ed.maxwidth)];
+        }
+    }
+    map.scrolldir = 0;
+}
+#endif

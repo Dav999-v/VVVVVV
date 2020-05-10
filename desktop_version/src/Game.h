@@ -234,12 +234,6 @@ public:
 
     int creditposx, creditposy, creditposdelay;
 
-    //Menu kludge...
-    bool wasintimetrial;
-    bool wasinintermission;
-    bool wasinnodeathmode;
-    bool wasincustommode;
-
 
     //Sine Wave Ninja Minigame
     bool swnmode;
@@ -351,10 +345,7 @@ public:
     int stretchMode;
     int controllerSensitivity;
 
-    bool menukludge;
     bool quickrestartkludge;
-
-    bool paused;
 
     //Custom stuff
     std::string customscript[50];
@@ -387,6 +378,18 @@ public:
     int playrx;
     int playry;
     int playgc;
+
+    void quittomenu();
+    void returntolab();
+    bool fadetomenu;
+    int fadetomenudelay;
+    bool fadetolab;
+    int fadetolabdelay;
+
+#if !defined(NO_CUSTOM_LEVELS)
+    void returntoeditor();
+    bool shouldreturntoeditor;
+#endif
 };
 
 extern Game game;

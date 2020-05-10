@@ -1537,26 +1537,7 @@ void gameinput()
                    game.activeactivity = -1;
                }
             }else{
-                game.gamestate = EDITORMODE;
-
-                graphics.textboxremove();
-                game.hascontrol = true;
-                game.advancetext = false;
-                game.completestop = false;
-                game.state = 0;
-                graphics.showcutscenebars = false;
-
-                graphics.backgrounddrawn=false;
-                music.fadeout();
-                //If warpdir() is used during playtesting, we need to set it back after!
-                for (int j = 0; j < ed.maxheight; j++)
-                {
-                    for (int i = 0; i < ed.maxwidth; i++)
-                    {
-                       ed.level[i+(j*ed.maxwidth)].warpdir=ed.kludgewarpdir[i+(j*ed.maxwidth)];
-                    }
-                }
-                map.scrolldir = 0;
+                game.shouldreturntoeditor = true;
             }
         }
     }
@@ -1812,6 +1793,32 @@ void mapinput()
     game.press_action = false;
     game.press_map = false;
 
+    if (game.fadetomenu)
+    {
+        if (game.fadetomenudelay > 0)
+        {
+            game.fadetomenudelay--;
+        }
+        else
+        {
+            game.quittomenu();
+            game.fadetomenu = false;
+        }
+    }
+
+    if (game.fadetolab)
+    {
+        if (game.fadetolabdelay > 0)
+        {
+            game.fadetolabdelay--;
+        }
+        else
+        {
+            game.returntolab();
+            game.fadetolab = false;
+        }
+    }
+
     if(graphics.menuoffset==0)
     {
         if (graphics.flipmode)
@@ -1870,25 +1877,6 @@ void mapinput()
         {
             //Normal map screen, do transition later
             graphics.resumegamemode = true;
-        }
-    }
-
-    if (graphics.fademode == 1)
-    {
-        FillRect(graphics.menubuffer, 0x000000);
-        graphics.resumegamemode = true;
-        obj.removeallblocks();
-        game.activeactivity = -1;
-        game.menukludge = false;
-        if (game.menupage >= 20)
-        {
-            game.state = 96;
-            game.statedelay = 0;
-        }
-        else
-        {
-            game.state = 80;
-            game.statedelay = 0;
         }
     }
 
@@ -1963,22 +1951,15 @@ void mapinput()
         if (game.menupage == 11 && game.press_action)
         {
             //quit to menu
-            if (graphics.fademode == 0)
-            {
-                //Kill contents of offset render buffer, since we do that for some reason.
-                //This fixes an apparent frame flicker.
-                FillRect(graphics.tempBuffer, 0x000000);
-                if (game.intimetrial || game.insecretlab || game.nodeathmode) game.menukludge = true;
-                game.wasintimetrial = game.intimetrial;
-                game.wasinintermission = game.inintermission;
-                game.wasinnodeathmode = game.nodeathmode;
-                game.wasincustommode = map.custommode;
-                script.hardreset();
-                if(graphics.setflipmode) graphics.flipmode = true;
-                graphics.fademode = 2;
-                music.fadeout();
-                map.nexttowercolour();
-            }
+
+            //Kill contents of offset render buffer, since we do that for some reason.
+            //This fixes an apparent frame flicker.
+            FillRect(graphics.tempBuffer, 0x000000);
+            graphics.fademode = 2;
+            music.fadeout();
+            map.nexttowercolour();
+            game.fadetomenu = true;
+            game.fadetomenudelay = 15;
         }
 
         if (game.menupage == 20 && game.press_action)
@@ -1989,12 +1970,11 @@ void mapinput()
         if (game.menupage == 21 && game.press_action)
         {
             //quit to menu
-            if (graphics.fademode == 0)
-            {
-                game.swnmode = false;
-                graphics.fademode = 2;
-                music.fadeout();
-            }
+            game.swnmode = false;
+            graphics.fademode = 2;
+            music.fadeout();
+            game.fadetolab = true;
+            game.fadetolabdelay = 15;
         }
 
         if (game.menupage < 0) game.menupage = 3;
