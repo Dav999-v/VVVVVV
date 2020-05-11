@@ -82,11 +82,16 @@ jobs:
         mkdir -p build
         nix-shell --arg cross true --run './build.sh'
 
-    - name: ls everything because I give this 10% chance of working immediately
+    - name: ls everything
       run: pwd && ls -R
+
+    - name: Copy DLLs and all
+      run: |
+        mkdir -p desktop_version/build/VVVVVV-MP-Windows
+        cp -rv .github/libs/* desktop_version/build/VVVVVV.exe desktop_version/build/VVVVVV-MP-Windows/
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:
         name: VVVVVV-MP-Windows
-        path: desktop_version/build/VVVVVV.exe
+        path: desktop_version/build/VVVVVV-MP-Windows
