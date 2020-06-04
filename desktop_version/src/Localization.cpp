@@ -4,7 +4,7 @@
 
 namespace loc
 {
-	std::string lang = "nl";
+	std::string lang = "nl"; // TODO: get language from unlock.vvv
 
 	typedef std::pair<std::string, std::string> english_plu;
 
@@ -13,9 +13,9 @@ namespace loc
 
 	bool load_doc(std::string cat, TiXmlDocument *doc)
 	{
-		if (!FILESYSTEM_loadTiXmlDocument(("lang/" + cat + "_" + lang + ".xml").c_str(), doc))
+		if (!FILESYSTEM_loadTiXmlDocument(("lang/" + lang + "/" + cat + ".xml").c_str(), doc))
 		{
-			printf("Could not load language %s_%s.\n", cat.c_str(), lang.c_str());
+			printf("Could not load language %s/%s.\n", lang.c_str(), cat.c_str());
 			return false;
 		}
 		return true;
