@@ -85,6 +85,7 @@ SET(VVV_SRC
 	src/Input.cpp
 	src/KeyPoll.cpp
 	src/Labclass.cpp
+	src/Localization.cpp
 	src/Logic.cpp
 	src/Map.cpp
 	src/Music.cpp

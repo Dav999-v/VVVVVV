@@ -25,6 +25,7 @@
 
 #include "FileSystemUtils.h"
 #include "Network.h"
+#include "Localization.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -203,6 +204,7 @@ int main(int argc, char *argv[])
 
     //Moved screensetting init here from main menu V2.1
     game.loadstats();
+    loc::loadtext();
     if (game.skipfakeload)
         game.gamestate = TITLEMODE;
     if(game.usingmmmmmm==0) music.usingmmmmmm=false;
@@ -373,7 +375,7 @@ int main(int argc, char *argv[])
             if (!game.blackout)
             {
                 FillRect(graphics.backBuffer, 0x00000000);
-                graphics.bprint(5, 110, "Game paused", 196 - help.glow, 255 - help.glow, 196 - help.glow, true);
+                graphics.bprint(5, 110, loc::gettext("Game paused"), 196 - help.glow, 255 - help.glow, 196 - help.glow, true);
                 graphics.bprint(5, 120, "[click to resume]", 196 - help.glow, 255 - help.glow, 196 - help.glow, true);
                 graphics.bprint(5, 220, "Press M to mute in game", 164 - help.glow, 196 - help.glow, 164 - help.glow, true);
                 graphics.bprint(5, 230, "Press N to mute music only", 164 - help.glow, 196 - help.glow, 164 - help.glow, true);
