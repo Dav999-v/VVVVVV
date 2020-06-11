@@ -1,5 +1,6 @@
 #include "Localization.h"
 
+//#include "Graphics.h"
 #include "FileSystemUtils.h"
 
 namespace loc
@@ -104,5 +105,4 @@ namespace loc
 
 		return tra[rule];
 	}
-
 }

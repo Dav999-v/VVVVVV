@@ -147,9 +147,7 @@ void menurender()
 
         case 3:
             graphics.bigprint( -1, 30, "Analogue Mode", tr, tg, tb, true);
-            graphics.Print( -1, 65, "There is nothing wrong with your", tr, tg, tb, true);
-            graphics.Print( -1, 75, "television set. Do not attempt to", tr, tg, tb, true);
-            graphics.Print( -1, 85, "adjust the picture.", tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, "There is nothing wrong with your television set. Do not attempt to adjust the picture.", tr, tg, tb, true);
             break;
         case 4:
             graphics.bigprint(-1, 30, "Toggle Mouse Cursor", tr, tg, tb, true);

@@ -250,6 +250,26 @@ void Graphics::MakeSpriteArray()
 }
 
 
+void Graphics::PrintWrap( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/, int maxw /*= 304*/, int linespacing /*= 10*/ ) {
+    size_t startline = 0;
+    size_t newline;
+
+    std::string s = wordwrap(_s, maxw);
+
+    do {
+        newline = s.find('\n', startline);
+
+        if (startline == 0 && newline == std::string::npos) {
+            return Print(_x, _y, s, r, g, b, cen);
+        }
+
+        Print(_x, _y, s.substr(startline, newline-startline), r, g, b, cen);
+        _y += linespacing;
+
+        startline = newline+1;
+    } while (newline != std::string::npos);
+}
+
 void Graphics::Print( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/ ) {
     return PrintAlpha(_x,_y,_s,r,g,b,255,cen);
 }
@@ -347,6 +367,52 @@ int Graphics::len(std::string t)
         bfontpos += bfontlen(cur);
     }
     return bfontpos;
+}
+
+std::string Graphics::wordwrap(const std::string& _s, int maxwidth)
+{
+    // Return a string wordwrapped to a maximum limit by adding newlines.
+    // Assumes a language that uses spaces, so won't work well with CJK.
+    std::string s = std::string(_s);
+    size_t lastsplit = -1, lastspace = -1;
+    int linewidth = 0;
+    int wordwidth = 0; // width since last space/split
+
+    std::string::iterator iter = s.begin();
+    size_t ix;
+    uint32_t ch;
+    while (iter != s.end())
+    {
+        // At index ix starts UTF-8 character ch. Luckily ' ' and '\n' are 1 byte in UTF-8!
+        ix = std::distance(s.begin(), iter);
+        ch = utf8::unchecked::next(iter);
+
+        int charwidth = bfontlen(ch);
+        linewidth += charwidth;
+        wordwidth += charwidth;
+
+        if (ch == ' ')
+        {
+            lastspace = ix;
+            wordwidth = 0;
+        }
+        if (ch == '\n')
+        {
+            lastsplit = ix;
+            lastspace = ix;
+            linewidth = 0;
+            wordwidth = 0;
+        }
+
+        if (linewidth > maxwidth && lastsplit != lastspace)
+        {
+            s[lastspace] = '\n';
+            lastsplit = lastspace;
+            linewidth = wordwidth;
+        }
+    }
+
+    return s;
 }
 
 void Graphics::PrintOff( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/ ) {
