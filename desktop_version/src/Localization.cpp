@@ -2,6 +2,8 @@
 
 //#include "Graphics.h"
 #include "FileSystemUtils.h"
+#include <stdio.h>
+#include "tinyxml2.h"
 
 namespace loc
 {
@@ -12,9 +14,9 @@ namespace loc
 	std::map<std::string, std::string> translation;
 	std::map<english_plu, std::vector<std::string> > translation_plu;
 
-	bool load_doc(std::string cat, TiXmlDocument *doc)
+	bool load_doc(std::string cat, tinyxml2::XMLDocument& doc)
 	{
-		if (!FILESYSTEM_loadTiXmlDocument(("lang/" + lang + "/" + cat + ".xml").c_str(), doc))
+		if (!FILESYSTEM_loadTiXml2Document(("lang/" + lang + "/" + cat + ".xml").c_str(), doc))
 		{
 			printf("Could not load language %s/%s.\n", lang.c_str(), cat.c_str());
 			return false;
@@ -24,27 +26,27 @@ namespace loc
 
 	void loadtext_strings()
 	{
-		TiXmlDocument doc;
-		if (!load_doc("strings", &doc))
+		tinyxml2::XMLDocument doc;
+		if (!load_doc("strings", doc))
 		{
 			return;
 		}
 
-		TiXmlHandle hDoc(&doc);
-		TiXmlElement* pElem;
-		TiXmlHandle hRoot(0);
+		tinyxml2::XMLHandle hDoc(&doc);
+		tinyxml2::XMLElement* pElem;
+		tinyxml2::XMLHandle hRoot(NULL);
 
 		int nplurals = 1;
 		std::string credit;
 
 		{
-			pElem=hDoc.FirstChildElement().Element();
+			pElem=hDoc.FirstChildElement().ToElement();
 			pElem->QueryIntAttribute("nplurals", &nplurals);
 			//pElem->QueryStringAttribute("credit", &credit); TODO
-			hRoot=TiXmlHandle(pElem);
+			hRoot=tinyxml2::XMLHandle(pElem);
 		}
 
-		for (pElem = hRoot.FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+		for (pElem = hRoot.FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
 		{
 			std::string pKey(pElem->Value());
 			const char* pText = pElem->GetText();
