@@ -1,9 +1,4 @@
-#ifndef SCRIPTS_H
-#define SCRIPTS_H
-
 #include "Script.h"
-
-#include <algorithm>
 
 void scriptclass::load(std::string t)
 {
@@ -12,10 +7,9 @@ void scriptclass::load(std::string t)
     commands.clear();
     running = true;
 
-    int maxlength = (std::min(int(t.length()),7));
     std::string customstring="";
-    for(int i=0; i<maxlength; i++){
-      customstring+=t[i];
+    if(t.length()){
+        customstring=t.substr(0, 7);
     }
 
     if (customstring == "custom_"){
@@ -6759,4 +6753,3 @@ void scriptclass::load(std::string t)
     }
 
 }
-#endif /* SCRIPTS_H */

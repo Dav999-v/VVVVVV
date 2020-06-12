@@ -188,7 +188,7 @@ public:
 	void drawtowerspikes();
 
 	bool onscreen(int t);
-	
+
 	void reloadresources();
 	std::string assetdir;
 

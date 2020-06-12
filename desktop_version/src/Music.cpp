@@ -6,6 +6,17 @@
 
 void musicclass::init()
 {
+	for (size_t i = 0; i < soundTracks.size(); ++i) {
+		Mix_FreeChunk(soundTracks[i].sound);
+	}
+	soundTracks.clear();
+	for (size_t i = 0; i < musicTracks.size(); ++i) {
+		Mix_FreeMusic(musicTracks[i].m_music);
+	}
+	musicTracks.clear();
+
+	musicReadBlob.clear();
+
 	soundTracks.push_back(SoundTrack( "sounds/jump.wav" ));
 	soundTracks.push_back(SoundTrack( "sounds/jump2.wav" ));
 	soundTracks.push_back(SoundTrack( "sounds/hurt.wav" ));
@@ -57,7 +68,6 @@ void musicclass::init()
 	musicWriteBlob.writeBinaryBlob("data/BinaryMusic.vvv");
 #endif
 
-	binaryBlob musicReadBlob;
 	if (!musicReadBlob.unPackBinary("mmmmmm.vvv"))
 	{
 		mmmmmm = false;
