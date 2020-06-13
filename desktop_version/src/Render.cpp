@@ -349,9 +349,26 @@ void menurender()
         {
             graphics.PrintWrap(-1, 90, "ERROR: No language files found.", tr, tg, tb, true);
         }
-        else
+        else if ((unsigned)game.currentmenuoption < loc::languagelist.size())
         {
-            graphics.PrintWrap( -1, 15, loc::languagelist[game.currentmenuoption].credit, tr, tg, tb, true);
+            graphics.PrintWrap(-1, 15, loc::languagelist[game.currentmenuoption].credit, tr, tg, tb, true);
+        }
+        else if (loc::show_lang_maint_menu)
+        {
+            graphics.PrintWrap(-1, 15, "This menu is only shown when having a lang folder in your VVVVVV folder.", tr, tg, tb, true);
+        }
+        break;
+    case Menu::language_maint:
+        switch (game.currentmenuoption)
+        {
+        case 0:
+            graphics.bigprint( -1, 30, "Sync language files", tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, "Merge all new strings from the template files into the translation files, keeping existing translations", tr, tg, tb, true);
+            break;
+        case 1:
+            graphics.bigprint( -1, 30, "Statistics", tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, "Count the amount of untranslated strings for each language", tr, tg, tb, true);
+            break;
         }
         break;
     case Menu::accessibility:

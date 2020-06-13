@@ -13,6 +13,7 @@ namespace loc
 	// language screen list
 	std::vector<LangMeta> languagelist;
 	int languagelist_curlang;
+	bool show_lang_maint_menu;
 
 	typedef std::pair<std::string, std::string> english_plu;
 
@@ -113,6 +114,8 @@ namespace loc
 
 	void loadtext()
 	{
+		show_lang_maint_menu = FILESYSTEM_langsAreModded();
+
 		translation.clear();
 		translation_plu.clear();
 

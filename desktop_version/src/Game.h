@@ -34,6 +34,7 @@ namespace Menu
         accessibility,
         controller,
         language,
+        language_maint,
         cleardatamenu,
         setinvincibility,
         setslowdown,

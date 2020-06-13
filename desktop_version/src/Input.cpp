@@ -587,12 +587,45 @@ void menuactionpress()
         music.playef(11);
         if (loc::languagelist.size() != 0)
         {
-            loc::lang = loc::languagelist[game.currentmenuoption].code;
-            loc::loadtext();
-            game.savestats();
+            if ((unsigned)game.currentmenuoption < loc::languagelist.size())
+            {
+                loc::lang = loc::languagelist[game.currentmenuoption].code;
+                loc::loadtext();
+                game.savestats();
+                map.nexttowercolour();
+                game.returnmenu();
+            }
+            else if (loc::show_lang_maint_menu)
+            {
+                game.createmenu(Menu::language_maint);
+            }
         }
-        map.nexttowercolour();
-        game.returnmenu();
+        else
+        {
+            map.nexttowercolour();
+            game.returnmenu();
+        }
+        break;
+    case Menu::language_maint:
+        music.playef(11);
+        switch (game.currentmenuoption)
+        {
+        case 0:
+            // sync languages
+            // TODO
+            map.nexttowercolour();
+            break;
+        case 1:
+            // translation statistics
+            // TODO
+            map.nexttowercolour();
+            break;
+        case 2:
+            // return. Also leave the language selection menu
+            game.returnmenu(); game.returnmenu();
+            map.nexttowercolour();
+            break;
+        }
         break;
     case Menu::unlockmenutrials:
         switch (game.currentmenuoption)

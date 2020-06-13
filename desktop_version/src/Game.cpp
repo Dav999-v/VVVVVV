@@ -7162,10 +7162,18 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                     option(loc::languagelist[i].nativename);
             }
 
-            //option("translation maintenance");
+            if (loc::show_lang_maint_menu)
+                option("translation maintenance");
             menuxoff = -90;
             menuyoff = 70-(menuoptions.size()*10);
         }
+        break;
+    case Menu::language_maint:
+        option("sync language files", false);
+        option("statistics", false);
+        option("return");
+        menuxoff = -40;
+        menuyoff = 0;
         break;
     case Menu::cleardatamenu:
         option("no! don't delete");

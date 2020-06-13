@@ -314,6 +314,12 @@ std::vector<std::string> FILESYSTEM_getLanguageCodes()
 	return list;
 }
 
+bool FILESYSTEM_langsAreModded()
+{
+	std::string langdir = std::string(PHYSFS_getRealDir("lang"));
+	return langdir.compare(langdir.size()-4, 4, ".zip") != 0;
+}
+
 void PLATFORM_getOSDirectory(char* output)
 {
 #ifdef _WIN32
