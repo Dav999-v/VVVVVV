@@ -345,7 +345,7 @@ void menurender()
 
         break;
     case Menu::language:
-        if (loc::languagelist.size() == 0)
+        if (loc::languagelist.empty())
         {
             graphics.PrintWrap(-1, 90, "ERROR: No language files found.", tr, tg, tb, true);
         }

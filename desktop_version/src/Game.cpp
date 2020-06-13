@@ -7146,7 +7146,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         menuyoff = 10;
         break;
     case Menu::language:
-        if (loc::languagelist.size() == 0)
+        if (loc::languagelist.empty())
         {
             option("ok");
             menuxoff = 0;
