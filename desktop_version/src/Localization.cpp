@@ -20,22 +20,22 @@ namespace loc
 	std::map<std::string, std::string> translation;
 	std::map<english_plu, std::vector<std::string> > translation_plu;
 
-	bool load_doc(std::string cat, tinyxml2::XMLDocument& doc, std::string load_lang = lang)
+	bool load_doc(std::string cat, tinyxml2::XMLDocument& doc, std::string langcode = lang)
 	{
-		if (!FILESYSTEM_loadTiXml2Document(("lang/" + load_lang + "/" + cat + ".xml").c_str(), doc))
+		if (!FILESYSTEM_loadTiXml2Document(("lang/" + langcode + "/" + cat + ".xml").c_str(), doc))
 		{
-			printf("Could not load language %s/%s.\n", load_lang.c_str(), cat.c_str());
+			printf("Could not load language %s/%s.\n", langcode.c_str(), cat.c_str());
 			return false;
 		}
 		return true;
 	}
 
-	void loadmeta(LangMeta& meta, std::string load_lang = lang)
+	void loadmeta(LangMeta& meta, std::string langcode = lang)
 	{
-		meta.code = load_lang;
+		meta.code = langcode;
 
 		tinyxml2::XMLDocument doc;
-		if (!load_doc("meta", doc, load_lang))
+		if (!load_doc("meta", doc, langcode))
 		{
 			return;
 		}
@@ -144,6 +144,69 @@ namespace loc
 				languagelist_curlang = i;
 		}
 	}
+
+	void sync_lang_file(std::string langcode)
+	{
+		// Update translation files for the given language with new strings from template.
+		// This basically takes the template, fills in existing translations, and saves.
+		printf("Syncing %s with templates...\n", langcode.c_str());
+
+		lang = langcode;
+		loadtext();
+
+		tinyxml2::XMLDocument doc;
+		if (!load_doc("strings", doc, "en"))
+		{
+			return;
+		}
+
+		tinyxml2::XMLHandle hDoc(&doc);
+		tinyxml2::XMLElement* pElem;
+		tinyxml2::XMLHandle hRoot(NULL);
+
+		{
+			pElem=hDoc.FirstChildElement().ToElement();
+			hRoot=tinyxml2::XMLHandle(pElem);
+		}
+
+		for (pElem = hRoot.FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
+		{
+			std::string pKey(pElem->Value());
+
+			if (pKey == "string")
+			{
+				const char* eng = pElem->Attribute("english");
+				pElem->SetText(translation[std::string(eng)].c_str());
+			}
+
+			if (pKey == "pluralString")
+			{
+				const char* eng = pElem->Attribute("english");
+				const char* eng_plural = pElem->Attribute("english_plural");
+
+				//std::vector<std::string> tra = std::vector<std::string>(2);
+
+				// TODO rule cases
+			}
+		}
+
+		FILESYSTEM_saveTiXml2Document(("lang/" + langcode + "/strings.xml").c_str(), doc);
+	}
+
+	void sync_lang_files()
+	{
+		std::string oldlang = lang;
+
+		for (size_t i = 0; i < languagelist.size(); i++)
+		{
+			if (languagelist[i].code != "en")
+				sync_lang_file(languagelist[i].code);
+		}
+
+		lang = oldlang;
+		loadtext();
+	}
+
 
 	std::string gettext(const std::string& eng)
 	{

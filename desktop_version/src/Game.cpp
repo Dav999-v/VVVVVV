@@ -7169,11 +7169,17 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         }
         break;
     case Menu::language_maint:
-        option("sync language files", false);
+        option("sync language files");
         option("statistics", false);
         option("return");
         menuxoff = -40;
         menuyoff = 0;
+        break;
+    case Menu::language_maint_sync:
+        option("sync");
+        option("return");
+        menuxoff = -30;
+        menuyoff = 64;
         break;
     case Menu::cleardatamenu:
         option("no! don't delete");

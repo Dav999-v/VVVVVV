@@ -35,6 +35,7 @@ namespace Menu
         controller,
         language,
         language_maint,
+        language_maint_sync,
         cleardatamenu,
         setinvincibility,
         setslowdown,

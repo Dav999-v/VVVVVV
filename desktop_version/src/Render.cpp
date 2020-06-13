@@ -371,6 +371,9 @@ void menurender()
             break;
         }
         break;
+    case Menu::language_maint_sync:
+        graphics.PrintWrap(-1, 80, "If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case.", tr, tg, tb, true);
+        break;
     case Menu::accessibility:
         switch (game.currentmenuoption)
         {

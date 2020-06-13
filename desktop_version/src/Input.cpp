@@ -612,7 +612,7 @@ void menuactionpress()
         {
         case 0:
             // sync languages
-            // TODO
+            game.createmenu(Menu::language_maint_sync);
             map.nexttowercolour();
             break;
         case 1:
@@ -626,6 +626,16 @@ void menuactionpress()
             map.nexttowercolour();
             break;
         }
+        break;
+    case Menu::language_maint_sync:
+        music.playef(11);
+        if (game.currentmenuoption == 0)
+        {
+            // yes, sync files
+            loc::sync_lang_files();
+        }
+        game.returnmenu();
+        map.nexttowercolour();
         break;
     case Menu::unlockmenutrials:
         switch (game.currentmenuoption)

@@ -22,6 +22,7 @@ namespace loc
 
 	void loadtext();
 	void loadlanguagelist();
+	void sync_lang_files();
 
 	std::string gettext(const std::string& eng);
 	std::string ngettext(const std::string& eng_sin, const std::string& eng_plu, long n);
