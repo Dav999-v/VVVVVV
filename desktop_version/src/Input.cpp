@@ -589,7 +589,7 @@ void menuactionpress()
         {
             loc::lang = loc::languagelist[game.currentmenuoption].code;
             loc::loadtext();
-            // TODO save to unlock.vvv
+            game.savestats();
         }
         map.nexttowercolour();
         game.returnmenu();

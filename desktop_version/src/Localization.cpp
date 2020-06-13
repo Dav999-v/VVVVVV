@@ -7,7 +7,7 @@
 
 namespace loc
 {
-	std::string lang = "nl"; // TODO: get language from unlock.vvv
+	std::string lang = "en";
 	LangMeta langmeta;
 
 	// language screen list

@@ -4789,6 +4789,11 @@ void Game::loadstats()
             controllerSensitivity = atoi(pText);
         }
 
+        if (pKey == "lang")
+        {
+            loc::lang = std::string(pText);
+        }
+
     }
 
     if(fullscreen)
@@ -5009,6 +5014,10 @@ void Game::savestats()
     msg = doc.NewElement( "controllerSensitivity" );
     msg->LinkEndChild( doc.NewText( help.String(controllerSensitivity).c_str()));
     dataNode->LinkEndChild( msg );
+
+    msg = doc.NewElement("lang");
+    msg->LinkEndChild(doc.NewText(loc::lang.c_str()));
+    dataNode->LinkEndChild(msg);
 
     FILESYSTEM_saveTiXml2Document("saves/unlock.vvv", doc);
 }
