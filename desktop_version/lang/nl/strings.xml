@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+    <string english="Game paused" comment="pause screen" max="40">Spel gepauzeerd</string>
+    <string english="[click to resume]" comment="pause screen" max="40">[klik om te hervatten]</string>
+    <string english="Press M to mute in game" comment="pause screen" max="40">Druk op M om te dempen</string>
+    <string english="Press N to mute music only" comment="pause screen" max="40">Druk op N om alleen muziek te dempen</string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+</strings>
