@@ -381,9 +381,9 @@ int main(int argc, char *argv[])
             {
                 FillRect(graphics.backBuffer, 0x00000000);
                 graphics.bprint(5, 110, loc::gettext("Game paused"), 196 - help.glow, 255 - help.glow, 196 - help.glow, true);
-                graphics.bprint(5, 120, "[click to resume]", 196 - help.glow, 255 - help.glow, 196 - help.glow, true);
-                graphics.bprint(5, 220, "Press M to mute in game", 164 - help.glow, 196 - help.glow, 164 - help.glow, true);
-                graphics.bprint(5, 230, "Press N to mute music only", 164 - help.glow, 196 - help.glow, 164 - help.glow, true);
+                graphics.bprint(5, 120, loc::gettext("[click to resume]"), 196 - help.glow, 255 - help.glow, 196 - help.glow, true);
+                graphics.bprint(5, 220, loc::gettext("Press M to mute in game"), 164 - help.glow, 196 - help.glow, 164 - help.glow, true);
+                graphics.bprint(5, 230, loc::gettext("Press N to mute music only"), 164 - help.glow, 196 - help.glow, 164 - help.glow, true);
             }
             graphics.render();
             //We are minimised, so lets put a bit of a delay to save CPU
