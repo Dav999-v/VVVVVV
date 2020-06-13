@@ -6848,17 +6848,26 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         menuyoff = 10;
         break;
     case Menu::language:
-        for (size_t i = 0; i < loc::languagelist.size(); i++)
+        if (loc::languagelist.size() == 0)
         {
-            if (loc::languagelist[i].nativename.empty())
-                option(loc::languagelist[i].code);
-            else
-                option(loc::languagelist[i].nativename);
+            option("ok");
+            menuxoff = 0;
+            menuyoff = -20;
         }
+        else
+        {
+            for (size_t i = 0; i < loc::languagelist.size(); i++)
+            {
+                if (loc::languagelist[i].nativename.empty())
+                    option(loc::languagelist[i].code);
+                else
+                    option(loc::languagelist[i].nativename);
+            }
 
-        //option("translation maintenance");
-        menuxoff = -90;
-        menuyoff = 70-(menuoptions.size()*10);
+            //option("translation maintenance");
+            menuxoff = -90;
+            menuyoff = 70-(menuoptions.size()*10);
+        }
         break;
     case Menu::cleardatamenu:
         option("no! don't delete");

@@ -585,11 +585,14 @@ void menuactionpress()
     }
     case Menu::language:
         music.playef(11);
-        loc::lang = loc::languagelist[game.currentmenuoption].code;
-        loc::loadtext();
+        if (loc::languagelist.size() != 0)
+        {
+            loc::lang = loc::languagelist[game.currentmenuoption].code;
+            loc::loadtext();
+            // TODO save to unlock.vvv
+        }
         map.nexttowercolour();
         game.returnmenu();
-        // TODO save to unlock.vvv
         break;
     case Menu::unlockmenutrials:
         switch (game.currentmenuoption)

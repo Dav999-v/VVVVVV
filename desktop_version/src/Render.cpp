@@ -345,7 +345,14 @@ void menurender()
 
         break;
     case Menu::language:
-        graphics.PrintWrap( -1, 15, loc::languagelist[game.currentmenuoption].credit, tr, tg, tb, true);
+        if (loc::languagelist.size() == 0)
+        {
+            graphics.PrintWrap(-1, 90, "ERROR: No language files found.", tr, tg, tb, true);
+        }
+        else
+        {
+            graphics.PrintWrap( -1, 15, loc::languagelist[game.currentmenuoption].credit, tr, tg, tb, true);
+        }
         break;
     case Menu::accessibility:
         switch (game.currentmenuoption)
