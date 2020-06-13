@@ -7,6 +7,7 @@
 #include "Map.h"
 #include "Script.h"
 #include "FileSystemUtils.h"
+#include "Localization.h"
 
 #include "MakeAndPlay.h"
 
@@ -90,11 +91,15 @@ void menurender()
             graphics.Print( -1, 75, "and adjust sensitivity", tr, tg, tb, true);
             break;
         case OFFSET+3:
+            graphics.bigprint( -1, 30, "Language", tr, tg, tb, true);
+            graphics.Print( -1, 65, "Change the language", tr, tg, tb, true);
+            break;
+        case OFFSET+4:
             graphics.bigprint( -1, 30, "Clear Data", tr, tg, tb, true);
             graphics.Print( -1, 65, "Delete your save data", tr, tg, tb, true);
             graphics.Print( -1, 75, "and unlocked play modes", tr, tg, tb, true);
             break;
-        case OFFSET+4:
+        case OFFSET+5:
             if(music.mmmmmm){
                 graphics.bigprint( -1, 30, "Soundtrack", tr, tg, tb, true);
                 graphics.Print( -1, 65, "Toggle between MMMMMM and PPPPPP", tr, tg, tb, true);
@@ -338,6 +343,9 @@ void menurender()
         }
 
 
+        break;
+    case Menu::language:
+        graphics.PrintWrap( -1, 15, loc::languagelist[game.currentmenuoption].credit, tr, tg, tb, true);
         break;
     case Menu::accessibility:
         switch (game.currentmenuoption)
@@ -1111,6 +1119,10 @@ void titlerender()
         else if (game.currentmenuname == Menu::levellist)
         {
             graphics.drawlevelmenu(tr, tg, tb, 5);
+        }
+        else if (game.currentmenuname == Menu::language)
+        {
+            graphics.drawmenu(tr, tg, tb, 5);
         }
         else
         {

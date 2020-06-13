@@ -7,9 +7,20 @@
 
 namespace loc
 {
+	struct LangMeta
+	{
+		std::string code;
+		std::string nativename;
+		std::string credit;
+		int nplurals;
+	};
+
 	extern std::string lang;
+	extern std::vector<LangMeta> languagelist;
+	extern int languagelist_curlang;
 
 	void loadtext();
+	void loadlanguagelist();
 
 	std::string gettext(const std::string& eng);
 	std::string ngettext(const std::string& eng_sin, const std::string& eng_plu, long n);

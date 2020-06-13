@@ -33,6 +33,7 @@ namespace Menu
         options,
         accessibility,
         controller,
+        language,
         cleardatamenu,
         setinvincibility,
         setslowdown,

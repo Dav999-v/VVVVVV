@@ -6,6 +6,7 @@
 #include "tinyxml2.h"
 
 #include "FileSystemUtils.h"
+#include "Localization.h"
 
 void updatebuttonmappings(int bind)
 {
@@ -536,12 +537,21 @@ void menuactionpress()
             break;
 #endif
         case OFFSET+2:
-            //clear data menu
+            //game pad menu
             music.playef(11);
             game.createmenu(Menu::controller);
             map.nexttowercolour();
             break;
         case OFFSET+3:
+            //language options
+            music.playef(11);
+            loc::loadlanguagelist();
+            game.createmenu(Menu::language);
+            game.currentmenuoption = loc::languagelist_curlang;
+            map.nexttowercolour();
+            break;
+
+        case OFFSET+4:
             //clear data menu
             music.playef(11);
             game.createmenu(Menu::cleardatamenu);
@@ -550,7 +560,7 @@ void menuactionpress()
         }
 
         int mmmmmm_offset = music.mmmmmm ? 0 : -1;
-        if (game.currentmenuoption == OFFSET+4+mmmmmm_offset)
+        if (game.currentmenuoption == OFFSET+5+mmmmmm_offset)
         {
             //**** TOGGLE MMMMMM
             if(game.usingmmmmmm > 0){
@@ -563,7 +573,7 @@ void menuactionpress()
             music.play(6);
             game.savestats();
         }
-        else if (game.currentmenuoption == OFFSET+5+mmmmmm_offset)
+        else if (game.currentmenuoption == OFFSET+6+mmmmmm_offset)
         {
             //back
             music.playef(11);
@@ -573,6 +583,14 @@ void menuactionpress()
 #undef OFFSET
         break;
     }
+    case Menu::language:
+        music.playef(11);
+        loc::lang = loc::languagelist[game.currentmenuoption].code;
+        loc::loadtext();
+        map.nexttowercolour();
+        game.returnmenu();
+        // TODO save to unlock.vvv
+        break;
     case Menu::unlockmenutrials:
         switch (game.currentmenuoption)
         {

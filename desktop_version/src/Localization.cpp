@@ -8,20 +8,62 @@
 namespace loc
 {
 	std::string lang = "nl"; // TODO: get language from unlock.vvv
+	LangMeta langmeta;
+
+	// language screen list
+	std::vector<LangMeta> languagelist;
+	int languagelist_curlang;
 
 	typedef std::pair<std::string, std::string> english_plu;
 
 	std::map<std::string, std::string> translation;
 	std::map<english_plu, std::vector<std::string> > translation_plu;
 
-	bool load_doc(std::string cat, tinyxml2::XMLDocument& doc)
+	bool load_doc(std::string cat, tinyxml2::XMLDocument& doc, std::string load_lang = lang)
 	{
-		if (!FILESYSTEM_loadTiXml2Document(("lang/" + lang + "/" + cat + ".xml").c_str(), doc))
+		if (!FILESYSTEM_loadTiXml2Document(("lang/" + load_lang + "/" + cat + ".xml").c_str(), doc))
 		{
-			printf("Could not load language %s/%s.\n", lang.c_str(), cat.c_str());
+			printf("Could not load language %s/%s.\n", load_lang.c_str(), cat.c_str());
 			return false;
 		}
 		return true;
+	}
+
+	void loadmeta(LangMeta& meta, std::string load_lang = lang)
+	{
+		meta.code = load_lang;
+
+		tinyxml2::XMLDocument doc;
+		if (!load_doc("meta", doc, load_lang))
+		{
+			return;
+		}
+
+		tinyxml2::XMLHandle hDoc(&doc);
+		tinyxml2::XMLElement* pElem;
+		tinyxml2::XMLHandle hRoot(NULL);
+
+		{
+			pElem=hDoc.FirstChildElement().ToElement();
+			hRoot=tinyxml2::XMLHandle(pElem);
+		}
+
+		for (pElem = hRoot.FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
+		{
+			std::string pKey(pElem->Value());
+			const char* pText = pElem->GetText();
+			if (pText == NULL)
+			{
+				pText = "";
+			}
+
+			if (pKey == "nativename")
+				meta.nativename = std::string(pText);
+			else if (pKey == "credit")
+				meta.credit = std::string(pText);
+			else if (pKey == "nplurals")
+				meta.nplurals = atoi(pText);
+		}
 	}
 
 	void loadtext_strings()
@@ -36,13 +78,9 @@ namespace loc
 		tinyxml2::XMLElement* pElem;
 		tinyxml2::XMLHandle hRoot(NULL);
 
-		int nplurals = 1;
-		std::string credit;
-
 		{
 			pElem=hDoc.FirstChildElement().ToElement();
-			pElem->QueryIntAttribute("nplurals", &nplurals);
-			//pElem->QueryStringAttribute("credit", &credit); TODO
+			//pElem->QueryIntAttribute("nplurals", &nplurals);
 			hRoot=tinyxml2::XMLHandle(pElem);
 		}
 
@@ -83,7 +121,25 @@ namespace loc
 			return;
 		}
 
+		loadmeta(langmeta);
 		loadtext_strings();
+	}
+
+	void loadlanguagelist()
+	{
+		// Load the list of languages for the language screen
+		languagelist.clear();
+
+		std::vector<std::string> codes = FILESYSTEM_getLanguageCodes();
+		for (size_t i = 0; i < codes.size(); i++)
+		{
+			LangMeta meta;
+			loadmeta(meta, codes[i]);
+			languagelist.push_back(meta);
+
+			if (lang == codes[i])
+				languagelist_curlang = i;
+		}
 	}
 
 	std::string gettext(const std::string& eng)

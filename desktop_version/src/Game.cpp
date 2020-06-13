@@ -13,6 +13,7 @@
 #include <sstream>
 
 #include "FileSystemUtils.h"
+#include "Localization.h"
 
 #include "tinyxml2.h"
 
@@ -6814,6 +6815,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("unlock play modes");
 #endif
         option("game pad options");
+        option("language");
         option("clear data");
         //Add extra menu for mmmmmm mod
         if(music.mmmmmm){
@@ -6844,6 +6846,19 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("return");
         menuxoff = -40;
         menuyoff = 10;
+        break;
+    case Menu::language:
+        for (size_t i = 0; i < loc::languagelist.size(); i++)
+        {
+            if (loc::languagelist[i].nativename.empty())
+                option(loc::languagelist[i].code);
+            else
+                option(loc::languagelist[i].nativename);
+        }
+
+        //option("translation maintenance");
+        menuxoff = -90;
+        menuyoff = 70-(menuoptions.size()*10);
         break;
     case Menu::cleardatamenu:
         option("no! don't delete");

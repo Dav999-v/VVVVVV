@@ -305,6 +305,23 @@ std::vector<std::string> FILESYSTEM_getLevelDirFileNames()
 	return list;
 }
 
+std::vector<std::string> FILESYSTEM_getLanguageCodes()
+{
+	std::vector<std::string> list;
+	char **fileList = PHYSFS_enumerateFiles("lang");
+	char **i;
+
+	for (i = fileList; *i != NULL; i++)
+	{
+		list.push_back(*i);
+	}
+
+	PHYSFS_freeList(fileList);
+
+	std::sort(list.begin(), list.end());
+	return list;
+}
+
 void PLATFORM_getOSDirectory(char* output)
 {
 #ifdef _WIN32
