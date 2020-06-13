@@ -316,7 +316,10 @@ std::vector<std::string> FILESYSTEM_getLanguageCodes()
 
 bool FILESYSTEM_langsAreModded()
 {
-	std::string langdir = std::string(PHYSFS_getRealDir("lang"));
+	const char *langdir_c = PHYSFS_getRealDir("lang");
+	if (langdir_c == NULL)
+		return false;
+	std::string langdir = std::string(langdir_c);
 	return langdir.compare(langdir.size()-4, 4, ".zip") != 0;
 }
 
