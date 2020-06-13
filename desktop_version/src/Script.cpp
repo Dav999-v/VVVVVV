@@ -84,8 +84,11 @@ void scriptclass::run()
 			{
 				//USAGE: moveplayer(x offset, y offset)
 				int player = obj.getplayer();
-				obj.entities[player].xp += ss_toi(words[1]);
-				obj.entities[player].yp += ss_toi(words[2]);
+				if (player > -1)
+				{
+					obj.entities[player].xp += ss_toi(words[1]);
+					obj.entities[player].yp += ss_toi(words[2]);
+				}
 				scriptdelay = 1;
 			}
 #if !defined(NO_CUSTOM_LEVELS)
@@ -94,12 +97,16 @@ void scriptclass::run()
 				int temprx=ss_toi(words[1])-1;
 				int tempry=ss_toi(words[2])-1;
 				int curlevel=temprx+(ed.maxwidth*(tempry));
-				ed.level[curlevel].warpdir=ss_toi(words[3]);
+				bool inbounds = curlevel >= 0 && curlevel < 400;
+				if (inbounds)
+				{
+					ed.level[curlevel].warpdir=ss_toi(words[3]);
+				}
 				//If screen warping, then override all that:
 				graphics.backgrounddrawn = false;
 
 				//Do we update our own room?
-				if(game.roomx-100==temprx && game.roomy-100==tempry){
+				if(inbounds && game.roomx-100==temprx && game.roomy-100==tempry){
 					map.warpx=false; map.warpy=false;
 					if(ed.level[curlevel].warpdir==0){
 						map.background = 1;
@@ -129,7 +136,8 @@ void scriptclass::run()
 			}
 			if (words[0] == "ifwarp")
 			{
-				if (ed.level[ss_toi(words[1])-1+(ed.maxwidth*(ss_toi(words[2])-1))].warpdir == ss_toi(words[3]))
+				int room = ss_toi(words[1])-1+(ed.maxwidth*(ss_toi(words[2])-1));
+				if (room >= 0 && room < 400 && ed.level[room].warpdir == ss_toi(words[3]))
 				{
 					load("custom_"+words[4]);
 					position--;
@@ -171,7 +179,8 @@ void scriptclass::run()
 			}
 			else if (words[0] == "customifflag")
 			{
-				if (obj.flags[ss_toi(words[1])])
+				int flag = ss_toi(words[1]);
+				if (flag >= 0 && flag < (int) obj.flags.size() && obj.flags[flag])
 				{
 					load("custom_"+words[2]);
 					position--;
@@ -230,7 +239,8 @@ void scriptclass::run()
 			}
 			if (words[0] == "tofloor")
 			{
-				if(obj.entities[obj.getplayer()].onroof>0)
+				int player = obj.getplayer();
+				if(player > -1 && obj.entities[player].onroof>0)
 				{
 					game.press_action = true;
 					scriptdelay = 1;
@@ -270,8 +280,11 @@ void scriptclass::run()
 			{
 				//USAGE: gotoposition(x position, y position, gravity position)
 				int player = obj.getplayer();
-				obj.entities[player].xp = ss_toi(words[1]);
-				obj.entities[player].yp = ss_toi(words[2]);
+				if (player > -1)
+				{
+					obj.entities[player].xp = ss_toi(words[1]);
+					obj.entities[player].yp = ss_toi(words[2]);
+				}
 				game.gravitycontrol = ss_toi(words[3]);
 
 			}
@@ -391,7 +404,10 @@ void scriptclass::run()
 				if (words[1] == "player")
 				{
 					i = obj.getplayer();
-					j = obj.entities[i].dir;
+					if (i > -1)
+					{
+						j = obj.entities[i].dir;
+					}
 				}
 				else if (words[1] == "cyan")
 				{
@@ -444,7 +460,7 @@ void scriptclass::run()
 				}
 
 				//next is whether to position above or below
-				if (words[2] == "above")
+				if (i > -1 && words[2] == "above")
 				{
 					if (j == 1)    //left
 					{
@@ -457,7 +473,7 @@ void scriptclass::run()
 						texty = obj.entities[i].yp - 18 - (txt.size() * 8);
 					}
 				}
-				else
+				else if (i > -1)
 				{
 					if (j == 1)    //left
 					{
@@ -660,24 +676,30 @@ void scriptclass::run()
 			{
 				//Create the super VVVVVV combo!
 				i = obj.getplayer();
-				obj.entities[i].xp = 30;
-				obj.entities[i].yp = 46;
-				obj.entities[i].size = 13;
-				obj.entities[i].colour = 23;
-				obj.entities[i].cx = 36;// 6;
-				obj.entities[i].cy = 12+80;// 2;
-				obj.entities[i].h = 126-80;// 21;
+				if (i > -1)
+				{
+					obj.entities[i].xp = 30;
+					obj.entities[i].yp = 46;
+					obj.entities[i].size = 13;
+					obj.entities[i].colour = 23;
+					obj.entities[i].cx = 36;// 6;
+					obj.entities[i].cy = 12+80;// 2;
+					obj.entities[i].h = 126-80;// 21;
+				}
 			}
 			else if (words[0] == "undovvvvvvman")
 			{
 				//Create the super VVVVVV combo!
 				i = obj.getplayer();
-				obj.entities[i].xp = 100;
-				obj.entities[i].size = 0;
-				obj.entities[i].colour = 0;
-				obj.entities[i].cx = 6;
-				obj.entities[i].cy = 2;
-				obj.entities[i].h = 21;
+				if (i > -1)
+				{
+					obj.entities[i].xp = 100;
+					obj.entities[i].size = 0;
+					obj.entities[i].colour = 0;
+					obj.entities[i].cx = 6;
+					obj.entities[i].cy = 2;
+					obj.entities[i].h = 21;
+				}
 			}
 			else if (words[0] == "createentity")
 			{
@@ -796,11 +818,11 @@ void scriptclass::run()
 					i=obj.getcrewman(1);
 				}
 
-				if (ss_toi(words[2]) == 0)
+				if (i > -1 && ss_toi(words[2]) == 0)
 				{
 					obj.entities[i].tile = 0;
 				}
-				else
+				else if (i > -1)
 				{
 					obj.entities[i].tile = 144;
 				}
@@ -893,7 +915,10 @@ void scriptclass::run()
 					i=obj.getcrewman(1);
 				}
 
-				obj.entities[i].tile = ss_toi(words[2]);
+				if (i > -1)
+				{
+					obj.entities[i].tile = ss_toi(words[2]);
+				}
 			}
 			else if (words[0] == "flipgravity")
 			{
@@ -973,7 +998,10 @@ void scriptclass::run()
 					i=obj.getcrewman(1);
 				}
 
-				obj.entities[i].tile +=12;
+				if (i > -1)
+				{
+					obj.entities[i].tile +=12;
+				}
 			}
 			else if (words[0] == "changedir")
 			{
@@ -1006,11 +1034,11 @@ void scriptclass::run()
 					i=obj.getcrewman(1);
 				}
 
-				if (ss_toi(words[2]) == 0)
+				if (i > -1 && ss_toi(words[2]) == 0)
 				{
 					obj.entities[i].dir = 0;
 				}
-				else
+				else if (i > -1)
 				{
 					obj.entities[i].dir = 1;
 				}
@@ -1075,14 +1103,17 @@ void scriptclass::run()
 				}
 
 
-				obj.entities[i].state = ss_toi(words[2]);
-				if (obj.entities[i].state == 16)
+				if (i > -1)
 				{
-					obj.entities[i].para=ss_toi(words[3]);
-				}
-				else if (obj.entities[i].state == 17)
-				{
-					obj.entities[i].dir=ss_toi(words[3]);
+					obj.entities[i].state = ss_toi(words[2]);
+					if (obj.entities[i].state == 16)
+					{
+						obj.entities[i].para=ss_toi(words[3]);
+					}
+					else if (obj.entities[i].state == 17)
+					{
+						obj.entities[i].dir=ss_toi(words[3]);
+					}
 				}
 			}
 			else if (words[0] == "alarmon")
@@ -1097,8 +1128,11 @@ void scriptclass::run()
 			else if (words[0] == "activateteleporter")
 			{
 				i = obj.getteleporter();
-				obj.entities[i].tile = 6;
-				obj.entities[i].colour = 102;
+				if (i > -1)
+				{
+					obj.entities[i].tile = 6;
+					obj.entities[i].colour = 102;
+				}
 			}
 			else if (words[0] == "changecolour")
 			{
@@ -1131,33 +1165,36 @@ void scriptclass::run()
 					i=obj.getcrewman(1);
 				}
 
-				if (words[2] == "cyan")
+				if (i > -1)
 				{
-					obj.entities[i].colour = 0;
-				}
-				else if (words[2] == "red")
-				{
-					obj.entities[i].colour = 15;
-				}
-				else if (words[2] == "green")
-				{
-					obj.entities[i].colour = 13;
-				}
-				else if (words[2] == "yellow")
-				{
-					obj.entities[i].colour = 14;
-				}
-				else if (words[2] == "blue")
-				{
-					obj.entities[i].colour = 16;
-				}
-				else if (words[2] == "purple")
-				{
-					obj.entities[i].colour = 20;
-				}
-				else if (words[2] == "teleporter")
-				{
-					obj.entities[i].colour = 102;
+					if (words[2] == "cyan")
+					{
+						obj.entities[i].colour = 0;
+					}
+					else if (words[2] == "red")
+					{
+						obj.entities[i].colour = 15;
+					}
+					else if (words[2] == "green")
+					{
+						obj.entities[i].colour = 13;
+					}
+					else if (words[2] == "yellow")
+					{
+						obj.entities[i].colour = 14;
+					}
+					else if (words[2] == "blue")
+					{
+						obj.entities[i].colour = 16;
+					}
+					else if (words[2] == "purple")
+					{
+						obj.entities[i].colour = 20;
+					}
+					else if (words[2] == "teleporter")
+					{
+						obj.entities[i].colour = 102;
+					}
 				}
 			}
 			else if (words[0] == "squeak")
@@ -1211,12 +1248,18 @@ void scriptclass::run()
 			{
 				i = obj.getplayer();
 				game.savepoint = 0;
-				game.savex = obj.entities[i].xp ;
-				game.savey = obj.entities[i].yp;
+				if (i > -1)
+				{
+					game.savex = obj.entities[i].xp ;
+					game.savey = obj.entities[i].yp;
+				}
 				game.savegc = game.gravitycontrol;
 				game.saverx = game.roomx;
 				game.savery = game.roomy;
-				game.savedir = obj.entities[i].dir;
+				if (i > -1)
+				{
+					game.savedir = obj.entities[i].dir;
+				}
 			}
 			else if (words[0] == "gamestate")
 			{
@@ -1247,7 +1290,8 @@ void scriptclass::run()
 			}
 			else if (words[0] == "ifexplored")
 			{
-				if (map.explored[ss_toi(words[1]) + (20 * ss_toi(words[2]))] == 1)
+				int room = ss_toi(words[1]) + (20 * ss_toi(words[2]));
+				if (room >= 0 && room < (int) map.explored.size() && map.explored[room] == 1)
 				{
 					load(words[3]);
 					position--;
@@ -1271,7 +1315,8 @@ void scriptclass::run()
 			}
 			else if (words[0] == "ifflag")
 			{
-				if (obj.flags[ss_toi(words[1])])
+				int flag = ss_toi(words[1]);
+				if (flag >= 0 && flag < (int) obj.flags.size() && obj.flags[flag])
 				{
 					load(words[2]);
 					position--;
@@ -1279,7 +1324,8 @@ void scriptclass::run()
 			}
 			else if (words[0] == "ifcrewlost")
 			{
-				if (game.crewstats[ss_toi(words[1])]==false)
+				int crewmate = ss_toi(words[1]);
+				if (crewmate >= 0 && crewmate < (int) game.crewstats.size() && game.crewstats[crewmate]==false)
 				{
 					load(words[2]);
 					position--;
@@ -1303,11 +1349,19 @@ void scriptclass::run()
 			}
 			else if (words[0] == "hidecoordinates")
 			{
-				map.explored[ss_toi(words[1]) + (20 * ss_toi(words[2]))] = 0;
+				int room = ss_toi(words[1]) + (20 * ss_toi(words[2]));
+				if (room >= 0 && room < (int) map.explored.size())
+				{
+					map.explored[room] = 0;
+				}
 			}
 			else if (words[0] == "showcoordinates")
 			{
-				map.explored[ss_toi(words[1]) + (20 * ss_toi(words[2]))] = 1;
+				int room = ss_toi(words[1]) + (20 * ss_toi(words[2]));
+				if (room >= 0 && room < (int) map.explored.size())
+				{
+					map.explored[room] = 1;
+				}
 			}
 			else if (words[0] == "hideship")
 			{
@@ -1365,11 +1419,19 @@ void scriptclass::run()
 			}
 			else if (words[0] == "hideplayer")
 			{
-				obj.entities[obj.getplayer()].invis = true;
+				int player = obj.getplayer();
+				if (player > -1)
+				{
+					obj.entities[player].invis = true;
+				}
 			}
 			else if (words[0] == "showplayer")
 			{
-				obj.entities[obj.getplayer()].invis = false;
+				int player = obj.getplayer();
+				if (player > -1)
+				{
+					obj.entities[player].invis = false;
+				}
 			}
 			else if (words[0] == "teleportscript")
 			{
@@ -1430,7 +1492,10 @@ void scriptclass::run()
 
 				obj.resetallflags();
 				i = obj.getplayer();
-				obj.entities[i].tile = 0;
+				if (i > -1)
+				{
+					obj.entities[i].tile = 0;
+				}
 
 				for (i = 0; i < 100; i++)
 				{
@@ -1603,11 +1668,11 @@ void scriptclass::run()
 					j=obj.getcrewman(1);
 				}
 
-				if (obj.entities[j].xp > obj.entities[i].xp + 5)
+				if (i > -1 && j > -1 && obj.entities[j].xp > obj.entities[i].xp + 5)
 				{
 					obj.entities[i].dir = 1;
 				}
-				else if (obj.entities[j].xp < obj.entities[i].xp - 5)
+				else if (i > -1 && j > -1 && obj.entities[j].xp < obj.entities[i].xp - 5)
 				{
 					obj.entities[i].dir = 0;
 				}
@@ -1793,39 +1858,45 @@ void scriptclass::run()
 			else if (words[0] == "restoreplayercolour")
 			{
 				i = obj.getplayer();
-				obj.entities[i].colour = 0;
+				if (i > -1)
+				{
+					obj.entities[i].colour = 0;
+				}
 			}
 			else if (words[0] == "changeplayercolour")
 			{
 				i = obj.getplayer();
 
-				if (words[1] == "cyan")
+				if (i > -1)
 				{
-					obj.entities[i].colour = 0;
-				}
-				else if (words[1] == "red")
-				{
-					obj.entities[i].colour = 15;
-				}
-				else if (words[1] == "green")
-				{
-					obj.entities[i].colour = 13;
-				}
-				else if (words[1] == "yellow")
-				{
-					obj.entities[i].colour = 14;
-				}
-				else if (words[1] == "blue")
-				{
-					obj.entities[i].colour = 16;
-				}
-				else if (words[1] == "purple")
-				{
-					obj.entities[i].colour = 20;
-				}
-				else if (words[1] == "teleporter")
-				{
-					obj.entities[i].colour = 102;
+					if (words[1] == "cyan")
+					{
+						obj.entities[i].colour = 0;
+					}
+					else if (words[1] == "red")
+					{
+						obj.entities[i].colour = 15;
+					}
+					else if (words[1] == "green")
+					{
+						obj.entities[i].colour = 13;
+					}
+					else if (words[1] == "yellow")
+					{
+						obj.entities[i].colour = 14;
+					}
+					else if (words[1] == "blue")
+					{
+						obj.entities[i].colour = 16;
+					}
+					else if (words[1] == "purple")
+					{
+						obj.entities[i].colour = 20;
+					}
+					else if (words[1] == "teleporter")
+					{
+						obj.entities[i].colour = 102;
+					}
 				}
 			}
 			else if (words[0] == "altstates")
@@ -1835,7 +1906,10 @@ void scriptclass::run()
 			else if (words[0] == "activeteleporter")
 			{
 				i = obj.getteleporter();
-				obj.entities[i].colour = 101;
+				if (i > -1)
+				{
+					obj.entities[i].colour = 101;
+				}
 			}
 			else if (words[0] == "foundtrinket")
 			{
@@ -1843,7 +1917,11 @@ void scriptclass::run()
 				music.haltdasmusik();
 				music.playef(3);
 
-				obj.collect[ss_toi(words[1])] = true;
+				int trinket = ss_toi(words[1]);
+				if (trinket >= 0 && trinket < (int) obj.collect.size())
+				{
+					obj.collect[trinket] = true;
+				}
 
 				graphics.textboxremovefast();
 
@@ -2579,7 +2657,10 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 
 			i = obj.getplayer();
-			map.ypos = obj.entities[i].yp - 120;
+			if (i > -1)
+			{
+				map.ypos = obj.entities[i].yp - 120;
+			}
 			map.bypos = map.ypos / 2;
 			map.cameramode = 0;
 			map.colsuperstate = 0;
@@ -3151,6 +3232,7 @@ void scriptclass::startgamemode( int t )
 		game.customstart();
 		game.jumpheld = true;
 
+		ed.ghosts.clear();
 
 		map.custommode = true;
 		map.customx = 100;
@@ -3271,9 +3353,12 @@ void scriptclass::teleport()
 	game.companion = 0;
 
 	i = obj.getplayer(); //less likely to have a serious collision error if the player is centered
-	obj.entities[i].xp = 150;
-	obj.entities[i].yp = 110;
-	if(game.teleport_to_x==17 && game.teleport_to_y==17) obj.entities[i].xp = 88; //prevent falling!
+	if (i > -1)
+	{
+		obj.entities[i].xp = 150;
+		obj.entities[i].yp = 110;
+		if(game.teleport_to_x==17 && game.teleport_to_y==17) obj.entities[i].xp = 88; //prevent falling!
+	}
 
 	if (game.teleportscript == "levelonecomplete")
 	{
@@ -3289,17 +3374,27 @@ void scriptclass::teleport()
 	game.gravitycontrol = 0;
 	map.gotoroom(100+game.teleport_to_x, 100+game.teleport_to_y);
 	j = obj.getteleporter();
-	obj.entities[j].state = 2;
+	if (j > -1)
+	{
+		obj.entities[j].state = 2;
+	}
 	game.teleport_to_new_area = false;
 
-	game.savepoint = obj.entities[j].para;
-	game.savex = obj.entities[j].xp + 44;
-	game.savey = obj.entities[j].yp + 44;
+	if (j > -1)
+	{
+		game.savepoint = obj.entities[j].para;
+		game.savex = obj.entities[j].xp + 44;
+		game.savey = obj.entities[j].yp + 44;
+	}
 	game.savegc = 0;
 
 	game.saverx = game.roomx;
 	game.savery = game.roomy;
-	game.savedir = obj.entities[obj.getplayer()].dir;
+	int player = obj.getplayer();
+	if (player > -1)
+	{
+		game.savedir = obj.entities[player].dir;
+	}
 
 	if(game.teleport_to_x==0 && game.teleport_to_y==0)
 	{

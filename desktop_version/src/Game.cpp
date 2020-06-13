@@ -365,6 +365,9 @@ void Game::init(void)
 
     skipfakeload = false;
 
+    ghostsenabled = false;
+    gametimer = 0;
+
     cliplaytest = false;
     playx = 0;
     playy = 0;
@@ -502,14 +505,17 @@ void Game::lifesequence()
     if (lifeseq > 0)
     {
         int i = obj.getplayer();
-        obj.entities[i].invis = false;
-        if (lifeseq == 2) obj.entities[i].invis = true;
-        if (lifeseq == 6) obj.entities[i].invis = true;
-        if (lifeseq >= 8) obj.entities[i].invis = true;
+        if (i > -1)
+        {
+            obj.entities[i].invis = false;
+            if (lifeseq == 2) obj.entities[i].invis = true;
+            if (lifeseq == 6) obj.entities[i].invis = true;
+            if (lifeseq >= 8) obj.entities[i].invis = true;
+        }
         if (lifeseq > 5) gravitycontrol = savegc;
 
         lifeseq--;
-        if (lifeseq <= 0)
+        if (i > -1 && lifeseq <= 0)
         {
             obj.entities[i].invis = false;
         }
@@ -904,19 +910,28 @@ void Game::updatestate()
             break;
 
         case 15:
+        {
             //leaving the naughty corner
-            obj.entities[obj.getplayer()].tile = 0;
+            int i = obj.getplayer();
+            if (i > -1)
+            {
+                obj.entities[obj.getplayer()].tile = 0;
+            }
             state = 0;
             break;
+        }
         case 16:
+        {
             //entering the naughty corner
-            if(obj.entities[obj.getplayer()].tile == 0)
+            int i = obj.getplayer();
+            if(i > -1 && obj.entities[i].tile == 0)
             {
-                obj.entities[obj.getplayer()].tile = 144;
+                obj.entities[i].tile = 144;
                 music.playef(2);
             }
             state = 0;
             break;
+        }
 
         case 17:
             //Arrow key tutorial
@@ -1502,12 +1517,12 @@ void Game::updatestate()
 
             i = obj.getplayer();
             hascontrol = false;
-            if (obj.entities[i].onroof > 0 && gravitycontrol == 1)
+            if (i > -1 && obj.entities[i].onroof > 0 && gravitycontrol == 1)
             {
                 gravitycontrol = 0;
                 music.playef(1);
             }
-            if (obj.entities[i].onground > 0)
+            if (i > -1 && obj.entities[i].onground > 0)
             {
                 state++;
             }
@@ -1519,8 +1534,11 @@ void Game::updatestate()
 
             companion = 6;
             i = obj.getcompanion();
-            obj.entities[i].tile = 0;
-            obj.entities[i].state = 1;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 0;
+                obj.entities[i].state = 1;
+            }
 
             advancetext = true;
             hascontrol = false;
@@ -1545,8 +1563,11 @@ void Game::updatestate()
             music.playef(2);
             graphics.textboxactive();
             i = obj.getcompanion();
-            obj.entities[i].tile = 54;
-            obj.entities[i].state = 0;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 54;
+                obj.entities[i].state = 0;
+            }
         }
         break;
         case 108:
@@ -1560,8 +1581,11 @@ void Game::updatestate()
         {
 
             i = obj.getcompanion();
-            obj.entities[i].tile = 0;
-            obj.entities[i].state = 1;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 0;
+                obj.entities[i].state = 1;
+            }
             graphics.createtextbox("Follow me!", 185, 154, 164, 164, 255);
             state++;
             music.playef(11);
@@ -1620,12 +1644,12 @@ void Game::updatestate()
 
             i = obj.getplayer();
             hascontrol = false;
-            if (obj.entities[i].onground > 0 && gravitycontrol == 0)
+            if (i > -1 && obj.entities[i].onground > 0 && gravitycontrol == 0)
             {
                 gravitycontrol = 1;
                 music.playef(1);
             }
-            if (obj.entities[i].onroof > 0)
+            if (i > -1 && obj.entities[i].onroof > 0)
             {
                 state++;
             }
@@ -1635,8 +1659,11 @@ void Game::updatestate()
         case 122:
             companion = 7;
             i = obj.getcompanion();
-            obj.entities[i].tile = 6;
-            obj.entities[i].state = 1;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 6;
+                obj.entities[i].state = 1;
+            }
 
             advancetext = true;
             hascontrol = false;
@@ -1651,7 +1678,7 @@ void Game::updatestate()
             state++;
             music.playef(2);
             graphics.textboxactive();
-            i = obj.getcompanion();	//obj.entities[i].tile = 66;	obj.entities[i].state = 0;
+            i = obj.getcompanion(); if (i > -1) {	/*obj.entities[i].tile = 66;	obj.entities[i].state = 0;*/	}
             break;
         case 126:
             graphics.createtextbox("I can help with that!", 125, 152-40, 164, 164, 255);
@@ -1673,8 +1700,11 @@ void Game::updatestate()
             music.playef(14);
             graphics.textboxactive();
             i = obj.getcompanion();
-            obj.entities[i].tile = 6;
-            obj.entities[i].state = 1;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 6;
+                obj.entities[i].state = 1;
+            }
             break;
         case 132:
             graphics.textboxremove();
@@ -2155,60 +2185,93 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 2502:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 5;
 
             i = obj.getplayer();
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
+            if (i > -1)
+            {
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
 
-            obj.entities[i].xp = obj.entities[obj.getteleporter()].xp+44;
-            obj.entities[i].yp = obj.entities[obj.getteleporter()].yp+44;
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                int j = obj.getteleporter();
+                if (j > -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                }
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
 
             i = obj.getteleporter();
-            obj.entities[i].tile = 1;
-            obj.entities[i].colour = 101;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 1;
+                obj.entities[i].colour = 101;
+            }
             break;
+        }
         case 2503:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 2504:
             state++;
             i = obj.getplayer();
-            //obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                //obj.entities[i].xp += 10;
+            }
             break;
         case 2505:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
         case 2506:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
         case 2507:
             state++;
             i = obj.getplayer();
-            //obj.entities[i].xp += 4;
+            if (i > -1)
+            {
+                //obj.entities[i].xp += 4;
+            }
             break;
         case 2508:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 2;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 2;
+            }
             break;
         case 2509:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
         case 2510:
             advancetext = true;
@@ -2304,8 +2367,11 @@ void Game::updatestate()
             }
 
             i = obj.getplayer();
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = true;
+            if (i > -1)
+            {
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = true;
+            }
 
             i = obj.getcompanion();
             if(i>-1)
@@ -2314,8 +2380,11 @@ void Game::updatestate()
             }
 
             i = obj.getteleporter();
-            obj.entities[i].tile = 1;
-            obj.entities[i].colour = 100;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 1;
+                obj.entities[i].colour = 100;
+            }
             break;
 
         case 3006:
@@ -3295,7 +3364,10 @@ void Game::updatestate()
         case 3511:
             //Activating a teleporter (long version for level complete)
             i = obj.getplayer();
-            obj.entities[i].colour = 102;
+            if (i > -1)
+            {
+                obj.entities[i].colour = 102;
+            }
 
             state++;
             statedelay = 30;
@@ -3332,8 +3404,11 @@ void Game::updatestate()
             screenshake = 0;
 
             i = obj.getplayer();
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = true;
+            if (i > -1)
+            {
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = true;
+            }
 
             //we're done here!
             music.playef(10);
@@ -3419,8 +3494,11 @@ void Game::updatestate()
             //state = 3040; //Lab
 
             i = obj.getplayer();
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = true;
+            if (i > -1)
+            {
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = true;
+            }
 
             i = obj.getteleporter();
             if(i>-1)
@@ -3458,52 +3536,73 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4013:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4014:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4015:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
         case 4016:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
         case 4017:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
         case 4018:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
         case 4019:
             if (intimetrial || nodeathmode || inintermission)
@@ -3515,8 +3614,11 @@ void Game::updatestate()
             }
             i = obj.getteleporter();
             activetele = true;
-            teleblock.x = obj.entities[i].xp - 32;
-            teleblock.y = obj.entities[i].yp - 32;
+            if (i > -1)
+            {
+                teleblock.x = obj.entities[i].xp - 32;
+                teleblock.y = obj.entities[i].yp - 32;
+            }
             teleblock.w = 160;
             teleblock.h = 160;
             hascontrol = true;
@@ -3547,52 +3649,73 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4023:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 12;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 12;
+            }
             break;
         case 4024:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 12;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 12;
+            }
             break;
         case 4025:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4026:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
         case 4027:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 5;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 5;
+            }
             break;
         case 4028:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 2;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 2;
+            }
             break;
         case 4029:
             hascontrol = true;
@@ -3623,52 +3746,73 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 0;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 0;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = -6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = -6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = -6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = -6;
+            }
             break;
         case 4033:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 12;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 12;
+            }
             break;
         case 4034:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 12;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 12;
+            }
             break;
         case 4035:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 10;
+            }
             break;
         case 4036:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 8;
+            }
             break;
         case 4037:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 5;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 5;
+            }
             break;
         case 4038:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp -= 2;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 2;
+            }
             break;
         case 4039:
             hascontrol = true;
@@ -3699,57 +3843,78 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4043:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 12;
-            obj.entities[i].yp -= 15;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 12;
+                obj.entities[i].yp -= 15;
+            }
             break;
         case 4044:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 12;
-            obj.entities[i].yp -= 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 12;
+                obj.entities[i].yp -= 10;
+            }
             break;
         case 4045:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 12;
-            obj.entities[i].yp -= 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 12;
+                obj.entities[i].yp -= 10;
+            }
             break;
         case 4046:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
-            obj.entities[i].yp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+                obj.entities[i].yp -= 8;
+            }
             break;
         case 4047:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 6;
-            obj.entities[i].yp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 6;
+                obj.entities[i].yp -= 8;
+            }
             break;
         case 4048:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
         case 4049:
             hascontrol = true;
@@ -3780,57 +3945,78 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4053:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 4;
-            obj.entities[i].yp -= 15;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 4;
+                obj.entities[i].yp -= 15;
+            }
             break;
         case 4054:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 4;
-            obj.entities[i].yp -= 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 4;
+                obj.entities[i].yp -= 10;
+            }
             break;
         case 4055:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 4;
-            obj.entities[i].yp -= 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 4;
+                obj.entities[i].yp -= 10;
+            }
             break;
         case 4056:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 4;
-            obj.entities[i].yp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 4;
+                obj.entities[i].yp -= 8;
+            }
             break;
         case 4057:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 2;
-            obj.entities[i].yp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 2;
+                obj.entities[i].yp -= 8;
+            }
             break;
         case 4058:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
         case 4059:
             hascontrol = true;
@@ -3861,54 +4047,75 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 0;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 0;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = -6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = -6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = -6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = -6;
+            }
             break;
         case 4063:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 28;
-            obj.entities[i].yp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 28;
+                obj.entities[i].yp -= 8;
+            }
             break;
         case 4064:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 28;
-            obj.entities[i].yp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 28;
+                obj.entities[i].yp -= 8;
+            }
             break;
         case 4065:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 25;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 25;
+            }
             break;
         case 4066:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 25;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 25;
+            }
             break;
         case 4067:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 20;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 20;
+            }
             break;
         case 4068:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp -= 16;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 16;
+            }
             break;
         case 4069:
             hascontrol = true;
@@ -3940,52 +4147,73 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
-            obj.entities[i].colour = obj.crewcolour(lastsaved);
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
+                obj.entities[i].colour = obj.crewcolour(lastsaved);
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4073:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4074:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4075:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
         case 4076:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
         case 4077:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
         case 4078:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
         case 4079:
             state = 0;
@@ -4016,52 +4244,73 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4083:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4084:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4085:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
         case 4086:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
         case 4087:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
         case 4088:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
         case 4089:
             startscript = true;
@@ -4092,52 +4341,73 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4093:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4094:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4095:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
         case 4096:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
         case 4097:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
         case 4098:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
         case 4099:
             if (nocutscenes)
@@ -4462,6 +4732,11 @@ void Game::loadstats()
             }
         }
 
+        if (pKey == "ghostsenabled")
+        {
+            ghostsenabled = atoi(pText);
+        }
+
         if (pKey == "skipfakeload")
         {
             skipfakeload = atoi(pText);
@@ -4692,6 +4967,10 @@ void Game::savestats()
     msg->LinkEndChild( doc.NewText( help.String(usingmmmmmm).c_str()));
     dataNode->LinkEndChild( msg );
 
+    msg = doc.NewElement("ghostsenabled");
+    msg->LinkEndChild(doc.NewText(help.String((int) ghostsenabled).c_str()));
+    dataNode->LinkEndChild(msg);
+
     msg = doc.NewElement("skipfakeload");
     msg->LinkEndChild(doc.NewText(help.String((int) skipfakeload).c_str()));
     dataNode->LinkEndChild(msg);
@@ -4794,9 +5073,12 @@ void Game::deathsequence()
     {
         i = obj.getplayer();
     }
-    obj.entities[i].colour = 1;
+    if (i > -1)
+    {
+        obj.entities[i].colour = 1;
 
-    obj.entities[i].invis = false;
+        obj.entities[i].invis = false;
+    }
     if (deathseq == 30)
     {
         if (nodeathmode)
@@ -4806,7 +5088,10 @@ void Game::deathsequence()
         }
         deathcounts++;
         music.playef(2);
-        obj.entities[i].invis = true;
+        if (i > -1)
+        {
+            obj.entities[i].invis = true;
+        }
         if (map.finalmode)
         {
             if (roomx - 41 >= 0 && roomx - 41 < 20 && roomy - 48 >= 0 && roomy - 48 < 20)
@@ -4824,15 +5109,18 @@ void Game::deathsequence()
             }
         }
     }
-    if (deathseq == 25) obj.entities[i].invis = true;
-    if (deathseq == 20) obj.entities[i].invis = true;
-    if (deathseq == 16) obj.entities[i].invis = true;
-    if (deathseq == 14) obj.entities[i].invis = true;
-    if (deathseq == 12) obj.entities[i].invis = true;
-    if (deathseq < 10) obj.entities[i].invis = true;
+    if (i > -1)
+    {
+        if (deathseq == 25) obj.entities[i].invis = true;
+        if (deathseq == 20) obj.entities[i].invis = true;
+        if (deathseq == 16) obj.entities[i].invis = true;
+        if (deathseq == 14) obj.entities[i].invis = true;
+        if (deathseq == 12) obj.entities[i].invis = true;
+        if (deathseq < 10) obj.entities[i].invis = true;
+    }
     if (!nodeathmode)
     {
-        if (deathseq <= 1) obj.entities[i].invis = false;
+        if (i > -1 && deathseq <= 1) obj.entities[i].invis = false;
     }
     else
     {
@@ -6779,11 +7067,12 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("change description");
         option("edit scripts");
         option("change music");
+        option("editor ghosts");
         option("load level");
         option("save level");
         option("quit to main menu");
 
-        menuxoff = -50;
+        menuxoff = -46;
         menuyoff = -20;
         break;
     case Menu::ed_desc:

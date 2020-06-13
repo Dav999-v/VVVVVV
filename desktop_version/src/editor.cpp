@@ -383,6 +383,9 @@ void editorclass::reset()
     script.customscripts.clear();
 
     returneditoralpha = 0;
+
+    ghosts.clear();
+    currentghosts = 0;
 }
 
 void editorclass::gethooks()
@@ -1643,7 +1646,7 @@ bool editorclass::load(std::string& _path)
         printf("Custom asset directory does not exist\n");
     }
 
-    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLDocument doc(true, tinyxml2::COLLAPSE_WHITESPACE);
     if (!FILESYSTEM_loadTiXml2Document(_path.c_str(), doc))
     {
         printf("No level %s to load :(\n", _path.c_str());
@@ -2238,6 +2241,13 @@ void editormenurender(int tr, int tg, int tb)
     {
     case Menu::ed_settings:
         graphics.bigprint( -1, 75, "Map Settings", tr, tg, tb, true);
+        if (game.currentmenuoption == 3)
+        {
+            if (!game.ghostsenabled)
+                graphics.Print(2, 230, "Editor ghost trail is OFF", tr/2, tg/2, tb/2);
+            else
+                graphics.Print(2, 230, "Editor ghost trail is ON", tr, tg, tb);
+        }
         break;
     case Menu::ed_desc:
         if(ed.titlemod)
@@ -2799,6 +2809,36 @@ void editorrender()
                        ed.level[tmp].platy2-ed.level[tmp].platy1,
                        graphics.getBGR(64,64,255-(help.glow/2)));
         }
+    }
+
+    //Draw ghosts (spooky!)
+    if (game.ghostsenabled) {
+        SDL_FillRect(graphics.ghostbuffer, NULL, SDL_MapRGBA(graphics.ghostbuffer->format, 0, 0, 0, 0));
+        for (int i = 0; i < (int)ed.ghosts.size(); i++) {
+            if (i <= ed.currentghosts) { // We don't want all of them to show up at once :)
+                if (ed.ghosts[i].rx != ed.levx || ed.ghosts[i].ry != ed.levy)
+                    continue;
+                point tpoint;
+                tpoint.x = ed.ghosts[i].x;
+                tpoint.y = ed.ghosts[i].y;
+                graphics.setcol(ed.ghosts[i].col);
+                Uint32 alpha = graphics.ct.colour & graphics.backBuffer->format->Amask;
+                Uint32 therest = graphics.ct.colour & 0x00FFFFFF;
+                alpha = (3 * (alpha >> 24) / 4) << 24;
+                graphics.ct.colour = therest | alpha;
+                SDL_Rect drawRect = graphics.sprites_rect;
+                drawRect.x += tpoint.x;
+                drawRect.y += tpoint.y;
+                BlitSurfaceColoured(graphics.sprites[ed.ghosts[i].frame],NULL, graphics.ghostbuffer, &drawRect, graphics.ct);
+            }
+        }
+        if (ed.currentghosts + 1 < (int)ed.ghosts.size()) {
+            ed.currentghosts++;
+            if (ed.zmod) ed.currentghosts++;
+        } else {
+            ed.currentghosts = (int)ed.ghosts.size() - 1;
+        }
+        SDL_BlitSurface(graphics.ghostbuffer, NULL, graphics.backBuffer, &graphics.bg_rect);
     }
 
     //Draw Cursor
@@ -3573,6 +3613,10 @@ void editormenuactionpress()
             if(ed.levmusic>0) music.play(ed.levmusic);
             break;
         case 3:
+            music.playef(11);
+            game.ghostsenabled = !game.ghostsenabled;
+            break;
+        case 4:
             //Load level
             ed.settingsmod=false;
             graphics.backgrounddrawn=false;
@@ -3586,7 +3630,7 @@ void editormenuactionpress()
             game.mapheld=true;
             graphics.backgrounddrawn=false;
             break;
-        case 4:
+        case 5:
             //Save level
             ed.settingsmod=false;
             graphics.backgrounddrawn=false;
@@ -3600,7 +3644,7 @@ void editormenuactionpress()
             game.mapheld=true;
             graphics.backgrounddrawn=false;
             break;
-        case 5:
+        case 6:
             music.playef(11);
             game.createmenu(Menu::ed_quit);
             map.nexttowercolour();
@@ -4442,6 +4486,7 @@ void editorinput()
                     }
                     else
                     {
+                        ed.currentghosts = 0;
                         if(startpoint==0)
                         {
                             //Checkpoint spawn
