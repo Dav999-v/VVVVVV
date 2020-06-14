@@ -2,5 +2,4 @@
 <langmeta>
 	<nativename>nederlands</nativename> <!-- should be lowercase because menu style -->
 	<credit>Nederlandse vertaling door Dav999</credit> <!-- English translation by X -->
-	<nplurals>2</nplurals> <!-- plural rules per language are hardcoded in Localization.cpp -->
 </langmeta>

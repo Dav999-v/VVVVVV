@@ -16,10 +16,7 @@ namespace loc
 	int languagelist_curlang;
 	bool show_lang_maint_menu;
 
-	typedef std::pair<std::string, std::string> english_plu;
-
 	std::map<std::string, std::string> translation;
-	std::map<english_plu, std::vector<std::string> > translation_plu;
 
 	bool load_doc(std::string cat, tinyxml2::XMLDocument& doc, std::string langcode = lang)
 	{
@@ -63,8 +60,6 @@ namespace loc
 				meta.nativename = std::string(pText);
 			else if (pKey == "credit")
 				meta.credit = std::string(pText);
-			else if (pKey == "nplurals")
-				meta.nplurals = atoi(pText);
 		}
 	}
 
@@ -100,16 +95,6 @@ namespace loc
 				const char* eng = pElem->Attribute("english");
 				translation[std::string(eng)] = std::string(pText);
 			}
-
-			if (pKey == "pluralString")
-			{
-				const char* eng = pElem->Attribute("english");
-				const char* eng_plural = pElem->Attribute("english_plural");
-
-				std::vector<std::string> tra = std::vector<std::string>(2);
-
-				// TODO rule cases
-			}
 		}
 	}
 
@@ -118,7 +103,6 @@ namespace loc
 		show_lang_maint_menu = FILESYSTEM_langsAreModded();
 
 		translation.clear();
-		translation_plu.clear();
 
 		loadmeta(langmeta);
 
@@ -180,16 +164,6 @@ namespace loc
 				const char* eng = pElem->Attribute("english");
 				pElem->SetText(translation[std::string(eng)].c_str());
 			}
-
-			if (pKey == "pluralString")
-			{
-				const char* eng = pElem->Attribute("english");
-				const char* eng_plural = pElem->Attribute("english_plural");
-
-				//std::vector<std::string> tra = std::vector<std::string>(2);
-
-				// TODO rule cases
-			}
 		}
 
 		FILESYSTEM_saveTiXml2Document(("lang/" + langcode + "/strings.xml").c_str(), doc);
@@ -237,20 +211,5 @@ namespace loc
 		}
 
 		return tra;
-	}
-
-	std::string ngettext(const std::string& eng_sin, const std::string& eng_plu, long n)
-	{
-		if (test_mode)
-		{
-			return "X";
-		}
-
-		std::vector<std::string>& tra = translation_plu[english_plu(eng_sin, eng_plu)];
-
-		// Insert appropriate plural formula here
-		short rule = n != 1;
-
-		return tra[rule];
 	}
 }

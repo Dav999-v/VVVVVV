@@ -12,7 +12,6 @@ namespace loc
 		std::string code;
 		std::string nativename;
 		std::string credit;
-		int nplurals;
 	};
 
 	extern std::string lang;
@@ -26,7 +25,6 @@ namespace loc
 	void sync_lang_files();
 
 	std::string gettext(const std::string& eng);
-	std::string ngettext(const std::string& eng_sin, const std::string& eng_plu, long n);
 }
 
 #endif /* LOCALIZATION_H */

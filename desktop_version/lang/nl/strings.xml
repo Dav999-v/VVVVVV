@@ -81,6 +81,8 @@
     <string english="Merge all new strings from the template files into the translation files, keeping existing translations" comment="wrapped, translation maintenance menu"></string>
     <string english="Statistics" comment="title, translation maintenance menu" max="20"></string>
     <string english="Count the amount of untranslated strings for each language" comment="wrapped, translation maintenance menu"></string>
+    <string english="Test mode" comment="title, translation maintenance menu" max="20"></string>
+    <string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." comment="wrapped, translation maintenance menu"></string>
     <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." comment="wrapped, translation maintenance menu"></string>
     <string english="Backgrounds" comment="title" max="20"></string>
     <string english="Backgrounds are ON." comment="wrapped"></string>
