@@ -622,7 +622,7 @@ void menuactionpress()
             break;
         case 2:
             // return. Also leave the language selection menu
-            game.returnmenu(); game.returnmenu();
+            game.returntomenu(Menu::options);
             map.nexttowercolour();
             break;
         }
