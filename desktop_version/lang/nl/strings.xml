@@ -171,20 +171,20 @@
     <string english="[Press ENTER to return to editor]" comment="`to editor` is sorta redundant" max="40"></string>
     <string english="- Press ACTION to advance text -" comment="" max="40"></string>
     <string english="- Press ENTER to Teleport -" comment="" max="40"></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
+    <string english="Current Time" comment="super gravitron, stopwatch time" max="20">Huidige tijd</string>
+    <string english="Best Time" comment="super gravitron, best stopwatch time" max="20">Beste tijd</string>
+    <string english="Next Trophy at 5 seconds" comment="wrapped">Volgende trofee bij 5 seconden</string>
+    <string english="Next Trophy at 10 seconds" comment="wrapped">Volgende trofee bij 10 seconden</string>
+    <string english="Next Trophy at 15 seconds" comment="wrapped">Volgende trofee bij 15 seconden</string>
+    <string english="Next Trophy at 20 seconds" comment="wrapped">Volgende trofee bij 20 seconden</string>
+    <string english="Next Trophy at 30 seconds" comment="wrapped">Volgende trofee bij 30 seconden</string>
+    <string english="Next Trophy at 1 minute" comment="wrapped">Volgende trofee bij 1 minuut</string>
+    <string english="All Trophies collected!" comment="wrapped">Alle trofeeën behaald!</string>
+    <string english="New Record!" comment="" max="20">Nieuw record!</string>
+    <string english="New Trophy!" comment="" max="20">Nieuwe trofee!</string>
+    <string english="[Press ENTER to stop]" comment="stop super gravitron" max="40">[Druk op ENTER om te stoppen]</string>
+    <string english="SUPER GRAVITRON" comment="" max="20">SUPER GRAVITRON</string>
+    <string english="GO!" comment="3, 2, 1, GO!" max="13">GO!</string>
     <string english="" comment=""></string>
     <string english="" comment=""></string>
     <string english="" comment=""></string>
