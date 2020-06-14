@@ -13,6 +13,7 @@
     <string english="Disable screen effects, enable slowdown modes or invincibility" comment="wrapped">Schakel schermeffecten uit, schakel vertraging of onkwetsbaarheid in</string>
     <string english="Unlock Play Modes" comment="title" max="20">Ontgrendel spelmodi</string>
     <string english="Unlock parts of the game normally unlocked as you progress" comment="wrapped">Ontgrendel delen van het spel die normaal tijdens je voortgang worden ontgrendeld</string>
+    <string english="From here, you may unlock parts of the game that are normally unlocked as you play." comment="wrapped"></string>
     <string english="Game Pad Options" comment="title" max="20">Gamepad-opties</string>
     <string english="Game Pad" comment="title" max="20"></string>
     <string english="Rebind your controller&apos;s buttons and adjust sensitivity" comment="wrapped">Wijzig de knoppen van je controller en pas de gevoeligheid aan</string>
@@ -134,9 +135,6 @@
     <string english="Tele Save" comment="title, game save that was made at a teleporter" max="20"></string>
     <string english="Quick Save" comment="title, game save that was made freely (at any checkpoint)" max="20"></string>
     <string english="GAME OVER" comment="bigger title" max="13"></string>
-    <pluralString english="(rescued crewmate)" english_plural="(rescued crewmates)" comment="number is filled in">
-        <case rule="0"/>
-    </pluralString>
     <string english="You managed to reach:" comment="you managed to reach the following room" max="40"></string>
     <string english="Keep trying! You&apos;ll get there!" comment="wrapped, player died before managing to save anybody"></string>
     <string english="Nice one!" comment="wrapped, player died after saving one crewmate"></string>
@@ -162,8 +160,6 @@
     <string english="Congratulations!" comment="title" max="20"></string>
     <string english="Your save files have been updated." comment="wrapped, player completed game"></string>
     <string english="If you want to keep exploring the game, select CONTINUE from the play menu." comment="wrapped"></string>
-    <string english="Unlock Play Modes" comment="title" max="20">Ontgrendel spelmodi</string>
-    <string english="From here, you may unlock parts of the game that are normally unlocked as you play." comment="wrapped"></string>
     <string english="You have unlocked a new Time Trial." comment="wrapped"></string>
     <string english="You have unlocked some new Time Trials." comment="wrapped"></string>
     <string english="You have unlocked No Death Mode." comment="wrapped"></string>

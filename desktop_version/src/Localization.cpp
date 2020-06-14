@@ -92,8 +92,12 @@ namespace loc
 
 			if (pKey == "string")
 			{
-				const char* eng = pElem->Attribute("english");
-				translation[std::string(eng)] = std::string(pText);
+				std::string eng = std::string(pElem->Attribute("english"));
+				if (translation.count(eng) != 0)
+				{
+					printf("Warning: \"%s\" appears in language file multiple times\n", eng.c_str());
+				}
+				translation[eng] = std::string(pText);
 			}
 		}
 	}
