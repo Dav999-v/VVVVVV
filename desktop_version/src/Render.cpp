@@ -304,27 +304,28 @@ void menurender()
         switch (game.currentmenuoption)
         {
         case 0:
+            //graphics.Print( -1, 85, " Low     Medium     High", tr, tg, tb, true);
+            graphics.Print(32, 85, loc::gettext("Low"), tr, tg, tb);
+            graphics.Print(-1, 85, loc::gettext("Medium"), tr, tg, tb, true);
+            #define HIGHLABEL loc::gettext("High")
+            graphics.Print(288-graphics.len(HIGHLABEL), 85, HIGHLABEL, tr, tg, tb);
+            #undef HIGHLABEL
             switch(game.controllerSensitivity)
             {
-            case 0: // TODO LOC
-                graphics.Print( -1, 85, " Low     Medium     High", tr, tg, tb, true);
-                graphics.Print( -1, 95, "[]..................", tr, tg, tb, true);
+            case 0:
+                graphics.Print( -1, 95, "[]..........................", tr, tg, tb, true);
                 break;
             case 1:
-                graphics.Print( -1, 85, " Low     Medium     High", tr, tg, tb, true);
-                graphics.Print( -1, 95, ".....[].............", tr, tg, tb, true);
+                graphics.Print( -1, 95, ".......[]...................", tr, tg, tb, true);
                 break;
             case 2:
-                graphics.Print( -1, 85, " Low     Medium     High", tr, tg, tb, true);
-                graphics.Print( -1, 95, ".........[].........", tr, tg, tb, true);
+                graphics.Print( -1, 95, ".............[].............", tr, tg, tb, true);
                 break;
             case 3:
-                graphics.Print( -1, 85, " Low     Medium     High", tr, tg, tb, true);
-                graphics.Print( -1, 95, ".............[].....", tr, tg, tb, true);
+                graphics.Print( -1, 95, "...................[].......", tr, tg, tb, true);
                 break;
             case 4:
-                graphics.Print( -1, 85, " Low     Medium     High", tr, tg, tb, true);
-                graphics.Print( -1, 95, "..................[]", tr, tg, tb, true);
+                graphics.Print( -1, 95, "..........................[]", tr, tg, tb, true);
                 break;
             }
             break;
@@ -342,7 +343,7 @@ void menurender()
     case Menu::language:
         if (loc::languagelist.empty())
         {
-            graphics.PrintWrap(-1, 90, "ERROR: No language files found.", tr, tg, tb, true);
+            graphics.PrintWrap(-1, 90, loc::gettext("ERROR: No language files found."), tr, tg, tb, true);
         }
         else if ((unsigned)game.currentmenuoption < loc::languagelist.size())
         {
@@ -350,186 +351,175 @@ void menurender()
         }
         else if (loc::show_lang_maint_menu)
         {
-            graphics.PrintWrap(-1, 15, "This menu is only shown when having a lang folder in your VVVVVV folder.", tr, tg, tb, true);
+            graphics.PrintWrap(-1, 15, loc::gettext("This menu is only shown when having a lang folder in your VVVVVV folder."), tr, tg, tb, true);
         }
         break;
     case Menu::language_maint:
         switch (game.currentmenuoption)
         {
         case 0:
-            graphics.bigprint( -1, 30, "Sync language files", tr, tg, tb, true);
-            graphics.PrintWrap( -1, 65, "Merge all new strings from the template files into the translation files, keeping existing translations", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Sync language files"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Merge all new strings from the template files into the translation files, keeping existing translations"), tr, tg, tb, true);
             break;
         case 1:
-            graphics.bigprint( -1, 30, "Statistics", tr, tg, tb, true);
-            graphics.PrintWrap( -1, 65, "Count the amount of untranslated strings for each language", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Statistics"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Count the amount of untranslated strings for each language"), tr, tg, tb, true);
             break;
         }
         break;
     case Menu::language_maint_sync:
-        graphics.PrintWrap(-1, 80, "If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case.", tr, tg, tb, true);
+        graphics.PrintWrap(-1, 80, loc::gettext("If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case."), tr, tg, tb, true);
         break;
     case Menu::accessibility:
         switch (game.currentmenuoption)
         {
         case 0:
-            graphics.bigprint( -1, 40, "Backgrounds", tr, tg, tb, true);
+            graphics.bigprint( -1, 40, loc::gettext("Backgrounds"), tr, tg, tb, true);
             if (!game.colourblindmode)
             {
-                graphics.Print( -1, 75, "Backgrounds are ON.", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 75, loc::gettext("Backgrounds are ON."), tr, tg, tb, true);
             }
             else
             {
-                graphics.Print( -1, 75, "Backgrounds are OFF.", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap( -1, 75, loc::gettext("Backgrounds are OFF."), tr/2, tg/2, tb/2, true);
             }
             break;
         case 1:
-            graphics.bigprint( -1, 40, "Screen Effects", tr, tg, tb, true);
-            graphics.Print( -1, 75, "Disables screen shakes and flashes.", tr, tg, tb, true);
+            graphics.bigprint( -1, 40, loc::gettext("Screen Effects"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 75, loc::gettext("Disables screen shakes and flashes."), tr, tg, tb, true);
             if (!game.noflashingmode)
             {
-                graphics.Print( -1, 85, "Screen Effects are ON.", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 95, loc::gettext("Screen Effects are ON."), tr, tg, tb, true);
             }
             else
             {
-                graphics.Print( -1, 85, "Screen Effects are OFF.", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap( -1, 95, loc::gettext("Screen Effects are OFF."), tr/2, tg/2, tb/2, true);
             }
             break;
         case 2:
-            graphics.bigprint( -1, 40, "Text Outline", tr, tg, tb, true);
-            graphics.Print( -1, 75, "Disables outline on game text", tr, tg, tb, true);
+            graphics.bigprint( -1, 40, loc::gettext("Text Outline"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 75, loc::gettext("Disables outline on game text"), tr, tg, tb, true);
             // FIXME: Maybe do an outlined print instead? -flibit
             if (!graphics.notextoutline)
             {
-                graphics.Print( -1, 85, "Text outlines are ON.", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 95, loc::gettext("Text outlines are ON."), tr, tg, tb, true);
             }
             else
             {
-                graphics.Print( -1, 85, "Text outlines are OFF.", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap( -1, 95, loc::gettext("Text outlines are OFF."), tr/2, tg/2, tb/2, true);
             }
             break;
         case 3:
-            graphics.bigprint( -1, 40, "Invincibility", tr, tg, tb, true);
-            graphics.Print( -1, 75, "Provided to help disabled gamers", tr, tg, tb, true);
-            graphics.Print( -1, 85, "explore the game. Can cause glitches.", tr, tg, tb, true);
+            graphics.bigprint( -1, 40, loc::gettext("Invincibility"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 75, loc::gettext("Provided to help disabled gamers explore the game. Can cause glitches."), tr, tg, tb, true);
             if (map.invincibility)
             {
-                graphics.Print( -1, 105, "Invincibility is ON.", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 105, loc::gettext("Invincibility is ON."), tr, tg, tb, true);
             }
             else
             {
-                graphics.Print( -1, 105, "Invincibility is off.", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap( -1, 105, loc::gettext("Invincibility is off."), tr/2, tg/2, tb/2, true);
             }
             break;
         case 4:
-            graphics.bigprint( -1, 40, "Game Speed", tr, tg, tb, true);
-            graphics.Print( -1, 75, "May be useful for disabled gamers", tr, tg, tb, true);
-            graphics.Print( -1, 85, "using one switch devices.", tr, tg, tb, true);
+            graphics.bigprint( -1, 40, loc::gettext("Game Speed"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 75, loc::gettext("May be useful for disabled gamers using one switch devices."), tr, tg, tb, true);
             if (game.gameframerate==34)
             {
-                graphics.Print( -1, 105, "Game speed is normal.", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap( -1, 105, loc::gettext("Game speed is normal."), tr/2, tg/2, tb/2, true);
             }
             else if (game.gameframerate==41)
             {
-                graphics.Print( -1, 105, "Game speed is at 80%", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 105, loc::gettext("Game speed is at 80%"), tr, tg, tb, true);
             }
             else if (game.gameframerate==55)
             {
-                graphics.Print( -1, 105, "Game speed is at 60%", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 105, loc::gettext("Game speed is at 60%"), tr, tg, tb, true);
             }
             else if (game.gameframerate==83)
             {
-                graphics.Print( -1, 105, "Game speed is at 40%", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 105, loc::gettext("Game speed is at 40%"), tr, tg, tb, true);
             }
             break;
         case 5:
-            graphics.bigprint(-1, 30, "Fake Load Screen", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Fake Load Screen"), tr, tg, tb, true);
             if (game.skipfakeload)
-                graphics.Print(-1, 75, "Fake loading screen is OFF", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap(-1, 75, loc::gettext("Fake loading screen is OFF"), tr/2, tg/2, tb/2, true);
             else
-                graphics.Print(-1, 75, "Fake loading screen is ON", tr, tg, tb, true);
+                graphics.PrintWrap(-1, 75, loc::gettext("Fake loading screen is ON"), tr, tg, tb, true);
             break;
         case 6:
-            graphics.bigprint(-1, 30, "Room Name BG", tr, tg, tb, true);
-            graphics.Print( -1, 75, "Lets you see through what is behind", tr, tg, tb, true);
-            graphics.Print( -1, 85, "the name at the bottom of the screen.", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Room Name BG"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 75, loc::gettext("Lets you see through what is behind the name at the bottom of the screen."), tr, tg, tb, true);
             if (graphics.translucentroomname)
-                graphics.Print(-1, 105, "Room name background is TRANSLUCENT", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap(-1, 105, loc::gettext("Room name background is TRANSLUCENT"), tr/2, tg/2, tb/2, true);
             else
-                graphics.Print(-1, 105, "Room name background is OPAQUE", tr, tg, tb, true);
+                graphics.PrintWrap(-1, 105, loc::gettext("Room name background is OPAQUE"), tr, tg, tb, true);
             break;
         }
         break;
     case Menu::playint1:
     case Menu::playint2:
-        graphics.Print( -1, 65, "Who do you want to play", tr, tg, tb, true);
-        graphics.Print( -1, 75, "the level with?", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 65, loc::gettext("Who do you want to play the level with?"), tr, tg, tb, true);
         break;
     case Menu::playmodes:
         switch (game.currentmenuoption)
         {
         case 0:
-            graphics.bigprint( -1, 30, "Time Trials", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Replay any level in the game in", tr, tg, tb, true);
-            graphics.Print( -1, 75, "a competitive time trial mode.", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Time Trials"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Replay any level in the game in a competitive time trial mode."), tr, tg, tb, true);
 
             if (game.gameframerate > 34 || map.invincibility)
             {
-                graphics.Print( -1, 105, "Time Trials are not available", tr, tg, tb, true);
-                graphics.Print( -1, 115, "with slowdown or invincibility.", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 105, loc::gettext("Time Trials are not available with slowdown or invincibility."), tr, tg, tb, true);
             }
             break;
         case 1:
-            graphics.bigprint( -1, 30, "Intermissions", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Replay the intermission levels.", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Intermissions"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Replay the intermission levels."), tr, tg, tb, true);
 
             if (!game.unlock[15] && !game.unlock[16])
             {
-                graphics.Print( -1, 95, "TO UNLOCK: Complete the", tr, tg, tb, true);
-                graphics.Print( -1, 105, "intermission levels in-game.", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 95, loc::gettext("TO UNLOCK: Complete the intermission levels in-game."), tr, tg, tb, true);
             }
             break;
         case 2:
-            graphics.bigprint( -1, 30, "No Death Mode", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Play the entire game", tr, tg, tb, true);
-            graphics.Print( -1, 75, "without dying once.", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("No Death Mode"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Play the entire game without dying once."), tr, tg, tb, true);
 
             if (game.gameframerate > 34 || map.invincibility)
             {
-                graphics.Print( -1, 105, "No Death Mode is not available", tr, tg, tb, true);
-                graphics.Print( -1, 115, "with slowdown or invincibility.", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 105, loc::gettext("No Death Mode is not available with slowdown or invincibility."), tr, tg, tb, true);
             }
             else if (!game.unlock[17])
             {
-                graphics.Print( -1, 105, "TO UNLOCK: Achieve an S-rank or", tr, tg, tb, true);
-                graphics.Print( -1, 115, "above in at least 4 time trials.", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 105, loc::gettext("TO UNLOCK: Achieve an S-rank or above in at least 4 time trials."), tr, tg, tb, true);
             }
             break;
         case 3:
-            graphics.bigprint( -1, 30, "Flip Mode", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Flip the entire game vertically.", tr, tg, tb, true);
-            graphics.Print( -1, 75, "Compatible with other game modes.", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Flip Mode"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Flip the entire game vertically. Compatible with other game modes."), tr, tg, tb, true);
 
             if (game.unlock[18])
             {
                 if (graphics.setflipmode)
                 {
-                    graphics.Print( -1, 105, "Currently ENABLED!", tr, tg, tb, true);
+                    graphics.PrintWrap( -1, 105, loc::gettext("Currently ENABLED!"), tr, tg, tb, true);
                 }
                 else
                 {
-                    graphics.Print( -1, 105, "Currently Disabled.", tr/2, tg/2, tb/2, true);
+                    graphics.PrintWrap( -1, 105, loc::gettext("Currently Disabled."), tr/2, tg/2, tb/2, true);
                 }
             }
             else
             {
-                graphics.Print( -1, 105, "TO UNLOCK: Complete the game.", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 105, loc::gettext("TO UNLOCK: Complete the game."), tr, tg, tb, true);
             }
             break;
         }
         break;
     case Menu::youwannaquit:
-        graphics.Print( -1, 75, "Are you sure you want to quit?", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 75, loc::gettext("Are you sure you want to quit?"), tr, tg, tb, true);
         break;
     case Menu::continuemenu:
         graphics.crewframedelay--;
@@ -544,8 +534,8 @@ void menurender()
             //Show teleporter save info
             graphics.drawpixeltextbox(25, 65-20, 270, 90, 34,12, 65, 185, 207,0,4);
 
-            graphics.bigprint(-1, 20, "Tele Save", tr, tg, tb, true);
-            graphics.Print(0, 80-20, game.tele_currentarea, 25, 255 - (help.glow / 2), 255 - (help.glow / 2), true);
+            graphics.bigprint(-1, 20, loc::gettext("Tele Save"), tr, tg, tb, true);
+            graphics.Print(0, 80-20, game.tele_currentarea, 25, 255 - (help.glow / 2), 255 - (help.glow / 2), true); // TODO LOC. Should translate only at presentation (here), not save to save file, to accomodate language changes. Repeat below
             for (int i = 0; i < 6; i++)
             {
                 graphics.drawcrewman(169-(3*42)+(i*42), 95-20, i, game.tele_crewstats[i], true);
@@ -560,7 +550,7 @@ void menurender()
             //Show quick save info
             graphics.drawpixeltextbox(25, 65-20, 270, 90, 34,12, 65, 185, 207,0,4);
 
-            graphics.bigprint(-1, 20, "Quick Save", tr, tg, tb, true);
+            graphics.bigprint(-1, 20, loc::gettext("Quick Save"), tr, tg, tb, true);
             graphics.Print(0, 80-20, game.quick_currentarea, 25, 255 - (help.glow / 2), 255 - (help.glow / 2), true);
             for (int i = 0; i < 6; i++)
             {
@@ -577,7 +567,7 @@ void menurender()
     case Menu::gameover:
     case Menu::gameover2:
     {
-        graphics.bigprint( -1, 25, "GAME OVER", tr, tg, tb, true, 3);
+        graphics.bigprint( -1, 25, loc::gettext("GAME OVER"), tr, tg, tb, true, 3);
 
         graphics.crewframedelay--;
         if (graphics.crewframedelay <= 0)
@@ -589,46 +579,45 @@ void menurender()
         {
             graphics.drawcrewman(169-(3*42)+(i*42), 68, i, game.crewstats[i], true);
         }
-        std::string tempstring;
+        std::string tempstring; // TODO LOC, plural forms
         tempstring = "You rescued " + help.number(game.crewrescued()) + " crewmates";
         graphics.Print(0, 100, tempstring, tr, tg, tb, true);
 
         tempstring = "and found " + help.number(game.trinkets()) + " trinkets.";
         graphics.Print(0, 110, tempstring, tr, tg, tb, true);
 
-        tempstring = "You managed to reach:";
-        graphics.Print(0, 145, tempstring, tr, tg, tb, true);
+        graphics.Print(0, 145, loc::gettext("You managed to reach:"), tr, tg, tb, true);
         graphics.Print(0, 155, game.hardestroom, tr, tg, tb, true);
 
         switch (game.crewrescued())
         {
         case 1:
-            tempstring = "Keep trying! You'll get there!";
+            tempstring = loc::gettext("Keep trying! You'll get there!");
             break;
         case 2:
-            tempstring = "Nice one!";
+            tempstring = loc::gettext("Nice one!");
             break;
         case 3:
-            tempstring = "Wow! Congratulations!";
+            tempstring = loc::gettext("Wow! Congratulations!");
             break;
         case 4:
-            tempstring = "Incredible!";
+            tempstring = loc::gettext("Incredible!");
             break;
         case 5:
-            tempstring = "Unbelievable! Well done!";
+            tempstring = loc::gettext("Unbelievable! Well done!");
             break;
         case 6:
-            tempstring = "Er, how did you do that?";
+            tempstring = loc::gettext("Er, how did you do that?");
             break;
         }
 
-        graphics.Print(0, 190, tempstring, tr, tg, tb, true);
+        graphics.PrintWrap(0, 190, tempstring, tr, tg, tb, true);
         break;
     }
     case Menu::nodeathmodecomplete:
     case Menu::nodeathmodecomplete2:
     {
-        graphics.bigprint( -1, 8, "WOW", tr, tg, tb, true, 4);
+        graphics.bigprint( -1, 8, loc::gettext("WOW"), tr, tg, tb, true, 4);
 
         graphics.crewframedelay--;
         if (graphics.crewframedelay <= 0)
@@ -640,54 +629,55 @@ void menurender()
         {
             graphics.drawcrewman(169-(3*42)+(i*42), 68, i, game.crewstats[i], true);
         }
-        std::string tempstring = "You rescued all the crewmates!";
+        std::string tempstring = loc::gettext("You rescued all the crewmates!");
         graphics.Print(0, 100, tempstring, tr, tg, tb, true);
 
-        tempstring = "And you found " + help.number(game.trinkets()) + " trinkets.";
+        tempstring = "And you found " + help.number(game.trinkets()) + " trinkets."; // TODO LOC
         graphics.Print(0, 110, tempstring, tr, tg, tb, true);
 
-        graphics.Print(0, 160, "A new trophy has been awarded and", tr, tg, tb, true);
-        graphics.Print(0, 170, "placed in the secret lab to", tr, tg, tb, true);
-        graphics.Print(0, 180, "acknowledge your achievement!", tr, tg, tb, true);
+        graphics.PrintWrap(0, 160, loc::gettext("A new trophy has been awarded and placed in the secret lab to acknowledge your achievement!"), tr, tg, tb, true);
         break;
     }
     case Menu::timetrialcomplete:
     case Menu::timetrialcomplete2:
     case Menu::timetrialcomplete3:
     {
-        graphics.bigprint( -1, 20, "Results", tr, tg, tb, true, 3);
+        graphics.bigprint( -1, 20, loc::gettext("Results"), tr, tg, tb, true, 3);
 
         std::string tempstring = game.resulttimestring() + " / " + game.partimestring();
 
         graphics.drawspritesetcol(30, 80-15, 50, 22);
-        graphics.Print(65, 80-15, "TIME TAKEN:", 255, 255, 255);
+        graphics.Print(65, 80-15, loc::gettext("TIME TAKEN:"), 255, 255, 255);
         graphics.Print(65, 90-15, tempstring, tr, tg, tb);
         if (game.timetrialresulttime <= game.timetrialpar)
         {
-            graphics.Print(220, 85-15, "+1 Rank!", 255, 255, 255);
+            graphics.Print(220, 90-15, loc::gettext("+1 Rank!"), 255, 255, 255);
         }
 
         tempstring = help.String(game.deathcounts);
         graphics.drawspritesetcol(30-4, 80+20-4, 12, 22);
-        graphics.Print(65, 80+20, "NUMBER OF DEATHS:", 255, 255, 255);
+        graphics.Print(65, 80+20, loc::gettext("NUMBER OF DEATHS:"), 255, 255, 255);
         graphics.Print(65, 90+20, tempstring, tr, tg, tb);
         if (game.deathcounts == 0)
         {
-            graphics.Print(220, 85+20, "+1 Rank!", 255, 255, 255);
+            graphics.Print(220, 90+20, loc::gettext("+1 Rank!"), 255, 255, 255);
         }
 
-        tempstring = help.String(game.trinkets()) + " of " + help.String(game.timetrialshinytarget);
+        tempstring = help.String(game.trinkets()) + " of " + help.String(game.timetrialshinytarget); // TODO LOC
         graphics.drawspritesetcol(30, 80+55, 22, 22);
-        graphics.Print(65, 80+55, "SHINY TRINKETS:", 255, 255, 255);
+        graphics.Print(65, 80+55, loc::gettext("SHINY TRINKETS:"), 255, 255, 255);
         graphics.Print(65, 90+55, tempstring, tr, tg, tb);
         if (game.trinkets() >= game.timetrialshinytarget)
         {
-            graphics.Print(220, 85+55, "+1 Rank!", 255, 255, 255);
+            graphics.Print(220, 90+55, loc::gettext("+1 Rank!"), 255, 255, 255);
         }
 
+        int rankw = graphics.len(loc::gettext("Rank:")) + 48;
+        int rankx = (320-rankw)/2;
+        int rankx2 = rankx + rankw - 32;
         if (game.currentmenuname == Menu::timetrialcomplete2 || game.currentmenuname == Menu::timetrialcomplete3)
         {
-            graphics.bigprint( 100, 175, "Rank:", tr, tg, tb, false, 2);
+            graphics.bigprint( rankx, 175, loc::gettext("Rank:"), tr, tg, tb, false, 2);
         }
 
         if (game.currentmenuname == Menu::timetrialcomplete3)
@@ -695,30 +685,32 @@ void menurender()
             switch(game.timetrialrank)
             {
             case 0:
-                graphics.bigprint( 195, 165, "B", 255, 255, 255, false, 4);
+                graphics.bigprint( rankx2, 165, loc::gettext("B"), 255, 255, 255, false, 4);
                 break;
             case 1:
-                graphics.bigprint( 195, 165, "A", 255, 255, 255, false, 4);
+                graphics.bigprint( rankx2, 165, loc::gettext("A"), 255, 255, 255, false, 4);
                 break;
             case 2:
-                graphics.bigprint( 195, 165, "S", 255, 255, 255, false, 4);
+                graphics.bigprint( rankx2, 165, loc::gettext("S"), 255, 255, 255, false, 4);
                 break;
             case 3:
-                graphics.bigprint( 195, 165, "V", 255, 255, 255, false, 4);
+                graphics.bigprint( rankx2, 165, loc::gettext("V"), 255, 255, 255, false, 4);
                 break;
             }
         }
         break;
     }
     case Menu::unlockmenutrials:
-        graphics.bigprint( -1, 30, "Unlock Time Trials", tr, tg, tb, true);
-        graphics.Print( -1, 65, "You can unlock each time", tr, tg, tb, true);
-        graphics.Print( -1, 75, "trial separately.", tr, tg, tb, true);
+        graphics.bigprint( -1, 30, loc::gettext("Unlock Time Trials"), tr, tg, tb, true);
+        graphics.PrintWrap( -1, 65, loc::gettext("You can unlock each time trial separately."), tr, tg, tb, true);
         break;
     case Menu::timetrials:
         switch (game.currentmenuoption)
         {
         case 0:
+            // TODO LOC. Context string for not globally limiting area names to 20 characters?
+            // In fact, this entire switch statement is hairy as for translation.
+            // Too tight for other languages, probably needs repositionings, and everything is hardcoded 6 times.
             if(game.unlock[9])
             {
                 graphics.bigprint( -1, 30, "Space Station 1", tr, tg, tb, true);
@@ -997,68 +989,56 @@ void menurender()
         }
         break;
     case Menu::gamecompletecontinue:
-        graphics.bigprint( -1, 25, "Congratulations!", tr, tg, tb, true, 2);
+        graphics.bigprint( -1, 25, loc::gettext("Congratulations!"), tr, tg, tb, true, 2);
 
-        graphics.Print( -1, 45, "Your save files have been updated.", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 45, loc::gettext("Your save files have been updated."), tr, tg, tb, true);
 
-        graphics.Print( -1, 110, "If you want to keep exploring", tr, tg, tb, true);
-        graphics.Print( -1, 120, "the game, select CONTINUE", tr, tg, tb, true);
-        graphics.Print( -1, 130, "from the play menu.", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 110, loc::gettext("If you want to keep exploring the game, select CONTINUE from the play menu."), tr, tg, tb, true);
         break;
     case Menu::unlockmenu:
-        graphics.bigprint( -1, 25, "Unlock Play Modes", tr, tg, tb, true, 2);
+        graphics.bigprint( -1, 25, loc::gettext("Unlock Play Modes"), tr, tg, tb, true, 2);
 
-        graphics.Print( -1, 55, "From here, you may unlock parts", tr, tg, tb, true);
-        graphics.Print( -1, 65, "of the game that are normally", tr, tg, tb, true);
-        graphics.Print( -1, 75, "unlocked as you play.", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 55, loc::gettext("From here, you may unlock parts of the game that are normally unlocked as you play."), tr, tg, tb, true);
         break;
     case Menu::unlocktimetrial:
-        graphics.bigprint( -1, 45, "Congratulations!", tr, tg, tb, true, 2);
+        graphics.bigprint( -1, 45, loc::gettext("Congratulations!"), tr, tg, tb, true, 2);
 
-        graphics.Print( -1, 125, "You have unlocked", tr, tg, tb, true);
-        graphics.Print( -1, 135, "a new Time Trial.", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 125, loc::gettext("You have unlocked a new Time Trial."), tr, tg, tb, true);
         break;
     case Menu::unlocktimetrials:
-        graphics.bigprint( -1, 45, "Congratulations!", tr, tg, tb, true, 2);
+        graphics.bigprint( -1, 45, loc::gettext("Congratulations!"), tr, tg, tb, true, 2);
 
-        graphics.Print( -1, 125, "You have unlocked some", tr, tg, tb, true);
-        graphics.Print( -1, 135, "new Time Trials.", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 125, loc::gettext("You have unlocked some new Time Trials."), tr, tg, tb, true);
         break;
     case Menu::unlocknodeathmode:
-        graphics.bigprint( -1, 45, "Congratulations!", tr, tg, tb, true, 2);
+        graphics.bigprint( -1, 45, loc::gettext("Congratulations!"), tr, tg, tb, true, 2);
 
-        graphics.Print( -1, 125, "You have unlocked", tr, tg, tb, true);
-        graphics.Print( -1, 135, "No Death Mode.", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 125, loc::gettext("You have unlocked No Death Mode."), tr, tg, tb, true);
         break;
     case Menu::unlockflipmode:
-        graphics.bigprint( -1, 45, "Congratulations!", tr, tg, tb, true, 2);
+        graphics.bigprint( -1, 45, loc::gettext("Congratulations!"), tr, tg, tb, true, 2);
 
-        graphics.Print( -1, 125, "You have unlocked", tr, tg, tb, true);
-        graphics.Print( -1, 135, "Flip Mode.", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 125, loc::gettext("You have unlocked Flip Mode."), tr, tg, tb, true);
         break;
     case Menu::unlockintermission:
-        graphics.bigprint( -1, 45, "Congratulations!", tr, tg, tb, true, 2);
+        graphics.bigprint( -1, 45, loc::gettext("Congratulations!"), tr, tg, tb, true, 2);
 
-        graphics.Print( -1, 125, "You have unlocked", tr, tg, tb, true);
-        graphics.Print( -1, 135, "the intermission levels.", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 125, loc::gettext("You have unlocked the intermission levels."), tr, tg, tb, true);
         break;
     case Menu::playerworlds:
     {
         std::string tempstring = FILESYSTEM_getUserLevelDirectory();
         if(tempstring.length()>80){
-            graphics.Print( -1, 160, "To install new player levels, copy", tr, tg, tb, true);
-            graphics.Print( -1, 170, "the .vvvvvv files to this folder:", tr, tg, tb, true);
+            graphics.PrintWrap( -1, 160, loc::gettext("To install new player levels, copy the .vvvvvv files to this folder:"), tr, tg, tb, true);
             graphics.Print( 320-((tempstring.length()-80)*8), 190, tempstring.substr(0,tempstring.length()-80), tr, tg, tb);
             graphics.Print( 0, 200, tempstring.substr(tempstring.length()-80,40), tr, tg, tb);
             graphics.Print( 0, 210, tempstring.substr(tempstring.length()-40,40), tr, tg, tb);
         }else if(tempstring.length()>40){
-            graphics.Print( -1, 170, "To install new player levels, copy", tr, tg, tb, true);
-            graphics.Print( -1, 180, "the .vvvvvv files to this folder:", tr, tg, tb, true);
+            graphics.PrintWrap( -1, 170, loc::gettext("To install new player levels, copy the .vvvvvv files to this folder:"), tr, tg, tb, true);
             graphics.Print( 320-((tempstring.length()-40)*8), 200, tempstring.substr(0,tempstring.length()-40), tr, tg, tb);
             graphics.Print( 0, 210, tempstring.substr(tempstring.length()-40,40), tr, tg, tb);
         }else{
-            graphics.Print( -1, 180, "To install new player levels, copy", tr, tg, tb, true);
-            graphics.Print( -1, 190, "the .vvvvvv files to this folder:", tr, tg, tb, true);
+            graphics.PrintWrap( -1, 180, loc::gettext("To install new player levels, copy the .vvvvvv files to this folder:"), tr, tg, tb, true);
             graphics.Print( 320-(tempstring.length()*8), 210, tempstring, tr, tg, tb);
         }
         break;
@@ -1087,11 +1067,13 @@ void titlerender()
         graphics.drawsprite((160 - 96) + 4 * 32, temp, 23, tr, tg, tb);
         graphics.drawsprite((160 - 96) + 5 * 32, temp, 23, tr, tg, tb);
 #if defined(MAKEANDPLAY)
-        graphics.Print(-1,temp+35,"     MAKE AND PLAY EDITION",tr, tg, tb, true);
+        #define EDITIONLABEL loc::gettext("MAKE AND PLAY EDITION")
+        graphics.Print(264-graphics.len(EDITIONLABEL),temp+35,EDITIONLABEL,tr, tg, tb);
+        #undef EDITIONLABEL
 #endif
 
-        graphics.Print(5, 175, "[ Press ACTION to Start ]", tr, tg, tb, true);
-        graphics.Print(5, 195, "ACTION = Space, Z, or V", int(tr*0.5f), int(tg*0.5f), int(tb*0.5f), true);
+        graphics.PrintWrap(5, 175, loc::gettext("[ Press ACTION to Start ]"), tr, tg, tb, true);
+        graphics.PrintWrap(5, 195, loc::gettext("ACTION = Space, Z, or V"), int(tr*0.5f), int(tg*0.5f), int(tb*0.5f), true);
     }
     else
     {
@@ -1187,6 +1169,7 @@ void gamecompleterender()
         graphics.drawsprite((160 - 96) + 5 * 32, temp, 23, tr, tg, tb);
     }
 
+    // TODO LOC. Maybe some of the text needs to be made a _bit_ smaller, or it's too tight (even "Thanks for playing!"). Maybe indicate in translation file "GitHub Contributors" doesn't _really_ need "GitHub" or could be replaced with "Code", and maybe auto-wrap "Thanks for playing"
     if (graphics.onscreen(290 + game.creditposition)) graphics.bigprint( -1, 290 + game.creditposition, "Starring", tr, tg, tb, true, 2);
 
     if (graphics.onscreen(320 + game.creditposition))
@@ -1477,7 +1460,7 @@ void gamerender()
 #if !defined(NO_CUSTOM_LEVELS)
      if(map.custommode && !map.custommodeforreal && !game.advancetext){
         //Return to level editor
-        graphics.bprintalpha(5, 5, "[Press ENTER to return to editor]", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), ed.returneditoralpha, false);
+        graphics.bprintalpha(5, 5, loc::gettext("[Press ENTER to return to editor]"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), ed.returneditoralpha, false);
         if (ed.returneditoralpha > 0) {
             ed.returneditoralpha -= 15;
         }
@@ -1492,22 +1475,22 @@ void gamerender()
     graphics.drawgui();
     if (graphics.flipmode)
     {
-        if (game.advancetext) graphics.bprint(5, 228, "- Press ACTION to advance text -", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
+        if (game.advancetext) graphics.bprint(5, 228, loc::gettext("- Press ACTION to advance text -"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
     }
     else
     {
-        if (game.advancetext) graphics.bprint(5, 5, "- Press ACTION to advance text -", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
+        if (game.advancetext) graphics.bprint(5, 5, loc::gettext("- Press ACTION to advance text -"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
     }
 
     if (game.readytotele > 100 && !game.advancetext && game.hascontrol && !script.running && !game.intimetrial)
     {
         if(graphics.flipmode)
         {
-            graphics.bprint(5, 20, "- Press ENTER to Teleport -", game.readytotele - 20 - (help.glow / 2), game.readytotele - 20 - (help.glow / 2), game.readytotele, true);
+            graphics.bprint(5, 20, loc::gettext("- Press ENTER to Teleport -"), game.readytotele - 20 - (help.glow / 2), game.readytotele - 20 - (help.glow / 2), game.readytotele, true);
         }
         else
         {
-            graphics.bprint(5, 210, "- Press ENTER to Teleport -", game.readytotele - 20 - (help.glow / 2), game.readytotele - 20 - (help.glow / 2), game.readytotele, true);
+            graphics.bprint(5, 210, loc::gettext("- Press ENTER to Teleport -"), game.readytotele - 20 - (help.glow / 2), game.readytotele - 20 - (help.glow / 2), game.readytotele, true);
         }
     }
 

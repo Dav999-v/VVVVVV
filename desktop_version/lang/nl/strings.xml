@@ -11,7 +11,7 @@
     <string english="ERROR: This level has no start point!" comment="wrapped">FOUT: Dit level heeft geen startpunt!</string>
     <string english="Accessibility" comment="title" max="20">Toegankelijkheid</string>
     <string english="Disable screen effects, enable slowdown modes or invincibility" comment="wrapped">Schakel schermeffecten uit, schakel vertraging of onkwetsbaarheid in</string>
-    <string english="Unlock Play Modes" comment="title" max="20">Ontgrendel speelmodi</string>
+    <string english="Unlock Play Modes" comment="title" max="20">Ontgrendel spelmodi</string>
     <string english="Unlock parts of the game normally unlocked as you progress" comment="wrapped">Ontgrendel delen van het spel die normaal tijdens je voortgang worden ontgrendeld</string>
     <string english="Game Pad Options" comment="title" max="20">Gamepad-opties</string>
     <string english="Game Pad" comment="title" max="20"></string>
@@ -64,21 +64,150 @@
     <string english="You!" comment="credits, and thanks also to ... you!"></string>
     <string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." comment="credits, wrapped"></string>
     <string english="Thank you!" comment="credits, wrapped"></string>
-    <string english="Are you sure you want to enable invincibility?" comment="wrapped"></string>
-    <string english="Game Speed" comment="title" max="20"></string>
-    <string english="Select a new game speed below." comment="wrapped"></string>
-    <string english="Game speed is normal." comment="wrapped"></string>
-    <string english="Game speed is at 80%" comment="wrapped"></string>
-    <string english="Game speed is at 60%" comment="wrapped"></string>
-    <string english="Game speed is at 40%" comment="wrapped"></string>
     <string english="Are you sure? This will delete your current saves..." comment="wrapped"></string>
     <string english="Are you sure you want to delete all your saved data?" comment="wrapped"></string>
     <string english="Good luck!" comment="wrapped"></string>
     <string english="You cannot save in this mode." comment="wrapped"></string>
     <string english="Would you like to disable the cutscenes during the game?" comment="wrapped"></string>
+    <string english="Low" comment="analog stick sensitivity">Laag</string>
+    <string english="Medium" comment="analog stick sensitivity">Gemiddeld</string>
+    <string english="High" comment="analog stick sensitivity">Hoog</string>
     <string english="Flip is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32">Flip is gebonden aan: </string>
     <string english="Enter is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32"></string>
     <string english="Menu is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32"></string>
+    <string english="ERROR: No language files found." comment="wrapped"></string>
+    <string english="This menu is only shown when having a lang folder in your VVVVVV folder." comment="wrapped, the folder is called lang. Translation maintenance menu"></string>
+    <string english="Sync language files" comment="title, translation maintenance menu" max="20"></string>
+    <string english="Merge all new strings from the template files into the translation files, keeping existing translations" comment="wrapped, translation maintenance menu"></string>
+    <string english="Statistics" comment="title, translation maintenance menu" max="20"></string>
+    <string english="Count the amount of untranslated strings for each language" comment="wrapped, translation maintenance menu"></string>
+    <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." comment="wrapped, translation maintenance menu"></string>
+    <string english="Backgrounds" comment="title" max="20"></string>
+    <string english="Backgrounds are ON." comment="wrapped"></string>
+    <string english="Backgrounds are OFF." comment="wrapped"></string>
+    <string english="Screen Effects" comment="title" max="20"></string>
+    <string english="Disables screen shakes and flashes." comment="wrapped"></string>
+    <string english="Screen Effects are ON." comment="wrapped"></string>
+    <string english="Screen Effects are OFF." comment="wrapped"></string>
+    <string english="Text Outline" comment="title" max="20"></string>
+    <string english="Disables outline on game text" comment="wrapped"></string>
+    <string english="Text outlines are ON." comment="wrapped"></string>
+    <string english="Text outlines are OFF." comment="wrapped"></string>
+    <string english="Invincibility" comment="title" max="20"></string>
+    <string english="Provided to help disabled gamers explore the game. Can cause glitches." comment="wrapped, invincibility mode"></string>
+    <string english="Invincibility is ON." comment="wrapped"></string>
+    <string english="Invincibility is off." comment="wrapped"></string>
+    <string english="Are you sure you want to enable invincibility?" comment="wrapped"></string>
+    <string english="Game Speed" comment="title" max="20"></string>
+    <string english="May be useful for disabled gamers using one switch devices." comment="wrapped"></string>
+    <string english="Select a new game speed below." comment="wrapped"></string>
+    <string english="Game speed is normal." comment="wrapped"></string>
+    <string english="Game speed is at 80%" comment="wrapped"></string>
+    <string english="Game speed is at 60%" comment="wrapped"></string>
+    <string english="Game speed is at 40%" comment="wrapped"></string>
+    <string english="Fake Load Screen" comment="title, allows the loading screen which counts to 100% to be turned off" max="20"></string>
+    <string english="Fake loading screen is OFF" comment="wrapped, allows the loading screen which counts to 100% to be turned off"></string>
+    <string english="Fake loading screen is ON" comment="wrapped, allows the loading screen which counts to 100% to be turned off"></string>
+    <string english="Room Name BG" comment="title, background behind room names" max="20"></string>
+    <string english="Lets you see through what is behind the name at the bottom of the screen." comment="wrapped"></string>
+    <string english="Room name background is TRANSLUCENT" comment="wrapped"></string>
+    <string english="Room name background is OPAQUE" comment="wrapped"></string>
+    <string english="Who do you want to play the level with?" comment="wrapped, choose your NPC companion"></string>
+    <string english="Time Trials" comment="title" max="20"></string>
+    <string english="Replay any level in the game in a competitive time trial mode." comment="wrapped"></string>
+    <string english="Time Trials are not available with slowdown or invincibility." comment="wrapped"></string>
+    <string english="Intermissions" comment="title" max="20"></string>
+    <string english="Replay the intermission levels." comment="wrapped"></string>
+    <string english="TO UNLOCK: Complete the intermission levels in-game." comment="wrapped"></string>
+    <string english="No Death Mode" comment="title" max="20"></string>
+    <string english="Play the entire game without dying once." comment="wrapped"></string>
+    <string english="No Death Mode is not available with slowdown or invincibility." comment="wrapped"></string>
+    <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." comment="wrapped, ranks are B A S V"></string>
+    <string english="Flip Mode" comment="title" max="20"></string>
+    <string english="Flip the entire game vertically. Compatible with other game modes." comment="wrapped"></string>
+    <string english="Currently ENABLED!" comment="wrapped, flip mode"></string>
+    <string english="Currently Disabled." comment="wrapped, flip mode"></string>
+    <string english="TO UNLOCK: Complete the game." comment="wrapped"></string>
+    <string english="Are you sure you want to quit?" comment="wrapped, quit the program"></string>
+    <string english="Tele Save" comment="title, game save that was made at a teleporter" max="20"></string>
+    <string english="Quick Save" comment="title, game save that was made freely (at any checkpoint)" max="20"></string>
+    <string english="GAME OVER" comment="bigger title" max="13"></string>
+    <pluralString english="(rescued crewmate)" english_plural="(rescued crewmates)" comment="number is filled in">
+        <case rule="0"/>
+    </pluralString>
+    <string english="You managed to reach:" comment="you managed to reach the following room" max="40"></string>
+    <string english="Keep trying! You&apos;ll get there!" comment="wrapped, player died before managing to save anybody"></string>
+    <string english="Nice one!" comment="wrapped, player died after saving one crewmate"></string>
+    <string english="Wow! Congratulations!" comment="wrapped, player died after saving two crewmates"></string>
+    <string english="Incredible!" comment="wrapped, player died after saving three crewmates"></string>
+    <string english="Unbelievable! Well done!" comment="wrapped, player died after saving four crewmates"></string>
+    <string english="Er, how did you do that?" comment="wrapped, player died even though they were finished, lol"></string>
+    <string english="WOW" comment="even bigger title" max="10"></string>
+    <string english="You rescued all the crewmates!" comment="" max="40"></string>
+    <string english="A new trophy has been awarded and placed in the secret lab to acknowledge your achievement!" comment="wrapped"></string>
+    <string english="Results" comment="bigger title" max="13"></string>
+    <string english="TIME TAKEN:" comment="time the player took playing the level" max="32"></string>
+    <string english="NUMBER OF DEATHS:" comment="amount of times the player died" max="32"></string>
+    <string english="SHINY TRINKETS:" comment="amount of trinkets collected"></string>
+    <string english="+1 Rank!" comment="rank was upgraded (B → A → S → V)" max="12"></string>
+    <string english="Rank:" comment="time trial rank"></string>
+    <string english="B" comment="time trial rank"></string>
+    <string english="A" comment="time trial rank"></string>
+    <string english="S" comment="time trial rank"></string>
+    <string english="V" comment="time trial rank"></string>
+    <string english="Unlock Time Trials" comment="title" max="20"></string>
+    <string english="You can unlock each time trial separately." comment="wrapped"></string>
+    <string english="Congratulations!" comment="title" max="20"></string>
+    <string english="Your save files have been updated." comment="wrapped, player completed game"></string>
+    <string english="If you want to keep exploring the game, select CONTINUE from the play menu." comment="wrapped"></string>
+    <string english="Unlock Play Modes" comment="title" max="20">Ontgrendel spelmodi</string>
+    <string english="From here, you may unlock parts of the game that are normally unlocked as you play." comment="wrapped"></string>
+    <string english="You have unlocked a new Time Trial." comment="wrapped"></string>
+    <string english="You have unlocked some new Time Trials." comment="wrapped"></string>
+    <string english="You have unlocked No Death Mode." comment="wrapped"></string>
+    <string english="You have unlocked Flip Mode." comment="wrapped"></string>
+    <string english="You have unlocked the intermission levels." comment="wrapped"></string>
+    <string english="To install new player levels, copy the .vvvvvv files to this folder:" comment=""></string>
+    <string english="[ Press ACTION to Start ]" comment="wrapped, title screen"></string>
+    <string english="ACTION = Space, Z, or V" comment="wrapped, title screen"></string>
+    <string english="[Press ENTER to return to editor]" comment="`to editor` is sorta redundant" max="40"></string>
+    <string english="- Press ACTION to advance text -" comment="" max="40"></string>
+    <string english="- Press ENTER to Teleport -" comment="" max="40"></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
+    <string english="" comment=""></string>
     <string english="" comment=""></string>
     <string english="" comment=""></string>
     <string english="" comment=""></string>
