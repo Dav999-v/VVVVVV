@@ -621,6 +621,11 @@ void menuactionpress()
             map.nexttowercolour();
             break;
         case 2:
+            // toggle extraction test mode
+            loc::test_mode = !loc::test_mode;
+            loc::loadtext();
+            break;
+        case 3:
             // return. Also leave the language selection menu
             game.returntomenu(Menu::options);
             map.nexttowercolour();

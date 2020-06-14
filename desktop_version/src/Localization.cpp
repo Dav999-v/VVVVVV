@@ -9,6 +9,7 @@ namespace loc
 {
 	std::string lang = "en";
 	LangMeta langmeta;
+	bool test_mode = false;
 
 	// language screen list
 	std::vector<LangMeta> languagelist;
@@ -119,12 +120,13 @@ namespace loc
 		translation.clear();
 		translation_plu.clear();
 
-		if (lang == "en")
+		loadmeta(langmeta);
+
+		if (lang == "en" && !test_mode)
 		{
 			return;
 		}
 
-		loadmeta(langmeta);
 		loadtext_strings();
 	}
 
@@ -210,6 +212,23 @@ namespace loc
 
 	std::string gettext(const std::string& eng)
 	{
+		if (test_mode)
+		{
+			if (translation.count(eng) != 0)
+			{
+				return "V";
+			}
+			else
+			{
+				return "X";
+			}
+		}
+
+		if (lang == "en" || translation.count(eng) == 0)
+		{
+			return eng;
+		}
+
 		std::string& tra = translation[eng];
 
 		if (tra.empty())
@@ -222,6 +241,11 @@ namespace loc
 
 	std::string ngettext(const std::string& eng_sin, const std::string& eng_plu, long n)
 	{
+		if (test_mode)
+		{
+			return "X";
+		}
+
 		std::vector<std::string>& tra = translation_plu[english_plu(eng_sin, eng_plu)];
 
 		// Insert appropriate plural formula here

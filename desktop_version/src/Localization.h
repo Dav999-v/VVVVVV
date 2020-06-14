@@ -16,6 +16,7 @@ namespace loc
 	};
 
 	extern std::string lang;
+	extern bool test_mode;
 	extern std::vector<LangMeta> languagelist;
 	extern int languagelist_curlang;
 	extern bool show_lang_maint_menu;

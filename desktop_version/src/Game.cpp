@@ -7171,6 +7171,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
     case Menu::language_maint:
         option("sync language files");
         option("statistics", false);
+        option("toggle test mode");
         option("return");
         menuxoff = -40;
         menuyoff = 0;
