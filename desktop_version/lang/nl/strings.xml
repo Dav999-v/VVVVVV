@@ -149,6 +149,7 @@
     <string english="TIME TAKEN:" comment="time the player took playing the level" max="32"></string>
     <string english="NUMBER OF DEATHS:" comment="amount of times the player died" max="32"></string>
     <string english="SHINY TRINKETS:" comment="amount of trinkets collected"></string>
+    <string english="%d of %d" comment="ex: 2 of 5"></string>
     <string english="+1 Rank!" comment="rank was upgraded (B → A → S → V)" max="12"></string>
     <string english="Rank:" comment="time trial rank"></string>
     <string english="B" comment="time trial rank"></string>
@@ -185,12 +186,11 @@
     <string english="[Press ENTER to stop]" comment="stop super gravitron" max="40">[Druk op ENTER om te stoppen]</string>
     <string english="SUPER GRAVITRON" comment="" max="20">SUPER GRAVITRON</string>
     <string english="GO!" comment="3, 2, 1, GO!" max="13">GO!</string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
+    <string english="Go!" comment="3, 2, 1, Go!" max="10">Go!</string>
+    <string english="TIME:" comment="stopwatch time, not too long">TIJD:</string>
+    <string english="DEATH:" comment="number of times player died, not too long">DOOD:</string>
+    <string english="SHINY:" comment="number of shiny trinkets collected, not too long">TRINKETS:</string>
+    <string english="PAR TIME:" comment="goal time for time trial">PARTIJD:</string>
     <string english="" comment=""></string>
     <string english="" comment=""></string>
     <string english="" comment=""></string>

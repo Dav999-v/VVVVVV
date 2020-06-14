@@ -666,7 +666,12 @@ void menurender()
             graphics.Print(220, 90+20, loc::gettext("+1 Rank!"), 255, 255, 255);
         }
 
-        tempstring = help.String(game.trinkets()) + " of " + help.String(game.timetrialshinytarget); // TODO LOC
+        char tempstring_c[40];
+        sprintf(
+            tempstring_c,
+            loc::gettext("%d of %d").substr(0,39).c_str(),
+            game.trinkets(), game.timetrialshinytarget
+        );
         graphics.drawspritesetcol(30, 80+55, 22, 22);
         graphics.Print(65, 80+55, loc::gettext("SHINY TRINKETS:"), 255, 255, 255);
         graphics.Print(65, 90+55, tempstring, tr, tg, tb);
@@ -1639,43 +1644,57 @@ void gamerender()
         else
         {
             //Draw OSD stuff
-            graphics.bprint(6, 18, "TIME :",  255,255,255);
-            graphics.bprint(6, 30, "DEATH:",  255, 255, 255);
-            graphics.bprint(6, 42, "SHINY:",  255,255,255);
+            std::string tempstring = loc::gettext("TIME:");
+            int label_len = graphics.len(tempstring);
+            graphics.bprint(6, 18, tempstring,  255,255,255);
+            tempstring = loc::gettext("DEATH:");
+            label_len = std::max(label_len, graphics.len(tempstring));
+            graphics.bprint(6, 30, tempstring,  255, 255, 255);
+            tempstring = loc::gettext("SHINY:");
+            label_len = std::max(label_len, graphics.len(tempstring));
+            graphics.bprint(6, 42, tempstring,  255,255,255);
 
             if(game.timetrialparlost)
             {
-                graphics.bprint(56, 18, game.timestring(),  196, 80, 80);
+                graphics.bprint(8+label_len, 18, game.timestring(),  196, 80, 80);
             }
             else
             {
-                graphics.bprint(56, 18, game.timestring(),  196, 196, 196);
+                graphics.bprint(8+label_len, 18, game.timestring(),  196, 196, 196);
             }
             if(game.deathcounts>0)
             {
-                graphics.bprint(56, 30,help.String(game.deathcounts),  196, 80, 80);
+                graphics.bprint(8+label_len, 30,help.String(game.deathcounts),  196, 80, 80);
             }
             else
             {
-                graphics.bprint(56, 30,help.String(game.deathcounts),  196, 196, 196);
+                graphics.bprint(8+label_len, 30,help.String(game.deathcounts),  196, 196, 196);
             }
+            char tempstring_c[40];
+            sprintf(
+                tempstring_c,
+                loc::gettext("%d of %d").substr(0,39).c_str(),
+                game.trinkets(), game.timetrialshinytarget
+            );
             if(game.trinkets()<game.timetrialshinytarget)
             {
-                graphics.bprint(56, 42,help.String(game.trinkets()) + " of " +help.String(game.timetrialshinytarget),  196, 80, 80);
+                graphics.bprint(8+label_len, 42, tempstring_c,  196, 80, 80);
             }
             else
             {
-                graphics.bprint(56, 42,help.String(game.trinkets()) + " of " +help.String(game.timetrialshinytarget),  196, 196, 196);
+                graphics.bprint(8+label_len, 42, tempstring_c,  196, 196, 196);
             }
 
+            tempstring = loc::gettext("PAR TIME:");
+            label_len = graphics.len(tempstring)+8;
             if(game.timetrialparlost)
             {
-                graphics.bprint(195, 214, "PAR TIME:",  80, 80, 80);
+                graphics.bprint(275-label_len, 214, tempstring,  80, 80, 80);
                 graphics.bprint(275, 214, game.partimestring(),  80, 80, 80);
             }
             else
             {
-                graphics.bprint(195, 214, "PAR TIME:",  255, 255, 255);
+                graphics.bprint(275-label_len, 214, tempstring,  255, 255, 255);
                 graphics.bprint(275, 214, game.partimestring(),  196, 196, 196);
             }
         }
@@ -1721,7 +1740,7 @@ void maprender()
     //Roomname:
     int temp = map.area(game.roomx, game.roomy);
     if (temp < 2 && !map.custommode && graphics.fademode==0)
-    {
+    { // TODO LOC
         if (game.roomx >= 102 && game.roomx <= 104 && game.roomy >= 110 && game.roomy <= 111)
         {
             graphics.Print(5, 2, "The Ship", 196, 196, 255 - help.glow, true);
