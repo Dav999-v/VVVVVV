@@ -7064,7 +7064,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         break;
     case Menu::graphicoptions:
         option("toggle fullscreen");
-        option("toggle letterbox");
+        option("graphics mode");
         option("toggle filter");
         option("toggle analogue");
         option("toggle mouse");

@@ -29,19 +29,21 @@ void menurender()
         graphics.drawsprite((160 - 96) + 4 * 32, temp, 23, tr, tg, tb);
         graphics.drawsprite((160 - 96) + 5 * 32, temp, 23, tr, tg, tb);
 #if defined(MAKEANDPLAY)
-        graphics.Print(-1,temp+35,"     MAKE AND PLAY EDITION",tr, tg, tb, true);
+        #define EDITIONLABEL loc::gettext("MAKE AND PLAY EDITION")
+        graphics.Print(264-graphics.len(EDITIONLABEL),temp+35,EDITIONLABEL,tr, tg, tb);
+        #undef EDITIONLABEL
 #endif
         graphics.Print( 310 - (4*8), 230, "v2.3", tr/2, tg/2, tb/2);
 
         if(music.mmmmmm){
-            graphics.Print( 10, 230, "[MMMMMM Mod Installed]", tr/2, tg/2, tb/2);
+            graphics.Print( 10, 230, loc::gettext("[MMMMMM Mod Installed]"), tr/2, tg/2, tb/2);
         }
         break;
 #if !defined(NO_CUSTOM_LEVELS)
     case Menu::levellist:
     {
       if(ed.ListOfMetaData.size()==0){
-      graphics.Print( -1, 100, "ERROR: No levels found.", tr, tg, tb, true);
+      graphics.PrintWrap( -1, 90, loc::gettext("ERROR: No levels found."), tr, tg, tb, true);
       }
       int tmp=game.currentmenuoption+(game.levelpage*8);
       if(tmp>=0 && tmp < (int) ed.ListOfMetaData.size()){ // FIXME: size_t/int! -flibit
@@ -50,7 +52,14 @@ void menurender()
 
         }else{
           graphics.bigprint( -1, 15, ed.ListOfMetaData[tmp].title, tr, tg, tb, true);
-          graphics.Print( -1, 40, "by " + ed.ListOfMetaData[tmp].creator, tr, tg, tb, true);
+          char creatorline[41]; // ouch, but translators may need to add something after the name
+          const std::string& bytext = loc::gettext("by %s").substr(0, 40); // just in case :)
+          sprintf(
+            creatorline,
+            bytext.c_str(),
+            ed.ListOfMetaData[tmp].creator.substr(0, 40-(bytext.size()-2)).c_str()
+          );
+          graphics.Print( -1, 40, creatorline, tr, tg, tb, true);
           graphics.Print( -1, 50, ed.ListOfMetaData[tmp].website, tr, tg, tb, true);
           graphics.Print( -1, 70, ed.ListOfMetaData[tmp].Desc1, tr, tg, tb, true);
           graphics.Print( -1, 80, ed.ListOfMetaData[tmp].Desc2, tr, tg, tb, true);
@@ -61,8 +70,7 @@ void menurender()
     }
 #endif
     case Menu::errornostart:
-      graphics.Print( -1, 65, "ERROR: This level has", tr, tg, tb, true);
-      graphics.Print( -1, 75, "no start point!", tr, tg, tb, true);
+      graphics.PrintWrap( -1, 65, loc::gettext("ERROR: This level has no start point!"), tr, tg, tb, true);
       break;
     case Menu::options:
 #if defined(MAKEANDPLAY)
@@ -74,39 +82,35 @@ void menurender()
         switch (game.currentmenuoption)
         {
         case 0:
-            graphics.bigprint( -1, 30, "Accessibility", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Disable screen effects, enable", tr, tg, tb, true);
-            graphics.Print( -1, 75, "slowdown modes or invincibility", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Accessibility"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Disable screen effects, enable slowdown modes or invincibility"), tr, tg, tb, true);
             break;
 #if !defined(MAKEANDPLAY)
         case 1:
-            graphics.bigprint( -1, 30, "Unlock Play Modes", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Unlock parts of the game normally", tr, tg, tb, true);
-            graphics.Print( -1, 75, "unlocked as you progress", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Unlock Play Modes"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Unlock parts of the game normally unlocked as you progress"), tr, tg, tb, true);
             break;
 #endif
         case OFFSET+2:
-            graphics.bigprint( -1, 30, "Game Pad Options", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Rebind your controller's buttons", tr, tg, tb, true);
-            graphics.Print( -1, 75, "and adjust sensitivity", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Game Pad Options"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Rebind your controller's buttons and adjust sensitivity"), tr, tg, tb, true);
             break;
         case OFFSET+3:
-            graphics.bigprint( -1, 30, "Language", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Change the language", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Language"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Change the language"), tr, tg, tb, true);
             break;
         case OFFSET+4:
-            graphics.bigprint( -1, 30, "Clear Data", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Delete your save data", tr, tg, tb, true);
-            graphics.Print( -1, 75, "and unlocked play modes", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Clear Data"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Delete your save data and unlocked play modes"), tr, tg, tb, true);
             break;
         case OFFSET+5:
             if(music.mmmmmm){
-                graphics.bigprint( -1, 30, "Soundtrack", tr, tg, tb, true);
-                graphics.Print( -1, 65, "Toggle between MMMMMM and PPPPPP", tr, tg, tb, true);
+                graphics.bigprint( -1, 30, loc::gettext("Soundtrack"), tr, tg, tb, true);
+                graphics.PrintWrap( -1, 65, loc::gettext("Toggle between MMMMMM and PPPPPP"), tr, tg, tb, true);
                 if(music.usingmmmmmm){
-                    graphics.Print( -1, 85, "Current soundtrack: MMMMMM", tr, tg, tb, true);
+                    graphics.PrintWrap( -1, 85, loc::gettext("Current soundtrack: MMMMMM"), tr, tg, tb, true);
                 }else{
-                    graphics.Print( -1, 85, "Current soundtrack: PPPPPP", tr, tg, tb, true);
+                    graphics.PrintWrap( -1, 85, loc::gettext("Current soundtrack: PPPPPP"), tr, tg, tb, true);
                 }
             }
             break;
@@ -117,85 +121,84 @@ void menurender()
         switch (game.currentmenuoption)
         {
         case 0:
-            graphics.bigprint( -1, 30, "Toggle Fullscreen", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Change to fullscreen/windowed mode.", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Toggle Fullscreen"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Change to fullscreen/windowed mode."), tr, tg, tb, true);
 
             if(game.fullscreen){
-              graphics.Print( -1, 85, "Current mode: FULLSCREEN", tr, tg, tb, true);
+              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: FULLSCREEN"), tr, tg, tb, true);
             }else{
-              graphics.Print( -1, 85, "Current mode: WINDOWED", tr, tg, tb, true);
+              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: WINDOWED"), tr, tg, tb, true);
             }
             break;
 
         case 1:
-            graphics.bigprint( -1, 30, "Toggle Letterbox", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Choose letterbox/stretch/integer mode.", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Graphics Mode"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Choose letterbox/stretch/integer mode."), tr, tg, tb, true);
 
             if(game.stretchMode == 2){
-              graphics.Print( -1, 85, "Current mode: INTEGER", tr, tg, tb, true);
+              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: INTEGER"), tr, tg, tb, true);
             }else if (game.stretchMode == 1){
-              graphics.Print( -1, 85, "Current mode: STRETCH", tr, tg, tb, true);
+              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: STRETCH"), tr, tg, tb, true);
             }else{
-              graphics.Print( -1, 85, "Current mode: LETTERBOX", tr, tg, tb, true);
+              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: LETTERBOX"), tr, tg, tb, true);
             }
             break;
         case 2:
-            graphics.bigprint( -1, 30, "Toggle Filter", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Change to nearest/linear filter.", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Toggle Filter"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Change to nearest/linear filter."), tr, tg, tb, true);
 
             if(game.useLinearFilter){
-              graphics.Print( -1, 85, "Current mode: LINEAR", tr, tg, tb, true);
+              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: LINEAR"), tr, tg, tb, true);
             }else{
-              graphics.Print( -1, 85, "Current mode: NEAREST", tr, tg, tb, true);
+              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: NEAREST"), tr, tg, tb, true);
             }
             break;
 
         case 3:
-            graphics.bigprint( -1, 30, "Analogue Mode", tr, tg, tb, true);
-            graphics.PrintWrap( -1, 65, "There is nothing wrong with your television set. Do not attempt to adjust the picture.", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Analogue Mode"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("There is nothing wrong with your television set. Do not attempt to adjust the picture."), tr, tg, tb, true);
             break;
         case 4:
-            graphics.bigprint(-1, 30, "Toggle Mouse Cursor", tr, tg, tb, true);
-            graphics.Print(-1, 65, "Show/hide the system mouse cursor.", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Toggle Mouse Cursor"), tr, tg, tb, true);
+            graphics.PrintWrap(-1, 65, loc::gettext("Show/hide the system mouse cursor."), tr, tg, tb, true);
 
             if (graphics.showmousecursor) {
-                graphics.Print(-1, 85, "Current mode: SHOW", tr, tg, tb, true);
+                graphics.PrintWrap(-1, 85, loc::gettext("Current mode: SHOW"), tr, tg, tb, true);
             }
             else {
-                graphics.Print(-1, 85, "Current mode: HIDE", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap(-1, 85, loc::gettext("Current mode: HIDE"), tr/2, tg/2, tb/2, true);
             }
             break;
         }
         break;
     case Menu::credits:
-        graphics.Print( -1, 50, "VVVVVV is a game by", tr, tg, tb, true);
-        graphics.bigprint( 40, 65, "Terry Cavanagh", tr, tg, tb, true, 2);
+        graphics.Print( -1, 50, loc::gettext("VVVVVV is a game by"), tr, tg, tb, true);
+        graphics.bigprint( 40, 65, loc::gettext("Terry Cavanagh"), tr, tg, tb, true, 2);
 
         graphics.drawimagecol(7, -1, 86, tr *0.75, tg *0.75, tb *0.75, true);
 
-        graphics.Print( -1, 120, "and features music by", tr, tg, tb, true);
-        graphics.bigprint( 40, 135, "Magnus P~lsson", tr, tg, tb, true, 2);
+        graphics.Print( -1, 120, loc::gettext("and features music by"), tr, tg, tb, true);
+        graphics.bigprint( 40, 135, loc::gettext("Magnus P~lsson"), tr, tg, tb, true, 2);
         graphics.drawimagecol(8, -1, 156, tr *0.75, tg *0.75, tb *0.75, true);
         break;
     case Menu::credits2:
-        graphics.Print( -1, 50, "Roomnames are by", tr, tg, tb, true);
-        graphics.bigprint( 40, 65, "Bennett Foddy", tr, tg, tb, true);
+        graphics.Print( -1, 50, loc::gettext("Roomnames are by"), tr, tg, tb, true);
+        graphics.bigprint( 40, 65, loc::gettext("Bennett Foddy"), tr, tg, tb, true);
         graphics.drawimagecol(9, -1, 86, tr*0.75, tg *0.75, tb *0.75, true);
-        graphics.Print( -1, 110, "C++ version by", tr, tg, tb, true);
-        graphics.bigprint( 40, 125, "Simon Roth", tr, tg, tb, true);
-        graphics.bigprint( 40, 145, "Ethan Lee", tr, tg, tb, true);
+        graphics.Print( -1, 110, loc::gettext("C++ version by"), tr, tg, tb, true);
+        graphics.bigprint( 40, 125, loc::gettext("Simon Roth"), tr, tg, tb, true);
+        graphics.bigprint( 40, 145, loc::gettext("Ethan Lee"), tr, tg, tb, true);
         break;
     case Menu::credits25:
-        graphics.Print( -1, 40, "Beta Testing by", tr, tg, tb, true);
-        graphics.bigprint( 40, 55, "Sam Kaplan", tr, tg, tb, true);
-        graphics.bigprint( 40, 75, "Pauli Kohberger", tr, tg, tb, true);
-        graphics.Print( -1, 130, "Ending Picture by", tr, tg, tb, true);
-        graphics.bigprint( 40, 145, "Pauli Kohberger", tr, tg, tb, true);
+        graphics.Print( -1, 40, loc::gettext("Beta Testing by"), tr, tg, tb, true);
+        graphics.bigprint( 40, 55, loc::gettext("Sam Kaplan"), tr, tg, tb, true);
+        graphics.bigprint( 40, 75, loc::gettext("Pauli Kohberger"), tr, tg, tb, true);
+        graphics.Print( -1, 130, loc::gettext("Ending Picture by"), tr, tg, tb, true);
+        graphics.bigprint( 40, 145, loc::gettext("Pauli Kohberger"), tr, tg, tb, true);
         break;
     case Menu::credits3:
     {
-        graphics.Print( -1, 20, "VVVVVV is supported by", tr, tg, tb, true);
-        graphics.Print( 40, 30, "the following patrons", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 20, loc::gettext("VVVVVV is supported by the following patrons"), tr, tg, tb, true);
 
         int startidx = game.current_credits_list_index;
         int endidx = std::min(startidx + 9, (int)game.superpatrons.size());
@@ -213,7 +216,7 @@ void menurender()
     }
     case Menu::credits4:
     {
-        graphics.Print( -1, 20, "and also by", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 20, loc::gettext("and also by"), tr, tg, tb, true);
 
         int startidx = game.current_credits_list_index;
         int endidx = std::min(startidx + 14, (int)game.patrons.size());
@@ -233,8 +236,7 @@ void menurender()
     }
     case Menu::credits5:
     {
-        graphics.Print( -1, 20, "With contributions on", tr, tg, tb, true);
-        graphics.Print( 40, 30, "GitHub from", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 20, loc::gettext("With contributions on GitHub from"), tr, tg, tb, true);
 
         int startidx = game.current_credits_list_index;
         int endidx = std::min(startidx + 9, (int)game.githubfriends.size());
@@ -255,63 +257,56 @@ void menurender()
         break;
     }
     case Menu::credits6:
-        graphics.Print( -1, 20, "and thanks also to:", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 20, loc::gettext("and thanks also to:"), tr, tg, tb, true);
 
-        graphics.bigprint(80, 60, "You!", tr, tg, tb, true);
+        graphics.bigprint(80, 60, loc::gettext("You!"), tr, tg, tb, true);
 
-        graphics.Print( 80, 100, "Your support makes it possible", tr, tg, tb,true);
-        graphics.Print( 80, 110,"for me to continue making the", tr, tg, tb,true);
-        graphics.Print( 80, 120,"games I want to make, now", tr, tg, tb,true);
-        graphics.Print( 80, 130, "and into the future.", tr, tg, tb, true);
+        graphics.PrintWrap( 80, 100, loc::gettext("Your support makes it possible for me to continue making the games I want to make, now and into the future."), tr, tg, tb,true);
 
-        graphics.Print( 80, 150,"Thank you!", tr, tg, tb,true);
+        graphics.PrintWrap( 80, 150,loc::gettext("Thank you!"), tr, tg, tb,true);
         break;
     case Menu::setinvincibility:
-        graphics.Print( -1, 100, "Are you sure you want to ", tr, tg, tb, true);
-        graphics.Print( -1, 110, "enable invincibility?", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 100, loc::gettext("Are you sure you want to enable invincibility?"), tr, tg, tb, true);
         break;
     case Menu::setslowdown:
-        graphics.bigprint( -1, 40, "Game Speed", tr, tg, tb, true);
-        graphics.Print( -1, 75, "Select a new game speed below.", tr, tg, tb, true);
+        graphics.bigprint( -1, 40, loc::gettext("Game Speed"), tr, tg, tb, true);
+        graphics.PrintWrap( -1, 75, loc::gettext("Select a new game speed below."), tr, tg, tb, true);
         switch (game.gameframerate)
         {
         case 34:
-            graphics.Print( -1, 105, "Game speed is normal.", tr/2, tg/2, tb/2, true);
+            graphics.PrintWrap( -1, 105, loc::gettext("Game speed is normal."), tr/2, tg/2, tb/2, true);
             break;
         case 41:
-            graphics.Print( -1, 105, "Game speed is at 80%", tr, tg, tb, true);
+            graphics.PrintWrap( -1, 105, loc::gettext("Game speed is at 80%"), tr, tg, tb, true);
             break;
         case 55:
-            graphics.Print( -1, 105, "Game speed is at 60%", tr, tg, tb, true);
+            graphics.PrintWrap( -1, 105, loc::gettext("Game speed is at 60%"), tr, tg, tb, true);
             break;
         case 83:
-            graphics.Print( -1, 105, "Game speed is at 40%", tr, tg, tb, true);
+            graphics.PrintWrap( -1, 105, loc::gettext("Game speed is at 40%"), tr, tg, tb, true);
             break;
         }
         break;
     case Menu::newgamewarning:
-        graphics.Print( -1, 100, "Are you sure? This will", tr, tg, tb, true);
-        graphics.Print( -1, 110, "delete your current saves...", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 100, loc::gettext("Are you sure? This will delete your current saves..."), tr, tg, tb, true);
         break;
     case Menu::cleardatamenu:
-        graphics.Print( -1, 100, "Are you sure you want to", tr, tg, tb, true);
-        graphics.Print( -1, 110, "delete all your saved data?", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 100, loc::gettext("Are you sure you want to delete all your saved data?"), tr, tg, tb, true);
         break;
     case Menu::startnodeathmode:
-        graphics.Print( -1, 45, "Good luck!", tr, tg, tb, true);
-        graphics.Print( -1, 80, "You cannot save in this mode.", tr, tg, tb, true);
-        graphics.Print( -1, 100, "Would you like to disable the", tr, tg, tb, true);
-        graphics.Print( -1, 112, "cutscenes during the game?", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 45, loc::gettext("Good luck!"), tr, tg, tb, true);
+        graphics.PrintWrap( -1, 80, loc::gettext("You cannot save in this mode."), tr, tg, tb, true);
+        graphics.PrintWrap( -1, 105, loc::gettext("Would you like to disable the cutscenes during the game?"), tr, tg, tb, true);
         break;
     case Menu::controller:
-        graphics.bigprint( -1, 30, "Game Pad", tr, tg, tb, true);
-        graphics.Print( -1, 55, "Change controller options.", tr, tg, tb, true);
+        graphics.bigprint( -1, 30, loc::gettext("Game Pad"), tr, tg, tb, true);
+        graphics.PrintWrap( -1, 55, loc::gettext("Change controller options."), tr, tg, tb, true);
         switch (game.currentmenuoption)
         {
         case 0:
             switch(game.controllerSensitivity)
             {
-            case 0:
+            case 0: // TODO LOC
                 graphics.Print( -1, 85, " Low     Medium     High", tr, tg, tb, true);
                 graphics.Print( -1, 95, "[]..................", tr, tg, tb, true);
                 break;
@@ -336,9 +331,9 @@ void menurender()
         case 1:
         case 2:
         case 3:
-            graphics.Print( -1, 85, "Flip is bound to: " + std::string(help.GCString(game.controllerButton_flip)) , tr, tg, tb, true);
-            graphics.Print( -1, 95, "Enter is bound to: "  + std::string(help.GCString(game.controllerButton_map)), tr, tg, tb, true);
-            graphics.Print( -1, 105, "Menu is bound to: " + std::string(help.GCString(game.controllerButton_esc)) , tr, tg, tb, true);
+            graphics.Print( -1, 85, loc::gettext("Flip is bound to: ") + std::string(help.GCString(game.controllerButton_flip)) , tr, tg, tb, true);
+            graphics.Print( -1, 95, loc::gettext("Enter is bound to: ")  + std::string(help.GCString(game.controllerButton_map)), tr, tg, tb, true);
+            graphics.Print( -1, 105, loc::gettext("Menu is bound to: ") + std::string(help.GCString(game.controllerButton_esc)) , tr, tg, tb, true);
             break;
         }
 

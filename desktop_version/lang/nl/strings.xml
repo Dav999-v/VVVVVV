@@ -4,11 +4,81 @@
     <string english="[click to resume]" comment="pause screen" max="40">[klik om te hervatten]</string>
     <string english="Press M to mute in game" comment="pause screen" max="40">Druk op M om te dempen</string>
     <string english="Press N to mute music only" comment="pause screen" max="40">Druk op N om alleen muziek te dempen</string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
+    <string english="MAKE AND PLAY EDITION" comment="">MAKE AND PLAY-EDITIE</string>
+    <string english="[MMMMMM Mod Installed]" comment="" max="32">[MMMMMM-mod geïnstalleerd]</string>
+    <string english="ERROR: No levels found." comment="wrapped">FOUT: Geen levels gevonden.</string>
+    <string english="by %s" comment="%s: author of level">door %s</string>
+    <string english="ERROR: This level has no start point!" comment="wrapped">FOUT: Dit level heeft geen startpunt!</string>
+    <string english="Accessibility" comment="title" max="20">Toegankelijkheid</string>
+    <string english="Disable screen effects, enable slowdown modes or invincibility" comment="wrapped">Schakel schermeffecten uit, schakel vertraging of onkwetsbaarheid in</string>
+    <string english="Unlock Play Modes" comment="title" max="20">Ontgrendel speelmodi</string>
+    <string english="Unlock parts of the game normally unlocked as you progress" comment="wrapped">Ontgrendel delen van het spel die normaal tijdens je voortgang worden ontgrendeld</string>
+    <string english="Game Pad Options" comment="title" max="20">Gamepad-opties</string>
+    <string english="Game Pad" comment="title" max="20"></string>
+    <string english="Rebind your controller&apos;s buttons and adjust sensitivity" comment="wrapped">Wijzig de knoppen van je controller en pas de gevoeligheid aan</string>
+    <string english="Change controller options." comment="wrapped"></string>
+    <string english="Language" comment="title" max="20">Taal</string>
+    <string english="Change the language" comment="wrapped">Wijzig de taal</string>
+    <string english="Clear Data" comment="title" max="20">Data wissen</string>
+    <string english="Delete your save data and unlocked play modes" comment="wrapped">Wis je opgeslagen data en ontgrendelde spelmodi</string>
+    <string english="Soundtrack" comment="title" max="20">Soundtrack</string>
+    <string english="Toggle between MMMMMM and PPPPPP" comment="wrapped">Schakel tussen MMMMMM en PPPPPP</string>
+    <string english="Current soundtrack: MMMMMM" comment="wrapped">Huidige soundtrack: MMMMMM</string>
+    <string english="Current soundtrack: PPPPPP" comment="wrapped">Huidige soundtrack: PPPPPP</string>
+    <string english="Toggle Fullscreen" comment="title" max="20">Volledig scherm</string>
+    <string english="Change to fullscreen/windowed mode." comment="wrapped">Schakel tussen venster en volledig scherm.</string>
+    <string english="Current mode: FULLSCREEN" comment="wrapped">Huidige modus: VOLLEDIG SCHERM</string>
+    <string english="Current mode: WINDOWED" comment="wrapped">Huidige modus: VENSTER</string>
+    <string english="Graphics Mode" comment="title" max="20">Grafische modus</string>
+    <string english="Choose letterbox/stretch/integer mode." comment="wrapped">Kies voor letterbox-/uitrekken-/integer-modus.</string>
+    <string english="Current mode: INTEGER" comment="wrapped">Huidige modus: INTEGER</string>
+    <string english="Current mode: STRETCH" comment="wrapped">Huidige modus: UITREKKEN</string>
+    <string english="Current mode: LETTERBOX" comment="wrapped">Huidige modus: LETTERBOX</string>
+    <string english="Toggle Filter" comment="title" max="20">Filter wijzigen</string>
+    <string english="Change to nearest/linear filter." comment="wrapped">Schakel tussen nearest-filter of lineair filter.</string>
+    <string english="Current mode: LINEAR" comment="wrapped">Huidige modus: LINEAIR</string>
+    <string english="Current mode: NEAREST" comment="wrapped, nearest neighbor filter">Huidige modus: NEAREST</string>
+    <string english="Analogue Mode" comment="">Analoge modus</string>
+    <string english="There is nothing wrong with your television set. Do not attempt to adjust the picture." comment="wrapped">Er is niets mis met je televisie. Probeer niet het beeld bij te stellen.</string>
+    <string english="Toggle Mouse Cursor" comment="title" max="20">Muisaanwijzer</string>
+    <string english="Show/hide the system mouse cursor." comment="wrapped">Muisaanwijzer weergeven of verbergen.</string>
+    <string english="Current mode: SHOW" comment="wrapped, show cursor">Huidige modus: WEERGEGEVEN</string>
+    <string english="Current mode: HIDE" comment="wrapped, hide cursor">Huidige modus: VERBORGEN</string>
+    <string english="VVVVVV is a game by" comment="credits" max="40"></string>
+    <string english="Terry Cavanagh" comment="credits" max="20"></string>
+    <string english="and features music by" comment="credits" max="40"></string>
+    <string english="Magnus P~lsson" comment="credits" max="20"></string>
+    <string english="Roomnames are by" comment="credits" max="40"></string>
+    <string english="Bennett Foddy" comment="credits" max="20"></string>
+    <string english="C++ version by" comment="credits" max="40"></string>
+    <string english="Simon Roth" comment="credits" max="20"></string>
+    <string english="Ethan Lee" comment="credits" max="20"></string>
+    <string english="Beta Testing by" comment="credits" max="40"></string>
+    <string english="Sam Kaplan" comment="credits" max="20"></string>
+    <string english="Pauli Kohberger" comment="credits" max="20"></string>
+    <string english="Ending Picture by" comment="credits" max="40"></string>
+    <string english="VVVVVV is supported by the following patrons" comment="credits, wrapped"></string>
+    <string english="and also by" comment="credits, wrapped, VVVVVV is also supported by the following people"></string>
+    <string english="With contributions on GitHub from" comment="credits, wrapped"></string>
+    <string english="and thanks also to:" comment="credits, and thanks also to ... you!"></string>
+    <string english="You!" comment="credits, and thanks also to ... you!"></string>
+    <string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." comment="credits, wrapped"></string>
+    <string english="Thank you!" comment="credits, wrapped"></string>
+    <string english="Are you sure you want to enable invincibility?" comment="wrapped"></string>
+    <string english="Game Speed" comment="title" max="20"></string>
+    <string english="Select a new game speed below." comment="wrapped"></string>
+    <string english="Game speed is normal." comment="wrapped"></string>
+    <string english="Game speed is at 80%" comment="wrapped"></string>
+    <string english="Game speed is at 60%" comment="wrapped"></string>
+    <string english="Game speed is at 40%" comment="wrapped"></string>
+    <string english="Are you sure? This will delete your current saves..." comment="wrapped"></string>
+    <string english="Are you sure you want to delete all your saved data?" comment="wrapped"></string>
+    <string english="Good luck!" comment="wrapped"></string>
+    <string english="You cannot save in this mode." comment="wrapped"></string>
+    <string english="Would you like to disable the cutscenes during the game?" comment="wrapped"></string>
+    <string english="Flip is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32">Flip is gebonden aan: </string>
+    <string english="Enter is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32"></string>
+    <string english="Menu is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32"></string>
     <string english="" comment=""></string>
     <string english="" comment=""></string>
     <string english="" comment=""></string>
