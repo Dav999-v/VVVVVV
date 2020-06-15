@@ -196,10 +196,7 @@ namespace loc
 			{
 				return "V";
 			}
-			else
-			{
-				return "X";
-			}
+			return "X";
 		}
 
 		if (lang == "en" || translation.count(eng) == 0)
