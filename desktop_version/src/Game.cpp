@@ -697,7 +697,7 @@ void Game::savecustomlevelstats()
 
 void Game::updatestate()
 {
-    int i;
+    int i, j;
     statedelay--;
     if(statedelay<=0){
         statedelay=0;
@@ -5926,7 +5926,7 @@ void Game::savetele()
 {
     //TODO make this code a bit cleaner.
 
-    if (map.custommode)
+    if (map.custommode || inspecial())
     {
         //Don't trash save data!
         return;
@@ -6122,7 +6122,7 @@ void Game::savetele()
 
 void Game::savequick()
 {
-    if (map.custommode)
+    if (map.custommode || inspecial())
     {
         //Don't trash save data!
         return;
@@ -6838,7 +6838,7 @@ std::string Game::resulttimestring()
 {
     //given result time in seconds:
     std::string tempstring = "";
-    if (timetrialresulttime > 60)
+    if (timetrialresulttime >= 60)
     {
         tempstring = help.twodigits(int((timetrialresulttime - (timetrialresulttime % 60)) / 60)) + ":"
                      + help.twodigits(timetrialresulttime % 60);
