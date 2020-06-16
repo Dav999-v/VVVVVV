@@ -2028,10 +2028,10 @@ void maprender()
     case 1:
         if (game.insecretlab)
         {
-            graphics.map_tab(0, loc::gettext("MAP"))
-            graphics.map_tab(1, loc::gettext("GRAV"), true)
-            graphics.map_tab(2, loc::gettext("STATS"))
-            graphics.map_tab(3, loc::gettext("SAVE"))
+            graphics.map_tab(0, loc::gettext("MAP"));
+            graphics.map_tab(1, loc::gettext("GRAV"), true);
+            graphics.map_tab(2, loc::gettext("STATS"));
+            graphics.map_tab(3, loc::gettext("SAVE"));
 
             if (graphics.flipmode)
             {
@@ -2102,19 +2102,19 @@ void maprender()
         }
         else if (obj.flags[67] && !map.custommode)
         {
-            graphics.map_tab(0, loc::gettext("MAP"))
-            graphics.map_tab(1, loc::gettext("SHIP"), true)
-            graphics.map_tab(2, loc::gettext("STATS"))
-            graphics.map_tab(3, loc::gettext("SAVE"))
+            graphics.map_tab(0, loc::gettext("MAP"));
+            graphics.map_tab(1, loc::gettext("SHIP"), true);
+            graphics.map_tab(2, loc::gettext("STATS"));
+            graphics.map_tab(3, loc::gettext("SAVE"));
 
             graphics.PrintWrap(0, 105, loc::gettext("Press ACTION to warp to the ship."), 196, 196, 255 - help.glow, true);
         }
 #if !defined(NO_CUSTOM_LEVELS)
         else if(map.custommode){
-            graphics.map_tab(0, loc::gettext("MAP"))
-            graphics.map_tab(1, loc::gettext("CREW"), true)
-            graphics.map_tab(2, loc::gettext("STATS"))
-            graphics.map_tab(3, loc::gettext("SAVE"))
+            graphics.map_tab(0, loc::gettext("MAP"));
+            graphics.map_tab(1, loc::gettext("CREW"), true);
+            graphics.map_tab(2, loc::gettext("STATS"));
+            graphics.map_tab(3, loc::gettext("SAVE"));
 
             if (graphics.flipmode)
             {
@@ -2150,10 +2150,10 @@ void maprender()
 #endif
         else
         {
-            graphics.map_tab(0, loc::gettext("MAP"))
-            graphics.map_tab(1, loc::gettext("CREW"), true)
-            graphics.map_tab(2, loc::gettext("STATS"))
-            graphics.map_tab(3, loc::gettext("SAVE"))
+            graphics.map_tab(0, loc::gettext("MAP"));
+            graphics.map_tab(1, loc::gettext("CREW"), true);
+            graphics.map_tab(2, loc::gettext("STATS"));
+            graphics.map_tab(3, loc::gettext("SAVE"));
 
             if (graphics.flipmode)
             {
@@ -2216,21 +2216,21 @@ void maprender()
         }
         break;
     case 2:
-        graphics.map_tab(0, loc::gettext("MAP"))
+        graphics.map_tab(0, loc::gettext("MAP"));
         if (game.insecretlab)
         {
-            graphics.map_tab(1, loc::gettext("GRAV"))
+            graphics.map_tab(1, loc::gettext("GRAV"));
         }
         else if (obj.flags[67] && !map.custommode)
         {
-            graphics.map_tab(1, loc::gettext("SHIP"))
+            graphics.map_tab(1, loc::gettext("SHIP"));
         }
         else
         {
-            graphics.map_tab(1, loc::gettext("CREW"))
+            graphics.map_tab(1, loc::gettext("CREW"));
         }
-        graphics.map_tab(2, loc::gettext("STATS"), true)
-        graphics.map_tab(3, loc::gettext("SAVE"))
+        graphics.map_tab(2, loc::gettext("STATS"), true);
+        graphics.map_tab(3, loc::gettext("SAVE"));
 
 #if !defined(NO_CUSTOM_LEVELS)
         if(map.custommode)
@@ -2286,21 +2286,21 @@ void maprender()
         }
         break;
     case 3:
-        graphics.map_tab(0, loc::gettext("MAP"))
+        graphics.map_tab(0, loc::gettext("MAP"));
         if (game.insecretlab)
         {
-            graphics.map_tab(1, loc::gettext("GRAV"))
+            graphics.map_tab(1, loc::gettext("GRAV"));
         }
         else if (obj.flags[67] && !map.custommode)
         {
-            graphics.map_tab(1, loc::gettext("SHIP"))
+            graphics.map_tab(1, loc::gettext("SHIP"));
         }
         else
         {
-            graphics.map_tab(1, loc::gettext("CREW"))
+            graphics.map_tab(1, loc::gettext("CREW"));
         }
-        graphics.map_tab(2, loc::gettext("STATS"))
-        graphics.map_tab(3, loc::gettext("SAVE"), true)
+        graphics.map_tab(2, loc::gettext("STATS"));
+        graphics.map_tab(3, loc::gettext("SAVE"), true);
 
         if (game.inintermission)
         {
