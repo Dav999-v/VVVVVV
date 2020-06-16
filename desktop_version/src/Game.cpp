@@ -7368,7 +7368,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
     case Menu::unlocknodeathmode:
     case Menu::unlockintermission:
     case Menu::unlockflipmode:
-        option(loc::gettext("continue"));
+        option(loc::gettext("proceed"));
         menuxoff = 20;
         menuyoff = 70;
         break;

@@ -6,13 +6,13 @@
     <string english="Press N to mute music only" comment="pause screen" max="40">Druk op N om alleen muziek te dempen</string>
     <string english="MAKE AND PLAY EDITION" comment="">MAKE AND PLAY-EDITIE</string>
     <string english="[MMMMMM Mod Installed]" comment="" max="32">[MMMMMM-mod geïnstalleerd]</string>
-    <string english="start game" comment="main menu option"></string>
-    <string english="player levels" comment="main menu option"></string>
-    <string english="graphic options" comment="main menu option"></string>
-    <string english="game options" comment="main menu option"></string>
-    <string english="view credits" comment="main menu option"></string>
-    <string english="quit game" comment="main menu option"></string>
-    <string english="continue" comment="menu option"></string>
+    <string english="start game" comment="main menu option">spel starten</string>
+    <string english="player levels" comment="main menu option">spelerlevels</string>
+    <string english="graphic options" comment="main menu option">grafische opties</string>
+    <string english="game options" comment="main menu option">spelopties</string>
+    <string english="view credits" comment="main menu option">credits</string>
+    <string english="quit game" comment="main menu option">spel afsluiten</string>
+    <string english="continue" comment="menu option">hervatten</string>
     <string english="continue from teleporter" comment="menu option"></string>
     <string english="continue from quicksave" comment="menu option"></string>
     <string english="new game" comment="menu option"></string>
@@ -232,7 +232,7 @@
     <string english="level editor" comment="menu option"></string>
     <string english="open level folder" comment="menu option"></string>
     <string english="return" comment="menu option"></string>
-    <string english="return to play menu" comment="menu option"></string>
+    <string english="return to play menu" comment="menu option" max="36"></string>
     <string english="ok" comment="button"></string>
     <string english="next page" comment="menu option"></string>
     <string english="previous page" comment="menu option"></string>

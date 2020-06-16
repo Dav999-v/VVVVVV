@@ -15,6 +15,7 @@
 	<string english="continue" comment="menu option"></string>
 	<string english="continue from teleporter" comment="menu option"></string>
 	<string english="continue from quicksave" comment="menu option"></string>
+	<string english="proceed" comment="menu option"></string>
 	<string english="new game" comment="menu option"></string>
 	<string english="start new game" comment="menu option, extra confirmation"></string>
 	<string english="secret lab" comment="menu option"></string>
@@ -232,7 +233,7 @@
 	<string english="level editor" comment="menu option"></string>
 	<string english="open level folder" comment="menu option"></string>
 	<string english="return" comment="menu option"></string>
-	<string english="return to play menu" comment="menu option"></string>
+	<string english="return to play menu" comment="menu option" max="36"></string>
 	<string english="ok" comment="button"></string>
 	<string english="next page" comment="menu option"></string>
 	<string english="previous page" comment="menu option"></string>
