@@ -13,8 +13,10 @@
 	<string english="view credits" comment="main menu option"></string>
 	<string english="quit game" comment="main menu option"></string>
 	<string english="continue" comment="menu option"></string>
-	<string english="continue from teleporter" comment="menu option"></string>
-	<string english="continue from quicksave" comment="menu option"></string>
+	<string english="continue from teleporter" comment="menu option, game save that was made at a teleporter"></string>
+	<string english="Tele Save" comment="title, game save that was made at a teleporter" max="20"></string>
+	<string english="continue from quicksave" comment="menu option, game save that was made freely from the menu (at any checkpoint)"></string>
+	<string english="Quick Save" comment="title, game save that was made freely from the menu (at any checkpoint)" max="20"></string>
 	<string english="proceed" comment="menu option"></string>
 	<string english="new game" comment="menu option"></string>
 	<string english="start new game" comment="menu option, extra confirmation"></string>
@@ -27,14 +29,8 @@
 	<string english="Unlock Play Modes" comment="title" max="20"></string>
 	<string english="Unlock parts of the game normally unlocked as you progress" comment="wrapped"></string>
 	<string english="From here, you may unlock parts of the game that are normally unlocked as you play." comment="wrapped"></string>
-	<string english="unlock intermissions" comment="menu option"></string>
-	<string english="unlock no death mode" comment="menu option"></string>
-	<string english="unlock flip mode" comment="menu option"></string>
 	<string english="unlock ship jukebox" comment="menu option"></string>
 	<string english="unlock secret lab" comment="menu option"></string>
-	<string english="unlock time trials" comment="menu option"></string>
-	<string english="Unlock Time Trials" comment="title" max="20"></string>
-	<string english="You can unlock each time trial separately." comment="wrapped"></string>
 	<string english="game pad options" comment="menu option"></string>
 	<string english="Game Pad Options" comment="title" max="20"></string>
 	<string english="Game Pad" comment="title" max="20"></string>
@@ -181,24 +177,28 @@
 	<string english="Time Trials" comment="title" max="20"></string>
 	<string english="Replay any level in the game in a competitive time trial mode." comment="wrapped"></string>
 	<string english="Time Trials are not available with slowdown or invincibility." comment="wrapped"></string>
+	<string english="unlock time trials" comment="menu option"></string>
+	<string english="Unlock Time Trials" comment="title" max="20"></string>
+	<string english="You can unlock each time trial separately." comment="wrapped"></string>
 	<string english="intermissions" comment="menu option"></string>
 	<string english="Intermissions" comment="title" max="20"></string>
 	<string english="Replay the intermission levels." comment="wrapped"></string>
+	<string english="unlock intermissions" comment="menu option"></string>
 	<string english="TO UNLOCK: Complete the intermission levels in-game." comment="wrapped"></string>
 	<string english="no death mode" comment="menu option"></string>
 	<string english="No Death Mode" comment="title" max="20"></string>
 	<string english="Play the entire game without dying once." comment="wrapped"></string>
 	<string english="No Death Mode is not available with slowdown or invincibility." comment="wrapped"></string>
+	<string english="unlock no death mode" comment="menu option"></string>
 	<string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." comment="wrapped, ranks are B A S V"></string>
 	<string english="flip mode" comment="menu option"></string>
 	<string english="Flip Mode" comment="title" max="20"></string>
 	<string english="Flip the entire game vertically. Compatible with other game modes." comment="wrapped"></string>
+	<string english="unlock flip mode" comment="menu option"></string>
 	<string english="Currently ENABLED!" comment="wrapped, flip mode"></string>
 	<string english="Currently Disabled." comment="wrapped, flip mode"></string>
 	<string english="TO UNLOCK: Complete the game." comment="wrapped"></string>
 	<string english="Are you sure you want to quit?" comment="wrapped, quit the program"></string>
-	<string english="Tele Save" comment="title, game save that was made at a teleporter" max="20"></string>
-	<string english="Quick Save" comment="title, game save that was made freely (at any checkpoint)" max="20"></string>
 	<string english="GAME OVER" comment="bigger title" max="13"></string>
 	<string english="You managed to reach:" comment="you managed to reach the following room" max="40"></string>
 	<string english="Keep trying! You'll get there!" comment="wrapped, player died before managing to save anybody"></string>
@@ -210,6 +210,9 @@
 	<string english="WOW" comment="even bigger title" max="10"></string>
 	<string english="You rescued all the crewmates!" comment="" max="40"></string>
 	<string english="A new trophy has been awarded and placed in the secret lab to acknowledge your achievement!" comment="wrapped"></string>
+	<string english="[Trinkets found]" comment="amount of shiny trinkets found" max="40"></string>
+	<string english="[Number of Deaths]" comment="" max="40"></string>
+	<string english="[Time Taken]" comment="stopwatch time" max="40"></string>
 	<string english="Results" comment="bigger title" max="13"></string>
 	<string english="TIME TAKEN:" comment="time the player took playing the level" max="32"></string>
 	<string english="NUMBER OF DEATHS:" comment="amount of times the player died" max="32"></string>
@@ -242,11 +245,11 @@
 	<string english="continue from save" comment="menu option"></string>
 	<string english="start from beginning" comment="menu option"></string>
 	<string english="back to levels" comment="menu option"></string>
-	<string english="To install new player levels, copy the .vvvvvv files to this folder:" comment=""></string>
+	<string english="To install new player levels, copy the .vvvvvv files to this folder:" comment="wrapped"></string>
 	<string english="[ Press ACTION to Start ]" comment="wrapped, title screen"></string>
 	<string english="ACTION = Space, Z, or V" comment="wrapped, title screen"></string>
 	<string english="[Press ENTER to return to editor]" comment="`to editor` is sorta redundant" max="40"></string>
-	<string english="- Press ACTION to advance text -" comment="" max="40"></string>
+	<string english="- Press ACTION to advance text -" comment="to dismiss a textbox" max="40"></string>
 	<string english="- Press ENTER to Teleport -" comment="" max="40"></string>
 	<string english="Current Time" comment="super gravitron, stopwatch time" max="20"></string>
 	<string english="Best Time" comment="super gravitron, best stopwatch time" max="20"></string>
@@ -277,11 +280,8 @@
 	<string english="[ QUIT ]" comment="in-game menu" max="40"></string>
 	<string english="[ GRAVITRON ]" comment="in-game menu" max="40"></string>
 	<string english="NO SIGNAL" comment=""></string>
-	<string english="Press ACTION to warp to the ship." comment="wrapped, spaceship"></string>
+	<string english="Press ACTION to warp to the ship." comment="wrapped, spaceship. Warp = teleport"></string>
 	<string english="Missing..." comment="" max="15"></string>
-	<string english="[Trinkets found]" comment="amount of shiny trinkets found" max="40"></string>
-	<string english="[Number of Deaths]" comment="" max="40"></string>
-	<string english="[Time Taken]" comment="stopwatch time" max="40"></string>
 	<string english="Cannot Save in Level Replay" comment="wrapped"></string>
 	<string english="Cannot Save in No Death Mode" comment="wrapped"></string>
 	<string english="Cannot Save in Time Trial" comment="wrapped"></string>
@@ -300,7 +300,7 @@
 	<string english="[ YES, QUIT TO MENU ]" comment="" max="28"></string>
 	<string english="yes, return" comment="" max="24"></string>
 	<string english="[ YES, RETURN ]" comment="" max="28"></string>
-	<string english="yes, quit" comment=""></string>
+	<string english="yes, quit" comment="quit program"></string>
 	<string english="Press Left/Right to choose a Teleporter" comment="tight fit, so maybe `Left/Right: choose teleporter`" max="40"></string>
 	<string english="Press ENTER to Teleport" comment="" max="40"></string>
 	<string english="edit scripts" comment="level editor menu option"></string>
@@ -308,7 +308,7 @@
 	<string english="editor ghosts" comment="level editor menu option"></string>
 	<string english="load level" comment="level editor menu option"></string>
 	<string english="save level" comment="level editor menu option"></string>
-	<string english="quit to main menu" comment="level editor menu option" max="18"></string>
+	<string english="quit to main menu" comment="level editor menu option" max="19"></string>
 	<string english="change name" comment="level editor menu option"></string>
 	<string english="change author" comment="level editor menu option"></string>
 	<string english="change description" comment="level editor menu option"></string>
