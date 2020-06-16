@@ -1777,21 +1777,21 @@ void maprender()
     switch(game.menupage)
     {
     case 0:
-        graphics.Print(30 - 8, 220, "[MAP]", 196, 196, 255 - help.glow);
+        graphics.map_tab(0, loc::gettext("MAP"), true);
         if (game.insecretlab)
         {
-            graphics.Print(103, 220, "GRAV", 64, 64, 64);
+            graphics.map_tab(1, loc::gettext("GRAV"));
         }
         else if (obj.flags[67] && !map.custommode)
         {
-            graphics.Print(103, 220, "SHIP", 64,64,64);
+            graphics.map_tab(1, loc::gettext("SHIP"));
         }
         else
         {
-            graphics.Print(103, 220, "CREW", 64,64,64);
+            graphics.map_tab(1, loc::gettext("CREW"));
         }
-        graphics.Print(185-4, 220, "STATS", 64,64,64);
-        graphics.Print(258, 220, "SAVE", 64,64,64);
+        graphics.map_tab(2, loc::gettext("STATS"));
+        graphics.map_tab(3, loc::gettext("SAVE"));
 
         if (map.finalmode || (map.custommode&&!map.customshowmm))
         {
@@ -1805,7 +1805,7 @@ void maprender()
                     graphics.drawimage(2, 40 + (i * 12), 21 + (j * 9), false);
                 }
             }
-            graphics.Print(-1, 105, "NO SIGNAL", 245, 245, 245, true);
+            graphics.Print(-1, 105, loc::gettext("NO SIGNAL"), 245, 245, 245, true);
         }
         else if(map.custommode)
         {
@@ -2028,47 +2028,47 @@ void maprender()
     case 1:
         if (game.insecretlab)
         {
-            graphics.Print(30, 220, "MAP", 64,64,64);
-            graphics.Print(103-8, 220, "[GRAV]", 196, 196, 255 - help.glow);
-            graphics.Print(185-4, 220, "STATS", 64,64,64);
-            graphics.Print(258, 220, "SAVE", 64, 64, 64);
+            graphics.map_tab(0, loc::gettext("MAP"))
+            graphics.map_tab(1, loc::gettext("GRAV"), true)
+            graphics.map_tab(2, loc::gettext("STATS"))
+            graphics.map_tab(3, loc::gettext("SAVE"))
 
             if (graphics.flipmode)
             {
-                graphics.Print(0, 174, "SUPER GRAVITRON HIGHSCORE", 196, 196, 255 - help.glow, true);
+                graphics.PrintWrap(0, 174, loc::gettext("SUPER GRAVITRON HIGHSCORE"), 196, 196, 255 - help.glow, true);
 
                 std::string tempstring = help.timestring(game.swnrecord);
-                graphics.Print( 240, 124, "Best Time", 196, 196, 255 - help.glow, true);
+                graphics.Print( 240, 124, loc::gettext("Best Time"), 196, 196, 255 - help.glow, true);
                 graphics.bigrprint( 300, 94, tempstring, 196, 196, 255 - help.glow, true, 2);
 
                 switch(game.swnbestrank)
                 {
                 case 0:
-                    graphics.Print( -1, 40, "Next Trophy at 5 seconds", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 40, loc::gettext("Next Trophy at 5 seconds"), 196, 196, 255 - help.glow, true);
                     break;
                 case 1:
-                    graphics.Print( -1, 40, "Next Trophy at 10 seconds", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 40, loc::gettext("Next Trophy at 10 seconds"), 196, 196, 255 - help.glow, true);
                     break;
                 case 2:
-                    graphics.Print( -1, 40, "Next Trophy at 15 seconds", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 40, loc::gettext("Next Trophy at 15 seconds"), 196, 196, 255 - help.glow, true);
                     break;
                 case 3:
-                    graphics.Print( -1, 40, "Next Trophy at 20 seconds", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 40, loc::gettext("Next Trophy at 20 seconds"), 196, 196, 255 - help.glow, true);
                     break;
                 case 4:
-                    graphics.Print( -1, 40, "Next Trophy at 30 seconds", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 40, loc::gettext("Next Trophy at 30 seconds"), 196, 196, 255 - help.glow, true);
                     break;
                 case 5:
-                    graphics.Print( -1, 40, "Next Trophy at 1 minute", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 40, loc::gettext("Next Trophy at 1 minute"), 196, 196, 255 - help.glow, true);
                     break;
                 case 6:
-                    graphics.Print( -1, 40, "All Trophies collected!", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 40, loc::gettext("All Trophies collected!"), 196, 196, 255 - help.glow, true);
                     break;
                 }
             }
             else
             {
-                graphics.Print(0, 40, "SUPER GRAVITRON HIGHSCORE", 196, 196, 255 - help.glow, true);
+                graphics.PrintWrap(0, 40, loc::gettext("SUPER GRAVITRON HIGHSCORE"), 196, 196, 255 - help.glow, true);
 
                 std::string tempstring = help.timestring(game.swnrecord);
                 graphics.Print( 240, 90, "Best Time", 196, 196, 255 - help.glow, true);
@@ -2077,55 +2077,55 @@ void maprender()
                 switch(game.swnbestrank)
                 {
                 case 0:
-                    graphics.Print( -1, 174, "Next Trophy at 5 seconds", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 174, loc::gettext("Next Trophy at 5 seconds"), 196, 196, 255 - help.glow, true);
                     break;
                 case 1:
-                    graphics.Print( -1, 174, "Next Trophy at 10 seconds", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 174, loc::gettext("Next Trophy at 10 seconds"), 196, 196, 255 - help.glow, true);
                     break;
                 case 2:
-                    graphics.Print( -1, 174, "Next Trophy at 15 seconds", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 174, loc::gettext("Next Trophy at 15 seconds"), 196, 196, 255 - help.glow, true);
                     break;
                 case 3:
-                    graphics.Print( -1, 174, "Next Trophy at 20 seconds", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 174, loc::gettext("Next Trophy at 20 seconds"), 196, 196, 255 - help.glow, true);
                     break;
                 case 4:
-                    graphics.Print( -1, 174, "Next Trophy at 30 seconds", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 174, loc::gettext("Next Trophy at 30 seconds"), 196, 196, 255 - help.glow, true);
                     break;
                 case 5:
-                    graphics.Print( -1, 174, "Next Trophy at 1 minute", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 174, loc::gettext("Next Trophy at 1 minute"), 196, 196, 255 - help.glow, true);
                     break;
                 case 6:
-                    graphics.Print( -1, 174, "All Trophies collected!", 196, 196, 255 - help.glow, true);
+                    graphics.PrintWrap( -1, 174, loc::gettext("All Trophies collected!"), 196, 196, 255 - help.glow, true);
                     break;
                 }
             }
         }
         else if (obj.flags[67] && !map.custommode)
         {
-            graphics.Print(30, 220, "MAP", 64,64,64);
-            graphics.Print(103-8, 220, "[SHIP]", 196, 196, 255 - help.glow);
-            graphics.Print(185-4, 220, "STATS", 64,64,64);
-            graphics.Print(258, 220, "SAVE", 64, 64, 64);
+            graphics.map_tab(0, loc::gettext("MAP"))
+            graphics.map_tab(1, loc::gettext("SHIP"), true)
+            graphics.map_tab(2, loc::gettext("STATS"))
+            graphics.map_tab(3, loc::gettext("SAVE"))
 
-            graphics.Print(0, 105, "Press ACTION to warp to the ship.", 196, 196, 255 - help.glow, true);
+            graphics.PrintWrap(0, 105, loc::gettext("Press ACTION to warp to the ship."), 196, 196, 255 - help.glow, true);
         }
 #if !defined(NO_CUSTOM_LEVELS)
         else if(map.custommode){
-            graphics.Print(30, 220, "MAP", 64,64,64);
-            graphics.Print(103-8, 220, "[CREW]", 196, 196, 255 - help.glow);
-            graphics.Print(185-4, 220, "STATS", 64,64,64);
-            graphics.Print(258, 220, "SAVE", 64, 64, 64);
+            graphics.map_tab(0, loc::gettext("MAP"))
+            graphics.map_tab(1, loc::gettext("CREW"), true)
+            graphics.map_tab(2, loc::gettext("STATS"))
+            graphics.map_tab(3, loc::gettext("SAVE"))
 
             if (graphics.flipmode)
             {
                 graphics.bigprint( -1, 220-45, ed.ListOfMetaData[game.playcustomlevel].title, 196, 196, 255 - help.glow, true);
-                graphics.Print( -1, 220-70, "by " + ed.ListOfMetaData[game.playcustomlevel].creator, 196, 196, 255 - help.glow, true);
+                graphics.Print( -1, 220-70, "by " + ed.ListOfMetaData[game.playcustomlevel].creator, 196, 196, 255 - help.glow, true); // TODO LOC repeat that thing from above
                 graphics.Print( -1, 220-80, ed.ListOfMetaData[game.playcustomlevel].website, 196, 196, 255 - help.glow, true);
                 graphics.Print( -1, 220-100, ed.ListOfMetaData[game.playcustomlevel].Desc1, 196, 196, 255 - help.glow, true);
                 graphics.Print( -1, 220-110, ed.ListOfMetaData[game.playcustomlevel].Desc2, 196, 196, 255 - help.glow, true);
                 graphics.Print( -1, 220-120, ed.ListOfMetaData[game.playcustomlevel].Desc3, 196, 196, 255 - help.glow, true);
 
-                if(ed.numcrewmates()-game.crewmates()==1){
+                if(ed.numcrewmates()-game.crewmates()==1){ // TODO LOC
                     graphics.Print(1,220-165, help.number(ed.numcrewmates()-game.crewmates())+ " crewmate remains", 196, 196, 255 - help.glow, true);
                 }else if(ed.numcrewmates()-game.crewmates()>0){
                     graphics.Print(1,220-165, help.number(ed.numcrewmates()-game.crewmates())+ " crewmates remain", 196, 196, 255 - help.glow, true);
@@ -2134,13 +2134,13 @@ void maprender()
             else
             {
                 graphics.bigprint( -1, 45, ed.ListOfMetaData[game.playcustomlevel].title, 196, 196, 255 - help.glow, true);
-                graphics.Print( -1, 70, "by " + ed.ListOfMetaData[game.playcustomlevel].creator, 196, 196, 255 - help.glow, true);
+                graphics.Print( -1, 70, "by " + ed.ListOfMetaData[game.playcustomlevel].creator, 196, 196, 255 - help.glow, true); // TODO LOC :D
                 graphics.Print( -1, 80, ed.ListOfMetaData[game.playcustomlevel].website, 196, 196, 255 - help.glow, true);
                 graphics.Print( -1, 100, ed.ListOfMetaData[game.playcustomlevel].Desc1, 196, 196, 255 - help.glow, true);
                 graphics.Print( -1, 110, ed.ListOfMetaData[game.playcustomlevel].Desc2, 196, 196, 255 - help.glow, true);
                 graphics.Print( -1, 120, ed.ListOfMetaData[game.playcustomlevel].Desc3, 196, 196, 255 - help.glow, true);
 
-                if(ed.numcrewmates()-game.crewmates()==1){
+                if(ed.numcrewmates()-game.crewmates()==1){ // TODO LOC :D
                     graphics.Print(1,165, help.number(ed.numcrewmates()-game.crewmates())+ " crewmate remains", 196, 196, 255 - help.glow, true);
                 }else if(ed.numcrewmates()-game.crewmates()>0){
                     graphics.Print(1,165, help.number(ed.numcrewmates()-game.crewmates())+ " crewmates remain", 196, 196, 255 - help.glow, true);
@@ -2150,10 +2150,10 @@ void maprender()
 #endif
         else
         {
-            graphics.Print(30, 220, "MAP", 64,64,64);
-            graphics.Print(103-8, 220, "[CREW]", 196, 196, 255 - help.glow);
-            graphics.Print(185-4, 220, "STATS", 64,64,64);
-            graphics.Print(258, 220, "SAVE", 64, 64, 64);
+            graphics.map_tab(0, loc::gettext("MAP"))
+            graphics.map_tab(1, loc::gettext("CREW"), true)
+            graphics.map_tab(2, loc::gettext("STATS"))
+            graphics.map_tab(3, loc::gettext("SAVE"))
 
             if (graphics.flipmode)
             {
@@ -2168,7 +2168,7 @@ void maprender()
                     else
                     {
                         graphics.printcrewnamedark(44, 32 + (i * 64)+4+10, 2-i);
-                        graphics.Print(44, 32 + (i * 64) + 4, "Missing...", 64,64,64);
+                        graphics.Print(44, 32 + (i * 64) + 4, loc::gettext("Missing..."), 64,64,64);
                     }
 
                     graphics.drawcrewman(16+160, 32 + (i * 64), (2-i)+3, game.crewstats[(2-i)+3]);
@@ -2180,7 +2180,7 @@ void maprender()
                     else
                     {
                         graphics.printcrewnamedark(44+160, 32 + (i * 64)+4+10, (2-i)+3);
-                        graphics.Print(44+160, 32 + (i * 64) + 4, "Missing...", 64,64,64);
+                        graphics.Print(44+160, 32 + (i * 64) + 4, loc::gettext("Missing..."), 64,64,64);
                     }
                 }
             }
@@ -2197,7 +2197,7 @@ void maprender()
                     else
                     {
                         graphics.printcrewnamedark(44, 32 + (i * 64)+4, i);
-                        graphics.Print(44, 32 + (i * 64) + 4 + 10, "Missing...", 64,64,64);
+                        graphics.Print(44, 32 + (i * 64) + 4 + 10, loc::gettext("Missing..."), 64,64,64);
                     }
 
                     graphics.drawcrewman(16+160, 32 + (i * 64), i+3, game.crewstats[i+3]);
@@ -2209,52 +2209,52 @@ void maprender()
                     else
                     {
                         graphics.printcrewnamedark(44+160, 32 + (i * 64)+4, i+3);
-                        graphics.Print(44+160, 32 + (i * 64) + 4 + 10, "Missing...", 64,64,64);
+                        graphics.Print(44+160, 32 + (i * 64) + 4 + 10, loc::gettext("Missing..."), 64,64,64);
                     }
                 }
             }
         }
         break;
     case 2:
-        graphics.Print(30, 220, "MAP", 64,64,64);
+        graphics.map_tab(0, loc::gettext("MAP"))
         if (game.insecretlab)
         {
-            graphics.Print(103, 220, "GRAV", 64, 64, 64);
+            graphics.map_tab(1, loc::gettext("GRAV"))
         }
         else if (obj.flags[67] && !map.custommode)
         {
-            graphics.Print(103, 220, "SHIP", 64,64,64);
+            graphics.map_tab(1, loc::gettext("SHIP"))
         }
         else
         {
-            graphics.Print(103, 220, "CREW", 64,64,64);
+            graphics.map_tab(1, loc::gettext("CREW"))
         }
-        graphics.Print(185-12, 220, "[STATS]", 196, 196, 255 - help.glow);
-        graphics.Print(258, 220, "SAVE", 64, 64, 64);
+        graphics.map_tab(2, loc::gettext("STATS"), true)
+        graphics.map_tab(3, loc::gettext("SAVE"))
 
 #if !defined(NO_CUSTOM_LEVELS)
         if(map.custommode)
         {
           if (graphics.flipmode)
           {
-              graphics.Print(0, 164, "[Trinkets found]", 196, 196, 255 - help.glow, true);
+              graphics.Print(0, 164, loc::gettext("[Trinkets found]"), 196, 196, 255 - help.glow, true);
               graphics.Print(0, 152, help.number(game.trinkets()) + " out of " + help.number(ed.numtrinkets()), 96,96,96, true);
 
-              graphics.Print(0, 114, "[Number of Deaths]", 196, 196, 255 - help.glow, true);
+              graphics.Print(0, 114, loc::gettext("[Number of Deaths]"), 196, 196, 255 - help.glow, true);
               graphics.Print(0, 102,help.String(game.deathcounts),  96,96,96, true);
 
-              graphics.Print(0, 64, "[Time Taken]", 196, 196, 255 - help.glow, true);
+              graphics.Print(0, 64, loc::gettext("[Time Taken]"), 196, 196, 255 - help.glow, true);
               graphics.Print(0, 52, game.timestring(),  96, 96, 96, true);
           }
           else
           {
-              graphics.Print(0, 52, "[Trinkets found]", 196, 196, 255 - help.glow, true);
+              graphics.Print(0, 52, loc::gettext("[Trinkets found]"), 196, 196, 255 - help.glow, true);
               graphics.Print(0, 64, help.number(game.trinkets()) + " out of "+help.number(ed.numtrinkets()), 96,96,96, true);
 
-              graphics.Print(0, 102, "[Number of Deaths]", 196, 196, 255 - help.glow, true);
+              graphics.Print(0, 102, loc::gettext("[Number of Deaths]"), 196, 196, 255 - help.glow, true);
               graphics.Print(0, 114,help.String(game.deathcounts),  96,96,96, true);
 
-              graphics.Print(0, 152, "[Time Taken]", 196, 196, 255 - help.glow, true);
+              graphics.Print(0, 152, loc::gettext("[Time Taken]"), 196, 196, 255 - help.glow, true);
               graphics.Print(0, 164, game.timestring(),  96, 96, 96, true);
           }
         }
@@ -2263,66 +2263,66 @@ void maprender()
         {
           if (graphics.flipmode)
           {
-              graphics.Print(0, 164, "[Trinkets found]", 196, 196, 255 - help.glow, true);
+              graphics.Print(0, 164, loc::gettext("[Trinkets found]"), 196, 196, 255 - help.glow, true);
               graphics.Print(0, 152, help.number(game.trinkets()) + " out of Twenty", 96,96,96, true);
 
-              graphics.Print(0, 114, "[Number of Deaths]", 196, 196, 255 - help.glow, true);
+              graphics.Print(0, 114, loc::gettext("[Number of Deaths]"), 196, 196, 255 - help.glow, true);
               graphics.Print(0, 102,help.String(game.deathcounts),  96,96,96, true);
 
-              graphics.Print(0, 64, "[Time Taken]", 196, 196, 255 - help.glow, true);
+              graphics.Print(0, 64, loc::gettext("[Time Taken]"), 196, 196, 255 - help.glow, true);
               graphics.Print(0, 52, game.timestring(),  96, 96, 96, true);
           }
           else
           {
-              graphics.Print(0, 52, "[Trinkets found]", 196, 196, 255 - help.glow, true);
+              graphics.Print(0, 52, loc::gettext("[Trinkets found]"), 196, 196, 255 - help.glow, true);
               graphics.Print(0, 64, help.number(game.trinkets()) + " out of Twenty", 96,96,96, true);
 
-              graphics.Print(0, 102, "[Number of Deaths]", 196, 196, 255 - help.glow, true);
+              graphics.Print(0, 102, loc::gettext("[Number of Deaths]"), 196, 196, 255 - help.glow, true);
               graphics.Print(0, 114,help.String(game.deathcounts),  96,96,96, true);
 
-              graphics.Print(0, 152, "[Time Taken]", 196, 196, 255 - help.glow, true);
+              graphics.Print(0, 152, loc::gettext("[Time Taken]"), 196, 196, 255 - help.glow, true);
               graphics.Print(0, 164, game.timestring(),  96, 96, 96, true);
           }
         }
         break;
     case 3:
-        graphics.Print(30, 220, "MAP", 64,64,64);
+        graphics.map_tab(0, loc::gettext("MAP"))
         if (game.insecretlab)
         {
-            graphics.Print(103, 220, "GRAV", 64, 64, 64);
+            graphics.map_tab(1, loc::gettext("GRAV"))
         }
         else if (obj.flags[67] && !map.custommode)
         {
-            graphics.Print(103, 220, "SHIP", 64,64,64);
+            graphics.map_tab(1, loc::gettext("SHIP"))
         }
         else
         {
-            graphics.Print(103, 220, "CREW", 64,64,64);
+            graphics.map_tab(1, loc::gettext("CREW"))
         }
-        graphics.Print(185-4, 220, "STATS", 64,64,64);
-        graphics.Print(258 - 8, 220, "[SAVE]", 196, 196, 255 - help.glow);
+        graphics.map_tab(2, loc::gettext("STATS"))
+        graphics.map_tab(3, loc::gettext("SAVE"), true)
 
         if (game.inintermission)
         {
-            graphics.Print(0, 115, "Cannot Save in Level Replay", 146, 146, 180, true);
+            graphics.PrintWrap(0, 115, loc::gettext("Cannot Save in Level Replay"), 146, 146, 180, true);
         }
         else if (game.nodeathmode)
         {
-            graphics.Print(0, 115, "Cannot Save in No Death Mode", 146, 146, 180, true);
+            graphics.PrintWrap(0, 115, loc::gettext("Cannot Save in No Death Mode"), 146, 146, 180, true);
         }
         else if (game.intimetrial)
         {
-            graphics.Print(0, 115, "Cannot Save in Time Trial", 146, 146, 180, true);
+            graphics.PrintWrap(0, 115, loc::gettext("Cannot Save in Time Trial"), 146, 146, 180, true);
         }
         else if (game.insecretlab)
         {
-            graphics.Print(0, 115, "Cannot Save in Secret Lab", 146, 146, 180, true);
+            graphics.PrintWrap(0, 115, loc::gettext("Cannot Save in Secret Lab"), 146, 146, 180, true);
         }
         else if (map.custommode)
         {
             if (game.gamesaved)
             {
-                graphics.Print(0, 36, "Game saved ok!", 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2), true);
+                graphics.PrintWrap(0, 36, loc::gettext("Game saved ok!"), 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2), true);
 
                 graphics.drawpixeltextbox(25, 65, 270, 90, 34,12, 65, 185, 207,0,4);
 
@@ -2347,12 +2347,12 @@ void maprender()
             }
             else
             {
-                graphics.Print(0, 80, "[Press ACTION to save your game]", 255 - (help.glow * 2), 255 - (help.glow * 2), 255 - help.glow, true);
+                graphics.PrintWrap(0, 80, loc::gettext("[Press ACTION to save your game]"), 255 - (help.glow * 2), 255 - (help.glow * 2), 255 - help.glow, true);
             }
         }
         else
         {
-            if (graphics.flipmode)
+            if (graphics.flipmode) // TODO LOC: flipmode
             {
                 graphics.Print(0, 186, "(Note: The game is autosaved", 146, 146, 180, true);
                 graphics.Print(0, 174, "at every teleporter.)", 146, 146, 180, true);
@@ -2365,7 +2365,7 @@ void maprender()
 
             if (game.gamesaved)
             {
-                graphics.Print(0, 36, "Game saved ok!", 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2), true);
+                graphics.PrintWrap(0, 36, loc::gettext("Game saved ok!"), 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2), true);
 
                 graphics.drawpixeltextbox(25, 65, 270, 90, 34,12, 65, 185, 207,0,4);
 
@@ -2398,18 +2398,18 @@ void maprender()
             }
             else
             {
-                graphics.Print(0, 80, "[Press ACTION to save your game]", 255 - (help.glow * 2), 255 - (help.glow * 2), 255 - help.glow, true);
+                graphics.PrintWrap(0, 80, loc::gettext("[Press ACTION to save your game]"), 255 - (help.glow * 2), 255 - (help.glow * 2), 255 - help.glow, true);
 
                 if (game.quicksummary != "")
                 {
                     if (graphics.flipmode)
                     {
-                        graphics.Print(0, 110, "Last Save:", 164 - (help.glow / 4), 164 - (help.glow / 4), 164, true);
+                        graphics.Print(0, 110, loc::gettext("Last Save:"), 164 - (help.glow / 4), 164 - (help.glow / 4), 164, true);
                         graphics.Print(0, 100, game.quicksummary, 164  - (help.glow / 4), 164 - (help.glow / 4), 164, true);
                     }
                     else
                     {
-                        graphics.Print(0, 100, "Last Save:", 164 - (help.glow / 4), 164 - (help.glow / 4), 164, true);
+                        graphics.Print(0, 100, loc::gettext("Last Save:"), 164 - (help.glow / 4), 164 - (help.glow / 4), 164, true);
                         graphics.Print(0, 110, game.quicksummary, 164  - (help.glow / 4), 164 - (help.glow / 4), 164, true);
                     }
                 }

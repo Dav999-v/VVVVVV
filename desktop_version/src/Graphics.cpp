@@ -253,6 +253,19 @@ void Graphics::MakeSpriteArray()
 }
 
 
+void Graphics::map_tab(int opt, std::string text, bool selected /*= false*/)
+{
+    int x = opt*80 + 40 - len(text)/2;
+    if (selected)
+    {
+        Print(x-8, 220, "[" + text + "]", 196, 196, 255 - help.glow);
+    }
+    else
+    {
+        Print(x, 220, text, 64, 64, 64);
+    }
+}
+
 void Graphics::PrintWrap( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/, int maxw /*= 304*/, int linespacing /*= 10*/ ) {
     size_t startline = 0;
     size_t newline;

@@ -9,8 +9,6 @@
 	<string english="ERROR: No levels found." comment="wrapped"></string>
 	<string english="by %s" comment="%s: author of level"></string>
 	<string english="ERROR: This level has no start point!" comment="wrapped"></string>
-	<string english="Accessibility" comment="title" max="20"></string>
-	<string english="Disable screen effects, enable slowdown modes or invincibility" comment="wrapped"></string>
 	<string english="Unlock Play Modes" comment="title" max="20"></string>
 	<string english="Unlock parts of the game normally unlocked as you progress" comment="wrapped"></string>
 	<string english="From here, you may unlock parts of the game that are normally unlocked as you play." comment="wrapped"></string>
@@ -22,6 +20,8 @@
 	<string english="Change the language" comment="wrapped"></string>
 	<string english="Clear Data" comment="title" max="20"></string>
 	<string english="Delete your save data and unlocked play modes" comment="wrapped"></string>
+	<string english="Are you sure? This will delete your current saves..." comment="wrapped"></string>
+	<string english="Are you sure you want to delete all your saved data?" comment="wrapped"></string>
 	<string english="Soundtrack" comment="title" max="20"></string>
 	<string english="Toggle between MMMMMM and PPPPPP" comment="wrapped"></string>
 	<string english="Current soundtrack: MMMMMM" comment="wrapped"></string>
@@ -65,8 +65,6 @@
 	<string english="You!" comment="credits, and thanks also to ... you!"></string>
 	<string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." comment="credits, wrapped"></string>
 	<string english="Thank you!" comment="credits, wrapped"></string>
-	<string english="Are you sure? This will delete your current saves..." comment="wrapped"></string>
-	<string english="Are you sure you want to delete all your saved data?" comment="wrapped"></string>
 	<string english="Good luck!" comment="wrapped"></string>
 	<string english="You cannot save in this mode." comment="wrapped"></string>
 	<string english="Would you like to disable the cutscenes during the game?" comment="wrapped"></string>
@@ -85,6 +83,8 @@
 	<string english="Test mode" comment="title, translation maintenance menu" max="20"></string>
 	<string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." comment="wrapped, translation maintenance menu"></string>
 	<string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." comment="wrapped, translation maintenance menu"></string>
+	<string english="Accessibility" comment="title" max="20"></string>
+	<string english="Disable screen effects, enable slowdown modes or invincibility" comment="wrapped"></string>
 	<string english="Backgrounds" comment="title" max="20"></string>
 	<string english="Backgrounds are ON." comment="wrapped"></string>
 	<string english="Backgrounds are OFF." comment="wrapped"></string>
@@ -185,31 +185,32 @@
 	<string english="New Trophy!" comment="" max="20"></string>
 	<string english="[Press ENTER to stop]" comment="stop super gravitron" max="40"></string>
 	<string english="SUPER GRAVITRON" comment="" max="20"></string>
+	<string english="SUPER GRAVITRON HIGHSCORE" comment="wrapped"></string>
 	<string english="GO!" comment="3, 2, 1, GO!" max="13"></string>
 	<string english="Go!" comment="3, 2, 1, Go!" max="10"></string>
 	<string english="TIME:" comment="stopwatch time, not too long"></string>
 	<string english="DEATH:" comment="number of times player died, not too long"></string>
 	<string english="SHINY:" comment="number of shiny trinkets collected, not too long"></string>
 	<string english="PAR TIME:" comment="goal time for time trial"></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
+	<string english="MAP" comment="in-game menu" max="8"></string>
+	<string english="GRAV" comment="in-game menu, Gravitron" max="8"></string>
+	<string english="SHIP" comment="in-game menu, spaceship" max="8"></string>
+	<string english="CREW" comment="in-game menu" max="8"></string>
+	<string english="STATS" comment="in-game menu" max="8"></string>
+	<string english="SAVE" comment="in-game menu" max="8"></string>
+	<string english="NO SIGNAL" comment=""></string>
+	<string english="Press ACTION to warp to the ship." comment="wrapped, spaceship"></string>
+	<string english="Missing..." comment="" max="15"></string>
+	<string english="[Trinkets found]" comment="amount of shiny trinkets found" max="40"></string>
+	<string english="[Number of Deaths]" comment="" max="40"></string>
+	<string english="[Time Taken]" comment="stopwatch time" max="40"></string>
+	<string english="Cannot Save in Level Replay" comment="wrapped"></string>
+	<string english="Cannot Save in No Death Mode" comment="wrapped"></string>
+	<string english="Cannot Save in Time Trial" comment="wrapped"></string>
+	<string english="Cannot Save in Secret Lab" comment="wrapped"></string>
+	<string english="Game saved ok!" comment="wrapped"></string>
+	<string english="[Press ACTION to save your game]" comment="wrapped"></string>
+	<string english="Last Save:" comment="" max="40"></string>
 	<string english="" comment=""></string>
 	<string english="" comment=""></string>
 	<string english="" comment=""></string>

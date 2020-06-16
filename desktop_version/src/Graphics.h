@@ -108,6 +108,8 @@ public:
 
 	void printcrewnamedark(int x, int y, int t);
 
+	void map_tab(int opt, std::string text, bool selected = false);
+
 	void PrintWrap(int _x, int _y, std::string _s, int r, int g, int b, bool cen = false, int maxw = 304, int linespacing = 10);
 
 	void Print(int _x, int _y, std::string _s, int r, int g, int b, bool cen = false);

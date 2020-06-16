@@ -13,15 +13,17 @@
     <string english="Disable screen effects, enable slowdown modes or invincibility" comment="wrapped">Schakel schermeffecten uit, schakel vertraging of onkwetsbaarheid in</string>
     <string english="Unlock Play Modes" comment="title" max="20">Ontgrendel spelmodi</string>
     <string english="Unlock parts of the game normally unlocked as you progress" comment="wrapped">Ontgrendel delen van het spel die normaal tijdens je voortgang worden ontgrendeld</string>
-    <string english="From here, you may unlock parts of the game that are normally unlocked as you play." comment="wrapped"></string>
+    <string english="From here, you may unlock parts of the game that are normally unlocked as you play." comment="wrapped">Hier kun je delen van het spel ontgrendelen die normaal tijdens het spelen worden ontgrendeld.</string>
     <string english="Game Pad Options" comment="title" max="20">Gamepad-opties</string>
-    <string english="Game Pad" comment="title" max="20"></string>
+    <string english="Game Pad" comment="title" max="20">Gamepad</string>
     <string english="Rebind your controller&apos;s buttons and adjust sensitivity" comment="wrapped">Wijzig de knoppen van je controller en pas de gevoeligheid aan</string>
-    <string english="Change controller options." comment="wrapped"></string>
+    <string english="Change controller options." comment="wrapped">Wijzig controller-opties.</string>
     <string english="Language" comment="title" max="20">Taal</string>
     <string english="Change the language" comment="wrapped">Wijzig de taal</string>
     <string english="Clear Data" comment="title" max="20">Data wissen</string>
-    <string english="Delete your save data and unlocked play modes" comment="wrapped">Wis je opgeslagen data en ontgrendelde spelmodi</string>
+    <string english="Delete your save data and unlocked play modes" comment="wrapped">Verwijder je opgeslagen data en ontgrendelde spelmodi</string>
+    <string english="Are you sure? This will delete your current saves..." comment="wrapped">Weet je het zeker? Dit zal je huidige opgeslagen data verwijderen...</string>
+    <string english="Are you sure you want to delete all your saved data?" comment="wrapped">Weet je zeker dat je al je opgeslagen data wilt verwijderen?</string>
     <string english="Soundtrack" comment="title" max="20">Soundtrack</string>
     <string english="Toggle between MMMMMM and PPPPPP" comment="wrapped">Schakel tussen MMMMMM en PPPPPP</string>
     <string english="Current soundtrack: MMMMMM" comment="wrapped">Huidige soundtrack: MMMMMM</string>
@@ -45,87 +47,85 @@
     <string english="Show/hide the system mouse cursor." comment="wrapped">Muisaanwijzer weergeven of verbergen.</string>
     <string english="Current mode: SHOW" comment="wrapped, show cursor">Huidige modus: WEERGEGEVEN</string>
     <string english="Current mode: HIDE" comment="wrapped, hide cursor">Huidige modus: VERBORGEN</string>
-    <string english="VVVVVV is a game by" comment="credits" max="40"></string>
-    <string english="Terry Cavanagh" comment="credits" max="20"></string>
-    <string english="and features music by" comment="credits" max="40"></string>
-    <string english="Magnus P~lsson" comment="credits" max="20"></string>
-    <string english="Roomnames are by" comment="credits" max="40"></string>
-    <string english="Bennett Foddy" comment="credits" max="20"></string>
-    <string english="C++ version by" comment="credits" max="40"></string>
-    <string english="Simon Roth" comment="credits" max="20"></string>
-    <string english="Ethan Lee" comment="credits" max="20"></string>
-    <string english="Beta Testing by" comment="credits" max="40"></string>
-    <string english="Sam Kaplan" comment="credits" max="20"></string>
-    <string english="Pauli Kohberger" comment="credits" max="20"></string>
-    <string english="Ending Picture by" comment="credits" max="40"></string>
-    <string english="VVVVVV is supported by the following patrons" comment="credits, wrapped"></string>
-    <string english="and also by" comment="credits, wrapped, VVVVVV is also supported by the following people"></string>
-    <string english="With contributions on GitHub from" comment="credits, wrapped"></string>
-    <string english="and thanks also to:" comment="credits, and thanks also to ... you!"></string>
-    <string english="You!" comment="credits, and thanks also to ... you!"></string>
-    <string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." comment="credits, wrapped"></string>
-    <string english="Thank you!" comment="credits, wrapped"></string>
-    <string english="Are you sure? This will delete your current saves..." comment="wrapped"></string>
-    <string english="Are you sure you want to delete all your saved data?" comment="wrapped"></string>
-    <string english="Good luck!" comment="wrapped"></string>
-    <string english="You cannot save in this mode." comment="wrapped"></string>
-    <string english="Would you like to disable the cutscenes during the game?" comment="wrapped"></string>
+    <string english="VVVVVV is a game by" comment="credits" max="40">VVVVVV is een spel door</string>
+    <string english="Terry Cavanagh" comment="credits" max="20">Terry Cavanagh</string>
+    <string english="and features music by" comment="credits" max="40">en heeft muziek door</string>
+    <string english="Magnus P~lsson" comment="credits" max="20">Magnus P~lsson</string>
+    <string english="Roomnames are by" comment="credits" max="40">Kamernamen door</string>
+    <string english="Bennett Foddy" comment="credits" max="20">Bennett Foddy</string>
+    <string english="C++ version by" comment="credits" max="40">C++-versie door</string>
+    <string english="Simon Roth" comment="credits" max="20">Simon Roth</string>
+    <string english="Ethan Lee" comment="credits" max="20">Ethan Lee</string>
+    <string english="Beta Testing by" comment="credits" max="40">Bètatesting door</string>
+    <string english="Sam Kaplan" comment="credits" max="20">Sam Kaplan</string>
+    <string english="Pauli Kohberger" comment="credits" max="20">Pauli Kohberger</string>
+    <string english="Ending Picture by" comment="credits" max="40">Eindafbeelding door</string>
+    <string english="VVVVVV is supported by the following patrons" comment="credits, wrapped">VVVVVV is ondersteund door de volgende patrons</string>
+    <string english="and also by" comment="credits, wrapped, VVVVVV is also supported by the following people">en ook door</string>
+    <string english="With contributions on GitHub from" comment="credits, wrapped">Met bijdragen op GitHub van</string>
+    <string english="and thanks also to:" comment="credits, and thanks also to ... you!">en ook met dank aan:</string>
+    <string english="You!" comment="credits, and thanks also to ... you!">Jou!</string>
+    <string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." comment="credits, wrapped">Jouw ondersteuning maakt het mogelijk voor mij om de spellen te blijven maken die ik wil maken, nu en in de toekomst.</string>
+    <string english="Thank you!" comment="credits, wrapped">Bedankt!</string>
+    <string english="Good luck!" comment="wrapped">Veel succes!</string>
+    <string english="You cannot save in this mode." comment="wrapped">Je kunt niet opslaan in deze modus.</string>
+    <string english="Would you like to disable the cutscenes during the game?" comment="wrapped">Wil je de cutscenes tijdens het spel uitschakelen?</string>
     <string english="Low" comment="analog stick sensitivity">Laag</string>
     <string english="Medium" comment="analog stick sensitivity">Gemiddeld</string>
     <string english="High" comment="analog stick sensitivity">Hoog</string>
     <string english="Flip is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32">Flip is gebonden aan: </string>
-    <string english="Enter is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32"></string>
-    <string english="Menu is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32"></string>
-    <string english="ERROR: No language files found." comment="wrapped"></string>
-    <string english="This menu is only shown when having a lang folder in your VVVVVV folder." comment="wrapped, the folder is called lang. Translation maintenance menu"></string>
-    <string english="Sync language files" comment="title, translation maintenance menu" max="20"></string>
-    <string english="Merge all new strings from the template files into the translation files, keeping existing translations" comment="wrapped, translation maintenance menu"></string>
-    <string english="Statistics" comment="title, translation maintenance menu" max="20"></string>
-    <string english="Count the amount of untranslated strings for each language" comment="wrapped, translation maintenance menu"></string>
-    <string english="Test mode" comment="title, translation maintenance menu" max="20"></string>
-    <string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." comment="wrapped, translation maintenance menu"></string>
-    <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." comment="wrapped, translation maintenance menu"></string>
-    <string english="Backgrounds" comment="title" max="20"></string>
-    <string english="Backgrounds are ON." comment="wrapped"></string>
-    <string english="Backgrounds are OFF." comment="wrapped"></string>
-    <string english="Screen Effects" comment="title" max="20"></string>
-    <string english="Disables screen shakes and flashes." comment="wrapped"></string>
-    <string english="Screen Effects are ON." comment="wrapped"></string>
-    <string english="Screen Effects are OFF." comment="wrapped"></string>
-    <string english="Text Outline" comment="title" max="20"></string>
-    <string english="Disables outline on game text" comment="wrapped"></string>
-    <string english="Text outlines are ON." comment="wrapped"></string>
-    <string english="Text outlines are OFF." comment="wrapped"></string>
-    <string english="Invincibility" comment="title" max="20"></string>
-    <string english="Provided to help disabled gamers explore the game. Can cause glitches." comment="wrapped, invincibility mode"></string>
-    <string english="Invincibility is ON." comment="wrapped"></string>
-    <string english="Invincibility is off." comment="wrapped"></string>
-    <string english="Are you sure you want to enable invincibility?" comment="wrapped"></string>
-    <string english="Game Speed" comment="title" max="20"></string>
-    <string english="May be useful for disabled gamers using one switch devices." comment="wrapped"></string>
-    <string english="Select a new game speed below." comment="wrapped"></string>
-    <string english="Game speed is normal." comment="wrapped"></string>
-    <string english="Game speed is at 80%" comment="wrapped"></string>
-    <string english="Game speed is at 60%" comment="wrapped"></string>
-    <string english="Game speed is at 40%" comment="wrapped"></string>
-    <string english="Fake Load Screen" comment="title, allows the loading screen which counts to 100% to be turned off" max="20"></string>
-    <string english="Fake loading screen is OFF" comment="wrapped, allows the loading screen which counts to 100% to be turned off"></string>
-    <string english="Fake loading screen is ON" comment="wrapped, allows the loading screen which counts to 100% to be turned off"></string>
-    <string english="Room Name BG" comment="title, background behind room names" max="20"></string>
-    <string english="Lets you see through what is behind the name at the bottom of the screen." comment="wrapped"></string>
-    <string english="Room name background is TRANSLUCENT" comment="wrapped"></string>
-    <string english="Room name background is OPAQUE" comment="wrapped"></string>
-    <string english="Who do you want to play the level with?" comment="wrapped, choose your NPC companion"></string>
-    <string english="Time Trials" comment="title" max="20"></string>
-    <string english="Replay any level in the game in a competitive time trial mode." comment="wrapped"></string>
-    <string english="Time Trials are not available with slowdown or invincibility." comment="wrapped"></string>
-    <string english="Intermissions" comment="title" max="20"></string>
-    <string english="Replay the intermission levels." comment="wrapped"></string>
-    <string english="TO UNLOCK: Complete the intermission levels in-game." comment="wrapped"></string>
-    <string english="No Death Mode" comment="title" max="20"></string>
-    <string english="Play the entire game without dying once." comment="wrapped"></string>
-    <string english="No Death Mode is not available with slowdown or invincibility." comment="wrapped"></string>
-    <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." comment="wrapped, ranks are B A S V"></string>
+    <string english="Enter is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32">Enter is gebonden aan: </string>
+    <string english="Menu is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32">Menu is gebonden aan: </string>
+    <string english="ERROR: No language files found." comment="wrapped">FOUT: Geen taalbestanden gevonden.</string>
+    <string english="This menu is only shown when having a lang folder in your VVVVVV folder." comment="wrapped, the folder is called lang. Translation maintenance menu">Dit menu wordt alleen weergegeven als er een lang-map in je VVVVVV-map staat.</string>
+    <string english="Sync language files" comment="title, translation maintenance menu" max="20">Sync taalbestanden</string>
+    <string english="Merge all new strings from the template files into the translation files, keeping existing translations" comment="wrapped, translation maintenance menu">Voeg alle nieuwe strings uit de sjabloonbestanden samen met de vertaalde bestanden, waarbij bestaande vertalingen behouden blijven</string>
+    <string english="Statistics" comment="title, translation maintenance menu" max="20">Statistieken</string>
+    <string english="Count the amount of untranslated strings for each language" comment="wrapped, translation maintenance menu">Tel het aantal onvertaalde strings voor elke taal</string>
+    <string english="Test mode" comment="title, translation maintenance menu" max="20">Testmodus</string>
+    <string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." comment="wrapped, translation maintenance menu">Toon alle vertaalbare strings als een V of X, om onvertaalbare of vergeten strings te onthullen. X betekent: ontbreekt uit het bestand.</string>
+    <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." comment="wrapped, translation maintenance menu">Als nieuwe strings zijn toegevoegd aan de Engelse sjabloon-taalbestanden zal deze functie ze invoegen in de taalbestanden van alle talen. Alleen talen die in de VVVVVV-map staan kunnen worden bijgewerkt. Maak een backup, voor het geval dat.</string>
+    <string english="Backgrounds" comment="title" max="20">Achtergronden</string>
+    <string english="Backgrounds are ON." comment="wrapped">Achtergronden staan AAN.</string>
+    <string english="Backgrounds are OFF." comment="wrapped">Achtergronden staan UIT.</string>
+    <string english="Screen Effects" comment="title" max="20">Schermeffecten</string>
+    <string english="Disables screen shakes and flashes." comment="wrapped">Schakelt schermbevingen en flitsen uit.</string>
+    <string english="Screen Effects are ON." comment="wrapped">Schermeffecten staan AAN.</string>
+    <string english="Screen Effects are OFF." comment="wrapped">Schermeffecten staan UIT.</string>
+    <string english="Text Outline" comment="title" max="20">Tekstomtrek</string>
+    <string english="Disables outline on game text" comment="wrapped">Schakelt de omtrek om tekst in het spel uit</string>
+    <string english="Text outlines are ON." comment="wrapped">Tekstomtrek staat AAN.</string>
+    <string english="Text outlines are OFF." comment="wrapped">Tekstomtrek staat UIT.</string>
+    <string english="Invincibility" comment="title" max="20">Onkwetsbaarheid</string>
+    <string english="Provided to help disabled gamers explore the game. Can cause glitches." comment="wrapped, invincibility mode">Beschikbaar om gehandicapte spelers te helpen het spel te ontdekken. Kan glitches veroorzaken.</string>
+    <string english="Invincibility is ON." comment="wrapped">Onkwetsbaarheid staat AAN.</string>
+    <string english="Invincibility is off." comment="wrapped">Onkwetsbaarheid staat uit.</string>
+    <string english="Are you sure you want to enable invincibility?" comment="wrapped">Weet je zeker dat je onkwetsbaarheid wilt inschakelen?</string>
+    <string english="Game Speed" comment="title" max="20">Spelsnelheid</string>
+    <string english="May be useful for disabled gamers using one switch devices." comment="wrapped">Zou nuttig kunnen zijn voor gehandicapte spelers die apparaten met één schakelaar gebruiken.</string>
+    <string english="Select a new game speed below." comment="wrapped">Kies hieronder een nieuwe spelsnelheid.</string>
+    <string english="Game speed is normal." comment="wrapped">Snelheid is normaal.</string>
+    <string english="Game speed is at 80%" comment="wrapped">Snelheid is 80%</string>
+    <string english="Game speed is at 60%" comment="wrapped">Snelheid is 60%</string>
+    <string english="Game speed is at 40%" comment="wrapped">Snelheid is 40%</string>
+    <string english="Fake Load Screen" comment="title, allows the loading screen which counts to 100% to be turned off" max="20">Nep-laadscherm</string>
+    <string english="Fake loading screen is OFF" comment="wrapped, allows the loading screen which counts to 100% to be turned off">Nep-laadscherm staat UIT</string>
+    <string english="Fake loading screen is ON" comment="wrapped, allows the loading screen which counts to 100% to be turned off">Nep-laadscherm staat AAN</string>
+    <string english="Room Name BG" comment="title, background behind room names" max="20">Naam-achtergrond</string>
+    <string english="Lets you see through what is behind the name at the bottom of the screen." comment="wrapped">Laat zien wat er achter de naam van een kamer zit onder in beeld.</string>
+    <string english="Room name background is TRANSLUCENT" comment="wrapped">Kamernaam-achtergrond is DOORZICHTIG</string>
+    <string english="Room name background is OPAQUE" comment="wrapped">Kamernaam-achtergrond is ONDOORZICHTIG</string>
+    <string english="Who do you want to play the level with?" comment="wrapped, choose your NPC companion">Met wie wil je het level spelen?</string>
+    <string english="Time Trials" comment="title" max="20">Races</string>
+    <string english="Replay any level in the game in a competitive time trial mode." comment="wrapped">Speel elk level in het spel opnieuw in een competitieve racemodus.</string>
+    <string english="Time Trials are not available with slowdown or invincibility." comment="wrapped">Races zijn niet beschikbaar met vertraging of onkwetsbaarheid.</string>
+    <string english="Intermissions" comment="title" max="20">Intermissies</string>
+    <string english="Replay the intermission levels." comment="wrapped">Speel de intermissielevels opnieuw.</string>
+    <string english="TO UNLOCK: Complete the intermission levels in-game." comment="wrapped">OM TE ONTGRENDELEN: Voltooi de intermissielevels in het spel.</string>
+    <string english="No Death Mode" comment="title" max="20">Éénlevenmodus</string>
+    <string english="Play the entire game without dying once." comment="wrapped">Speel het gehele spel zonder ook maar één keer dood te gaan.</string>
+    <string english="No Death Mode is not available with slowdown or invincibility." comment="wrapped">Éénlevenmodus is niet beschikbaar met vertraging of onkwetsbaarheid.</string>
+    <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." comment="wrapped, ranks are B A S V">OM TE ONTGRENDELEN: Behaal een S-score of hoger in ten minste 4 races.</string>
     <string english="Flip Mode" comment="title" max="20"></string>
     <string english="Flip the entire game vertically. Compatible with other game modes." comment="wrapped"></string>
     <string english="Currently ENABLED!" comment="wrapped, flip mode"></string>
