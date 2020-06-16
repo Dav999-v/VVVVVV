@@ -198,6 +198,8 @@
 	<string english="CREW" comment="in-game menu" max="8"></string>
 	<string english="STATS" comment="in-game menu" max="8"></string>
 	<string english="SAVE" comment="in-game menu" max="8"></string>
+	<string english="[ QUIT ]" comment="in-game menu" max="40"></string>
+	<string english="[ GRAVITRON ]" comment="in-game menu" max="40"></string>
 	<string english="NO SIGNAL" comment=""></string>
 	<string english="Press ACTION to warp to the ship." comment="wrapped, spaceship"></string>
 	<string english="Missing..." comment="" max="15"></string>
@@ -210,7 +212,25 @@
 	<string english="Cannot Save in Secret Lab" comment="wrapped"></string>
 	<string english="Game saved ok!" comment="wrapped"></string>
 	<string english="[Press ACTION to save your game]" comment="wrapped"></string>
+	<string english="(Note: The game is autosaved at every teleporter.)" comment="wrapped"></string>
 	<string english="Last Save:" comment="" max="40"></string>
+	<string english="Return to main menu?" comment="wrapped"></string>
+	<string english="Do you want to quit? You will lose any unsaved progress." comment="wrapped"></string>
+	<string english="Do you want to return to the secret laboratory?" comment="wrapped"></string>
+	<string english="no, keep playing" comment=""></string>
+	<string english="[ NO, KEEP PLAYING ]" comment=""></string>
+	<string english="yes, quit to menu" comment=""></string>
+	<string english="[ YES, QUIT TO MENU ]" comment=""></string>
+	<string english="yes, return" comment=""></string>
+	<string english="[ YES, RETURN ]" comment=""></string>
+	<string english="" comment=""></string>
+	<string english="" comment=""></string>
+	<string english="" comment=""></string>
+	<string english="" comment=""></string>
+	<string english="" comment=""></string>
+	<string english="" comment=""></string>
+	<string english="" comment=""></string>
+	<string english="" comment=""></string>
 	<string english="" comment=""></string>
 	<string english="" comment=""></string>
 	<string english="" comment=""></string>

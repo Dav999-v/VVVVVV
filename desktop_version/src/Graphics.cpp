@@ -266,7 +266,7 @@ void Graphics::map_tab(int opt, std::string text, bool selected /*= false*/)
     }
 }
 
-void Graphics::PrintWrap( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/, int maxw /*= 304*/, int linespacing /*= 10*/ ) {
+void Graphics::PrintWrap( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/, int linespacing /*= 10*/, int maxw /*= 304*/ ) {
     size_t startline = 0;
     size_t newline;
 
@@ -280,7 +280,11 @@ void Graphics::PrintWrap( int _x, int _y, std::string _s, int r, int g, int b, b
         }
 
         Print(_x, _y, s.substr(startline, newline-startline), r, g, b, cen);
-        _y += linespacing;
+        if (flipmode) {
+            _y -= linespacing;
+        } else {
+            _y += linespacing;
+        }
 
         startline = newline+1;
     } while (newline != std::string::npos);

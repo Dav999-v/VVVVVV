@@ -1589,7 +1589,7 @@ void gamerender()
             if (int(game.swndelay / 15) % 2 == 1 || game.swndelay >= 120)
             {
                 if (graphics.flipmode)
-                { // TODO LOC: wrapped bigprint. And how does flip mode even interact with the different print functions?
+                { // TODO LOC: wrapped bigprint.
                     graphics.bigprint( -1, 30, "Survive for", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
                     graphics.bigprint( -1, 10, "60 seconds!", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
                 }
@@ -2352,15 +2352,13 @@ void maprender()
         }
         else
         {
-            if (graphics.flipmode) // TODO LOC: flipmode
+            if (graphics.flipmode)
             {
-                graphics.Print(0, 186, "(Note: The game is autosaved", 146, 146, 180, true);
-                graphics.Print(0, 174, "at every teleporter.)", 146, 146, 180, true);
+                graphics.PrintWrap(0, 186, loc::gettext("(Note: The game is autosaved at every teleporter.)"), 146, 146, 180, true, 12);
             }
             else
             {
-                graphics.Print(0, 174, "(Note: The game is autosaved", 146, 146, 180, true);
-                graphics.Print(0, 186, "at every teleporter.)", 146, 146, 180, true);
+                graphics.PrintWrap(0, 174, loc::gettext("(Note: The game is autosaved at every teleporter.)"), 146, 146, 180, true, 12);
             }
 
             if (game.gamesaved)
@@ -2417,110 +2415,102 @@ void maprender()
         }
         break;
     case 10:
-        graphics.Print(128, 220, "[ QUIT ]", 196, 196, 255 - help.glow);
+        graphics.Print(-1, 220, loc::gettext("[ QUIT ]"), 196, 196, 255 - help.glow, true);
 
         if (graphics.flipmode)
         {
             if (game.intimetrial || game.insecretlab || game.nodeathmode)
             {
-                graphics.Print(0, 135, "Return to main menu?", 196, 196, 255 - help.glow, true);
+                graphics.PrintWrap(0, 135, loc::gettext("Return to main menu?"), 196, 196, 255 - help.glow, true, 12);
             }
             else
             {
-                graphics.Print(0, 142, "Do you want to quit? You will", 196, 196, 255 - help.glow, true);
-                graphics.Print(0, 130, "lose any unsaved progress.", 196, 196, 255 - help.glow, true);
+                graphics.PrintWrap(0, 142, loc::gettext("Do you want to quit? You will lose any unsaved progress."), 196, 196, 255 - help.glow, true, 12);
             }
 
-            graphics.Print(80-16, 88, "[ NO, KEEP PLAYING ]", 196, 196, 255 - help.glow);
-            graphics.Print(80 + 32, 76, "yes, quit to menu",  96, 96, 96);
+            graphics.Print(80-16, 88, loc::gettext("[ NO, KEEP PLAYING ]"), 196, 196, 255 - help.glow);
+            graphics.Print(80 + 32, 76, loc::gettext("yes, quit to menu"),  96, 96, 96);
         }
         else
         {
 
             if (game.intimetrial || game.insecretlab || game.nodeathmode)
             {
-                graphics.Print(0, 80, "Return to main menu?", 196, 196, 255 - help.glow, true);
+                graphics.PrintWrap(0, 80, loc::gettext("Return to main menu?"), 196, 196, 255 - help.glow, true, 12);
             }
             else
             {
-                graphics.Print(0, 76, "Do you want to quit? You will", 196, 196, 255 - help.glow, true);
-                graphics.Print(0, 88, "lose any unsaved progress.", 196, 196, 255 - help.glow, true);
+                graphics.PrintWrap(0, 76, loc::gettext("Do you want to quit? You will lose any unsaved progress."), 196, 196, 255 - help.glow, true, 12);
             }
 
-            graphics.Print(80-16, 130, "[ NO, KEEP PLAYING ]", 196, 196, 255 - help.glow);
-            graphics.Print(80 + 32, 142, "yes, quit to menu",  96, 96, 96);
+            graphics.Print(80-16, 130, loc::gettext("[ NO, KEEP PLAYING ]"), 196, 196, 255 - help.glow);
+            graphics.Print(80 + 32, 142, loc::gettext("yes, quit to menu"),  96, 96, 96);
 
         }
         break;
     case 11:
-        graphics.Print(128, 220, "[ QUIT ]", 196, 196, 255 - help.glow);
+        graphics.Print(-1, 220, loc::gettext("[ QUIT ]"), 196, 196, 255 - help.glow, true);
 
         if (graphics.flipmode)
         {
             if (game.intimetrial || game.insecretlab || game.nodeathmode)
             {
-                graphics.Print(0, 135, "Return to main menu?", 196, 196, 255 - help.glow, true);
+                graphics.PrintWrap(0, 135, loc::gettext("Return to main menu?"), 196, 196, 255 - help.glow, true, 12);
             }
             else
             {
-                graphics.Print(0, 142, "Do you want to quit? You will", 196, 196, 255 - help.glow, true);
-                graphics.Print(0, 130, "lose any unsaved progress.", 196, 196, 255 - help.glow, true);
+                graphics.PrintWrap(0, 142, loc::gettext("Do you want to quit? You will lose any unsaved progress."), 196, 196, 255 - help.glow, true, 12);
             }
 
-            graphics.Print(80, 88, "no, keep playing", 96,96,96);
-            graphics.Print(80+32-16, 76, "[ YES, QUIT TO MENU ]",  196, 196, 255 - help.glow);
+            graphics.Print(80, 88, loc::gettext("no, keep playing"), 96,96,96);
+            graphics.Print(80+32-16, 76, loc::gettext("[ YES, QUIT TO MENU ]"),  196, 196, 255 - help.glow);
         }
         else
         {
             if (game.intimetrial || game.insecretlab || game.nodeathmode)
             {
-                graphics.Print(0, 80, "Return to main menu?", 196, 196, 255 - help.glow, true);
+                graphics.PrintWrap(0, 80, loc::gettext("Return to main menu?"), 196, 196, 255 - help.glow, true, 12);
             }
             else
             {
-                graphics.Print(0, 76, "Do you want to quit? You will", 196, 196, 255 - help.glow, true);
-                graphics.Print(0, 88, "lose any unsaved progress.", 196, 196, 255 - help.glow, true);
+                graphics.PrintWrap(0, 76, loc::gettext("Do you want to quit? You will lose any unsaved progress."), 196, 196, 255 - help.glow, true, 12);
             }
 
-            graphics.Print(80, 130, "no, keep playing", 96,96,96);
-            graphics.Print(80+32-16, 142, "[ YES, QUIT TO MENU ]", 196, 196, 255 - help.glow);
+            graphics.Print(80, 130, loc::gettext("no, keep playing"), 96,96,96);
+            graphics.Print(80+32-16, 142, loc::gettext("[ YES, QUIT TO MENU ]"), 196, 196, 255 - help.glow);
         }
         break;
     case 20:
-        graphics.Print(128, 220, "[ GRAVITRON ]", 196, 196, 255 - help.glow, true);
+        graphics.Print(-1, 220, loc::gettext("[ GRAVITRON ]"), 196, 196, 255 - help.glow, true);
 
         if (graphics.flipmode)
         {
-            graphics.Print(0, 76, "the secret laboratory?", 196, 196, 255 - help.glow, true);
-            graphics.Print(0, 88, "Do you want to return to", 196, 196, 255 - help.glow, true);
-            graphics.Print(80-16, 142, "[ NO, KEEP PLAYING ]", 196, 196, 255 - help.glow);
-            graphics.Print(80 + 32, 130, "yes, return",  96, 96, 96);
+            graphics.PrintWrap(0, 88, loc::gettext("Do you want to return to the secret laboratory?"), 196, 196, 255 - help.glow, true, 12);
+            graphics.Print(80-16, 142, loc::gettext("[ NO, KEEP PLAYING ]"), 196, 196, 255 - help.glow);
+            graphics.Print(80 + 32, 130, loc::gettext("yes, return"),  96, 96, 96);
         }
         else
         {
-            graphics.Print(0, 76, "Do you want to return to", 196, 196, 255 - help.glow, true);
-            graphics.Print(0, 88, "the secret laboratory?", 196, 196, 255 - help.glow, true);
-            graphics.Print(80-16, 130, "[ NO, KEEP PLAYING ]", 196, 196, 255 - help.glow);
-            graphics.Print(80 + 32, 142, "yes, return",  96, 96, 96);
+            graphics.PrintWrap(0, 76, loc::gettext("Do you want to return to the secret laboratory?"), 196, 196, 255 - help.glow, true, 12);
+            graphics.Print(80-16, 130, loc::gettext("[ NO, KEEP PLAYING ]"), 196, 196, 255 - help.glow);
+            graphics.Print(80 + 32, 142, loc::gettext("yes, return"),  96, 96, 96);
         }
 
         break;
     case 21:
-        graphics.Print(128, 220, "[ GRAVITRON ]", 196, 196, 255 - help.glow, true);
+        graphics.Print(-1, 220, loc::gettext("[ GRAVITRON ]"), 196, 196, 255 - help.glow, true);
 
         if (graphics.flipmode)
         {
-            graphics.Print(0, 76, "the secret laboratory?", 196, 196, 255 - help.glow, true);
-            graphics.Print(0, 88, "Do you want to return to", 196, 196, 255 - help.glow, true);
-            graphics.Print(80, 142, "no, keep playing", 96, 96, 96);
-            graphics.Print(80 + 32-16, 130, "[ YES, RETURN ]",  196, 196, 255 - help.glow);
+            graphics.PrintWrap(0, 88, loc::gettext("Do you want to return to the secret laboratory?"), 196, 196, 255 - help.glow, true, 12);
+            graphics.Print(80, 142, loc::gettext("no, keep playing"), 96, 96, 96);
+            graphics.Print(80 + 32-16, 130, loc::gettext("[ YES, RETURN ]"),  196, 196, 255 - help.glow);
         }
         else
         {
-            graphics.Print(0, 76, "Do you want to return to", 196, 196, 255 - help.glow, true);
-            graphics.Print(0, 88, "the secret laboratory?", 196, 196, 255 - help.glow, true);
-            graphics.Print(80, 130, "no, keep playing", 96, 96, 96);
-            graphics.Print(80 + 32-16, 142, "[ YES, RETURN ]",  196, 196, 255 - help.glow);
+            graphics.PrintWrap(0, 76, loc::gettext("Do you want to return to the secret laboratory?"), 196, 196, 255 - help.glow, true, 12);
+            graphics.Print(80, 130, loc::gettext("no, keep playing"), 96, 96, 96);
+            graphics.Print(80 + 32-16, 142, loc::gettext("[ YES, RETURN ]"),  196, 196, 255 - help.glow);
         }
 
     }
