@@ -217,14 +217,14 @@
 	<string english="Return to main menu?" comment="wrapped"></string>
 	<string english="Do you want to quit? You will lose any unsaved progress." comment="wrapped"></string>
 	<string english="Do you want to return to the secret laboratory?" comment="wrapped"></string>
-	<string english="no, keep playing" comment=""></string>
-	<string english="[ NO, KEEP PLAYING ]" comment=""></string>
-	<string english="yes, quit to menu" comment=""></string>
-	<string english="[ YES, QUIT TO MENU ]" comment=""></string>
-	<string english="yes, return" comment=""></string>
-	<string english="[ YES, RETURN ]" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
+	<string english="no, keep playing" comment="28"></string>
+	<string english="[ NO, KEEP PLAYING ]" comment="32"></string>
+	<string english="yes, quit to menu" comment="24"></string>
+	<string english="[ YES, QUIT TO MENU ]" comment="28"></string>
+	<string english="yes, return" comment="24"></string>
+	<string english="[ YES, RETURN ]" comment="28"></string>
+	<string english="Press Left/Right to choose a Teleporter" comment="tight fit, so maybe `Left/Right: choose teleporter`" max="40"></string>
+	<string english="Press ENTER to Teleport" comment="" max="40"></string>
 	<string english="" comment=""></string>
 	<string english="" comment=""></string>
 	<string english="" comment=""></string>

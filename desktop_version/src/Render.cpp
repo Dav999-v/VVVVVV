@@ -2568,7 +2568,7 @@ void teleporterrender()
     //Roomname:
     int temp = map.area(game.roomx, game.roomy);
     if (temp < 2 && !map.custommode && graphics.fademode==0)
-    {
+    { // TODO LOC, déjà vu
         if (game.roomx >= 102 && game.roomx <= 104 && game.roomy >= 110 && game.roomy <= 111)
         {
             graphics.Print(5, 2, "The Ship", 196, 196, 255 - help.glow, true);
@@ -2670,19 +2670,19 @@ void teleporterrender()
     if (game.useteleporter)
     {
         //Instructions!
-        graphics.Print(5, 210, "Press Left/Right to choose a Teleporter", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
-        graphics.Print(5, 225, "Press ENTER to Teleport", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
+        graphics.Print(5, 210, loc::gettext("Press Left/Right to choose a Teleporter"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
+        graphics.Print(5, 225, loc::gettext("Press ENTER to Teleport"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
     }
 
     graphics.drawgui();
 
     if (graphics.flipmode)
     {
-        if (game.advancetext) graphics.bprint(5, 228, "- Press ACTION to advance text -", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
+        if (game.advancetext) graphics.bprint(5, 228, loc::gettext("- Press ACTION to advance text -"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
     }
     else
     {
-        if (game.advancetext) graphics.bprint(5, 5, "- Press ACTION to advance text -", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
+        if (game.advancetext) graphics.bprint(5, 5, loc::gettext("- Press ACTION to advance text -"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
     }
 
 

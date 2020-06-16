@@ -9,8 +9,6 @@
     <string english="ERROR: No levels found." comment="wrapped">FOUT: Geen levels gevonden.</string>
     <string english="by %s" comment="%s: author of level">door %s</string>
     <string english="ERROR: This level has no start point!" comment="wrapped">FOUT: Dit level heeft geen startpunt!</string>
-    <string english="Accessibility" comment="title" max="20">Toegankelijkheid</string>
-    <string english="Disable screen effects, enable slowdown modes or invincibility" comment="wrapped">Schakel schermeffecten uit, schakel vertraging of onkwetsbaarheid in</string>
     <string english="Unlock Play Modes" comment="title" max="20">Ontgrendel spelmodi</string>
     <string english="Unlock parts of the game normally unlocked as you progress" comment="wrapped">Ontgrendel delen van het spel die normaal tijdens je voortgang worden ontgrendeld</string>
     <string english="From here, you may unlock parts of the game that are normally unlocked as you play." comment="wrapped">Hier kun je delen van het spel ontgrendelen die normaal tijdens het spelen worden ontgrendeld.</string>
@@ -85,6 +83,8 @@
     <string english="Test mode" comment="title, translation maintenance menu" max="20">Testmodus</string>
     <string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." comment="wrapped, translation maintenance menu">Toon alle vertaalbare strings als een V of X, om onvertaalbare of vergeten strings te onthullen. X betekent: ontbreekt uit het bestand.</string>
     <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." comment="wrapped, translation maintenance menu">Als nieuwe strings zijn toegevoegd aan de Engelse sjabloon-taalbestanden zal deze functie ze invoegen in de taalbestanden van alle talen. Alleen talen die in de VVVVVV-map staan kunnen worden bijgewerkt. Maak een backup, voor het geval dat.</string>
+    <string english="Accessibility" comment="title" max="20">Toegankelijkheid</string>
+    <string english="Disable screen effects, enable slowdown modes or invincibility" comment="wrapped">Schakel schermeffecten uit, schakel vertraging of onkwetsbaarheid in</string>
     <string english="Backgrounds" comment="title" max="20">Achtergronden</string>
     <string english="Backgrounds are ON." comment="wrapped">Achtergronden staan AAN.</string>
     <string english="Backgrounds are OFF." comment="wrapped">Achtergronden staan UIT.</string>
@@ -185,25 +185,46 @@
     <string english="New Trophy!" comment="" max="20">Nieuwe trofee!</string>
     <string english="[Press ENTER to stop]" comment="stop super gravitron" max="40">[Druk op ENTER om te stoppen]</string>
     <string english="SUPER GRAVITRON" comment="" max="20">SUPER GRAVITRON</string>
+    <string english="SUPER GRAVITRON HIGHSCORE" comment="wrapped"></string>
     <string english="GO!" comment="3, 2, 1, GO!" max="13">GO!</string>
     <string english="Go!" comment="3, 2, 1, Go!" max="10">Go!</string>
     <string english="TIME:" comment="stopwatch time, not too long">TIJD:</string>
     <string english="DEATH:" comment="number of times player died, not too long">DOOD:</string>
     <string english="SHINY:" comment="number of shiny trinkets collected, not too long">TRINKETS:</string>
     <string english="PAR TIME:" comment="goal time for time trial">PARTIJD:</string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
+    <string english="MAP" comment="in-game menu" max="8">KAART</string>
+    <string english="GRAV" comment="in-game menu, Gravitron" max="8">GRAV</string>
+    <string english="SHIP" comment="in-game menu, spaceship" max="8">SCHIP</string>
+    <string english="CREW" comment="in-game menu" max="8">CREW</string>
+    <string english="STATS" comment="in-game menu" max="8">STAT</string>
+    <string english="SAVE" comment="in-game menu" max="8">OPSLAAN</string>
+    <string english="[ QUIT ]" comment="in-game menu" max="40">[ STOPPEN ]</string>
+    <string english="[ GRAVITRON ]" comment="in-game menu" max="40">[ GRAVITRON ]</string>
+    <string english="NO SIGNAL" comment="">GEEN SIGNAAL</string>
+    <string english="Press ACTION to warp to the ship." comment="wrapped, spaceship"></string>
+    <string english="Missing..." comment="" max="15">Vermist...</string>
+    <string english="[Trinkets found]" comment="amount of shiny trinkets found" max="40"></string>
+    <string english="[Number of Deaths]" comment="" max="40"></string>
+    <string english="[Time Taken]" comment="stopwatch time" max="40"></string>
+    <string english="Cannot Save in Level Replay" comment="wrapped"></string>
+    <string english="Cannot Save in No Death Mode" comment="wrapped"></string>
+    <string english="Cannot Save in Time Trial" comment="wrapped"></string>
+    <string english="Cannot Save in Secret Lab" comment="wrapped"></string>
+    <string english="Game saved ok!" comment="wrapped"></string>
+    <string english="[Press ACTION to save your game]" comment="wrapped"></string>
+    <string english="(Note: The game is autosaved at every teleporter.)" comment="wrapped"></string>
+    <string english="Last Save:" comment="" max="40"></string>
+    <string english="Return to main menu?" comment="wrapped">Terug naar het hoofdmenu?</string>
+    <string english="Do you want to quit? You will lose any unsaved progress." comment="wrapped">Wil je stoppen? Je niet-opgeslagen voortgang gaat verloren.</string>
+    <string english="Do you want to return to the secret laboratory?" comment="wrapped">Wil je teruggaan naar het geheime laboratorium?</string>
+    <string english="no, keep playing" comment="">nee, blijf spelen</string>
+    <string english="[ NO, KEEP PLAYING ]" comment="">[ NEE, BLIJF SPELEN ]</string>
+    <string english="yes, quit to menu" comment="">ja, naar het menu</string>
+    <string english="[ YES, QUIT TO MENU ]" comment="">[ JA, NAAR HET MENU ]</string>
+    <string english="yes, return" comment="">ja, teruggaan</string>
+    <string english="[ YES, RETURN ]" comment="">[ JA, TERUGGAAN ]</string>
+    <string english="Press Left/Right to choose a Teleporter" comment="tight fit, so maybe `Left/Right: choose teleporter`" max="40">Links/Rechts: kies teleporter</string>
+    <string english="Press ENTER to Teleport" comment="" max="40">Druk op ENTER om te teleporteren</string>
     <string english="" comment=""></string>
     <string english="" comment=""></string>
     <string english="" comment=""></string>
