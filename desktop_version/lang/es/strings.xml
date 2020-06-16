@@ -4,7 +4,7 @@
 	<string english="[click to resume]" comment="pause screen" max="40">[Click para continuar]</string>
 	<string english="Press M to mute in game" comment="pause screen" max="40">Presiona M para silenciar el juego</string>
 	<string english="Press N to mute music only" comment="pause screen" max="40">Presiona N para silenciar la musica</string>
-	<string english="MAKE AND PLAY EDITION" comment="">EDICIN MAKE AND PLAY</string>
+	<string english="MAKE AND PLAY EDITION" comment="">EDICION MAKE AND PLAY</string>
 	<string english="[MMMMMM Mod Installed]" comment="" max="32">[MMMMMM Mod Instalado]</string>
 	<string english="ERROR: No levels found." comment="wrapped">ERROR: No se encontraron niveles.</string>
 	<string english="by %s" comment="%s: author of level">Por %s</string>
