@@ -209,6 +209,7 @@ int main(int argc, char *argv[])
     //Moved screensetting init here from main menu V2.1
     game.loadstats();
     loc::loadtext();
+    game.createmenu(Menu::mainmenu);
     if (game.skipfakeload)
         game.gamestate = TITLEMODE;
     if(game.usingmmmmmm==0) music.usingmmmmmm=false;

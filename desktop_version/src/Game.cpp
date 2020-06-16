@@ -230,7 +230,6 @@ void Game::init(void)
     levelpage=0;
     playcustomlevel=0;
     customleveltitle="";
-    createmenu(Menu::mainmenu);
 
     deathcounts = 0;
     gameoverdelay = 0;
