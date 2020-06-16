@@ -19,16 +19,6 @@
 	<string english="start new game" comment="menu option, extra confirmation"></string>
 	<string english="secret lab" comment="menu option"></string>
 	<string english="play modes" comment="menu option"></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment="menu option"></string>
-	<string english="" comment="menu option"></string>
-	<string english="" comment="menu option"></string>
-	<string english="" comment="menu option"></string>
-	<string english="" comment="menu option"></string>
-	<string english="" comment="menu option"></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
 	<string english="ERROR: No levels found." comment="wrapped"></string>
 	<string english="by %s" comment="%s: author of level"></string>
 	<string english="ERROR: This level has no start point!" comment="wrapped"></string>
@@ -312,7 +302,6 @@
 	<string english="yes, quit" comment=""></string>
 	<string english="Press Left/Right to choose a Teleporter" comment="tight fit, so maybe `Left/Right: choose teleporter`" max="40"></string>
 	<string english="Press ENTER to Teleport" comment="" max="40"></string>
-	<string english="change description" comment="level editor menu option"></string>
 	<string english="edit scripts" comment="level editor menu option"></string>
 	<string english="change music" comment="level editor menu option"></string>
 	<string english="editor ghosts" comment="level editor menu option"></string>
