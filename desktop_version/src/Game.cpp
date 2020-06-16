@@ -705,7 +705,7 @@ void Game::updatestate()
     }
     if (statedelay <= 0)
     {
-        switch(state)
+        switch(state) // TODO LOC, most everything here. We might need to sacrifice the manual paddings and centerings in textboxes. Though centering can probably be done with a function just before the textbox is displayed. I also have an idea in mind for "nice" wrapping in cutscenes, so lines are filled as much as possible.
         {
         case 0:
             //Do nothing here! Standard game state
@@ -4436,7 +4436,7 @@ void Game::gethardestroom()
         {
             if (roomx == 42 && roomy == 51)
             {
-                hardestroom = "Rear Vindow";
+                hardestroom = "Rear Vindow"; // TODO LOC
             }
             else if (roomx == 48 && roomy == 51)
             {
@@ -6744,7 +6744,7 @@ void Game::loadtele()
 std::string Game::unrescued()
 {
     //Randomly return the name of an unrescued crewmate
-    if (fRandom() * 100 > 50)
+    if (fRandom() * 100 > 50) // TODO LOC
     {
         if (!crewstats[5]) return "Victoria";
         if (!crewstats[2]) return "Vitellary";
@@ -6949,35 +6949,35 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
     {
     case Menu::mainmenu:
 #if !defined(MAKEANDPLAY)
-        option("start game");
+        option(loc::gettext("start game"));
 #endif
 #if !defined(NO_CUSTOM_LEVELS)
-        option("player levels");
+        option(loc::gettext("player levels"));
 #endif
-        option("graphic options");
-        option("game options");
+        option(loc::gettext("graphic options"));
+        option(loc::gettext("game options"));
 #if !defined(MAKEANDPLAY)
-        option("view credits");
+        option(loc::gettext("view credits"));
 #endif
-        option("quit game");
+        option(loc::gettext("quit game"));
         menuxoff = -16;
         menuyoff = -10;
         break;
 #if !defined(NO_CUSTOM_LEVELS)
     case Menu::playerworlds:
-        option("play a level");
+        option(loc::gettext("play a level"));
  #if !defined(NO_EDITOR)
-        option("level editor");
+        option(loc::gettext("level editor"));
  #endif
-        option("open level folder", FILESYSTEM_openDirectoryEnabled());
-        option("back to menu");
+        option(loc::gettext("open level folder"), FILESYSTEM_openDirectoryEnabled());
+        option(loc::gettext("return"));
         menuxoff = -30;
         menuyoff = -40;
         break;
     case Menu::levellist:
         if(ed.ListOfMetaData.size()==0)
         {
-            option("ok");
+            option(loc::gettext("ok"));
             menuxoff = 0;
             menuyoff = -20;
         }
@@ -7023,21 +7023,21 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
             }
             if((size_t) ((levelpage*8)+8) <ed.ListOfMetaData.size())
             {
-                option("next page");
+                option(loc::gettext("next page"));
             }
             else
             {
-                option("first page");
+                option(loc::gettext("first page"));
             }
             if (levelpage == 0)
             {
-                option("last page");
+                option(loc::gettext("last page"));
             }
             else
             {
-                option("previous page");
+                option(loc::gettext("previous page"));
             }
-            option("return to menu");
+            option(loc::gettext("return"));
 
             menuxoff = -90;
             menuyoff = 70-(menuoptions.size()*10);
@@ -7045,110 +7045,110 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         break;
 #endif
     case Menu::quickloadlevel:
-        option("continue from save");
-        option("start from beginning");
-        option("back to levels");
+        option(loc::gettext("continue from save"));
+        option(loc::gettext("start from beginning"));
+        option(loc::gettext("back to levels"));
         menuxoff = -40;
         menuyoff = -30;
         break;
     case Menu::youwannaquit:
-        option("yes, quit");
-        option("no, return");
+        option(loc::gettext("yes, quit"));
+        option(loc::gettext("no, return"));
         menuxoff = 0;
         menuyoff = -20;
         break;
     case Menu::errornostart:
-        option("ok");
+        option(loc::gettext("ok"));
         menuxoff = 0;
         menuyoff = -20;
         break;
     case Menu::graphicoptions:
-        option("toggle fullscreen");
-        option("graphics mode");
-        option("toggle filter");
-        option("toggle analogue");
-        option("toggle mouse");
-        option("return");
+        option(loc::gettext("toggle fullscreen"));
+        option(loc::gettext("graphics mode"));
+        option(loc::gettext("toggle filter"));
+        option(loc::gettext("toggle analogue"));
+        option(loc::gettext("toggle mouse"));
+        option(loc::gettext("return"));
         menuxoff = -50;
         menuyoff = 8;
         break;
     case Menu::ed_settings:
-        option("change description");
-        option("edit scripts");
-        option("change music");
-        option("editor ghosts");
-        option("load level");
-        option("save level");
-        option("quit to main menu");
+        option(loc::gettext("change description"));
+        option(loc::gettext("edit scripts"));
+        option(loc::gettext("change music"));
+        option(loc::gettext("editor ghosts"));
+        option(loc::gettext("load level"));
+        option(loc::gettext("save level"));
+        option(loc::gettext("quit to main menu"));
 
         menuxoff = -46;
         menuyoff = -20;
         break;
     case Menu::ed_desc:
-        option("change name");
-        option("change author");
-        option("change description");
-        option("change website");
-        option("back to settings");
+        option(loc::gettext("change name"));
+        option(loc::gettext("change author"));
+        option(loc::gettext("change description"));
+        option(loc::gettext("change website"));
+        option(loc::gettext("return"));
 
         menuxoff = -40;
         menuyoff = 6;
         break;
     case Menu::ed_music:
-        option("next song");
-        option("back");
+        option(loc::gettext("next song"));
+        option(loc::gettext("return"));
         menuxoff = -10;
         menuyoff = 16;
         break;
     case Menu::ed_quit:
-        option("yes, save and quit");
-        option("no, quit without saving");
-        option("return to editor");
+        option(loc::gettext("yes, save and quit"));
+        option(loc::gettext("no, quit without saving"));
+        option(loc::gettext("return to editor"));
         menuxoff = -50;
         menuyoff = 8;
         break;
     case Menu::options:
-        option("accessibility options");
+        option(loc::gettext("accessibility options"));
 #if !defined(MAKEANDPLAY)
-        option("unlock play modes");
+        option(loc::gettext("unlock play modes"));
 #endif
-        option("game pad options");
-        option("language");
-        option("clear data");
+        option(loc::gettext("game pad options"));
+        option(loc::gettext("language"));
+        option(loc::gettext("clear data"));
         //Add extra menu for mmmmmm mod
         if(music.mmmmmm){
-            option("soundtrack");
+            option(loc::gettext("soundtrack"));
         }
 
-        option("return");
+        option(loc::gettext("return"));
         menuxoff = -40;
         menuyoff = 0;
         break;
     case Menu::accessibility:
-        option("animated backgrounds");
-        option("screen effects");
-        option("text outline");
-        option("invincibility");
-        option("slowdown");
-        option("load screen");
-        option("room name bg");
-        option("return");
+        option(loc::gettext("animated backgrounds"));
+        option(loc::gettext("screen effects"));
+        option(loc::gettext("text outline"));
+        option(loc::gettext("invincibility"));
+        option(loc::gettext("slowdown"));
+        option(loc::gettext("load screen"));
+        option(loc::gettext("room name bg"));
+        option(loc::gettext("return"));
         menuxoff = -85;
         menuyoff = -10;
         break;
     case Menu::controller:
-        option("analog stick sensitivity");
-        option("bind flip");
-        option("bind enter");
-        option("bind menu");
-        option("return");
+        option(loc::gettext("analog stick sensitivity"));
+        option(loc::gettext("bind flip"));
+        option(loc::gettext("bind enter"));
+        option(loc::gettext("bind menu"));
+        option(loc::gettext("return"));
         menuxoff = -40;
         menuyoff = 10;
         break;
     case Menu::language:
         if (loc::languagelist.empty())
         {
-            option("ok");
+            option(loc::gettext("ok"));
             menuxoff = 0;
             menuyoff = -20;
         }
@@ -7163,102 +7163,78 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
             }
 
             if (loc::show_lang_maint_menu)
-                option("translation maintenance");
+                option(loc::gettext("translation maintenance"));
             menuxoff = -90;
             menuyoff = 70-(menuoptions.size()*10);
         }
         break;
     case Menu::language_maint:
-        option("sync language files");
-        option("statistics", false);
-        option("toggle test mode");
-        option("return");
+        option(loc::gettext("sync language files"));
+        option(loc::gettext("statistics"), false);
+        option(loc::gettext("toggle test mode"));
+        option(loc::gettext("return"));
         menuxoff = -40;
         menuyoff = 0;
         break;
     case Menu::language_maint_sync:
-        option("sync");
-        option("return");
+        option(loc::gettext("sync"));
+        option(loc::gettext("return"));
         menuxoff = -30;
         menuyoff = 64;
         break;
     case Menu::cleardatamenu:
-        option("no! don't delete");
-        option("yes, delete everything");
+        option(loc::gettext("no! don't delete"));
+        option(loc::gettext("yes, delete everything"));
         menuxoff = -30;
         menuyoff = 64;
         break;
     case Menu::setinvincibility:
-        option("no, return to options");
-        option("yes, enable");
+        option(loc::gettext("no, return to options"));
+        option(loc::gettext("yes, enable"));
         menuxoff = -30;
         menuyoff = 64;
         break;
     case Menu::setslowdown:
-        option("normal speed");
-        option("80% speed");
-        option("60% speed");
-        option("40% speed");
+        option(loc::gettext("normal speed"));
+        option(loc::gettext("80% speed"));
+        option(loc::gettext("60% speed"));
+        option(loc::gettext("40% speed"));
         menuxoff = -40;
         menuyoff = 16;
         break;
     case Menu::unlockmenu:
-        option("unlock time trials");
-        option("unlock intermissions", !unlock[16]);
-        option("unlock no death mode", !unlock[17]);
-        option("unlock flip mode", !unlock[18]);
-        option("unlock ship jukebox", (stat_trinkets<20));
-        option("unlock secret lab", !unlock[8]);
-        option("return");
+        option(loc::gettext("unlock time trials"));
+        option(loc::gettext("unlock intermissions"), !unlock[16]);
+        option(loc::gettext("unlock no death mode"), !unlock[17]);
+        option(loc::gettext("unlock flip mode"), !unlock[18]);
+        option(loc::gettext("unlock ship jukebox"), (stat_trinkets<20));
+        option(loc::gettext("unlock secret lab"), !unlock[8]);
+        option(loc::gettext("return"));
         menuxoff = -70;
         menuyoff = -20;
         break;
     case Menu::credits:
-        option("next page");
-        option("last page");
-        option("return");
+        option(loc::gettext("next page"));
+        option(loc::gettext("last page"));
+        option(loc::gettext("return"));
         menuxoff = 20;
         menuyoff = 64;
         break;
     case Menu::credits2:
-        option("next page");
-        option("previous page");
-        option("return");
-        menuxoff = 20;
-        menuyoff = 64;
-        break;
     case Menu::credits25:
-        option("next page");
-        option("previous page");
-        option("return");
-        menuxoff = 20;
-        menuyoff = 64;
-        break;
     case Menu::credits3:
-        option("next page");
-        option("previous page");
-        option("return");
-        menuxoff = 20;
-        menuyoff = 64;
-        break;
     case Menu::credits4:
-        option("next page");
-        option("previous page");
-        option("return");
-        menuxoff = 20;
-        menuyoff = 64;
-        break;
     case Menu::credits5:
-        option("next page");
-        option("previous page");
-        option("return");
+        option(loc::gettext("next page"));
+        option(loc::gettext("previous page"));
+        option(loc::gettext("return"));
         menuxoff = 20;
         menuyoff = 64;
         break;
     case Menu::credits6:
-        option("first page");
-        option("previous page");
-        option("return");
+        option(loc::gettext("first page"));
+        option(loc::gettext("previous page"));
+        option(loc::gettext("return"));
         menuxoff = 20;
         menuyoff = 64;
         break;
@@ -7356,23 +7332,23 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
             {
                 if (save_exists())
                 {
-                    option("continue");
+                    option(loc::gettext("continue"));
                 }
                 else
                 {
-                    option("new game");
+                    option(loc::gettext("new game"));
                 }
                 //ok, secret lab! no notification, but test:
                 if (unlock[8])
                 {
-                    option("secret lab", !map.invincibility && slowdown == 30);
+                    option(loc::gettext("secret lab"), !map.invincibility && slowdown == 30);
                 }
-                option("play modes");
+                option(loc::gettext("play modes"));
                 if (save_exists())
                 {
-                    option("new game");
+                    option(loc::gettext("new game"));
                 }
-                option("return");
+                option(loc::gettext("return"));
                 if (unlock[8])
                 {
                     menuxoff = -40;
@@ -7392,34 +7368,34 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
     case Menu::unlocknodeathmode:
     case Menu::unlockintermission:
     case Menu::unlockflipmode:
-        option("continue");
+        option(loc::gettext("continue"));
         menuxoff = 20;
         menuyoff = 70;
         break;
     case Menu::newgamewarning:
-        option("start new game");
-        option("return to menu");
+        option(loc::gettext("start new game"));
+        option(loc::gettext("return"));
         menuxoff = -30;
         menuyoff = 64;
         break;
     case Menu::playmodes:
-        option("time trials", !map.invincibility && slowdown == 30);
-        option("intermissions", unlock[16]);
-        option("no death mode", unlock[17] && !map.invincibility && slowdown == 30);
-        option("flip mode", unlock[18]);
-        option("return to play menu");
+        option(loc::gettext("time trials"), !map.invincibility && slowdown == 30);
+        option(loc::gettext("intermissions"), unlock[16]);
+        option(loc::gettext("no death mode"), unlock[17] && !map.invincibility && slowdown == 30);
+        option(loc::gettext("flip mode"), unlock[18]);
+        option(loc::gettext("return"));
         menuxoff = -70;
         menuyoff = 8;
         break;
     case Menu::intermissionmenu:
-        option("play intermission 1");
-        option("play intermission 2");
-        option("return to play menu");
+        option(loc::gettext("play intermission 1"));
+        option(loc::gettext("play intermission 2"));
+        option(loc::gettext("return"));
         menuxoff = -50;
         menuyoff = -35;
         break;
     case Menu::playint1:
-        option("Vitellary");
+        option("Vitellary"); // TODO LOC
         option("Vermilion");
         option("Verdigris");
         option("Victoria");
@@ -7438,16 +7414,16 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         break;
     case Menu::continuemenu:
         map.settowercolour(3);
-        option("continue from teleporter");
-        option("continue from quicksave");
-        option("return to play menu");
+        option(loc::gettext("continue from teleporter"));
+        option(loc::gettext("continue from quicksave"));
+        option(loc::gettext("return"));
         menuxoff = -60;
         menuyoff = 20;
         break;
     case Menu::startnodeathmode:
-        option("disable cutscenes");
-        option("enable cutscenes");
-        option("return to play menu");
+        option(loc::gettext("disable cutscenes"));
+        option(loc::gettext("enable cutscenes"));
+        option(loc::gettext("return"));
         menuxoff = -60;
         menuyoff = 40;
         break;
@@ -7456,19 +7432,19 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         menudest=Menu::gameover2;
         break;
     case Menu::gameover2:
-        option("return to play menu");
+        option(loc::gettext("return to play menu"));
         menuxoff = -25;
         menuyoff = 80;
         break;
     case Menu::unlockmenutrials:
-        option("space station 1", !unlock[9]);
+        option("space station 1", !unlock[9]); // TODO LOC
         option("the laboratory", !unlock[10]);
         option("the tower", !unlock[11]);
         option("space station 2", !unlock[12]);
         option("the warp zone", !unlock[13]);
         option("the final level", !unlock[14]);
 
-        option("return to unlock menu");
+        option(loc::gettext("return"));
         menuxoff = -80;
         menuyoff = 0;
         break;
@@ -7480,7 +7456,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(unlock[13] ? "the warp zone" : "???", unlock[13]);
         option(unlock[14] ? "the final level" : "???", unlock[14]);
 
-        option("return to play menu");
+        option(loc::gettext("return"));
         menuxoff = -80;
         menuyoff = 0;
         break;
@@ -7489,7 +7465,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         menudest = Menu::nodeathmodecomplete2;
         break;
     case Menu::nodeathmodecomplete2:
-        option("return to play menu");
+        option(loc::gettext("return to play menu"));
         menuxoff = -25;
         menuyoff = 70;
         break;
@@ -7502,13 +7478,13 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         menudest=Menu::timetrialcomplete3;
         break;
     case Menu::timetrialcomplete3:
-        option("return to play menu");
+        option(loc::gettext("return to play menu"));
         option("try again");
         menuxoff = -25;
         menuyoff = 70;
         break;
     case Menu::gamecompletecontinue:
-        option("return to play menu");
+        option(loc::gettext("return to play menu"));
         menuxoff = -25;
         menuyoff = 70;
         break;

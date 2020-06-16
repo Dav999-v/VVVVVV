@@ -6,41 +6,84 @@
 	<string english="Press N to mute music only" comment="pause screen" max="40"></string>
 	<string english="MAKE AND PLAY EDITION" comment=""></string>
 	<string english="[MMMMMM Mod Installed]" comment="" max="32"></string>
+	<string english="start game" comment="main menu option"></string>
+	<string english="player levels" comment="main menu option"></string>
+	<string english="graphic options" comment="main menu option"></string>
+	<string english="game options" comment="main menu option"></string>
+	<string english="view credits" comment="main menu option"></string>
+	<string english="quit game" comment="main menu option"></string>
+	<string english="continue" comment="menu option"></string>
+	<string english="continue from teleporter" comment="menu option"></string>
+	<string english="continue from quicksave" comment="menu option"></string>
+	<string english="new game" comment="menu option"></string>
+	<string english="start new game" comment="menu option, extra confirmation"></string>
+	<string english="secret lab" comment="menu option"></string>
+	<string english="play modes" comment="menu option"></string>
+	<string english="" comment=""></string>
+	<string english="" comment=""></string>
+	<string english="" comment="menu option"></string>
+	<string english="" comment="menu option"></string>
+	<string english="" comment="menu option"></string>
+	<string english="" comment="menu option"></string>
+	<string english="" comment="menu option"></string>
+	<string english="" comment="menu option"></string>
+	<string english="" comment=""></string>
+	<string english="" comment=""></string>
 	<string english="ERROR: No levels found." comment="wrapped"></string>
 	<string english="by %s" comment="%s: author of level"></string>
 	<string english="ERROR: This level has no start point!" comment="wrapped"></string>
+	<string english="unlock play modes" comment="menu option"></string>
 	<string english="Unlock Play Modes" comment="title" max="20"></string>
 	<string english="Unlock parts of the game normally unlocked as you progress" comment="wrapped"></string>
 	<string english="From here, you may unlock parts of the game that are normally unlocked as you play." comment="wrapped"></string>
+	<string english="unlock intermissions" comment="menu option"></string>
+	<string english="unlock no death mode" comment="menu option"></string>
+	<string english="unlock flip mode" comment="menu option"></string>
+	<string english="unlock ship jukebox" comment="menu option"></string>
+	<string english="unlock secret lab" comment="menu option"></string>
+	<string english="unlock time trials" comment="menu option"></string>
+	<string english="Unlock Time Trials" comment="title" max="20"></string>
+	<string english="You can unlock each time trial separately." comment="wrapped"></string>
+	<string english="game pad options" comment="menu option"></string>
 	<string english="Game Pad Options" comment="title" max="20"></string>
 	<string english="Game Pad" comment="title" max="20"></string>
 	<string english="Rebind your controller&apos;s buttons and adjust sensitivity" comment="wrapped"></string>
 	<string english="Change controller options." comment="wrapped"></string>
+	<string english="language" comment="menu option"></string>
 	<string english="Language" comment="title" max="20"></string>
 	<string english="Change the language" comment="wrapped"></string>
+	<string english="clear data" comment="menu option"></string>
 	<string english="Clear Data" comment="title" max="20"></string>
 	<string english="Delete your save data and unlocked play modes" comment="wrapped"></string>
 	<string english="Are you sure? This will delete your current saves..." comment="wrapped"></string>
 	<string english="Are you sure you want to delete all your saved data?" comment="wrapped"></string>
+	<string english="no! don't delete" comment="menu option"></string>
+	<string english="yes, delete everything" comment="menu option"></string>
+	<string english="soundtrack" comment="menu option"></string>
 	<string english="Soundtrack" comment="title" max="20"></string>
 	<string english="Toggle between MMMMMM and PPPPPP" comment="wrapped"></string>
 	<string english="Current soundtrack: MMMMMM" comment="wrapped"></string>
 	<string english="Current soundtrack: PPPPPP" comment="wrapped"></string>
+	<string english="toggle fullscreen" comment="menu option"></string>
 	<string english="Toggle Fullscreen" comment="title" max="20"></string>
 	<string english="Change to fullscreen/windowed mode." comment="wrapped"></string>
 	<string english="Current mode: FULLSCREEN" comment="wrapped"></string>
 	<string english="Current mode: WINDOWED" comment="wrapped"></string>
+	<string english="graphics mode" comment="menu option"></string>
 	<string english="Graphics Mode" comment="title" max="20"></string>
 	<string english="Choose letterbox/stretch/integer mode." comment="wrapped"></string>
 	<string english="Current mode: INTEGER" comment="wrapped"></string>
 	<string english="Current mode: STRETCH" comment="wrapped"></string>
 	<string english="Current mode: LETTERBOX" comment="wrapped"></string>
+	<string english="toggle filter" comment="menu option"></string>
 	<string english="Toggle Filter" comment="title" max="20"></string>
 	<string english="Change to nearest/linear filter." comment="wrapped"></string>
 	<string english="Current mode: LINEAR" comment="wrapped"></string>
 	<string english="Current mode: NEAREST" comment="wrapped, nearest neighbor filter"></string>
-	<string english="Analogue Mode" comment=""></string>
+	<string english="toggle analogue" comment="menu option, analogue mode simulates distortion from bad signal"></string>
+	<string english="Analogue Mode" comment="analogue mode simulates distortion from bad signal"></string>
 	<string english="There is nothing wrong with your television set. Do not attempt to adjust the picture." comment="wrapped"></string>
+	<string english="toggle mouse" comment="menu option"></string>
 	<string english="Toggle Mouse Cursor" comment="title" max="20"></string>
 	<string english="Show/hide the system mouse cursor." comment="wrapped"></string>
 	<string english="Current mode: SHOW" comment="wrapped, show cursor"></string>
@@ -68,39 +111,58 @@
 	<string english="Good luck!" comment="wrapped"></string>
 	<string english="You cannot save in this mode." comment="wrapped"></string>
 	<string english="Would you like to disable the cutscenes during the game?" comment="wrapped"></string>
+	<string english="disable cutscenes" comment="menu option"></string>
+	<string english="enable cutscenes" comment="menu option"></string>
+	<string english="analog stick sensitivity" comment="menu option"></string>
 	<string english="Low" comment="analog stick sensitivity"></string>
 	<string english="Medium" comment="analog stick sensitivity"></string>
 	<string english="High" comment="analog stick sensitivity"></string>
+	<string english="bind flip" comment="menu option"></string>
+	<string english="bind enter" comment="menu option"></string>
+	<string english="bind menu" comment="menu option"></string>
 	<string english="Flip is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32"></string>
 	<string english="Enter is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32"></string>
 	<string english="Menu is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32"></string>
 	<string english="ERROR: No language files found." comment="wrapped"></string>
 	<string english="This menu is only shown when having a lang folder in your VVVVVV folder." comment="wrapped, the folder is called lang. Translation maintenance menu"></string>
+	<string english="translation maintenance" comment="menu option"></string>
+	<string english="sync language files" comment="menu option"></string>
 	<string english="Sync language files" comment="title, translation maintenance menu" max="20"></string>
+	<string english="sync" comment="menu option, verb"></string>
 	<string english="Merge all new strings from the template files into the translation files, keeping existing translations" comment="wrapped, translation maintenance menu"></string>
+	<string english="statistics" comment="menu option"></string>
 	<string english="Statistics" comment="title, translation maintenance menu" max="20"></string>
 	<string english="Count the amount of untranslated strings for each language" comment="wrapped, translation maintenance menu"></string>
+	<string english="toggle test mode" comment="menu option"></string>
 	<string english="Test mode" comment="title, translation maintenance menu" max="20"></string>
 	<string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." comment="wrapped, translation maintenance menu"></string>
 	<string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." comment="wrapped, translation maintenance menu"></string>
+	<string english="accessibility options" comment="menu option"></string>
 	<string english="Accessibility" comment="title" max="20"></string>
 	<string english="Disable screen effects, enable slowdown modes or invincibility" comment="wrapped"></string>
+	<string english="animated backgrounds" comment="menu option"></string>
 	<string english="Backgrounds" comment="title" max="20"></string>
 	<string english="Backgrounds are ON." comment="wrapped"></string>
 	<string english="Backgrounds are OFF." comment="wrapped"></string>
+	<string english="screen effects" comment="menu option"></string>
 	<string english="Screen Effects" comment="title" max="20"></string>
 	<string english="Disables screen shakes and flashes." comment="wrapped"></string>
 	<string english="Screen Effects are ON." comment="wrapped"></string>
 	<string english="Screen Effects are OFF." comment="wrapped"></string>
+	<string english="text outline" comment="menu option"></string>
 	<string english="Text Outline" comment="title" max="20"></string>
 	<string english="Disables outline on game text" comment="wrapped"></string>
 	<string english="Text outlines are ON." comment="wrapped"></string>
 	<string english="Text outlines are OFF." comment="wrapped"></string>
+	<string english="invincibility" comment="menu option"></string>
 	<string english="Invincibility" comment="title" max="20"></string>
 	<string english="Provided to help disabled gamers explore the game. Can cause glitches." comment="wrapped, invincibility mode"></string>
 	<string english="Invincibility is ON." comment="wrapped"></string>
 	<string english="Invincibility is off." comment="wrapped"></string>
 	<string english="Are you sure you want to enable invincibility?" comment="wrapped"></string>
+	<string english="no, return to options" comment="menu option"></string>
+	<string english="yes, enable" comment="menu option"></string>
+	<string english="slowdown" comment="menu option"></string>
 	<string english="Game Speed" comment="title" max="20"></string>
 	<string english="May be useful for disabled gamers using one switch devices." comment="wrapped"></string>
 	<string english="Select a new game speed below." comment="wrapped"></string>
@@ -108,24 +170,36 @@
 	<string english="Game speed is at 80%" comment="wrapped"></string>
 	<string english="Game speed is at 60%" comment="wrapped"></string>
 	<string english="Game speed is at 40%" comment="wrapped"></string>
+	<string english="normal speed" comment="menu option"></string>
+	<string english="80% speed" comment="menu option"></string>
+	<string english="60% speed" comment="menu option"></string>
+	<string english="40% speed" comment="menu option"></string>
+	<string english="load screen" comment="menu option"></string>
 	<string english="Fake Load Screen" comment="title, allows the loading screen which counts to 100% to be turned off" max="20"></string>
 	<string english="Fake loading screen is OFF" comment="wrapped, allows the loading screen which counts to 100% to be turned off"></string>
 	<string english="Fake loading screen is ON" comment="wrapped, allows the loading screen which counts to 100% to be turned off"></string>
+	<string english="room name bg" comment="menu option, background behind room names"></string>
 	<string english="Room Name BG" comment="title, background behind room names" max="20"></string>
 	<string english="Lets you see through what is behind the name at the bottom of the screen." comment="wrapped"></string>
 	<string english="Room name background is TRANSLUCENT" comment="wrapped"></string>
 	<string english="Room name background is OPAQUE" comment="wrapped"></string>
+	<string english="play intermission 1" comment="menu option"></string>
+	<string english="play intermission 2" comment="menu option"></string>
 	<string english="Who do you want to play the level with?" comment="wrapped, choose your NPC companion"></string>
+	<string english="time trials" comment="menu option"></string>
 	<string english="Time Trials" comment="title" max="20"></string>
 	<string english="Replay any level in the game in a competitive time trial mode." comment="wrapped"></string>
 	<string english="Time Trials are not available with slowdown or invincibility." comment="wrapped"></string>
+	<string english="intermissions" comment="menu option"></string>
 	<string english="Intermissions" comment="title" max="20"></string>
 	<string english="Replay the intermission levels." comment="wrapped"></string>
 	<string english="TO UNLOCK: Complete the intermission levels in-game." comment="wrapped"></string>
+	<string english="no death mode" comment="menu option"></string>
 	<string english="No Death Mode" comment="title" max="20"></string>
 	<string english="Play the entire game without dying once." comment="wrapped"></string>
 	<string english="No Death Mode is not available with slowdown or invincibility." comment="wrapped"></string>
 	<string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." comment="wrapped, ranks are B A S V"></string>
+	<string english="flip mode" comment="menu option"></string>
 	<string english="Flip Mode" comment="title" max="20"></string>
 	<string english="Flip the entire game vertically. Compatible with other game modes." comment="wrapped"></string>
 	<string english="Currently ENABLED!" comment="wrapped, flip mode"></string>
@@ -156,8 +230,6 @@
 	<string english="A" comment="time trial rank"></string>
 	<string english="S" comment="time trial rank"></string>
 	<string english="V" comment="time trial rank"></string>
-	<string english="Unlock Time Trials" comment="title" max="20"></string>
-	<string english="You can unlock each time trial separately." comment="wrapped"></string>
 	<string english="Congratulations!" comment="title" max="20"></string>
 	<string english="Your save files have been updated." comment="wrapped, player completed game"></string>
 	<string english="If you want to keep exploring the game, select CONTINUE from the play menu." comment="wrapped"></string>
@@ -166,6 +238,19 @@
 	<string english="You have unlocked No Death Mode." comment="wrapped"></string>
 	<string english="You have unlocked Flip Mode." comment="wrapped"></string>
 	<string english="You have unlocked the intermission levels." comment="wrapped"></string>
+	<string english="play a level" comment="menu option"></string>
+	<string english="level editor" comment="menu option"></string>
+	<string english="open level folder" comment="menu option"></string>
+	<string english="return" comment="menu option"></string>
+	<string english="return to play menu" comment="menu option"></string>
+	<string english="ok" comment="button"></string>
+	<string english="next page" comment="menu option"></string>
+	<string english="previous page" comment="menu option"></string>
+	<string english="first page" comment="menu option"></string>
+	<string english="last page" comment="menu option"></string>
+	<string english="continue from save" comment="menu option"></string>
+	<string english="start from beginning" comment="menu option"></string>
+	<string english="back to levels" comment="menu option"></string>
 	<string english="To install new player levels, copy the .vvvvvv files to this folder:" comment=""></string>
 	<string english="[ Press ACTION to Start ]" comment="wrapped, title screen"></string>
 	<string english="ACTION = Space, Z, or V" comment="wrapped, title screen"></string>
@@ -217,17 +302,32 @@
 	<string english="Return to main menu?" comment="wrapped"></string>
 	<string english="Do you want to quit? You will lose any unsaved progress." comment="wrapped"></string>
 	<string english="Do you want to return to the secret laboratory?" comment="wrapped"></string>
-	<string english="no, keep playing" comment="28"></string>
-	<string english="[ NO, KEEP PLAYING ]" comment="32"></string>
-	<string english="yes, quit to menu" comment="24"></string>
-	<string english="[ YES, QUIT TO MENU ]" comment="28"></string>
-	<string english="yes, return" comment="24"></string>
-	<string english="[ YES, RETURN ]" comment="28"></string>
+	<string english="no, keep playing" comment="" max="28"></string>
+	<string english="[ NO, KEEP PLAYING ]" comment="" max="32"></string>
+	<string english="no, return" comment=""></string>
+	<string english="yes, quit to menu" comment="" max="24"></string>
+	<string english="[ YES, QUIT TO MENU ]" comment="" max="28"></string>
+	<string english="yes, return" comment="" max="24"></string>
+	<string english="[ YES, RETURN ]" comment="" max="28"></string>
+	<string english="yes, quit" comment=""></string>
 	<string english="Press Left/Right to choose a Teleporter" comment="tight fit, so maybe `Left/Right: choose teleporter`" max="40"></string>
 	<string english="Press ENTER to Teleport" comment="" max="40"></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
-	<string english="" comment=""></string>
+	<string english="change description" comment="level editor menu option"></string>
+	<string english="edit scripts" comment="level editor menu option"></string>
+	<string english="change music" comment="level editor menu option"></string>
+	<string english="editor ghosts" comment="level editor menu option"></string>
+	<string english="load level" comment="level editor menu option"></string>
+	<string english="save level" comment="level editor menu option"></string>
+	<string english="quit to main menu" comment="level editor menu option" max="18"></string>
+	<string english="change name" comment="level editor menu option"></string>
+	<string english="change author" comment="level editor menu option"></string>
+	<string english="change description" comment="level editor menu option"></string>
+	<string english="change website" comment="level editor menu option"></string>
+	<string english="next song" comment="level editor menu option"></string>
+	<string english="back" comment="level editor menu option"></string>
+	<string english="yes, save and quit" comment="level editor menu option"></string>
+	<string english="no, quit without saving" comment="level editor menu option"></string>
+	<string english="return to editor" comment="level editor menu option"></string>
 	<string english="" comment=""></string>
 	<string english="" comment=""></string>
 	<string english="" comment=""></string>
