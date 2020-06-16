@@ -680,7 +680,7 @@ void menurender()
             graphics.Print(220, 90+55, loc::gettext("+1 Rank!"), 255, 255, 255);
         }
 
-        int rankw = graphics.len(loc::gettext("Rank:")) + 48;
+        int rankw = graphics.len(loc::gettext("Rank:"))*2 + 48;
         int rankx = (320-rankw)/2;
         int rankx2 = rankx + rankw - 32;
         if (game.currentmenuname == Menu::timetrialcomplete2 || game.currentmenuname == Menu::timetrialcomplete3)
