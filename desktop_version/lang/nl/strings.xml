@@ -68,7 +68,7 @@
     <string english="Current mode: LINEAR" comment="wrapped">Huidige modus: LINEAIR</string>
     <string english="Current mode: NEAREST" comment="wrapped, nearest neighbor filter">Huidige modus: NEAREST</string>
     <string english="toggle analogue" comment="menu option, analogue mode simulates distortion from bad signal">analoge modus</string>
-    <string english="Analogue Mode" comment="analogue mode simulates distortion from bad signal">Analoge modus</string>
+    <string english="Analogue Mode" comment="title, analogue mode simulates distortion from bad signal" max="20">Analoge modus</string>
     <string english="There is nothing wrong with your television set. Do not attempt to adjust the picture." comment="wrapped">Er is niets mis met je televisie. Probeer niet het beeld bij te stellen.</string>
     <string english="toggle mouse" comment="menu option">muisaanwijzer</string>
     <string english="Toggle Mouse Cursor" comment="title" max="20">Muisaanwijzer</string>
@@ -191,8 +191,8 @@
     <string english="No Death Mode is not available with slowdown or invincibility." comment="wrapped">Éénlevenmodus is niet beschikbaar met vertraging of onkwetsbaarheid.</string>
     <string english="unlock no death mode" comment="menu option">éénlevenmodus ontgrendelen</string>
     <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." comment="wrapped, ranks are B A S V">OM TE ONTGRENDELEN: Behaal een S-score of hoger in ten minste 4 races.</string>
-    <string english="flip mode" comment="menu option">flipmodus</string>
-    <string english="Flip Mode" comment="title" max="20">Flipmodus</string>
+    <string english="flip mode" comment="menu option, mirrors the entire game vertically">flipmodus</string>
+    <string english="Flip Mode" comment="title, mirrors the entire game vertically" max="20">Flipmodus</string>
     <string english="Flip the entire game vertically. Compatible with other game modes." comment="wrapped">Spiegelt het hele spel verticaal. Werkt samen met andere spelmodi.</string>
     <string english="unlock flip mode" comment="menu option">flipmodus ontgrendelen</string>
     <string english="Currently ENABLED!" comment="wrapped, flip mode">Momenteel INGESCHAKELD!</string>
@@ -305,7 +305,7 @@
     <string english="Press ENTER to Teleport" comment="" max="40">Druk op ENTER om te teleporteren</string>
     <string english="edit scripts" comment="level editor menu option">scripts bewerken</string>
     <string english="change music" comment="level editor menu option">muziek wijzigen</string>
-    <string english="editor ghosts" comment="level editor menu option">editor-spoken</string>
+    <string english="editor ghosts" comment="level editor menu option. Toggles option to show a repetition of the player&apos;s path after playtesting">editor-spoken</string>
     <string english="load level" comment="level editor menu option">level laden</string>
     <string english="save level" comment="level editor menu option">level opslaan</string>
     <string english="quit to main menu" comment="level editor menu option" max="19">stop en naar menu</string>
