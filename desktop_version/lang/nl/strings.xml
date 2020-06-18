@@ -104,10 +104,10 @@
     <string english="Low" comment="analog stick sensitivity">Laag</string>
     <string english="Medium" comment="analog stick sensitivity">Gemiddeld</string>
     <string english="High" comment="analog stick sensitivity">Hoog</string>
-    <string english="bind flip" comment="menu option">flip binden</string>
+    <string english="bind flip" comment="menu option">omkeren binden</string>
     <string english="bind enter" comment="menu option">enter binden</string>
     <string english="bind menu" comment="menu option">menu binden</string>
-    <string english="Flip is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32">Flip is gebonden aan: </string>
+    <string english="Flip is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32">Omkeren is gebonden aan: </string>
     <string english="Enter is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32">Enter is gebonden aan: </string>
     <string english="Menu is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32">Menu is gebonden aan: </string>
     <string english="ERROR: No language files found." comment="wrapped">FOUT: Geen taalbestanden gevonden.</string>
@@ -173,13 +173,13 @@
     <string english="play intermission 1" comment="menu option">intermissie 1 spelen</string>
     <string english="play intermission 2" comment="menu option">intermissie 2 spelen</string>
     <string english="Who do you want to play the level with?" comment="wrapped, choose your NPC companion">Met wie wil je het level spelen?</string>
-    <string english="time trials" comment="menu option">races</string>
-    <string english="Time Trials" comment="title" max="20">Races</string>
+    <string english="time trials" comment="menu option">races tegen de klok</string>
+    <string english="Time Trials" comment="title" max="20">Races tegen de klok</string>
     <string english="Replay any level in the game in a competitive time trial mode." comment="wrapped">Speel elk level in het spel opnieuw in een competitieve racemodus.</string>
-    <string english="Time Trials are not available with slowdown or invincibility." comment="wrapped">Races zijn niet beschikbaar met vertraging of onkwetsbaarheid.</string>
-    <string english="unlock time trials" comment="menu option">races ontgrendelen</string>
+    <string english="Time Trials are not available with slowdown or invincibility." comment="wrapped">Races tegen de klok zijn niet beschikbaar met vertraging of onkwetsbaarheid.</string>
+    <string english="unlock time trials" comment="menu option">races tegen de klok ontgrendelen</string>
     <string english="Unlock Time Trials" comment="title" max="20">Races ontgrendelen</string>
-    <string english="You can unlock each time trial separately." comment="wrapped">Je kunt elke race apart ontgrendelen.</string>
+    <string english="You can unlock each time trial separately." comment="wrapped">Je kunt elke race tegen de klok afzonderlijk ontgrendelen.</string>
     <string english="intermissions" comment="menu option">intermissies</string>
     <string english="Intermissions" comment="title" max="20">Intermissies</string>
     <string english="Replay the intermission levels." comment="wrapped">Speel de intermissielevels opnieuw.</string>
@@ -190,11 +190,11 @@
     <string english="Play the entire game without dying once." comment="wrapped">Speel het gehele spel zonder ook maar één keer dood te gaan.</string>
     <string english="No Death Mode is not available with slowdown or invincibility." comment="wrapped">Éénlevenmodus is niet beschikbaar met vertraging of onkwetsbaarheid.</string>
     <string english="unlock no death mode" comment="menu option">éénlevenmodus ontgrendelen</string>
-    <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." comment="wrapped, ranks are B A S V">OM TE ONTGRENDELEN: Behaal een S-score of hoger in ten minste 4 races.</string>
-    <string english="flip mode" comment="menu option, mirrors the entire game vertically">flipmodus</string>
-    <string english="Flip Mode" comment="title, mirrors the entire game vertically" max="20">Flipmodus</string>
-    <string english="Flip the entire game vertically. Compatible with other game modes." comment="wrapped">Spiegelt het hele spel verticaal. Werkt samen met andere spelmodi.</string>
-    <string english="unlock flip mode" comment="menu option">flipmodus ontgrendelen</string>
+    <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." comment="wrapped, ranks are B A S V">OM TE ONTGRENDELEN: Behaal een S-score of hoger in ten minste 4 races tegen de klok.</string>
+    <string english="flip mode" comment="menu option, mirrors the entire game vertically">spiegelmodus</string>
+    <string english="Flip Mode" comment="title, mirrors the entire game vertically" max="20">Spiegelmodus</string>
+    <string english="Flip the entire game vertically. Compatible with other game modes." comment="wrapped">Spiegelt het gehele spel verticaal. Werkt samen met andere spelmodi.</string>
+    <string english="unlock flip mode" comment="menu option">spiegelmodus ontgrendelen</string>
     <string english="Currently ENABLED!" comment="wrapped, flip mode">Momenteel INGESCHAKELD!</string>
     <string english="Currently Disabled." comment="wrapped, flip mode">Momenteel uitgeschakeld.</string>
     <string english="TO UNLOCK: Complete the game." comment="wrapped">OM TE ONTGRENDELEN: Voltooi het spel.</string>
@@ -227,10 +227,10 @@
     <string english="Congratulations!" comment="title" max="20">Gefeliciteerd!</string>
     <string english="Your save files have been updated." comment="wrapped, player completed game">Je opgeslagen gegevens zijn bijgewerkt.</string>
     <string english="If you want to keep exploring the game, select CONTINUE from the play menu." comment="wrapped">Als je het spel verder wilt verkennen, kies dan HERVATTEN in het spelmenu.</string>
-    <string english="You have unlocked a new Time Trial." comment="wrapped">Je hebt een nieuwe race ontgrendeld.</string>
-    <string english="You have unlocked some new Time Trials." comment="wrapped">Je hebt een paar nieuwe races ontgrendeld.</string>
+    <string english="You have unlocked a new Time Trial." comment="wrapped">Je hebt een nieuwe race tegen de klok ontgrendeld.</string>
+    <string english="You have unlocked some new Time Trials." comment="wrapped">Je hebt een paar nieuwe races tegen de klok ontgrendeld.</string>
     <string english="You have unlocked No Death Mode." comment="wrapped">Je hebt de éénlevenmodus ontgrendeld.</string>
-    <string english="You have unlocked Flip Mode." comment="wrapped">Je hebt flipmodus ontgrendeld.</string>
+    <string english="You have unlocked Flip Mode." comment="wrapped">Je hebt de spiegelmodus ontgrendeld.</string>
     <string english="You have unlocked the intermission levels." comment="wrapped">Je hebt de intermissielevels ontgrendeld.</string>
     <string english="play a level" comment="menu option">een level spelen</string>
     <string english="level editor" comment="menu option">leveleditor</string>
@@ -284,7 +284,7 @@
     <string english="Missing..." comment="" max="15">Vermist...</string>
     <string english="Cannot Save in Level Replay" comment="wrapped">Kan niet opslaan tijdens opnieuw spelen van een level</string>
     <string english="Cannot Save in No Death Mode" comment="wrapped">Kan niet opslaan in éénlevenmodus</string>
-    <string english="Cannot Save in Time Trial" comment="wrapped">Kan niet opslaan in race</string>
+    <string english="Cannot Save in Time Trial" comment="wrapped">Kan niet opslaan in race tegen de klok</string>
     <string english="Cannot Save in Secret Lab" comment="wrapped">Kan niet opslaan in geheim lab</string>
     <string english="Game saved ok!" comment="wrapped">Spel opgeslagen!</string>
     <string english="[Press ACTION to save your game]" comment="wrapped">[Druk op ACTIE om je spel op te slaan]</string>
