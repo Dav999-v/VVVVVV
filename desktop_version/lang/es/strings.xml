@@ -17,7 +17,7 @@
     <string english="Tele Save" comment="title, game save that was made at a teleporter" max="20">Tele guardado</string>
     <string english="continue from quicksave" comment="menu option, game save that was made freely from the menu (at any checkpoint)">continuar desde guardado rapido</string>
     <string english="Quick Save" comment="title, game save that was made freely from the menu (at any checkpoint)" max="20">Guardado rápido</string>
-    <string english="proceed" comment="menu option"></string>
+    <string english="proceed" comment="menu option">continuar</string>
     <string english="new game" comment="menu option">nuevo juego</string>
     <string english="start new game" comment="menu option, extra confirmation">empezar un juego nuevo</string>
     <string english="secret lab" comment="menu option">laboratorio secreto</string>
@@ -68,7 +68,7 @@
     <string english="Current mode: LINEAR" comment="wrapped">Modo actual: LINEAL</string>
     <string english="Current mode: NEAREST" comment="wrapped, nearest neighbor filter">Modo actual: CERCANO</string>
     <string english="toggle analogue" comment="menu option, analogue mode simulates distortion from bad signal">alternar analogico</string>
-    <string english="Analogue Mode" comment="analogue mode simulates distortion from bad signal">Modo Analógico</string>
+    <string english="Analogue Mode" comment="title, analogue mode simulates distortion from bad signal" max="20">Modo Analógico</string>
     <string english="There is nothing wrong with your television set. Do not attempt to adjust the picture." comment="wrapped">No hay nada mal con tu televisión. No intentes ajustar la imagen.</string>
     <string english="toggle mouse" comment="menu option">alternar cursor</string>
     <string english="Toggle Mouse Cursor" comment="title" max="20">Alternar Cursor</string>
@@ -191,8 +191,8 @@
     <string english="No Death Mode is not available with slowdown or invincibility." comment="wrapped">El Modo Sin Muertes no está disponible con desaceleración o invencibilidad.</string>
     <string english="unlock no death mode" comment="menu option">desbloquear modo sin muertes</string>
     <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." comment="wrapped, ranks are B A S V">PARA LIBERAR: Consigue un rango-S o superior en al menos 4 pruebas a contrarreloj.</string>
-    <string english="flip mode" comment="menu option">modo volteado</string>
-    <string english="Flip Mode" comment="title" max="20">Modo volteado</string>
+    <string english="flip mode" comment="menu option, mirrors the entire game vertically">modo volteado</string>
+    <string english="Flip Mode" comment="title, mirrors the entire game vertically" max="20">Modo volteado</string>
     <string english="Flip the entire game vertically. Compatible with other game modes." comment="wrapped">Voltear todo el juego verticalmente. Compatible con otros modos de juego.</string>
     <string english="unlock flip mode" comment="menu option">desbloquear modo volteado</string>
     <string english="Currently ENABLED!" comment="wrapped, flip mode">Actualmente ACITVADO!</string>
@@ -277,8 +277,8 @@
     <string english="CREW" comment="in-game menu" max="8">MIEMBROS</string>
     <string english="STATS" comment="in-game menu" max="8">REGISTRO</string>
     <string english="SAVE" comment="in-game menu" max="8">GUARDAR</string>
-    <string english="[ QUIT ]" comment="in-game menu" max="40"></string>
-    <string english="[ GRAVITRON ]" comment="in-game menu" max="40"></string>
+    <string english="[ QUIT ]" comment="in-game menu" max="40">[ SALIR ]</string>
+    <string english="[ GRAVITRON ]" comment="in-game menu" max="40">[ GRAVITRON ]</string>
     <string english="NO SIGNAL" comment="">SIN SEÑAL</string>
     <string english="Press ACTION to warp to the ship." comment="wrapped, spaceship. Warp = teleport">Presiona ACCIÓN para transportar la nave.</string>
     <string english="Missing..." comment="" max="15">Faltando...</string>
