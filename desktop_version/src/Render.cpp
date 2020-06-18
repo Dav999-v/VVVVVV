@@ -674,7 +674,7 @@ void menurender()
         );
         graphics.drawspritesetcol(30, 80+55, 22, 22);
         graphics.Print(65, 80+55, loc::gettext("SHINY TRINKETS:"), 255, 255, 255);
-        graphics.Print(65, 90+55, tempstring, tr, tg, tb);
+        graphics.Print(65, 90+55, tempstring_c, tr, tg, tb);
         if (game.trinkets() >= game.timetrialshinytarget)
         {
             graphics.Print(220, 90+55, loc::gettext("+1 Rank!"), 255, 255, 255);

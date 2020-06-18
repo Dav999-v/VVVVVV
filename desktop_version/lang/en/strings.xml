@@ -68,7 +68,7 @@
 	<string english="Current mode: LINEAR" comment="wrapped"></string>
 	<string english="Current mode: NEAREST" comment="wrapped, nearest neighbor filter"></string>
 	<string english="toggle analogue" comment="menu option, analogue mode simulates distortion from bad signal"></string>
-	<string english="Analogue Mode" comment="analogue mode simulates distortion from bad signal"></string>
+	<string english="Analogue Mode" comment="title, analogue mode simulates distortion from bad signal" max="20"></string>
 	<string english="There is nothing wrong with your television set. Do not attempt to adjust the picture." comment="wrapped"></string>
 	<string english="toggle mouse" comment="menu option"></string>
 	<string english="Toggle Mouse Cursor" comment="title" max="20"></string>
@@ -191,8 +191,8 @@
 	<string english="No Death Mode is not available with slowdown or invincibility." comment="wrapped"></string>
 	<string english="unlock no death mode" comment="menu option"></string>
 	<string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." comment="wrapped, ranks are B A S V"></string>
-	<string english="flip mode" comment="menu option"></string>
-	<string english="Flip Mode" comment="title" max="20"></string>
+	<string english="flip mode" comment="menu option, mirrors the entire game vertically"></string>
+	<string english="Flip Mode" comment="title, mirrors the entire game vertically" max="20"></string>
 	<string english="Flip the entire game vertically. Compatible with other game modes." comment="wrapped"></string>
 	<string english="unlock flip mode" comment="menu option"></string>
 	<string english="Currently ENABLED!" comment="wrapped, flip mode"></string>
@@ -305,7 +305,7 @@
 	<string english="Press ENTER to Teleport" comment="" max="40"></string>
 	<string english="edit scripts" comment="level editor menu option"></string>
 	<string english="change music" comment="level editor menu option"></string>
-	<string english="editor ghosts" comment="level editor menu option"></string>
+	<string english="editor ghosts" comment="level editor menu option. Toggles option to show a repetition of the player&apos;s path after playtesting"></string>
 	<string english="load level" comment="level editor menu option"></string>
 	<string english="save level" comment="level editor menu option"></string>
 	<string english="quit to main menu" comment="level editor menu option" max="19"></string>
