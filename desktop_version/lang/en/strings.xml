@@ -75,6 +75,16 @@
 	<string english="Show/hide the system mouse cursor." comment="wrapped"></string>
 	<string english="Current mode: SHOW" comment="wrapped, show cursor"></string>
 	<string english="Current mode: HIDE" comment="wrapped, hide cursor"></string>
+	<string english="toggle fps" comment="menu option"></string>
+	<string english="Toggle 30+ FPS" comment="title" max="20"></string>
+	<string english="Change whether the game runs at 30 or over 30 FPS." comment="wrapped"></string>
+	<string english="Current mode: 30 FPS" comment="wrapped"></string>
+	<string english="Current mode: Over 30 FPS" comment="wrapped"></string>
+	<string english="toggle vsync" comment="menu option"></string>
+	<string english="Toggle VSync" comment="title" max="20"></string>
+	<string english="Turn VSync on or off." comment="wrapped"></string>
+	<string english="Current mode: VSYNC OFF" comment="wrapped"></string>
+	<string english="Current mode: VSYNC ON" comment="wrapped"></string>
 	<string english="VVVVVV is a game by" comment="credits" max="40"></string>
 	<string english="Terry Cavanagh" comment="credits" max="20"></string>
 	<string english="and features music by" comment="credits" max="40"></string>
@@ -112,7 +122,7 @@
 	<string english="Menu is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32"></string>
 	<string english="ERROR: No language files found." comment="wrapped"></string>
 	<string english="This menu is only shown when having a lang folder in your VVVVVV folder." comment="wrapped, the folder is called lang. Translation maintenance menu"></string>
-	<string english="translation maintenance" comment="menu option"></string>
+	<string english="translation maintenance" comment="menu option, menu that allows you to apply maintenance to translations"></string>
 	<string english="sync language files" comment="menu option"></string>
 	<string english="Sync language files" comment="title, translation maintenance menu" max="20"></string>
 	<string english="sync" comment="menu option, verb"></string>

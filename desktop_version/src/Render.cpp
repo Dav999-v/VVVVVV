@@ -170,30 +170,29 @@ void menurender()
             }
             break;
         case 5:
-            graphics.bigprint(-1, 30, "Toggle 30+ FPS", tr, tg, tb, true);
-            graphics.Print(-1, 65, "Change whether the game", tr, tg, tb, true);
-            graphics.Print(-1, 75, "runs at 30 or over 30 FPS.", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Toggle 30+ FPS"), tr, tg, tb, true);
+            graphics.PrintWrap(-1, 65, loc::gettext("Change whether the game runs at 30 or over 30 FPS."), tr, tg, tb, true);
 
             if (!game.over30mode)
             {
-                graphics.Print(-1, 95, "Current mode: 30 FPS", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap(-1, 95, loc::gettext("Current mode: 30 FPS"), tr/2, tg/2, tb/2, true);
             }
             else
             {
-                graphics.Print(-1, 95, "Current mode: Over 30 FPS", tr, tg, tb, true);
+                graphics.PrintWrap(-1, 95, loc::gettext("Current mode: Over 30 FPS"), tr, tg, tb, true);
             }
             break;
         case 6:
-            graphics.bigprint(-1, 30, "Toggle VSync", tr, tg, tb, true);
-            graphics.Print(-1, 65, "Turn VSync on or off.", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Toggle VSync"), tr, tg, tb, true);
+            graphics.PrintWrap(-1, 65, loc::gettext("Turn VSync on or off."), tr, tg, tb, true);
 
             if (!graphics.vsync)
             {
-                graphics.Print(-1, 95, "Current mode: VSYNC OFF", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap(-1, 95, loc::gettext("Current mode: VSYNC OFF"), tr/2, tg/2, tb/2, true);
             }
             else
             {
-                graphics.Print(-1, 95, "Current mode: VSYNC ON", tr, tg, tb, true);
+                graphics.PrintWrap(-1, 95, loc::gettext("Current mode: VSYNC ON"), tr, tg, tb, true);
             }
         }
         break;

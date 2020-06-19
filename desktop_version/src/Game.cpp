@@ -7092,8 +7092,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("toggle filter"));
         option(loc::gettext("toggle analogue"));
         option(loc::gettext("toggle mouse"));
-        option("toggle fps");
-        option("toggle vsync");
+        option(loc::gettext("toggle fps"));
+        option(loc::gettext("toggle vsync"));
         option(loc::gettext("return"));
         menuxoff = -85;
         menuyoff = 0;
