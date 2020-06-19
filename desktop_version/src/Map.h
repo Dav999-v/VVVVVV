@@ -94,10 +94,12 @@ public:
 
 
     std::string roomname;
+    std::string hiddenname;
 
     //Special tower stuff
     bool towermode;
     float ypos;
+    float oldypos;
     int bypos;
     int cameramode;
     int cameraseek, cameraseekframe;
@@ -112,6 +114,7 @@ public:
     int colstate, colstatedelay;
     int colsuperstate;
     int spikeleveltop, spikelevelbottom;
+    int oldspikeleveltop, oldspikelevelbottom;
     bool tdrawback;
     int bscroll;
     //final level navigation

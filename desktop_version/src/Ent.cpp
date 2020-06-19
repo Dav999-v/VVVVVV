@@ -27,6 +27,8 @@ entclass::entclass()
 	cy = 0;
 	newxp = 0;
 	newyp = 0;
+	oldxp = 0;
+	oldyp = 0;
 
 	x1 = 0;
 	y1 = 0;
@@ -51,6 +53,8 @@ entclass::entclass()
 	walkingframe = 0;
 	dir = 0;
 	actionframe = 0;
+
+	realcol = 0;
 }
 
 bool entclass::outside()
@@ -86,8 +90,9 @@ void entclass::setenemy( int t )
 	{
 	case 0:
 		//lies emitter
-		if( (para)==0)
+		switch ((int) para)
 		{
+		case 0:
 			tile = 60;
 			animate = 2;
 			colour = 6;
@@ -95,10 +100,10 @@ void entclass::setenemy( int t )
 			w = 32;
 			h = 32;
 			x1 = -200;
-		}
-		else if ( (para) == 1)
-		{
+			break;
+		case 1:
 			yp += 10;
+			oldyp += 10;
 			tile = 63;
 			animate = 100; //LIES
 			colour = 6;
@@ -110,21 +115,22 @@ void entclass::setenemy( int t )
 			h = 10;
 			cx = 1;
 			cy = 1;
-		}
-		else if ( (para) == 2)
-		{
+			break;
+		case 2:
 			tile = 62;
 			animate = 100;
 			colour = 6;
 			behave = -1;
 			w = 32;
 			h = 32;
+			break;
 		}
 		break;
 	case 1:
 		//FACTORY emitter
-		if( (para)==0)
+		switch ((int) para)
 		{
+		case 0:
 			tile = 72;
 			animate = 3;
 			size = 9;
@@ -134,11 +140,12 @@ void entclass::setenemy( int t )
 			h = 40;
 			cx = 0;
 			cy = 24;
-		}
-		else if ( (para) == 1)
-		{
+			break;
+		case 1:
 			xp += 4;
+			oldxp += 4;
 			yp -= 4;
+			oldyp -= 4;
 			tile = 76;
 			animate = 100; // Clouds
 			colour = 6;
@@ -149,15 +156,15 @@ void entclass::setenemy( int t )
 			h = 12;
 			cx = 0;
 			cy = 6;
-		}
-		else if ( (para) == 2)
-		{
+			break;
+		case 2:
 			tile = 77;
 			animate = 100;
 			colour = 6;
 			behave = -1;
 			w = 32;
 			h = 16;
+			break;
 		}
 		break;
 	default:
@@ -216,7 +223,9 @@ void entclass::setenemyroom( int rx, int ry )
 			w = 16;
 			h = 16;
 			xp -= 24;
+			oldxp -= 24;
 			yp -= 16;
+			oldyp -= 16;
 		}
 		else
 		{
@@ -229,7 +238,9 @@ void entclass::setenemyroom( int rx, int ry )
 			cx = 4;
 			size = 9;
 			xp -= 4;
+			oldxp -= 4;
 			yp -= 32;
+			oldyp -= 32;
 		}
 
 		break;
@@ -330,6 +341,7 @@ void entclass::setenemyroom( int rx, int ry )
 		w = 32;
 		h = 14;
 		yp += 1;
+		oldyp += 1;
 		break;
 	case rn(16, 2): // (Manequins)
 		tile = 52;
@@ -338,6 +350,7 @@ void entclass::setenemyroom( int rx, int ry )
 		w = 16;
 		h = 25;
 		yp -= 4;
+		oldyp -= 4;
 		break;
 	case rn(18, 0): // (Obey)
 		tile = 51;
@@ -578,6 +591,53 @@ void entclass::settreadmillcolour( int rx, int ry )
 		break; //Red
 	default:
 		return;
+		break;
+	}
+}
+
+void entclass::updatecolour()
+{
+	switch (size)
+	{
+	case 0: // Sprites
+	case 7: // Teleporter
+	case 9: // Really Big Sprite! (2x2)
+	case 10: // 2x1 Sprite
+	case 13: // Special for epilogue: huge hero!
+		graphics.setcol(colour);
+		realcol = graphics.ct.colour;
+		break;
+	case 3: // Big chunky pixels!
+		realcol = graphics.bigchunkygetcol(colour);
+		break;
+	case 4: // Small pickups
+		graphics.huetilesetcol(colour);
+		realcol = graphics.ct.colour;
+		break;
+	case 11: // The fucking elephant
+		if (game.noflashingmode)
+		{
+			graphics.setcol(22);
+		}
+		else
+		{
+			graphics.setcol(colour);
+		}
+		realcol = graphics.ct.colour;
+		break;
+	case 12: // Regular sprites that don't wrap
+		// if we're outside the screen, we need to draw indicators
+		if ((xp < -20 && vx > 0) || (xp > 340 && vx < 0))
+		{
+			graphics.setcol(23);
+		}
+		else
+		{
+			graphics.setcol(colour);
+		}
+		realcol = graphics.ct.colour;
+		break;
+	default:
 		break;
 	}
 }

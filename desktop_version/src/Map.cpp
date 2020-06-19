@@ -13,6 +13,8 @@ mapclass::mapclass()
 	colsuperstate = 0;
 	spikeleveltop = 0;
 	spikelevelbottom = 0;
+	oldspikeleveltop = 0;
+	oldspikelevelbottom = 0;
 	warpx = false;
 	warpy = false;
 	extrarow = 0;
@@ -91,6 +93,10 @@ mapclass::mapclass()
 	2,2,2,2,2,0,0,2,0,3,0,0,0,0,0,0,0,0,0,0,
 	};
 	areamap.insert(areamap.end(), tmap, tmap+400);
+
+	ypos = 0;
+	oldypos = 0;
+	bypos = 0;
 }
 
 int mapclass::RGB(int red,int green,int blue)
@@ -795,6 +801,7 @@ void mapclass::resetplayer()
 			{
 				ypos = 0;
 			}
+			oldypos = ypos;
 			bypos = ypos / 2;
 		}
 	}
@@ -1033,8 +1040,8 @@ void mapclass::gotoroom(int rx, int ry)
 	temp = obj.getplayer();
 	if(temp>-1)
 	{
-		obj.entities[temp].oldxp = obj.entities[temp].xp;
-		obj.entities[temp].oldyp = obj.entities[temp].yp;
+		obj.entities[temp].oldxp = obj.entities[temp].xp - int(obj.entities[temp].vx);
+		obj.entities[temp].oldyp = obj.entities[temp].yp - int(obj.entities[temp].vy);
 	}
 
 	for (size_t i = 0; i < obj.entities.size(); i++)
@@ -1137,13 +1144,19 @@ void mapclass::loadlevel(int rx, int ry)
 	obj.vertplatforms = false;
 	obj.horplatforms = false;
 	roomname = "";
+	hiddenname = "";
 	background = 1;
 	warpx = false;
 	warpy = false;
 
 	towermode = false;
 	ypos = 0;
+	oldypos = 0;
 	extrarow = 0;
+	spikeleveltop = 0;
+	spikelevelbottom = 0;
+	oldspikeleveltop = 0;
+	oldspikelevelbottom = 0;
 
 	//Custom stuff for warplines
 	obj.customwarpmode=false;
@@ -1198,6 +1211,7 @@ void mapclass::loadlevel(int rx, int ry)
 				}
 
 				ypos = (700-29) * 8;
+				oldypos = ypos;
 				bypos = ypos / 2;
 				cameramode = 0;
 				colstate = 0;
@@ -1207,6 +1221,7 @@ void mapclass::loadlevel(int rx, int ry)
 			{
 				//you've entered from the top floor
 				ypos = 0;
+				oldypos = ypos;
 				bypos = 0;
 				cameramode = 0;
 				colstate = 0;
@@ -1268,6 +1283,15 @@ void mapclass::loadlevel(int rx, int ry)
 		{
 			roomtexton = true;
 			roomtext = std::vector<Roomtext>(otherlevel.roomtext);
+		}
+
+		if (game.roomx >= 102 && game.roomx <= 104 && game.roomy >= 110 && game.roomy <= 111)
+		{
+			hiddenname = "The Ship";
+		}
+		else
+		{
+			hiddenname = "Dimension VVVVVV";
 		}
 		break;
 	case 2: //The Lab
@@ -1359,6 +1383,14 @@ void mapclass::loadlevel(int rx, int ry)
 
 		graphics.rcol = 6;
 		changefinalcol(final_mapcol);
+		for (size_t i = 0; i < obj.entities.size(); i++)
+		{
+			if (obj.entities[i].type == 1 || obj.entities[i].type == 2)
+			{
+				//Fix 1-frame glitch
+				obj.entities[i].drawframe = obj.entities[i].tile;
+			}
+		}
 		break;
 	case 7: //Final Level, Tower 1
 		tdrawback = true;
@@ -1375,6 +1407,7 @@ void mapclass::loadlevel(int rx, int ry)
 		tower.loadminitower1();
 
 		ypos = 0;
+		oldypos = 0;
 		bypos = 0;
 		cameramode = 0;
 		colstate = 0;
@@ -1404,6 +1437,7 @@ void mapclass::loadlevel(int rx, int ry)
 		finaly--;
 
 		ypos = (100-29) * 8;
+		oldypos = ypos;
 		bypos = ypos/2;
 		cameramode = 0;
 		colstate = 0;
@@ -1448,6 +1482,7 @@ void mapclass::loadlevel(int rx, int ry)
 		finaly--;
 
 		ypos = (100-29) * 8;
+		oldypos = ypos;
 		bypos = ypos/2;
 		cameramode = 0;
 		colstate = 0;
@@ -1486,6 +1521,7 @@ void mapclass::loadlevel(int rx, int ry)
 		obj.createentity(72, 156, 11, 200); // (horizontal gravity line)
 
 		ypos = 0;
+		oldypos = 0;
 		bypos = 0;
 		cameramode = 0;
 		colstate = 0;
@@ -1909,10 +1945,15 @@ void mapclass::loadlevel(int rx, int ry)
 	}
 
 	//Make sure our crewmates are facing the player if appliciable
+	//Also make sure they're flipped if they're flipped
 	for (size_t i = 0; i < obj.entities.size(); i++)
 	{
 		if (obj.entities[i].rule == 6 || obj.entities[i].rule == 7)
 		{
+			if (obj.entities[i].tile == 144 || obj.entities[i].tile == 144+6)
+			{
+				obj.entities[i].drawframe = 144;
+			}
 			if (obj.entities[i].state == 18)
 			{
 				//face the player
@@ -1924,8 +1965,13 @@ void mapclass::loadlevel(int rx, int ry)
 				else if (j > -1 && obj.entities[j].xp < obj.entities[i].xp - 5)
 				{
 					obj.entities[i].dir = 0;
+					obj.entities[i].drawframe += 3;
 				}
 			}
+		}
+		if (obj.entities[i].rule == 7)
+		{
+			obj.entities[i].drawframe += 6;
 		}
 	}
 }

@@ -169,6 +169,32 @@ void menurender()
                 graphics.PrintWrap(-1, 85, loc::gettext("Current mode: HIDE"), tr/2, tg/2, tb/2, true);
             }
             break;
+        case 5:
+            graphics.bigprint(-1, 30, "Toggle 30+ FPS", tr, tg, tb, true);
+            graphics.Print(-1, 65, "Change whether the game", tr, tg, tb, true);
+            graphics.Print(-1, 75, "runs at 30 or over 30 FPS.", tr, tg, tb, true);
+
+            if (!game.over30mode)
+            {
+                graphics.Print(-1, 95, "Current mode: 30 FPS", tr/2, tg/2, tb/2, true);
+            }
+            else
+            {
+                graphics.Print(-1, 95, "Current mode: Over 30 FPS", tr, tg, tb, true);
+            }
+            break;
+        case 6:
+            graphics.bigprint(-1, 30, "Toggle VSync", tr, tg, tb, true);
+            graphics.Print(-1, 65, "Turn VSync on or off.", tr, tg, tb, true);
+
+            if (!graphics.vsync)
+            {
+                graphics.Print(-1, 95, "Current mode: VSYNC OFF", tr/2, tg/2, tb/2, true);
+            }
+            else
+            {
+                graphics.Print(-1, 95, "Current mode: VSYNC ON", tr, tg, tb, true);
+            }
         }
         break;
     case Menu::credits:
@@ -525,12 +551,6 @@ void menurender()
         graphics.PrintWrap( -1, 75, loc::gettext("Are you sure you want to quit?"), tr, tg, tb, true);
         break;
     case Menu::continuemenu:
-        graphics.crewframedelay--;
-        if (graphics.crewframedelay <= 0)
-        {
-            graphics.crewframedelay = 8;
-            graphics.crewframe = (graphics.crewframe + 1) % 2;
-        }
         switch (game.currentmenuoption)
         {
         case 0:
@@ -546,8 +566,8 @@ void menurender()
             graphics.Print(160 - 84, 132-20, game.tele_gametime, 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2));
             graphics.Print(160 + 40, 132-20, help.number(game.tele_trinkets), 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2));
 
-            graphics.drawspritesetcol(50, 126-20, 50, 18);
-            graphics.drawspritesetcol(175, 126-20, 22, 18);
+            graphics.drawsprite(50, 126-20, 50, graphics.col_clock);
+            graphics.drawsprite(175, 126-20, 22, graphics.col_trinket);
             break;
         case 1:
             //Show quick save info
@@ -562,8 +582,8 @@ void menurender()
             graphics.Print(160 - 84, 132-20, game.quick_gametime, 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2));
             graphics.Print(160 + 40, 132-20, help.number(game.quick_trinkets), 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2));
 
-            graphics.drawspritesetcol(50, 126-20, 50, 18);
-            graphics.drawspritesetcol(175, 126-20, 22, 18);
+            graphics.drawsprite(50, 126-20, 50, graphics.col_clock);
+            graphics.drawsprite(175, 126-20, 22, graphics.col_trinket);
             break;
         }
         break;
@@ -572,12 +592,6 @@ void menurender()
     {
         graphics.bigprint( -1, 25, loc::gettext("GAME OVER"), tr, tg, tb, true, 3);
 
-        graphics.crewframedelay--;
-        if (graphics.crewframedelay <= 0)
-        {
-            graphics.crewframedelay = 8;
-            graphics.crewframe = (graphics.crewframe + 1) % 2;
-        }
         for (int i = 0; i < 6; i++)
         {
             graphics.drawcrewman(169-(3*42)+(i*42), 68, i, game.crewstats[i], true);
@@ -622,12 +636,6 @@ void menurender()
     {
         graphics.bigprint( -1, 8, loc::gettext("WOW"), tr, tg, tb, true, 4);
 
-        graphics.crewframedelay--;
-        if (graphics.crewframedelay <= 0)
-        {
-            graphics.crewframedelay = 8;
-            graphics.crewframe = (graphics.crewframe + 1) % 2;
-        }
         for (int i = 0; i < 6; i++)
         {
             graphics.drawcrewman(169-(3*42)+(i*42), 68, i, game.crewstats[i], true);
@@ -1063,9 +1071,9 @@ void titlerender()
 
     if (!game.menustart)
     {
-        tr = (int)(164 - (help.glow / 2) - int(fRandom() * 4));
-        tg = 164 - (help.glow / 2) - int(fRandom() * 4);
-        tb = 164 - (help.glow / 2) - int(fRandom() * 4);
+        tr = graphics.col_tr;
+        tg = graphics.col_tg;
+        tb = graphics.col_tb;
 
         int temp = 50;
         graphics.drawsprite((160 - 96) + 0 * 32, temp, 23, tr, tg, tb);
@@ -1087,15 +1095,9 @@ void titlerender()
     {
         if(!game.colourblindmode) graphics.drawtowerbackground();
 
-        tr = map.r - (help.glow / 4) - int(fRandom() * 4);
-        tg = map.g - (help.glow / 4) - int(fRandom() * 4);
-        tb = map.b - (help.glow / 4) - int(fRandom() * 4);
-        if (tr < 0) tr = 0;
-        if(tr>255) tr=255;
-        if (tg < 0) tg = 0;
-        if(tg>255) tg=255;
-        if (tb < 0) tb = 0;
-        if(tb>255) tb=255;
+        tr = graphics.col_tr;
+        tg = graphics.col_tg;
+        tb = graphics.col_tb;
 
         menurender();
 
@@ -1153,22 +1155,17 @@ void gamecompleterender()
 
     if(!game.colourblindmode) graphics.drawtowerbackground();
 
-    tr = map.r - (help.glow / 4) - fRandom() * 4;
-    tg = map.g - (help.glow / 4) - fRandom() * 4;
-    tb = map.b - (help.glow / 4) - fRandom() * 4;
-    if (tr < 0) tr = 0;
-    if(tr>255) tr=255;
-    if (tg < 0) tg = 0;
-    if(tg>255) tg=255;
-    if (tb < 0) tb = 0;
-    if(tb>255) tb=255;
+    tr = graphics.col_tr;
+    tg = graphics.col_tg;
+    tb = graphics.col_tb;
 
 
     //rendering starts... here!
 
-    if (graphics.onscreen(220 + game.creditposition))
+    int position = graphics.lerp(game.oldcreditposition, game.creditposition);
+    if (graphics.onscreen(220 + position))
     {
-        int temp = 220 + game.creditposition;
+        int temp = 220 + position;
         graphics.drawsprite((160 - 96) + 0 * 32, temp, 23, tr, tg, tb);
         graphics.drawsprite((160 - 96) + 1 * 32, temp, 23, tr, tg, tb);
         graphics.drawsprite((160 - 96) + 2 * 32, temp, 23, tr, tg, tb);
@@ -1178,121 +1175,121 @@ void gamecompleterender()
     }
 
     // TODO LOC. Maybe some of the text needs to be made a _bit_ smaller, or it's too tight (even "Thanks for playing!"). Maybe indicate in translation file "GitHub Contributors" doesn't _really_ need "GitHub" or could be replaced with "Code", and maybe auto-wrap "Thanks for playing"
-    if (graphics.onscreen(290 + game.creditposition)) graphics.bigprint( -1, 290 + game.creditposition, "Starring", tr, tg, tb, true, 2);
+    if (graphics.onscreen(290 + position)) graphics.bigprint( -1, 290 + position, "Starring", tr, tg, tb, true, 2);
 
-    if (graphics.onscreen(320 + game.creditposition))
+    if (graphics.onscreen(320 + position))
     {
-        graphics.drawcrewman(70, 320 + game.creditposition, 0, true);
-        graphics.Print(100, 330 + game.creditposition, "Captain Viridian", tr, tg, tb);
+        graphics.drawcrewman(70, 320 + position, 0, true);
+        graphics.Print(100, 330 + position, "Captain Viridian", tr, tg, tb);
     }
-    if (graphics.onscreen(350 + game.creditposition))
+    if (graphics.onscreen(350 + position))
     {
-        graphics.drawcrewman(70, 350 + game.creditposition, 1, true);
-        graphics.Print(100, 360 + game.creditposition, "Doctor Violet", tr, tg, tb);
+        graphics.drawcrewman(70, 350 + position, 1, true);
+        graphics.Print(100, 360 + position, "Doctor Violet", tr, tg, tb);
     }
-    if (graphics.onscreen(380 + game.creditposition))
+    if (graphics.onscreen(380 + position))
     {
-        graphics.drawcrewman(70, 380 + game.creditposition, 2, true);
-        graphics.Print(100, 390 + game.creditposition, "Professor Vitellary", tr, tg, tb);
+        graphics.drawcrewman(70, 380 + position, 2, true);
+        graphics.Print(100, 390 + position, "Professor Vitellary", tr, tg, tb);
     }
-    if (graphics.onscreen(410 + game.creditposition))
+    if (graphics.onscreen(410 + position))
     {
-        graphics.drawcrewman(70, 410 + game.creditposition, 3, true);
-        graphics.Print(100, 420 + game.creditposition, "Officer Vermilion", tr, tg, tb);
+        graphics.drawcrewman(70, 410 + position, 3, true);
+        graphics.Print(100, 420 + position, "Officer Vermilion", tr, tg, tb);
     }
-    if (graphics.onscreen(440 + game.creditposition))
+    if (graphics.onscreen(440 + position))
     {
-        graphics.drawcrewman(70, 440 + game.creditposition, 4, true);
-        graphics.Print(100, 450 + game.creditposition, "Chief Verdigris", tr, tg, tb);
+        graphics.drawcrewman(70, 440 + position, 4, true);
+        graphics.Print(100, 450 + position, "Chief Verdigris", tr, tg, tb);
     }
-    if (graphics.onscreen(470 + game.creditposition))
+    if (graphics.onscreen(470 + position))
     {
-        graphics.drawcrewman(70, 470 + game.creditposition, 5, true);
-        graphics.Print(100, 480 + game.creditposition, "Doctor Victoria", tr, tg, tb);
-    }
-
-    if (graphics.onscreen(520 + game.creditposition)) graphics.bigprint( -1, 520 + game.creditposition, "Credits", tr, tg, tb, true, 3);
-
-    if (graphics.onscreen(560 + game.creditposition))
-    {
-        graphics.Print(40, 560 + game.creditposition, "Created by", tr, tg, tb);
-        graphics.bigprint(60, 570 + game.creditposition, "Terry Cavanagh", tr, tg, tb);
+        graphics.drawcrewman(70, 470 + position, 5, true);
+        graphics.Print(100, 480 + position, "Doctor Victoria", tr, tg, tb);
     }
 
-    if (graphics.onscreen(600 + game.creditposition))
+    if (graphics.onscreen(520 + position)) graphics.bigprint( -1, 520 + position, "Credits", tr, tg, tb, true, 3);
+
+    if (graphics.onscreen(560 + position))
     {
-        graphics.Print(40, 600 + game.creditposition, "With Music by", tr, tg, tb);
-        graphics.bigprint(60, 610 + game.creditposition, "Magnus P~lsson", tr, tg, tb);
+        graphics.Print(40, 560 + position, "Created by", tr, tg, tb);
+        graphics.bigprint(60, 570 + position, "Terry Cavanagh", tr, tg, tb);
     }
 
-    if (graphics.onscreen(640 + game.creditposition))
+    if (graphics.onscreen(600 + position))
     {
-        graphics.Print(40, 640 + game.creditposition, "Rooms Named by", tr, tg, tb);
-        graphics.bigprint(60, 650 + game.creditposition, "Bennett Foddy", tr, tg, tb);
+        graphics.Print(40, 600 + position, "With Music by", tr, tg, tb);
+        graphics.bigprint(60, 610 + position, "Magnus P~lsson", tr, tg, tb);
     }
 
-    if (graphics.onscreen(680 + game.creditposition))
+    if (graphics.onscreen(640 + position))
     {
-        graphics.Print(40, 680 + game.creditposition, "C++ Port by", tr, tg, tb);
-        graphics.bigprint(60, 690 + game.creditposition, "Simon Roth", tr, tg, tb);
-        graphics.bigprint(60, 710 + game.creditposition, "Ethan Lee", tr, tg, tb);
+        graphics.Print(40, 640 + position, "Rooms Named by", tr, tg, tb);
+        graphics.bigprint(60, 650 + position, "Bennett Foddy", tr, tg, tb);
+    }
+
+    if (graphics.onscreen(680 + position))
+    {
+        graphics.Print(40, 680 + position, "C++ Port by", tr, tg, tb);
+        graphics.bigprint(60, 690 + position, "Simon Roth", tr, tg, tb);
+        graphics.bigprint(60, 710 + position, "Ethan Lee", tr, tg, tb);
     }
 
 
-    if (graphics.onscreen(740 + game.creditposition))
+    if (graphics.onscreen(740 + position))
     {
-        graphics.Print(40, 740 + game.creditposition, "Beta Testing by", tr, tg, tb);
-        graphics.bigprint(60, 750 + game.creditposition, "Sam Kaplan", tr, tg, tb);
-        graphics.bigprint(60, 770 + game.creditposition, "Pauli Kohberger", tr, tg, tb);
+        graphics.Print(40, 740 + position, "Beta Testing by", tr, tg, tb);
+        graphics.bigprint(60, 750 + position, "Sam Kaplan", tr, tg, tb);
+        graphics.bigprint(60, 770 + position, "Pauli Kohberger", tr, tg, tb);
     }
 
-    if (graphics.onscreen(800 + game.creditposition))
+    if (graphics.onscreen(800 + position))
     {
-        graphics.Print(40, 800 + game.creditposition, "Ending Picture by", tr, tg, tb);
-        graphics.bigprint(60, 810 + game.creditposition, "Pauli Kohberger", tr, tg, tb);
+        graphics.Print(40, 800 + position, "Ending Picture by", tr, tg, tb);
+        graphics.bigprint(60, 810 + position, "Pauli Kohberger", tr, tg, tb);
     }
 
-    if (graphics.onscreen(890 + game.creditposition)) graphics.bigprint( -1, 870 + game.creditposition, "Patrons", tr, tg, tb, true, 3);
+    if (graphics.onscreen(890 + position)) graphics.bigprint( -1, 870 + position, "Patrons", tr, tg, tb, true, 3);
 
     int creditOffset = 930;
 
     for (size_t i = 0; i < game.superpatrons.size(); i += 1)
     {
-        if (graphics.onscreen(creditOffset + game.creditposition))
+        if (graphics.onscreen(creditOffset + position))
         {
-            graphics.Print(-1, creditOffset + game.creditposition, game.superpatrons[i], tr, tg, tb, true);
+            graphics.Print(-1, creditOffset + position, game.superpatrons[i], tr, tg, tb, true);
         }
         creditOffset += 10;
     }
 
     creditOffset += 10;
-    if (graphics.onscreen(creditOffset + game.creditposition)) graphics.Print( -1, creditOffset + game.creditposition, "and", tr, tg, tb, true);
+    if (graphics.onscreen(creditOffset + position)) graphics.Print( -1, creditOffset + position, "and", tr, tg, tb, true);
     creditOffset += 20;
 
     for (size_t i = 0; i < game.patrons.size(); i += 1)
     {
-        if (graphics.onscreen(creditOffset + game.creditposition))
+        if (graphics.onscreen(creditOffset + position))
         {
-            graphics.Print(-1, creditOffset + game.creditposition, game.patrons[i], tr, tg, tb, true);
+            graphics.Print(-1, creditOffset + position, game.patrons[i], tr, tg, tb, true);
         }
         creditOffset += 10;
     }
 
     creditOffset += 20;
-    if (graphics.onscreen(creditOffset + game.creditposition)) graphics.bigprint(40, creditOffset + game.creditposition, "GitHub Contributors", tr, tg, tb, true);
+    if (graphics.onscreen(creditOffset + position)) graphics.bigprint(40, creditOffset + position, "GitHub Contributors", tr, tg, tb, true);
     creditOffset += 30;
 
     for (size_t i = 0; i < game.githubfriends.size(); i += 1)
     {
-        if (graphics.onscreen(creditOffset + game.creditposition))
+        if (graphics.onscreen(creditOffset + position))
         {
-            graphics.Print(-1, creditOffset + game.creditposition, game.githubfriends[i], tr, tg, tb, true);
+            graphics.Print(-1, creditOffset + position, game.githubfriends[i], tr, tg, tb, true);
         }
         creditOffset += 10;
     }
 
     creditOffset += 140;
-    if (graphics.onscreen(creditOffset + game.creditposition)) graphics.bigprint( -1, creditOffset + game.creditposition, "Thanks for playing!", tr, tg, tb, true, 2);
+    if (graphics.onscreen(creditOffset + position)) graphics.bigprint( -1, creditOffset + position, "Thanks for playing!", tr, tg, tb, true, 2);
 
     graphics.drawfade();
 
@@ -1323,6 +1320,8 @@ void gamecompleterender2()
             }
         }
     }
+
+    FillRect(graphics.backBuffer, graphics.lerp(game.oldcreditposx * 8, game.creditposx * 8) + 8, game.creditposy * 8, 8, 8, 0, 0, 0);
 
     graphics.drawfade();
 
@@ -1371,68 +1370,11 @@ void gamerender()
         }
 
 
-        if(!game.completestop)
-        {
-            for (size_t i = 0; i < obj.entities.size(); i++)
-            {
-                //Is this entity on the ground? (needed for jumping)
-                if (obj.entitycollidefloor(i))
-                {
-                    obj.entities[i].onground = 2;
-                }
-                else
-                {
-                    obj.entities[i].onground--;
-                }
-
-                if (obj.entitycollideroof(i))
-                {
-                    obj.entities[i].onroof = 2;
-                }
-                else
-                {
-                    obj.entities[i].onroof--;
-                }
-
-                //Animate the entities
-                obj.animateentities(i);
-            }
-        }
-
         graphics.drawentities();
         if (map.towermode)
         {
             graphics.drawtowerspikes();
         }
-
-#if !defined(NO_CUSTOM_LEVELS)
-        // Editor ghosts!
-        if (game.ghostsenabled)
-        {
-            if (map.custommode && !map.custommodeforreal)
-            {
-                if (game.gametimer % 3 == 0)
-                {
-                    int i = obj.getplayer();
-                    GhostInfo ghost;
-                    ghost.rx = game.roomx-100;
-                    ghost.ry = game.roomy-100;
-                    if (i > -1)
-                    {
-                        ghost.x = obj.entities[i].xp;
-                        ghost.y = obj.entities[i].yp;
-                        ghost.col = obj.entities[i].colour;
-                        ghost.frame = obj.entities[i].drawframe;
-                    }
-                    ed.ghosts.push_back(ghost);
-                }
-                if (ed.ghosts.size() > 100)
-                {
-                    ed.ghosts.erase(ed.ghosts.begin());
-                }
-            }
-        }
-#endif
     }
 
     if(map.extrarow==0 || (map.custommode && map.roomname!=""))
@@ -1449,7 +1391,6 @@ void gamerender()
 
         if (map.finalmode)
         {
-            map.glitchname = map.getglitchname(game.roomx, game.roomy);
             graphics.bprint(5, 231, map.glitchname, 196, 196, 255 - help.glow, true);
         }else{
             graphics.bprint(5, 231, map.roomname, 196, 196, 255 - help.glow, true);
@@ -1468,10 +1409,8 @@ void gamerender()
 #if !defined(NO_CUSTOM_LEVELS)
      if(map.custommode && !map.custommodeforreal && !game.advancetext){
         //Return to level editor
-        graphics.bprintalpha(5, 5, loc::gettext("[Press ENTER to return to editor]"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), ed.returneditoralpha, false);
-        if (ed.returneditoralpha > 0) {
-            ed.returneditoralpha -= 15;
-        }
+        int alpha = graphics.lerp(ed.oldreturneditoralpha, ed.returneditoralpha);
+        graphics.bprintalpha(5, 5, loc::gettext("[Press ENTER to return to editor]"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), alpha, false);
       }
 #endif
 
@@ -1490,15 +1429,16 @@ void gamerender()
         if (game.advancetext) graphics.bprint(5, 5, loc::gettext("- Press ACTION to advance text -"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
     }
 
-    if (game.readytotele > 100 && !game.advancetext && game.hascontrol && !script.running && !game.intimetrial)
+    if ((game.readytotele > 100 || game.oldreadytotele > 100) && !game.advancetext && game.hascontrol && !script.running && !game.intimetrial)
     {
+        int alpha = graphics.lerp(game.oldreadytotele, game.readytotele);
         if(graphics.flipmode)
         {
-            graphics.bprint(5, 20, loc::gettext("- Press ENTER to Teleport -"), game.readytotele - 20 - (help.glow / 2), game.readytotele - 20 - (help.glow / 2), game.readytotele, true);
+            graphics.bprint(5, 20, loc::gettext("- Press ENTER to Teleport -"), alpha - 20 - (help.glow / 2), alpha - 20 - (help.glow / 2), alpha, true);
         }
         else
         {
-            graphics.bprint(5, 210, loc::gettext("- Press ENTER to Teleport -"), game.readytotele - 20 - (help.glow / 2), game.readytotele - 20 - (help.glow / 2), game.readytotele, true);
+            graphics.bprint(5, 210, loc::gettext("- Press ENTER to Teleport -"), alpha - 20 - (help.glow / 2), alpha - 20 - (help.glow / 2), alpha, true);
         }
     }
 
@@ -1700,34 +1640,25 @@ void gamerender()
         }
     }
 
+    float act_alpha = graphics.lerp(game.prev_act_fade, game.act_fade) / 10.0f;
     if (game.activeactivity > -1)
     {
         game.activity_lastprompt = obj.blocks[game.activeactivity].prompt;
         game.activity_r = obj.blocks[game.activeactivity].r;
         game.activity_g = obj.blocks[game.activeactivity].g;
         game.activity_b = obj.blocks[game.activeactivity].b;
-        if(game.act_fade<5) game.act_fade=5;
-        if(game.act_fade<10)
-        {
-            game.act_fade++;
-        }
-        graphics.drawtextbox(16, 4, 36, 3, game.activity_r*(game.act_fade/10.0f), game.activity_g*(game.act_fade/10.0f), game.activity_b*(game.act_fade/10.0f));
-        graphics.Print(5, 12, game.activity_lastprompt, game.activity_r*(game.act_fade/10.0f), game.activity_g*(game.act_fade/10.0f), game.activity_b*(game.act_fade/10.0f), true);
+        graphics.drawtextbox(16, 4, 36, 3, game.activity_r*act_alpha, game.activity_g*act_alpha, game.activity_b*act_alpha);
+        graphics.Print(5, 12, game.activity_lastprompt, game.activity_r*act_alpha, game.activity_g*act_alpha, game.activity_b*act_alpha, true);
     }
-    else
+    else if(game.act_fade>5 || game.prev_act_fade>5)
     {
-        if(game.act_fade>5)
-        {
-            graphics.drawtextbox(16, 4, 36, 3, game.activity_r*(game.act_fade/10.0f), game.activity_g*(game.act_fade/10.0f), game.activity_b*(game.act_fade/10.0f));
-            graphics.Print(5, 12, game.activity_lastprompt, game.activity_r*(game.act_fade/10.0f), game.activity_g*(game.act_fade/10.0f), game.activity_b*(game.act_fade/10.0f), true);
-            game.act_fade--;
-        }
+        graphics.drawtextbox(16, 4, 36, 3, game.activity_r*act_alpha, game.activity_g*act_alpha, game.activity_b*act_alpha);
+        graphics.Print(5, 12, game.activity_lastprompt, game.activity_r*act_alpha, game.activity_g*act_alpha, game.activity_b*act_alpha, true);
     }
 
-    if (obj.trophytext > 0)
+    if (obj.trophytext > 0 || obj.oldtrophytext > 0)
     {
         graphics.drawtrophytext();
-        obj.trophytext--;
     }
 
 
@@ -1736,24 +1667,17 @@ void gamerender()
 
 void maprender()
 {
+    FillRect(graphics.backBuffer, 0x000000);
+
     //draw screen alliteration
     //Roomname:
-    int temp = map.area(game.roomx, game.roomy);
-    if (temp < 2 && !map.custommode && graphics.fademode==0)
-    { // TODO LOC
-        if (game.roomx >= 102 && game.roomx <= 104 && game.roomy >= 110 && game.roomy <= 111)
-        {
-            graphics.Print(5, 2, "The Ship", 196, 196, 255 - help.glow, true);
-        }
-        else
-        {
-            graphics.Print(5, 2, "Dimension VVVVVV", 196, 196, 255 - help.glow, true);
-        }
+    if (map.hiddenname != "")
+    {
+        graphics.Print(5, 2, map.hiddenname, 196, 196, 255 - help.glow, true);
     }
     else
     {
       if (map.finalmode){
-        map.glitchname = map.getglitchname(game.roomx, game.roomy);
         graphics.Print(5, 2, map.glitchname, 196, 196, 255 - help.glow, true);
       }else{
         graphics.Print(5, 2, map.roomname, 196, 196, 255 - help.glow, true);
@@ -1762,13 +1686,6 @@ void maprender()
 
     //Background color
     FillRect(graphics.backBuffer,0, 12, 320, 240, 10, 24, 26 );
-
-    graphics.crewframedelay--;
-    if (graphics.crewframedelay <= 0)
-    {
-        graphics.crewframedelay = 8;
-        graphics.crewframe = (graphics.crewframe + 1) % 2;
-    }
 
 
 
@@ -1864,19 +1781,6 @@ void maprender()
             }
           }
 
-          if (map.cursorstate == 0){
-            map.cursordelay++;
-            if (map.cursordelay > 10){
-              map.cursorstate = 1;
-              map.cursordelay = 0;
-            }
-          }else if (map.cursorstate == 1){
-            map.cursordelay++;
-            if (map.cursordelay > 30) map.cursorstate = 2;
-          }else if (map.cursorstate == 2){
-            map.cursordelay++;
-          }
-
           //normal size maps
           if(map.customzoom==4){
             if(map.cursorstate==1){
@@ -1935,18 +1839,8 @@ void maprender()
             if (game.roomx == 109)
             {
                 //tower!instead of room y, scale map.ypos
-                if (map.cursorstate == 0)
+                if (map.cursorstate == 1)
                 {
-                    map.cursordelay++;
-                    if (map.cursordelay > 10)
-                    {
-                        map.cursorstate = 1;
-                        map.cursordelay = 0;
-                    }
-                }
-                else if (map.cursorstate == 1)
-                {
-                    map.cursordelay++;
                     if (int(map.cursordelay / 4) % 2 == 0)
                     {
                         graphics.drawrect(40 + ((game.roomx - 100) * 12) , 21 , 12, 180, 255,255,255);
@@ -1956,7 +1850,6 @@ void maprender()
                 }
                 else if (map.cursorstate == 2)
                 {
-                    map.cursordelay++;
                     if (int(map.cursordelay / 15) % 2 == 0)
                     {
                         graphics.drawrect(40 + ((game.roomx - 100) * 12) + 2 , 21  + 2, 12 - 4, 180 - 4,16, 245 - (help.glow), 245 - (help.glow));
@@ -1965,28 +1858,16 @@ void maprender()
             }
             else
             {
-                if (map.cursorstate == 0)
+                if (map.cursorstate == 1)
                 {
-                    map.cursordelay++;
-                    if (map.cursordelay > 10)
-                    {
-                        map.cursorstate = 1;
-                        map.cursordelay = 0;
-                    }
-                }
-                else if (map.cursorstate == 1)
-                {
-                    map.cursordelay++;
                     if (int(map.cursordelay / 4) % 2 == 0)
                     {
                         graphics.drawrect(40 + ((game.roomx - 100) * 12) , 21 + ((game.roomy - 100) * 9) , 12 , 9 , 255,255,255);
                         graphics.drawrect(40 + ((game.roomx - 100) * 12) + 2, 21 + ((game.roomy - 100) * 9) + 2, 12 - 4, 9 - 4, 255,255,255);
                     }
-                    if (map.cursordelay > 30) map.cursorstate = 2;
                 }
                 else if (map.cursorstate == 2)
                 {
-                    map.cursordelay++;
                     if (int(map.cursordelay / 15) % 2 == 0)
                     {
                         graphics.drawrect(40 + ((game.roomx - 100) * 12) + 2, 21 + ((game.roomy - 100) * 9) + 2, 12 - 4, 9 - 4, 16, 245 - (help.glow), 245 - (help.glow));
@@ -2332,8 +2213,8 @@ void maprender()
                     graphics.Print(160 - 84, 78, game.savetime, 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2));
                     graphics.Print(160 + 40, 78, help.number(game.savetrinkets), 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2));
 
-                    graphics.drawspritesetcol(50, 74, 50, 18);
-                    graphics.drawspritesetcol(175, 74, 22, 18);
+                    graphics.drawsprite(50, 74, 50, graphics.col_clock);
+                    graphics.drawsprite(175, 74, 22, graphics.col_trinket);
                 }
                 else
                 {
@@ -2341,8 +2222,8 @@ void maprender()
                     graphics.Print(160 - 84, 132, game.savetime, 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2));
                     graphics.Print(160 + 40, 132, help.number(game.savetrinkets), 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2));
 
-                    graphics.drawspritesetcol(50, 126, 50, 18);
-                    graphics.drawspritesetcol(175, 126, 22, 18);
+                    graphics.drawsprite(50, 126, 50, graphics.col_clock);
+                    graphics.drawsprite(175, 126, 22, graphics.col_trinket);
                 }
             }
             else
@@ -2377,8 +2258,8 @@ void maprender()
                     graphics.Print(160 - 84, 78, game.savetime, 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2));
                     graphics.Print(160 + 40, 78, help.number(game.savetrinkets), 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2));
 
-                    graphics.drawspritesetcol(50, 74, 50, 18);
-                    graphics.drawspritesetcol(175, 74, 22, 18);
+                    graphics.drawsprite(50, 74, 50, graphics.col_clock);
+                    graphics.drawsprite(175, 74, 22, graphics.col_trinket);
                 }
                 else
                 {
@@ -2390,8 +2271,8 @@ void maprender()
                     graphics.Print(160 - 84, 132, game.savetime, 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2));
                     graphics.Print(160 + 40, 132, help.number(game.savetrinkets), 255 - (help.glow / 2), 255 - (help.glow / 2), 255 - (help.glow / 2));
 
-                    graphics.drawspritesetcol(50, 126, 50, 18);
-                    graphics.drawspritesetcol(175, 126, 22, 18);
+                    graphics.drawsprite(50, 126, 50, graphics.col_clock);
+                    graphics.drawsprite(175, 126, 22, graphics.col_trinket);
                 }
             }
             else
@@ -2523,35 +2404,8 @@ void maprender()
         graphics.drawfade();
     }
 
-    if (graphics.resumegamemode)
+    if (graphics.resumegamemode || graphics.menuoffset > 0 || graphics.oldmenuoffset > 0)
     {
-        graphics.menuoffset += 25;
-        if (map.extrarow)
-        {
-            if (graphics.menuoffset >= 230)
-            {
-                graphics.menuoffset = 230;
-                //go back to gamemode!
-                game.mapheld = true;
-                game.gamestate = GAMEMODE;
-            }
-        }
-        else
-        {
-            if (graphics.menuoffset >= 240)
-            {
-                graphics.menuoffset = 240;
-                //go back to gamemode!
-                game.mapheld = true;
-                game.gamestate = GAMEMODE;
-            }
-        }
-        graphics.menuoffrender();
-    }
-    else if (graphics.menuoffset > 0)
-    {
-        graphics.menuoffset -= 25;
-        if (graphics.menuoffset < 0) graphics.menuoffset = 0;
         graphics.menuoffrender();
     }
     else
@@ -2562,21 +2416,15 @@ void maprender()
 
 void teleporterrender()
 {
+    FillRect(graphics.backBuffer, 0x000000);
     int tempx;
     int tempy;
     //draw screen alliteration
     //Roomname:
     int temp = map.area(game.roomx, game.roomy);
     if (temp < 2 && !map.custommode && graphics.fademode==0)
-    { // TODO LOC, déjà vu
-        if (game.roomx >= 102 && game.roomx <= 104 && game.roomy >= 110 && game.roomy <= 111)
-        {
-            graphics.Print(5, 2, "The Ship", 196, 196, 255 - help.glow, true);
-        }
-        else
-        {
-            graphics.Print(5, 2, "Dimension VVVVVV", 196, 196, 255 - help.glow, true);
-        }
+    {
+        graphics.Print(5, 2, map.hiddenname, 196, 196, 255 - help.glow, true);
     }
     else
     {
@@ -2686,35 +2534,8 @@ void teleporterrender()
     }
 
 
-    if (graphics.resumegamemode)
+    if (graphics.resumegamemode || graphics.menuoffset > 0 || graphics.oldmenuoffset > 0)
     {
-        graphics.menuoffset += 25;
-        if (map.extrarow)
-        {
-            if (graphics.menuoffset >= 230)
-            {
-                graphics.menuoffset = 230;
-                //go back to gamemode!
-                game.mapheld = true;
-                game.gamestate = GAMEMODE;
-            }
-        }
-        else
-        {
-            if (graphics.menuoffset >= 240)
-            {
-                graphics.menuoffset = 240;
-                //go back to gamemode!
-                game.mapheld = true;
-                game.gamestate = GAMEMODE;
-            }
-        }
-        graphics.menuoffrender();
-    }
-    else if (graphics.menuoffset > 0)
-    {
-        graphics.menuoffset -= 25;
-        if (graphics.menuoffset < 0) graphics.menuoffset = 0;
         graphics.menuoffrender();
     }
     else

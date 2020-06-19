@@ -359,6 +359,19 @@ void menuactionpress()
                 graphics.showmousecursor = true;
             }
             break;
+        case 5:
+            //toggle 30+ fps
+            music.playef(11);
+            game.over30mode = !game.over30mode;
+            game.savestats();
+            break;
+        case 6:
+            //toggle vsync
+            music.playef(11);
+            graphics.vsync = !graphics.vsync;
+            graphics.processVsync();
+            game.savestats();
+            break;
         default:
             //back
             music.playef(11);
@@ -1694,7 +1707,12 @@ void gameinput()
                                 //Alright, normal teleporting
                                 game.gamestate = TELEPORTERMODE;
                                 graphics.menuoffset = 240; //actually this should count the roomname
-                                if (map.extrarow) graphics.menuoffset -= 10;
+                                graphics.oldmenuoffset = 240;
+                                if (map.extrarow)
+                                {
+                                    graphics.menuoffset -= 10;
+                                    graphics.oldmenuoffset -= 10;
+                                }
 
                                 BlitSurfaceStandard(graphics.menubuffer,NULL,graphics.backBuffer, NULL);
 
@@ -1750,7 +1768,12 @@ void gameinput()
                         game.menupage = 20; // The Map Page
                         BlitSurfaceStandard(graphics.menubuffer,NULL,graphics.backBuffer, NULL);
                         graphics.menuoffset = 240; //actually this should count the roomname
-                        if (map.extrarow) graphics.menuoffset -= 10;
+                        graphics.oldmenuoffset = 240;
+                        if (map.extrarow)
+                        {
+                            graphics.menuoffset -= 10;
+                            graphics.oldmenuoffset -= 10;
+                        }
                     }
                     else if (game.intimetrial && graphics.fademode==0)
                     {
@@ -1774,7 +1797,12 @@ void gameinput()
                         game.menupage = 0; // The Map Page
                         BlitSurfaceStandard(graphics.menubuffer,NULL,graphics.backBuffer, NULL);
                         graphics.menuoffset = 240; //actually this should count the roomname
-                        if (map.extrarow) graphics.menuoffset -= 10;
+                        graphics.oldmenuoffset = 240;
+                        if (map.extrarow)
+                        {
+                            graphics.menuoffset -= 10;
+                            graphics.oldmenuoffset -= 10;
+                        }
                     }
                 }
 
@@ -1789,7 +1817,12 @@ void gameinput()
 
                     BlitSurfaceStandard(graphics.menubuffer,NULL,graphics.backBuffer, NULL);
                     graphics.menuoffset = 240; //actually this should count the roomname
-                    if (map.extrarow) graphics.menuoffset -= 10;
+                    graphics.oldmenuoffset = 240;
+                    if (map.extrarow)
+                    {
+                        graphics.menuoffset -= 10;
+                        graphics.oldmenuoffset -= 10;
+                    }
                 }
 
                 if (key.keymap[SDLK_r] && game.deathseq<=0)// && map.custommode) //Have fun glitchrunners!
@@ -2075,7 +2108,7 @@ void mapinput()
             music.fadeout();
             map.nexttowercolour();
             game.fadetomenu = true;
-            game.fadetomenudelay = 15;
+            game.fadetomenudelay = 16;
         }
 
         if (game.menupage == 20 && game.press_action)
@@ -2090,7 +2123,7 @@ void mapinput()
             graphics.fademode = 2;
             music.fadeout();
             game.fadetolab = true;
-            game.fadetolabdelay = 15;
+            game.fadetolabdelay = 16;
         }
 
         if (game.menupage < 0) game.menupage = 3;
@@ -2220,8 +2253,15 @@ void gamecompleteinput()
     game.press_action = false;
     game.press_map = false;
 
-    //Do this here because input comes first
+    //Do this before we update map.bypos
+    if (!game.colourblindmode)
+    {
+        graphics.updatetowerbackground();
+    }
+
+    //Do these here because input comes first
     map.bypos += map.bscroll;
+    game.oldcreditposition = game.creditposition;
 
     if (key.isDown(KEYBOARD_z) || key.isDown(KEYBOARD_SPACE) || key.isDown(KEYBOARD_v) || key.isDown(game.controllerButton_flip))
     {
@@ -2262,10 +2302,13 @@ void gamecompleteinput2()
     game.press_action = false;
     game.press_map = false;
 
+    //Do this here because input comes first
+    game.oldcreditposx = game.creditposx;
 
     if (key.isDown(KEYBOARD_z) || key.isDown(KEYBOARD_SPACE) || key.isDown(KEYBOARD_v) || key.isDown(game.controllerButton_flip))
     {
         game.creditposx++;
+        game.oldcreditposx++;
         if (game.creditposy >= 30)
         {
             if(graphics.fademode==0)

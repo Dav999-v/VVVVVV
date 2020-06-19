@@ -235,6 +235,7 @@ public:
     enum Menu::MenuName menudest;
 
     int creditposx, creditposy, creditposdelay;
+    int oldcreditposx;
 
 
     //Sine Wave Ninja Minigame
@@ -263,6 +264,7 @@ public:
     int timetrialpar, timetrialresulttime, timetrialrank;
 
     int creditposition;
+    int oldcreditposition;
     int creditmaxposition;
     std::vector<const char*> superpatrons;
     std::vector<const char*> patrons;
@@ -321,6 +323,7 @@ public:
     SDL_Rect teleblock;
     bool activetele;
     int readytotele;
+    int oldreadytotele;
     int activity_r, activity_g, activity_b;
     std::string activity_lastprompt;
 
@@ -330,6 +333,7 @@ public:
     bool backgroundtext;
 
     int activeactivity, act_fade;
+    int prev_act_fade;
 
     bool press_left, press_right, press_action, press_map;
 
@@ -400,6 +404,8 @@ public:
     {
         return inintermission || insecretlab || intimetrial || nodeathmode;
     }
+
+    bool over30mode;
 };
 
 extern Game game;

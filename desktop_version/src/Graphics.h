@@ -32,7 +32,9 @@ public:
 
 	void Makebfont();
 
-	void drawhuetile(int x, int y, int t, int c);
+	void drawhuetile(int x, int y, int t);
+	void huetilesetcol(int t);
+	Uint32 bigchunkygetcol(int t);
 
 	void drawgravityline(int t);
 
@@ -53,9 +55,7 @@ public:
 
 	void setwarprect(int a, int b, int c, int d);
 
-	void createtextbox(std::string t, int xp, int yp, int r= 255, int g= 255, int b = 255);
-
-	void textboxcleanup();
+	void createtextbox(std::string t, int xp, int yp, int r= 255, int g= 255, int b = 255, bool allowspecial = false);
 
 	void textboxcenter();
 
@@ -91,6 +91,7 @@ public:
 	int crewcolour(const int t);
 
 	void cutscenebars();
+	void cutscenebarstimer();
 
 	void drawpartimage(int t, int xp, int yp, int wp, int hp);
 
@@ -98,9 +99,11 @@ public:
 
 	void drawimagecol(int t, int xp, int yp, int r, int g, int b, bool cent= false);
 
+	void updatetextboxes();
 	void drawgui();
 
 	void drawsprite(int x, int y, int t, int r, int g, int b);
+	void drawsprite(int x, int y, int t, Uint32 c);
 
 	void printcrewname(int x, int y, int t);
 
@@ -135,6 +138,10 @@ public:
 
 	void flashlight();
 	void screenshake();
+	void updatescreenshake();
+
+	int screenshake_x;
+	int screenshake_y;
 
 	void render();
 	void renderwithscreeneffects();
@@ -148,7 +155,7 @@ public:
 	void bigrprint(int x, int y, std::string& t, int r, int g, int b, bool cen = false, float sc = 2);
 
 
-	void drawtele(int x, int y, int t, int c);
+	void drawtele(int x, int y, int t, Uint32 c);
 
 	Uint32 getRGBA(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
@@ -166,6 +173,7 @@ public:
 	void setcolreal(Uint32 t);
 
 	void drawbackground(int t);
+	void updatebackground(int t);
 	void drawtile3( int x, int y, int t, int off );
 	void drawentcolours( int x, int y, int t);
 	void drawtile2( int x, int y, int t );
@@ -198,6 +206,7 @@ public:
 	void menuoffrender();
 
 	void drawtowerbackground();
+	void updatetowerbackground();
 
 	void setcol(int t);
 	void drawfinalmap();
@@ -234,6 +243,7 @@ public:
 	Screen* screenbuffer;
 	SDL_Surface* menubuffer;
 	SDL_Surface* towerbuffer;
+	SDL_Surface* towerbuffer_lerp;
 	SDL_Surface* foregroundBuffer;
 	SDL_Surface* tempBuffer;
 
@@ -256,6 +266,7 @@ public:
 	bool backgrounddrawn, foregrounddrawn;
 
 	int menuoffset;
+	int oldmenuoffset;
 	bool resumegamemode;
 
 	SDL_Rect warprect;
@@ -265,6 +276,7 @@ public:
 
 	int fademode;
 	int fadeamount;
+	int oldfadeamount;
 	std::vector <int> fadebars;
 
 	bool trinketcolset;
@@ -274,6 +286,7 @@ public:
 
 	bool showcutscenebars;
 	int cutscenebarspos;
+	int oldcutscenebarspos;
 
 	std::vector<SDL_Rect> stars;
 	std::vector<int> starsspeed;
@@ -283,7 +296,6 @@ public:
 	std::vector<int> backboxvx;
 	std::vector<int> backboxvy;
 	std::vector<float> backboxint;
-	SDL_Rect backboxrect;
 
 	int warpskip, warpfcol, warpbcol;
 
@@ -294,6 +306,33 @@ public:
 	std::map<int, int> font_positions;
 
 	SDL_Surface* ghostbuffer;
+
+	float inline lerp(const float v0, const float v1)
+	{
+		return v0 + alpha * (v1 - v0);
+	}
+	float alpha;
+
+	Uint32 col_crewred;
+	Uint32 col_crewyellow;
+	Uint32 col_crewgreen;
+	Uint32 col_crewcyan;
+	Uint32 col_crewblue;
+	Uint32 col_crewpurple; //actually pink
+	Uint32 col_crewinactive;
+	Uint32 col_clock;
+	Uint32 col_trinket;
+	int col_tr;
+	int col_tg;
+	int col_tb;
+	void updatetitlecolours();
+
+	bool kludgeswnlinewidth;
+
+	Uint32 crewcolourreal(int t);
+
+	bool vsync;
+	void processVsync();
 };
 
 extern Graphics graphics;

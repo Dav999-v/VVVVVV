@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include "Script.h"
+#include "Graphics.h"
 
 class edentities{
 public:
@@ -81,6 +82,7 @@ struct GhostInfo {
     int x; // .xp
     int y; // .yp
     int col; // .colour
+    Uint32 realcol;
     int frame; // .drawframe
 };
 
@@ -150,6 +152,7 @@ class editorclass{
   int getlevelcol(int t);
   int getenemycol(int t);
   int entcol;
+  Uint32 entcolreal;
 
   //Colouring stuff
   int getwarpbackground(int rx, int ry);
@@ -164,6 +167,7 @@ class editorclass{
 
   int temp;
   int notedelay;
+  int oldnotedelay;
   std::string note;
   std::string keybuffer;
   std::string filename;
@@ -236,6 +240,7 @@ class editorclass{
   int dmtileeditor;
 
   int returneditoralpha;
+  int oldreturneditoralpha;
 
   std::vector<GhostInfo> ghosts;
   int currentghosts;

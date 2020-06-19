@@ -151,6 +151,7 @@ void Game::init(void)
     completestop = false;
     activeactivity = -1;
     act_fade = 0;
+    prev_act_fade = 0;
     backgroundtext = false;
     startscript = false;
     newscript = "";
@@ -162,17 +163,20 @@ void Game::init(void)
     creditposx = 0;
     creditposy = 0;
     creditposdelay = 0;
+    oldcreditposx = 0;
 
     useteleporter = false;
     teleport_to_teleporter = 0;
 
     activetele = false;
     readytotele = 0;
+    oldreadytotele = 0;
     activity_lastprompt = "";
     activity_r = 0;
     activity_g = 0;
     activity_b = 0;
     creditposition = 0;
+    oldcreditposition = 0;
     bestgamedeaths = -1;
 
     fullScreenEffect_badSignal = false;
@@ -382,6 +386,8 @@ void Game::init(void)
 #if !defined(NO_CUSTOM_LEVELS)
     shouldreturntoeditor = false;
 #endif
+
+    over30mode = false;
 
     /* Terry's Patrons... */
     const char* superpatrons_arr[] = {
@@ -1372,7 +1378,7 @@ void Game::updatestate()
             //Time Trial Complete!
             obj.removetrigger(82);
             hascontrol = false;
-            timetrialresulttime = seconds + (minutes * 60);
+            timetrialresulttime = seconds + (minutes * 60) + (hours * 60 * 60);
             timetrialrank = 0;
             if (timetrialresulttime <= timetrialpar) timetrialrank++;
             if (trinkets() >= timetrialshinytarget) timetrialrank++;
@@ -2396,11 +2402,11 @@ void Game::updatestate()
 
             if (graphics.flipmode)
             {
-                graphics.createtextbox("", -1, 180, 165, 165, 255);
+                graphics.createtextbox("", -1, 180, 165, 165, 255, true);
             }
             else
             {
-                graphics.createtextbox("", -1, 12, 165, 165, 255);
+                graphics.createtextbox("", -1, 12, 165, 165, 255, true);
             }
             //graphics.addline("      Level Complete!      ");
             graphics.addline("                                   ");
@@ -2420,11 +2426,11 @@ void Game::updatestate()
 
             if (graphics.flipmode)
             {
-                graphics.createtextbox("", -1, 104, 175,174,174);
+                graphics.createtextbox("", -1, 104, 175,174,174, true);
             }
             else
             {
-                graphics.createtextbox("", -1, 64+8+16, 175,174,174);
+                graphics.createtextbox("", -1, 64+8+16, 175,174,174, true);
             }
             graphics.addline("     You have rescued  ");
             graphics.addline("      a crew member!   ");
@@ -2513,11 +2519,11 @@ void Game::updatestate()
 
             if (graphics.flipmode)
             {
-                graphics.createtextbox("", -1, 180, 165, 165, 255);
+                graphics.createtextbox("", -1, 180, 165, 165, 255, true);
             }
             else
             {
-                graphics.createtextbox("", -1, 12, 165, 165, 255);
+                graphics.createtextbox("", -1, 12, 165, 165, 255, true);
             }
             //graphics.addline("      Level Complete!      ");
             graphics.addline("                                   ");
@@ -2537,11 +2543,11 @@ void Game::updatestate()
 
             if (graphics.flipmode)
             {
-                graphics.createtextbox("", -1, 104, 174,175,174);
+                graphics.createtextbox("", -1, 104, 174,175,174, true);
             }
             else
             {
-                graphics.createtextbox("", -1, 64+8+16, 174,175,174);
+                graphics.createtextbox("", -1, 64+8+16, 174,175,174, true);
             }
             graphics.addline("     You have rescued  ");
             graphics.addline("      a crew member!   ");
@@ -2629,11 +2635,11 @@ void Game::updatestate()
 
             if (graphics.flipmode)
             {
-                graphics.createtextbox("", -1, 180, 165, 165, 255);
+                graphics.createtextbox("", -1, 180, 165, 165, 255, true);
             }
             else
             {
-                graphics.createtextbox("", -1, 12, 165, 165, 255);
+                graphics.createtextbox("", -1, 12, 165, 165, 255, true);
             }
             //graphics.addline("      Level Complete!      ");
             graphics.addline("                                   ");
@@ -2653,11 +2659,11 @@ void Game::updatestate()
 
             if (graphics.flipmode)
             {
-                graphics.createtextbox("", -1, 104, 174,174,175);
+                graphics.createtextbox("", -1, 104, 174,174,175, true);
             }
             else
             {
-                graphics.createtextbox("", -1, 64+8+16, 174,174,175);
+                graphics.createtextbox("", -1, 64+8+16, 174,174,175, true);
             }
             graphics.addline("     You have rescued  ");
             graphics.addline("      a crew member!   ");
@@ -2746,11 +2752,11 @@ void Game::updatestate()
 
             if (graphics.flipmode)
             {
-                graphics.createtextbox("", -1, 180, 165, 165, 255);
+                graphics.createtextbox("", -1, 180, 165, 165, 255, true);
             }
             else
             {
-                graphics.createtextbox("", -1, 12, 165, 165, 255);
+                graphics.createtextbox("", -1, 12, 165, 165, 255, true);
             }
             //graphics.addline("      Level Complete!      ");
             graphics.addline("                                   ");
@@ -2770,11 +2776,11 @@ void Game::updatestate()
 
             if (graphics.flipmode)
             {
-                graphics.createtextbox("", -1, 104, 175,175,174);
+                graphics.createtextbox("", -1, 104, 175,175,174, true);
             }
             else
             {
-                graphics.createtextbox("", -1, 64+8+16, 175,175,174);
+                graphics.createtextbox("", -1, 64+8+16, 175,175,174, true);
             }
             graphics.addline("     You have rescued  ");
             graphics.addline("      a crew member!   ");
@@ -2881,11 +2887,11 @@ void Game::updatestate()
 
             if (graphics.flipmode)
             {
-                graphics.createtextbox("", -1, 180, 165, 165, 255);
+                graphics.createtextbox("", -1, 180, 165, 165, 255, true);
             }
             else
             {
-                graphics.createtextbox("", -1, 12, 165, 165, 255);
+                graphics.createtextbox("", -1, 12, 165, 165, 255, true);
             }
             //graphics.addline("      Level Complete!      ");
             graphics.addline("                                   ");
@@ -2905,11 +2911,11 @@ void Game::updatestate()
 
             if (graphics.flipmode)
             {
-                graphics.createtextbox("", -1, 104, 175,174,175);
+                graphics.createtextbox("", -1, 104, 175,174,175, true);
             }
             else
             {
-                graphics.createtextbox("", -1, 64+8+16, 175,174,175);
+                graphics.createtextbox("", -1, 64+8+16, 175,174,175, true);
             }
             graphics.addline("     You have rescued  ");
             graphics.addline("      a crew member!   ");
@@ -3177,11 +3183,11 @@ void Game::updatestate()
 
             if (graphics.flipmode)
             {
-                graphics.createtextbox("", -1, 180, 164, 165, 255);
+                graphics.createtextbox("", -1, 180, 164, 165, 255, true);
             }
             else
             {
-                graphics.createtextbox("", -1, 12, 164, 165, 255);
+                graphics.createtextbox("", -1, 12, 164, 165, 255, true);
             }
             graphics.addline("                                   ");
             graphics.addline("");
@@ -3440,6 +3446,7 @@ void Game::updatestate()
             map.finaly = 100;
 
             graphics.cutscenebarspos = 320;
+            graphics.oldcutscenebarspos = 320;
 
             teleport_to_new_area = true;
             teleportscript = "gamecomplete";
@@ -4741,6 +4748,16 @@ void Game::loadstats()
             skipfakeload = atoi(pText);
         }
 
+        if (pKey == "over30mode")
+        {
+            over30mode = atoi(pText);
+        }
+
+        if (pKey == "vsync")
+        {
+            graphics.vsync = atoi(pText);
+        }
+
         if (pKey == "notextoutline")
         {
             graphics.notextoutline = atoi(pText);
@@ -4989,6 +5006,14 @@ void Game::savestats()
 
     msg = doc.NewElement("showmousecursor");
     msg->LinkEndChild(doc.NewText(help.String((int)graphics.showmousecursor).c_str()));
+    dataNode->LinkEndChild(msg);
+
+    msg = doc.NewElement("over30mode");
+    msg->LinkEndChild(doc.NewText(help.String((int) over30mode).c_str()));
+    dataNode->LinkEndChild(msg);
+
+    msg = doc.NewElement("vsync");
+    msg->LinkEndChild(doc.NewText(help.String((int) graphics.vsync).c_str()));
     dataNode->LinkEndChild(msg);
 
     for (size_t i = 0; i < controllerButton_flip.size(); i += 1)
@@ -7067,9 +7092,11 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("toggle filter"));
         option(loc::gettext("toggle analogue"));
         option(loc::gettext("toggle mouse"));
+        option("toggle fps");
+        option("toggle vsync");
         option(loc::gettext("return"));
-        menuxoff = -50;
-        menuyoff = 8;
+        menuxoff = -85;
+        menuyoff = 0;
         break;
     case Menu::ed_settings:
         option(loc::gettext("change description"));

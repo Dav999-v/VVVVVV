@@ -12,6 +12,39 @@ void titlelogic()
     map.bypos -= 2;
     map.bscroll = -2;
 
+    if (!game.colourblindmode)
+    {
+        graphics.updatetowerbackground();
+    }
+
+    if (!game.menustart)
+    {
+        graphics.col_tr = (int)(164 - (help.glow / 2) - int(fRandom() * 4));
+        graphics.col_tg = 164 - (help.glow / 2) - int(fRandom() * 4);
+        graphics.col_tb = 164 - (help.glow / 2) - int(fRandom() * 4);
+    }
+    else
+    {
+        graphics.col_tr = map.r - (help.glow / 4) - int(fRandom() * 4);
+        graphics.col_tg = map.g - (help.glow / 4) - int(fRandom() * 4);
+        graphics.col_tb = map.b - (help.glow / 4) - int(fRandom() * 4);
+        if (graphics.col_tr < 0) graphics.col_tr = 0;
+        if(graphics.col_tr>255) graphics.col_tr=255;
+        if (graphics.col_tg < 0) graphics.col_tg = 0;
+        if(graphics.col_tg>255) graphics.col_tg=255;
+        if (graphics.col_tb < 0) graphics.col_tb = 0;
+        if(graphics.col_tb>255) graphics.col_tb=255;
+
+        graphics.updatetitlecolours();
+    }
+
+    graphics.crewframedelay--;
+    if (graphics.crewframedelay <= 0)
+    {
+        graphics.crewframedelay = 8;
+        graphics.crewframe = (graphics.crewframe + 1) % 2;
+    }
+
     if (game.menucountdown > 0)
     {
         game.menucountdown--;
@@ -38,6 +71,55 @@ void maplogic()
 {
     //Misc
     help.updateglow();
+    graphics.updatetextboxes();
+    graphics.updatetitlecolours();
+
+    graphics.crewframedelay--;
+    if (graphics.crewframedelay <= 0)
+    {
+        graphics.crewframedelay = 8;
+        graphics.crewframe = (graphics.crewframe + 1) % 2;
+    }
+
+    graphics.oldmenuoffset = graphics.menuoffset;
+    if (graphics.resumegamemode)
+    {
+        graphics.menuoffset += 25;
+        int threshold = map.extrarow ? 230 : 240;
+        if (graphics.menuoffset >= threshold)
+        {
+            graphics.menuoffset = threshold;
+            //go back to gamemode!
+            game.mapheld = true;
+            game.gamestate = GAMEMODE;
+        }
+    }
+    else if (graphics.menuoffset > 0)
+    {
+        graphics.menuoffset -= 25;
+        if (graphics.menuoffset < 0)
+        {
+            graphics.menuoffset = 0;
+        }
+    }
+
+    if (map.cursorstate == 0){
+        map.cursordelay++;
+        if (map.cursordelay > 10){
+            map.cursorstate = 1;
+            map.cursordelay = 0;
+        }
+    }else if (map.cursorstate == 1){
+        map.cursordelay++;
+        if (map.cursordelay > 30) map.cursorstate = 2;
+    }else if (map.cursorstate == 2){
+        map.cursordelay++;
+    }
+
+    if (map.finalmode)
+    {
+        map.glitchname = map.getglitchname(game.roomx, game.roomy);
+    }
 }
 
 
@@ -48,6 +130,17 @@ void gamecompletelogic()
     help.updateglow();
     graphics.crewframe = 0;
     map.scrolldir = 1;
+    graphics.updatetitlecolours();
+
+    graphics.col_tr = map.r - (help.glow / 4) - fRandom() * 4;
+    graphics.col_tg = map.g - (help.glow / 4) - fRandom() * 4;
+    graphics.col_tb = map.b - (help.glow / 4) - fRandom() * 4;
+    if (graphics.col_tr < 0) graphics.col_tr = 0;
+    if(graphics.col_tr>255) graphics.col_tr=255;
+    if (graphics.col_tg < 0) graphics.col_tg = 0;
+    if(graphics.col_tg>255) graphics.col_tg=255;
+    if (graphics.col_tb < 0) graphics.col_tb = 0;
+    if(graphics.col_tb>255) graphics.col_tb=255;
 
     game.creditposition--;
     if (game.creditposition <= -game.creditmaxposition)
@@ -65,6 +158,7 @@ void gamecompletelogic()
         //Fix some graphical things
         graphics.showcutscenebars = false;
         graphics.cutscenebarspos = 0;
+        graphics.oldcutscenebarspos = 0;
         map.scrolldir = 0;
         map.bypos = 0;
         //Return to game
@@ -119,6 +213,34 @@ void gamecompletelogic2()
 
 void gamelogic()
 {
+    if (!game.blackout && !game.completestop)
+    {
+        for (size_t i = 0; i < obj.entities.size(); i++)
+        {
+            //Is this entity on the ground? (needed for jumping)
+            if (obj.entitycollidefloor(i))
+            {
+                obj.entities[i].onground = 2;
+            }
+            else
+            {
+                obj.entities[i].onground--;
+            }
+
+            if (obj.entitycollideroof(i))
+            {
+                obj.entities[i].onroof = 2;
+            }
+            else
+            {
+                obj.entities[i].onroof--;
+            }
+
+            //Animate the entities
+            obj.animateentities(i);
+        }
+    }
+
     //Misc
     if (map.towermode)
     {
@@ -172,8 +294,13 @@ void gamelogic()
         obj.upset = 0;
     }
 
+    obj.oldtrophytext = obj.trophytext;
+
     if (map.towermode)
     {
+        map.oldypos = map.ypos;
+        map.oldspikeleveltop = map.spikeleveltop;
+        map.oldspikelevelbottom = map.spikelevelbottom;
         if(!game.completestop)
         {
             if (map.cameramode == 0)
@@ -315,6 +442,7 @@ void gamelogic()
         game.lifesequence();
     }
 
+    graphics.kludgeswnlinewidth = false;
 
     if (game.deathseq != -1)
     {
@@ -620,6 +748,7 @@ void gamelogic()
                 {
                     obj.entities[obj.getlineat(84 - 32)].w = 332;
                     game.swngame = 2;
+                    graphics.kludgeswnlinewidth = true;
                 }
             }
             else if (game.swngame == 4)    //create top line
@@ -900,11 +1029,13 @@ void gamelogic()
                         {
                             if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
                             obj.entities[i].xp += 400;
+                            obj.entities[i].oldxp += 400;
                         }
                         else if (obj.entities[i].xp > 320)
                         {
                             if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
                             obj.entities[i].xp -= 400;
+                            obj.entities[i].oldxp -= 400;
                         }
                     }
                     else
@@ -913,11 +1044,13 @@ void gamelogic()
                         {
                             if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
                             obj.entities[i].xp += 320;
+                            obj.entities[i].oldxp += 320;
                         }
                         else if (obj.entities[i].xp > 310)
                         {
                             if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
                             obj.entities[i].xp -= 320;
+                            obj.entities[i].oldxp -= 320;
                         }
                     }
                 }
@@ -933,11 +1066,13 @@ void gamelogic()
                     {
                         if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
                         obj.entities[i].yp += 232;
+                        obj.entities[i].oldyp += 232;
                     }
                     else if (obj.entities[i].yp > 226)
                     {
                         if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
                         obj.entities[i].yp -= 232;
+                        obj.entities[i].oldyp -= 232;
                     }
                 }
             }
@@ -955,11 +1090,13 @@ void gamelogic()
                     {
                         if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
                         obj.entities[i].xp += 350;
+                        obj.entities[i].oldxp += 350;
                     }
                     else if (obj.entities[i].xp > 320)
                     {
                         if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
                         obj.entities[i].xp -= 350;
+                        obj.entities[i].oldxp -= 350;
                     }
                 }
             }
@@ -1051,13 +1188,12 @@ void gamelogic()
                     if (obj.entities[i].xp <= -10)
                     {
                         obj.entities[i].xp += 320;
+                        obj.entities[i].oldxp += 320;
                     }
-                    else
+                    else if (obj.entities[i].xp > 310)
                     {
-                        if (obj.entities[i].xp > 310)
-                        {
-                            obj.entities[i].xp -= 320;
-                        }
+                        obj.entities[i].xp -= 320;
+                        obj.entities[i].oldxp -= 320;
                     }
                 }
             }
@@ -1214,6 +1350,23 @@ void gamelogic()
             }
         }
     }
+
+    //Update colour cycling for final level
+    if (map.finalmode && map.final_colormode)
+    {
+        map.final_aniframedelay--;
+        if(map.final_aniframedelay==0)
+        {
+            graphics.foregrounddrawn=false;
+        }
+        if (map.final_aniframedelay <= 0) {
+            map.final_aniframedelay = 2;
+            map.final_aniframe++;
+            if (map.final_aniframe >= 4)
+                map.final_aniframe = 0;
+        }
+    }
+
     int j;
     if (game.roomchange)
     {
@@ -1408,6 +1561,7 @@ void gamelogic()
 
     game.activeactivity = obj.checkactivity();
 
+    game.oldreadytotele = game.readytotele;
     if (game.activetele)
     {
         int i = obj.getplayer();
@@ -1441,8 +1595,110 @@ void gamelogic()
 #if !defined(NO_CUSTOM_LEVELS)
     if (game.shouldreturntoeditor)
     {
-        game.shouldreturntoeditor = false;
         game.returntoeditor();
+    }
+#endif
+
+    game.prev_act_fade = game.act_fade;
+    if (game.activeactivity > -1)
+    {
+        if (game.act_fade < 5)
+        {
+            game.act_fade = 5;
+        }
+        if (game.act_fade < 10)
+        {
+            game.act_fade++;
+        }
+    }
+    else if (game.act_fade > 5)
+    {
+        game.act_fade--;
+    }
+
+    if (obj.trophytext > 0)
+    {
+        obj.trophytext--;
+    }
+
+    graphics.updatetextboxes();
+
+    if (!game.colourblindmode)
+    {
+        if (map.towermode)
+        {
+            graphics.updatetowerbackground();
+        }
+        else
+        {
+            graphics.updatebackground(map.background);
+        }
+    }
+
+    if (!game.blackout)
+    {
+        //Update line colours!
+        if (graphics.linedelay <= 0)
+        {
+            graphics.linestate++;
+            if (graphics.linestate >= 10) graphics.linestate = 0;
+            graphics.linedelay = 2;
+        }
+        else
+        {
+            graphics.linedelay--;
+        }
+    }
+
+    graphics.trinketcolset = false;
+    for (int i = obj.entities.size() - 1; i >= 0; i--)
+    {
+        if (obj.entities[i].invis)
+        {
+            continue;
+        }
+
+        obj.entities[i].updatecolour();
+    }
+
+    if (map.finalmode)
+    {
+        map.glitchname = map.getglitchname(game.roomx, game.roomy);
+    }
+
+#if !defined(NO_CUSTOM_LEVELS)
+    ed.oldreturneditoralpha = ed.returneditoralpha;
+    if (map.custommode && !map.custommodeforreal && ed.returneditoralpha > 0)
+    {
+        ed.returneditoralpha -= 15;
+    }
+
+    // Editor ghosts!
+    if (game.ghostsenabled)
+    {
+        if (map.custommode && !map.custommodeforreal)
+        {
+            if (game.gametimer % 3 == 0)
+            {
+                int i = obj.getplayer();
+                GhostInfo ghost;
+                ghost.rx = game.roomx-100;
+                ghost.ry = game.roomy-100;
+                if (i > -1)
+                {
+                    ghost.x = obj.entities[i].xp;
+                    ghost.y = obj.entities[i].yp;
+                    ghost.col = obj.entities[i].colour;
+                    ghost.realcol = obj.entities[i].realcol;
+                    ghost.frame = obj.entities[i].drawframe;
+                }
+                ed.ghosts.push_back(ghost);
+            }
+            if (ed.ghosts.size() > 100)
+            {
+                ed.ghosts.erase(ed.ghosts.begin());
+            }
+        }
     }
 #endif
 }

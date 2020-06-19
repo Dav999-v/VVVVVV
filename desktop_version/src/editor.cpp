@@ -305,6 +305,7 @@ void editorclass::reset()
     saveandquit=false;
     note="";
     notedelay=0;
+    oldnotedelay=0;
     roomnamemod=false;
     textentry=false;
     savemod=false;
@@ -406,6 +407,7 @@ void editorclass::reset()
     script.customscripts.clear();
 
     returneditoralpha = 0;
+    oldreturneditoralpha = 0;
 
     ghosts.clear();
     currentghosts = 0;
@@ -2461,6 +2463,11 @@ void editormenurender(int tr, int tg, int tb)
 
 void editorrender()
 {
+    if (game.shouldreturntoeditor)
+    {
+        graphics.backgrounddrawn = false;
+    }
+
     //Draw grid
 
     FillRect(graphics.backBuffer, 0, 0, 320,240, graphics.getRGB(0,0,0));
@@ -2562,8 +2569,6 @@ void editorrender()
     }
 
     //Draw entities
-    game.customcol=ed.getlevelcol(ed.levx+(ed.levy*ed.maxwidth))+1;
-    ed.entcol=ed.getenemycol(game.customcol);
     obj.customplatformtile=game.customcol*12;
 
     ed.temp=edentat(ed.tilex+ (ed.levx*40),ed.tiley+ (ed.levy*30));
@@ -2583,7 +2588,7 @@ void editorrender()
             switch(edentity[i].t)
             {
             case 1: //Entities
-                graphics.drawspritesetcol((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),ed.getenemyframe(ed.level[ed.levx+(ed.levy*ed.maxwidth)].enemytype),ed.entcol);
+                graphics.drawsprite((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),ed.getenemyframe(ed.level[ed.levx+(ed.levy*ed.maxwidth)].enemytype),ed.entcolreal);
                 if(edentity[i].p1==0) graphics.Print((edentity[i].x*8)- (ed.levx*40*8)+4,(edentity[i].y*8)- (ed.levy*30*8)+4, "V", 255, 255, 255 - help.glow, false);
                 if(edentity[i].p1==1) graphics.Print((edentity[i].x*8)- (ed.levx*40*8)+4,(edentity[i].y*8)- (ed.levy*30*8)+4, "^", 255, 255, 255 - help.glow, false);
                 if(edentity[i].p1==2) graphics.Print((edentity[i].x*8)- (ed.levx*40*8)+4,(edentity[i].y*8)- (ed.levy*30*8)+4, "<", 255, 255, 255 - help.glow, false);
@@ -2726,17 +2731,17 @@ void editorrender()
                 }
                 break;
             case 15: //Crewmates
-                graphics.drawspritesetcol((edentity[i].x*8)- (ed.levx*40*8)-4,(edentity[i].y*8)- (ed.levy*30*8),144,obj.crewcolour(edentity[i].p1));
+                graphics.drawsprite((edentity[i].x*8)- (ed.levx*40*8)-4,(edentity[i].y*8)- (ed.levy*30*8),144,graphics.crewcolourreal(edentity[i].p1));
                 fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),16,24,graphics.getRGB(164,164,164));
                 break;
             case 16: //Start
                 if(edentity[i].p1==0)  //Left
                 {
-                    graphics.drawspritesetcol((edentity[i].x*8)- (ed.levx*40*8)-4,(edentity[i].y*8)- (ed.levy*30*8),0,obj.crewcolour(0));
+                    graphics.drawsprite((edentity[i].x*8)- (ed.levx*40*8)-4,(edentity[i].y*8)- (ed.levy*30*8),0,graphics.col_crewcyan);
                 }
                 else if(edentity[i].p1==1)
                 {
-                    graphics.drawspritesetcol((edentity[i].x*8)- (ed.levx*40*8)-4,(edentity[i].y*8)- (ed.levy*30*8),3,obj.crewcolour(0));
+                    graphics.drawsprite((edentity[i].x*8)- (ed.levx*40*8)-4,(edentity[i].y*8)- (ed.levy*30*8),3,graphics.col_crewcyan);
                 }
                 fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),16,24,graphics.getRGB(164,255,255));
                 if(ed.entframe<2)
@@ -2884,7 +2889,7 @@ void editorrender()
                 point tpoint;
                 tpoint.x = ed.ghosts[i].x;
                 tpoint.y = ed.ghosts[i].y;
-                graphics.setcol(ed.ghosts[i].col);
+                graphics.setcolreal(ed.ghosts[i].realcol);
                 Uint32 alpha = graphics.ct.colour & graphics.backBuffer->format->Amask;
                 Uint32 therest = graphics.ct.colour & 0x00FFFFFF;
                 alpha = (3 * (alpha >> 24) / 4) << 24;
@@ -2894,12 +2899,6 @@ void editorrender()
                 drawRect.y += tpoint.y;
                 BlitSurfaceColoured(graphics.sprites[ed.ghosts[i].frame],NULL, graphics.ghostbuffer, &drawRect, graphics.ct);
             }
-        }
-        if (ed.currentghosts + 1 < (int)ed.ghosts.size()) {
-            ed.currentghosts++;
-            if (ed.zmod) ed.currentghosts++;
-        } else {
-            ed.currentghosts = (int)ed.ghosts.size() - 1;
         }
         SDL_BlitSurface(graphics.ghostbuffer, NULL, graphics.backBuffer, &graphics.bg_rect);
     }
@@ -3363,10 +3362,10 @@ void editorrender()
                 FillRect(graphics.backBuffer, tx+6,ty+2,4,12,graphics.getRGB(255,255,255));
                 //15:
                 tx+=tg;
-                graphics.drawsprite(tx,ty,186,75, 75, 255- help.glow/4 - (fRandom()*20));
+                graphics.drawsprite(tx,ty,186,graphics.col_crewblue);
                 //16:
                 tx+=tg;
-                graphics.drawsprite(tx,ty,184,160- help.glow/2 - (fRandom()*20), 200- help.glow/2, 220 - help.glow);
+                graphics.drawsprite(tx,ty,184,graphics.col_crewcyan);
 
                 if(ed.drawmode==10)graphics.Print(22+((ed.drawmode-10)*tg)-4, 225-4,"R",255,255,255,false);
                 if(ed.drawmode==11)graphics.Print(22+((ed.drawmode-10)*tg)-4, 225-4,"T",255,255,255,false);
@@ -3574,11 +3573,12 @@ void editorrender()
         }
     }
 
-    if(ed.notedelay>0)
+    if(ed.notedelay>0 || ed.oldnotedelay>0)
     {
+        float alpha = graphics.lerp(ed.oldnotedelay, ed.notedelay);
         FillRect(graphics.backBuffer, 0,115,320,18, graphics.getRGB(92,92,92));
         FillRect(graphics.backBuffer, 0,116,320,16, graphics.getRGB(0,0,0));
-        graphics.Print(0,121, ed.note,196-((45-ed.notedelay)*4), 196-((45-ed.notedelay)*4), 196-((45-ed.notedelay)*4), true);
+        graphics.Print(0,121, ed.note,196-((45.0f-alpha)*4), 196-((45.0f-alpha)*4), 196-((45.0f-alpha)*4), true);
     }
 
     graphics.drawfade();
@@ -3590,6 +3590,18 @@ void editorlogic()
 {
     //Misc
     help.updateglow();
+    graphics.updatetitlecolours();
+
+    game.customcol=ed.getlevelcol(ed.levx+(ed.levy*ed.maxwidth))+1;
+    ed.entcol=ed.getenemycol(game.customcol);
+
+    graphics.setcol(ed.entcol);
+    ed.entcolreal = graphics.ct.colour;
+
+    if (game.shouldreturntoeditor)
+    {
+        game.shouldreturntoeditor = false;
+    }
 
     map.bypos -= 2;
     map.bscroll = -2;
@@ -3601,9 +3613,58 @@ void editorlogic()
         ed.entframedelay=8;
     }
 
+    ed.oldnotedelay = ed.notedelay;
     if(ed.notedelay>0)
     {
         ed.notedelay--;
+    }
+
+    if (game.ghostsenabled)
+    {
+        for (size_t i = 0; i < ed.ghosts.size(); i++)
+        {
+            GhostInfo& ghost = ed.ghosts[i];
+
+            if ((int) i > ed.currentghosts || ghost.rx != ed.levx || ghost.ry != ed.levy)
+            {
+                continue;
+            }
+
+            graphics.setcol(ghost.col);
+            ghost.realcol = graphics.ct.colour;
+        }
+
+        if (ed.currentghosts + 1 < (int)ed.ghosts.size()) {
+            ed.currentghosts++;
+            if (ed.zmod) ed.currentghosts++;
+        } else {
+            ed.currentghosts = (int)ed.ghosts.size() - 1;
+        }
+    }
+
+    if (!ed.settingsmod)
+    {
+        switch(ed.level[ed.levx+(ed.levy*ed.maxwidth)].warpdir)
+        {
+        case 1:
+            graphics.rcol=ed.getwarpbackground(ed.levx, ed.levy);
+            graphics.updatebackground(3);
+            break;
+        case 2:
+            graphics.rcol=ed.getwarpbackground(ed.levx, ed.levy);
+            graphics.updatebackground(4);
+            break;
+        case 3:
+            graphics.rcol=ed.getwarpbackground(ed.levx, ed.levy);
+            graphics.updatebackground(5);
+            break;
+        default:
+            break;
+        }
+    }
+    else if (!game.colourblindmode)
+    {
+        graphics.updatetowerbackground();
     }
 
     if (graphics.fademode == 1)
@@ -4608,6 +4669,7 @@ void editorinput()
                         music.haltdasmusik();
                         graphics.backgrounddrawn=false;
                         ed.returneditoralpha = 1000; // Let's start it higher than 255 since it gets clamped
+                        ed.oldreturneditoralpha = 1000;
                         script.startgamemode(21);
                     }
                 }

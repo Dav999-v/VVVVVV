@@ -1277,7 +1277,12 @@ void scriptclass::run()
 					//TODO this draw the teleporter screen. This is a problem. :(
 					game.gamestate = TELEPORTERMODE;
 					graphics.menuoffset = 240; //actually this should count the roomname
-					if (map.extrarow) graphics.menuoffset -= 10;
+					graphics.oldmenuoffset = 240;
+					if (map.extrarow)
+					{
+						graphics.menuoffset -= 10;
+						graphics.oldmenuoffset -= 10;
+					}
 
 					graphics.resumegamemode = false;
 
@@ -2593,6 +2598,7 @@ void scriptclass::startgamemode( int t )
 		game.jumpheld = true;
 		graphics.showcutscenebars = true;
 		graphics.cutscenebarspos = 320;
+		graphics.oldcutscenebarspos = 320;
 
 		//set flipmode
 		if (graphics.setflipmode) graphics.flipmode = true;
@@ -2849,6 +2855,7 @@ void scriptclass::startgamemode( int t )
 		game.jumpheld = true;
 		graphics.showcutscenebars = true;
 		graphics.cutscenebarspos = 320;
+		graphics.oldcutscenebarspos = 320;
 
 		//set flipmode
 		if (graphics.setflipmode) graphics.flipmode = true;
@@ -2876,6 +2883,7 @@ void scriptclass::startgamemode( int t )
 		game.jumpheld = true;
 		graphics.showcutscenebars = true;
 		graphics.cutscenebarspos = 320;
+		graphics.oldcutscenebarspos = 320;
 
 		//set flipmode
 		if (graphics.setflipmode) graphics.flipmode = true;
