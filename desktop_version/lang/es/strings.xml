@@ -220,13 +220,13 @@
     <string english="WOW" comment="even bigger title" max="10">WOW</string>
     <string english="You rescued all the crewmates!" comment="" max="40">Rescataste a todos los miembros!</string>
     <string english="A new trophy has been awarded and placed in the secret lab to acknowledge your achievement!" comment="wrapped">Un nuevo trofeo fue otorgado y colocado en el laboratorio secreto para reconocer tu logro!</string>
-    <string english="[Trinkets found]" comment="amount of shiny trinkets found" max="40">[Monedas encontradas]</string>
+    <string english="[Trinkets found]" comment="amount of shiny trinkets found" max="40">[Baratijas encontradas]</string>
     <string english="[Number of Deaths]" comment="" max="40">[Número de muertes]</string>
     <string english="[Time Taken]" comment="stopwatch time" max="40">[Tiempo tomado]</string>
     <string english="Results" comment="bigger title" max="13">Resultados</string>
     <string english="TIME TAKEN:" comment="time the player took playing the level" max="32">TIEMPO TOMADO:</string>
     <string english="NUMBER OF DEATHS:" comment="amount of times the player died" max="32">NÚMERO DE MUERTES:</string>
-    <string english="SHINY TRINKETS:" comment="amount of trinkets collected">MONEDAS BRILLANTES:</string>
+    <string english="SHINY TRINKETS:" comment="amount of trinkets collected">BARATIJAS BRILLANTES:</string>
     <string english="%d of %d" comment="ex: 2 of 5">%d de %d</string>
     <string english="+1 Rank!" comment="rank was upgraded (B → A → S → V)" max="12">+1 Rango!</string>
     <string english="Rank:" comment="time trial rank">Rango:</string>
@@ -279,7 +279,7 @@
     <string english="Go!" comment="3, 2, 1, Go!" max="10">Ya!</string>
     <string english="TIME:" comment="stopwatch time, not too long">TIEMPO:</string>
     <string english="DEATH:" comment="number of times player died, not too long">MUERTES:</string>
-    <string english="SHINY:" comment="number of shiny trinkets collected, not too long">MONEDAS:</string>
+    <string english="SHINY:" comment="number of shiny trinkets collected, not too long">BRILLANTES:</string>
     <string english="PAR TIME:" comment="goal time for time trial">MEJOR TIEMPO</string>
     <string english="MAP" comment="in-game menu" max="8">MAPA</string>
     <string english="GRAV" comment="in-game menu, Gravitron" max="8">GRAV</string>
