@@ -335,13 +335,12 @@ void Graphics::map_option(int opt, int num_opts, const std::string& text, bool s
 
     if (selected)
     {
-        std::string text_upper(text);
-        std::transform(text_upper.begin(), text_upper.end(), text_upper.begin(), ::toupper);
+        std::string text_upper(loc::toupper(text));
         Print(x - 16, y, "[ " + text_upper + " ]", 196, 196, 255 - help.glow);
     }
     else
     {
-        Print(x, y, text, 96, 96, 96);
+        Print(x, y, loc::not_toupper(text), 96, 96, 96);
     }
 }
 

@@ -32,8 +32,8 @@ namespace loc
 
 	std::string gettext(const std::string& eng);
 
-	std::string toupper(std::string& lower);
-	std::string not_toupper(std::string& _s);
+	std::string toupper(const std::string& lower);
+	std::string not_toupper(const std::string& _s);
 }
 
 #endif /* LOCALIZATION_H */

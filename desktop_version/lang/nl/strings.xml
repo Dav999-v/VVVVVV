@@ -75,8 +75,8 @@
     <string english="Show/hide the system mouse cursor." comment="wrapped">Muisaanwijzer weergeven of verbergen.</string>
     <string english="Current mode: SHOW" comment="wrapped, show cursor">Huidige modus: WEERGEGEVEN</string>
     <string english="Current mode: HIDE" comment="wrapped, hide cursor">Huidige modus: VERBORGEN</string>
-    <string english="toggle fps" comment="menu option"></string>
-    <string english="Toggle 30+ FPS" comment="title" max="20"></string>
+    <string english="toggle fps" comment="menu option">fps</string>
+    <string english="Toggle 30+ FPS" comment="title" max="20">30+ FPS aan/uit</string>
     <string english="Change whether the game runs at 30 or over 30 FPS." comment="wrapped"></string>
     <string english="Current mode: 30 FPS" comment="wrapped"></string>
     <string english="Current mode: Over 30 FPS" comment="wrapped"></string>
@@ -213,7 +213,7 @@
     <string english="You managed to reach:" comment="you managed to reach the following room" max="40">Je wist te bereiken:</string>
     <string english="Keep trying! You&apos;ll get there!" comment="wrapped, player died before managing to save anybody">Blijf het proberen! Je komt er wel!</string>
     <string english="Nice one!" comment="wrapped, player died after saving one crewmate">Prima!</string>
-    <string english="Wow! Congratulations!" comment="wrapped, player died after saving two crewmates">Wow! Gefeliciteerd!</string>
+    <string english="Wow! Congratulations!" comment="wrapped, player died after saving two crewmates">Wauw! Gefeliciteerd!</string>
     <string english="Incredible!" comment="wrapped, player died after saving three crewmates">Fantastisch!</string>
     <string english="Unbelievable! Well done!" comment="wrapped, player died after saving four crewmates">Ongelooflijk! Goed gedaan!</string>
     <string english="Er, how did you do that?" comment="wrapped, player died even though they were finished, lol">Eh, hoe heb je dat gedaan?</string>
@@ -287,6 +287,7 @@
     <string english="CREW" comment="in-game menu" max="8">CREW</string>
     <string english="STATS" comment="in-game menu" max="8">STAT</string>
     <string english="SAVE" comment="in-game menu" max="8">OPSLAAN</string>
+    <string english="[ PAUSE ]" comment="in-game menu" max="40">[ PAUZE ]</string>
     <string english="[ QUIT ]" comment="in-game menu" max="40">[ STOPPEN ]</string>
     <string english="[ GRAVITRON ]" comment="in-game menu" max="40">[ GRAVITRON ]</string>
     <string english="NO SIGNAL" comment="">GEEN SIGNAAL</string>
@@ -311,6 +312,8 @@
     <string english="yes, return" comment="" max="24">ja, teruggaan</string>
     <string english="[ YES, RETURN ]" comment="" max="28">[ JA, TERUGGAAN ]</string>
     <string english="yes, quit" comment="quit program">ja, afsluiten</string>
+    <string english="return to game" comment="pause menu option">terug naar het spel</string>
+    <string english="quit to menu" comment="pause menu option">stoppen en naar menu</string>
     <string english="Press Left/Right to choose a Teleporter" comment="tight fit, so maybe `Left/Right: choose teleporter`" max="40">Links/Rechts: kies teleporter</string>
     <string english="Press ENTER to Teleport" comment="" max="40">Druk op ENTER om te teleporteren</string>
     <string english="edit scripts" comment="level editor menu option">scripts bewerken</string>
@@ -328,8 +331,6 @@
     <string english="yes, save and quit" comment="level editor menu option">ja, opslaan en afsluiten</string>
     <string english="no, quit without saving" comment="level editor menu option">nee, afsluiten zonder opslaan</string>
     <string english="return to editor" comment="level editor menu option">terug naar editor</string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
     <string english="" comment=""></string>
     <string english="" comment=""></string>
     <string english="" comment=""></string>

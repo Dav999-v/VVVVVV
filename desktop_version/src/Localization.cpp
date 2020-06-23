@@ -295,7 +295,7 @@ namespace loc
 		return ch;
 	}
 
-	std::string toupper(std::string& lower)
+	std::string toupper(const std::string& lower)
 	{
 		// Convert a UTF-8 string to uppercase
 		if (!langmeta.toupper)
@@ -303,7 +303,7 @@ namespace loc
 
 		std::string upper = std::string();
 		std::back_insert_iterator<std::string> inserter = std::back_inserter(upper);
-		std::string::iterator iter = lower.begin();
+		std::string::const_iterator iter = lower.begin();
 		bool ignorenext = false;
 		uint32_t ch;
 		while (iter != lower.end())
@@ -328,7 +328,7 @@ namespace loc
 		return upper;
 	}
 
-	std::string not_toupper(std::string& _s)
+	std::string not_toupper(const std::string& _s)
 	{
 		// No-op, except if langmeta.toupper_lower_escape_char, to remove the ~ escape character
 		// To be clear: does not convert to lowercase!

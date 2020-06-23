@@ -1734,17 +1734,17 @@ void maprender()
     case 31:
     case 32:
     case 33:
-        graphics.Print(-1, 220, "[ PAUSE ]", 196, 196, 255 - help.glow, true);
+        graphics.Print(-1, 220, loc::gettext("[ PAUSE ]"), 196, 196, 255 - help.glow, true);
     }
 
     // Draw menu options
     if (game.menupage >= 30 && game.menupage <= 33)
     {
 #define OPTION(opt, text) graphics.map_option(opt, 4, text, game.menupage - 30 == opt)
-        OPTION(0, "return to game");
-        OPTION(1, "quit to menu");
-        OPTION(2, "graphic options");
-        OPTION(3, "game options");
+        OPTION(0, loc::gettext("return to game"));
+        OPTION(1, loc::gettext("quit to menu"));
+        OPTION(2, loc::gettext("graphic options"));
+        OPTION(3, loc::gettext("game options"));
 #undef OPTION
     }
 
