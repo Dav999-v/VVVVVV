@@ -315,6 +315,36 @@ void Graphics::map_tab(int opt, const std::string& text, bool selected /*= false
     }
 }
 
+void Graphics::map_option(int opt, int num_opts, const std::string& text, bool selected /*= false*/)
+{
+    int x = 80 + opt*32;
+    int y = 136; // start from middle of menu
+
+    int yoff = -(num_opts * 12) / 2; // could be simplified to -num_opts * 6, this conveys my intent better though
+    yoff += opt * 12;
+
+    if (flipmode)
+    {
+        y -= yoff; // going down, which in Flip Mode means going up
+        y -= 40;
+    }
+    else
+    {
+        y += yoff; // going up
+    }
+
+    if (selected)
+    {
+        std::string text_upper(text);
+        std::transform(text_upper.begin(), text_upper.end(), text_upper.begin(), ::toupper);
+        Print(x - 16, y, "[ " + text_upper + " ]", 196, 196, 255 - help.glow);
+    }
+    else
+    {
+        Print(x, y, text, 96, 96, 96);
+    }
+}
+
 void Graphics::PrintWrap( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/, int linespacing /*= 10*/, int maxw /*= 304*/ ) {
     size_t startline = 0;
     size_t newline;

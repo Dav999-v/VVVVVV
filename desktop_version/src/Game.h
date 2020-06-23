@@ -219,6 +219,7 @@ public:
     std::vector<MenuOption> menuoptions;
     int currentmenuoption ;
     enum Menu::MenuName currentmenuname;
+    enum Menu::MenuName kludge_ingametemp;
     int current_credits_list_index;
     int menuxoff, menuyoff;
     std::vector<MenuStackFrame> menustack;
@@ -407,6 +408,11 @@ public:
     }
 
     bool over30mode;
+
+    bool ingame_titlemode;
+
+    bool shouldreturntopausemenu;
+    void returntopausemenu();
 };
 
 extern Game game;
