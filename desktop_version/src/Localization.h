@@ -9,12 +9,18 @@ namespace loc
 {
 	struct LangMeta
 	{
+		bool active; // = true, language is shown in the list
 		std::string code;
 		std::string nativename;
 		std::string credit;
+		bool autowordwrap; // = true; enable automatic wordwrapping
+		bool toupper; // = true; enable automatic full-caps for menu options
+		bool toupper_i_dot; // = false; enable Turkish i mapping when uppercasing
+		bool toupper_lower_escape_char; // = false; enable ~ to mark lowercase letters for uppercasing
 	};
 
 	extern std::string lang;
+	extern LangMeta langmeta;
 	extern bool test_mode;
 	extern std::vector<LangMeta> languagelist;
 	extern int languagelist_curlang;
@@ -25,6 +31,9 @@ namespace loc
 	void sync_lang_files();
 
 	std::string gettext(const std::string& eng);
+
+	std::string toupper(std::string& lower);
+	std::string not_toupper(std::string& _s);
 }
 
 #endif /* LOCALIZATION_H */
