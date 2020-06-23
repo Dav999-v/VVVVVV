@@ -75,16 +75,16 @@
     <string english="Show/hide the system mouse cursor." comment="wrapped">Mostrar/Ocultar el cursor.</string>
     <string english="Current mode: SHOW" comment="wrapped, show cursor">Modo actual: MOSTRAR</string>
     <string english="Current mode: HIDE" comment="wrapped, hide cursor">Modo actual: OCULTAR</string>
-    <string english="toggle fps" comment="menu option"></string>
-    <string english="Toggle 30+ FPS" comment="title" max="20"></string>
-    <string english="Change whether the game runs at 30 or over 30 FPS." comment="wrapped"></string>
-    <string english="Current mode: 30 FPS" comment="wrapped"></string>
-    <string english="Current mode: Over 30 FPS" comment="wrapped"></string>
-    <string english="toggle vsync" comment="menu option"></string>
-    <string english="Toggle VSync" comment="title" max="20"></string>
-    <string english="Turn VSync on or off." comment="wrapped"></string>
-    <string english="Current mode: VSYNC OFF" comment="wrapped"></string>
-    <string english="Current mode: VSYNC ON" comment="wrapped"></string>
+    <string english="toggle fps" comment="menu option">alternar fps</string>
+    <string english="Toggle 30+ FPS" comment="title" max="20">Alternar +30 FPS</string>
+    <string english="Change whether the game runs at 30 or over 30 FPS." comment="wrapped">Cambiar si el juego corre a 30 o mas FPS.</string>
+    <string english="Current mode: 30 FPS" comment="wrapped">Modo actual: 30 FPS</string>
+    <string english="Current mode: Over 30 FPS" comment="wrapped">Modo actual: Mas de 30 FPS</string>
+    <string english="toggle vsync" comment="menu option">alternar sincronizacion vertical</string>
+    <string english="Toggle VSync" comment="title" max="20">Alternar VSync</string>
+    <string english="Turn VSync on or off." comment="wrapped">Acitvar o desactivar VSync.</string>
+    <string english="Current mode: VSYNC OFF" comment="wrapped">Modo actual: VSYNC DESACTIVADO</string>
+    <string english="Current mode: VSYNC ON" comment="wrapped">Modo actual: VSYNC ACTIVADO</string>
     <string english="VVVVVV is a game by" comment="credits" max="40">VVVVVV es un juego por</string>
     <string english="Terry Cavanagh" comment="credits" max="20">Terry Cavanagh</string>
     <string english="and features music by" comment="credits" max="40">y presenta música por</string>
@@ -103,7 +103,7 @@
     <string english="With contributions on GitHub from" comment="credits, wrapped">Con contribuciones de GitHub desde</string>
     <string english="and thanks also to:" comment="credits, and thanks also to ... you!">Y también gracias a:</string>
     <string english="You!" comment="credits, and thanks also to ... you!">Ti!</string>
-    <string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." comment="credits, wrapped">Tu apoyo me hace posible el poder continuar creando los juegos que quiero hacer, ahora y en el futuro</string>
+    <string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." comment="credits, wrapped">Tu apoyo me hace posible el poder continuar creando los juegos que quiero hacer, ahora y en el futuro.</string>
     <string english="Thank you!" comment="credits, wrapped">Gracias!</string>
     <string english="Good luck!" comment="wrapped">Buena Suerte!</string>
     <string english="You cannot save in this mode." comment="wrapped">No puedes guardar en este modo.</string>
@@ -164,9 +164,9 @@
     <string english="May be useful for disabled gamers using one switch devices." comment="wrapped">Podría ser útil para jugadores discapacitados.</string>
     <string english="Select a new game speed below." comment="wrapped">Selecciona la velocidad del juego abajo.</string>
     <string english="Game speed is normal." comment="wrapped">La velocidad esta normal.</string>
-    <string english="Game speed is at 80%" comment="wrapped">La velocidad esta al 80%.</string>
-    <string english="Game speed is at 60%" comment="wrapped">La velocidad esta al 60%.</string>
-    <string english="Game speed is at 40%" comment="wrapped">La velocidad esta al 40%.</string>
+    <string english="Game speed is at 80%" comment="wrapped">La velocidad esta al 80%</string>
+    <string english="Game speed is at 60%" comment="wrapped">La velocidad esta al 60%</string>
+    <string english="Game speed is at 40%" comment="wrapped">La velocidad esta al 40%</string>
     <string english="normal speed" comment="menu option">velocidad normal</string>
     <string english="80% speed" comment="menu option">velocidad 80%</string>
     <string english="60% speed" comment="menu option">velocidad 60%</string>
@@ -192,7 +192,7 @@
     <string english="You can unlock each time trial separately." comment="wrapped">Puedes liberar cada prueba a contrarreloj por separado.</string>
     <string english="intermissions" comment="menu option">intermisiones</string>
     <string english="Intermissions" comment="title" max="20">Intermisiones</string>
-    <string english="Replay the intermission levels." comment="wrapped">Repetir los niveles de intermision</string>
+    <string english="Replay the intermission levels." comment="wrapped">Repetir los niveles de intermision.</string>
     <string english="unlock intermissions" comment="menu option">desbloquear intermisiones</string>
     <string english="TO UNLOCK: Complete the intermission levels in-game." comment="wrapped">PARA LIBERAR: Completa los niveles de intermision en el juego.</string>
     <string english="no death mode" comment="menu option">modo sin muertes</string>
@@ -220,13 +220,13 @@
     <string english="WOW" comment="even bigger title" max="10">WOW</string>
     <string english="You rescued all the crewmates!" comment="" max="40">Rescataste a todos los miembros!</string>
     <string english="A new trophy has been awarded and placed in the secret lab to acknowledge your achievement!" comment="wrapped">Un nuevo trofeo fue otorgado y colocado en el laboratorio secreto para reconocer tu logro!</string>
-    <string english="[Trinkets found]" comment="amount of shiny trinkets found" max="40">[Monedas encontradas]</string>
+    <string english="[Trinkets found]" comment="amount of shiny trinkets found" max="40">[Baratijas encontradas]</string>
     <string english="[Number of Deaths]" comment="" max="40">[Número de muertes]</string>
     <string english="[Time Taken]" comment="stopwatch time" max="40">[Tiempo tomado]</string>
     <string english="Results" comment="bigger title" max="13">Resultados</string>
     <string english="TIME TAKEN:" comment="time the player took playing the level" max="32">TIEMPO TOMADO:</string>
     <string english="NUMBER OF DEATHS:" comment="amount of times the player died" max="32">NÚMERO DE MUERTES:</string>
-    <string english="SHINY TRINKETS:" comment="amount of trinkets collected">MONEDAS BRILLANTES:</string>
+    <string english="SHINY TRINKETS:" comment="amount of trinkets collected">BARATIJAS BRILLANTES:</string>
     <string english="%d of %d" comment="ex: 2 of 5">%d de %d</string>
     <string english="+1 Rank!" comment="rank was upgraded (B → A → S → V)" max="12">+1 Rango!</string>
     <string english="Rank:" comment="time trial rank">Rango:</string>
@@ -279,7 +279,7 @@
     <string english="Go!" comment="3, 2, 1, Go!" max="10">Ya!</string>
     <string english="TIME:" comment="stopwatch time, not too long">TIEMPO:</string>
     <string english="DEATH:" comment="number of times player died, not too long">MUERTES:</string>
-    <string english="SHINY:" comment="number of shiny trinkets collected, not too long">MONEDAS:</string>
+    <string english="SHINY:" comment="number of shiny trinkets collected, not too long">BRILLANTES:</string>
     <string english="PAR TIME:" comment="goal time for time trial">MEJOR TIEMPO</string>
     <string english="MAP" comment="in-game menu" max="8">MAPA</string>
     <string english="GRAV" comment="in-game menu, Gravitron" max="8">GRAV</string>
