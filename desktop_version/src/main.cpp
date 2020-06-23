@@ -54,6 +54,7 @@ int saverx = 0;
 int savery = 0;
 int savegc = 0;
 int savemusic = 0;
+std::string playassets;
 
 std::string playtestname;
 
@@ -73,52 +74,82 @@ int main(int argc, char *argv[])
     char* baseDir = NULL;
     char* assetsPath = NULL;
 
-    for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "-renderer") == 0) {
-            ++i;
-            SDL_SetHintWithPriority(SDL_HINT_RENDER_DRIVER, argv[i], SDL_HINT_OVERRIDE);
-        } else if (strcmp(argv[i], "-basedir") == 0) {
-            ++i;
-            baseDir = argv[i];
-        } else if (strcmp(argv[i], "-assets") == 0) {
-            ++i;
-            assetsPath = argv[i];
-        } else if (strcmp(argv[i], "-playing") == 0 || strcmp(argv[i], "-p") == 0) {
-            if (i + 1 < argc) {
-                startinplaytest = true;
+    for (int i = 1; i < argc; ++i)
+    {
+#define ARG(name) (strcmp(argv[i], name) == 0)
+#define ARG_INNER(code) \
+    if (i + 1 < argc) \
+    { \
+        code \
+    } \
+    else \
+    { \
+        printf("%s option requires one argument.\n", argv[i]); \
+        return 1; \
+    }
+
+        if (ARG("-renderer"))
+        {
+            ARG_INNER({
                 i++;
+                SDL_SetHintWithPriority(SDL_HINT_RENDER_DRIVER, argv[i], SDL_HINT_OVERRIDE);
+            })
+        }
+        else if (ARG("-basedir"))
+        {
+            ARG_INNER({
+                i++;
+                baseDir = argv[i];
+            })
+        }
+        else if (ARG("-assets"))
+        {
+            ARG_INNER({
+                i++;
+                assetsPath = argv[i];
+            })
+        }
+        else if (ARG("-playing") || ARG("-p"))
+        {
+            ARG_INNER({
+                i++;
+                startinplaytest = true;
                 playtestname = std::string("levels/");
                 playtestname.append(argv[i]);
                 playtestname.append(std::string(".vvvvvv"));
-            } else {
-                printf("-playing option requires one argument.\n");
-                return 1;
-            }
-        } else if (strcmp(argv[i], "-playx") == 0 ||
-                strcmp(argv[i], "-playy") == 0 ||
-                strcmp(argv[i], "-playrx") == 0 ||
-                strcmp(argv[i], "-playry") == 0 ||
-                strcmp(argv[i], "-playgc") == 0 ||
-                strcmp(argv[i], "-playmusic") == 0) {
-            if (i + 1 < argc) {
+            })
+        }
+        else if (ARG("-playx") || ARG("-playy") ||
+        ARG("-playrx") || ARG("-playry") ||
+        ARG("-playgc") || ARG("-playmusic"))
+        {
+            ARG_INNER({
                 savefileplaytest = true;
                 int v = std::atoi(argv[i+1]);
-                if (strcmp(argv[i], "-playx") == 0) savex = v;
-                else if (strcmp(argv[i], "-playy") == 0) savey = v;
-                else if (strcmp(argv[i], "-playrx") == 0) saverx = v;
-                else if (strcmp(argv[i], "-playry") == 0) savery = v;
-                else if (strcmp(argv[i], "-playgc") == 0) savegc = v;
-                else if (strcmp(argv[i], "-playmusic") == 0) savemusic = v;
+                if (ARG("-playx")) savex = v;
+                else if (ARG("-playy")) savey = v;
+                else if (ARG("-playrx")) saverx = v;
+                else if (ARG("-playry")) savery = v;
+                else if (ARG("-playgc")) savegc = v;
+                else if (ARG("-playmusic")) savemusic = v;
                 i++;
-            } else {
-                printf("-playing option requires one argument.\n");
-                return 1;
-            }
+            })
         }
+        else if (ARG("-playassets"))
+        {
+            ARG_INNER({
+                i++;
+                // Even if this is a directory, FILESYSTEM_mountassets() expects '.vvvvvv' on the end
+                playassets = "levels/" + std::string(argv[i]) + ".vvvvvv";
+            })
+        }
+#undef ARG_INNER
+#undef ARG_IS
     }
 
     if(!FILESYSTEM_init(argv[0], baseDir, assetsPath))
     {
+        puts("Unable to initialize filesystem!");
         return 1;
     }
 
@@ -283,6 +314,7 @@ int main(int argc, char *argv[])
     if (startinplaytest) {
         game.levelpage = 0;
         game.playcustomlevel = 0;
+        game.playassets = playassets;
 
         ed.directoryList.clear();
         ed.directoryList.push_back(playtestname);
@@ -403,7 +435,7 @@ void inline deltaloop()
         case PRELOADER:
             preloaderrender();
             break;
-#if !defined(NO_CUSTOM_LEVELS)
+#if !defined(NO_CUSTOM_LEVELS) && !defined(NO_EDITOR)
         case EDITORMODE:
             graphics.flipmode = false;
             editorrender();
@@ -502,7 +534,7 @@ void inline fixedloop()
         case PRELOADER:
             preloaderlogic();
             break;
-#if !defined(NO_CUSTOM_LEVELS)
+#if !defined(NO_CUSTOM_LEVELS) && !defined(NO_EDITOR)
         case EDITORMODE:
             //Input
             editorinput();
@@ -601,7 +633,7 @@ void inline fixedloop()
     }
 
     //Mute button
-#if !defined(NO_CUSTOM_LEVELS)
+#if !defined(NO_CUSTOM_LEVELS) && !defined(NO_EDITOR)
     bool inEditor = ed.textentry || ed.scripthelppage == 1;
 #else
     bool inEditor = false;

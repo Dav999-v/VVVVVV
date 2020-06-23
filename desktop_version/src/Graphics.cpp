@@ -301,7 +301,7 @@ void Graphics::MakeSpriteArray()
 }
 
 
-void Graphics::map_tab(int opt, std::string text, bool selected /*= false*/)
+void Graphics::map_tab(int opt, const std::string& text, bool selected /*= false*/)
 {
     int x = opt*80 + 40 - len(text)/2;
     if (selected)
