@@ -75,16 +75,16 @@
     <string english="Show/hide the system mouse cursor." comment="wrapped">Montri/kaŝi la sisteman muskursoron.</string>
     <string english="Current mode: SHOW" comment="wrapped, show cursor">Nuna reĝimo: MONTRI</string>
     <string english="Current mode: HIDE" comment="wrapped, hide cursor">Nuna reĝimo: KAŜI</string>
-    <string english="toggle fps" comment="menu option"></string>
-    <string english="Toggle 30+ FPS" comment="title" max="20"></string>
-    <string english="Change whether the game runs at 30 or over 30 FPS." comment="wrapped"></string>
-    <string english="Current mode: 30 FPS" comment="wrapped"></string>
-    <string english="Current mode: Over 30 FPS" comment="wrapped"></string>
-    <string english="toggle vsync" comment="menu option"></string>
-    <string english="Toggle VSync" comment="title" max="20"></string>
-    <string english="Turn VSync on or off." comment="wrapped"></string>
-    <string english="Current mode: VSYNC OFF" comment="wrapped"></string>
-    <string english="Current mode: VSYNC ON" comment="wrapped"></string>
+    <string english="toggle fps" comment="menu option">kadrorapido</string>
+    <string english="Toggle 30+ FPS" comment="title" max="20">Kadrorapido super 30</string>
+    <string english="Change whether the game runs at 30 or over 30 FPS." comment="wrapped">Ŝanĝi ĉu la ludo rulas je 30 aŭ super 30 kadroj sekunde.</string>
+    <string english="Current mode: 30 FPS" comment="wrapped">Nuna reĝimo: 30 KS</string>
+    <string english="Current mode: Over 30 FPS" comment="wrapped">Nuna reĝimo: Super 30 KS</string>
+    <string english="toggle vsync" comment="menu option">v-sinkronigo</string>
+    <string english="Toggle VSync" comment="title" max="20">Vertikala sinkronigo</string>
+    <string english="Turn VSync on or off." comment="wrapped">Baskuligi vertikalan sinkronigon.</string>
+    <string english="Current mode: VSYNC OFF" comment="wrapped">Nuna reĝimo: V-sink. malŝalta</string>
+    <string english="Current mode: VSYNC ON" comment="wrapped">Nuna reĝimo: V-sink. ŝalta</string>
     <string english="VVVVVV is a game by" comment="credits" max="40">VVVVVV estas ludo de</string>
     <string english="Terry Cavanagh" comment="credits" max="20">Terry Cavanagh</string>
     <string english="and features music by" comment="credits" max="40">kaj enhavas muzikon de</string>
@@ -287,7 +287,7 @@
     <string english="CREW" comment="in-game menu" max="8">ANOJ</string>
     <string english="STATS" comment="in-game menu" max="8">STAT.</string>
     <string english="SAVE" comment="in-game menu" max="8">KONS.</string>
-    <string english="[ PAUSE ]" comment="in-game menu" max="40"></string>
+    <string english="[ PAUSE ]" comment="in-game menu" max="40">[ PAŬZI ]</string>
     <string english="[ QUIT ]" comment="in-game menu" max="40">[ ELIRI ]</string>
     <string english="[ GRAVITRON ]" comment="in-game menu" max="40">[ GRAVITRON ]</string>
     <string english="NO SIGNAL" comment="">NENIU SIGNALO</string>
@@ -312,8 +312,8 @@
     <string english="yes, return" comment="" max="24">jes, revenu</string>
     <string english="[ YES, RETURN ]" comment="" max="28">[ JES, REVENU ]</string>
     <string english="yes, quit" comment="quit program">jes, eliri</string>
-    <string english="return to game" comment="pause menu option"></string>
-    <string english="quit to menu" comment="pause menu option"></string>
+    <string english="return to game" comment="pause menu option">reveni al ludo</string>
+    <string english="quit to menu" comment="pause menu option">eliri al menuo</string>
     <string english="Press Left/Right to choose a Teleporter" comment="tight fit, so maybe `Left/Right: choose teleporter`" max="40">Dekstro/Mald.: elekti teleportilon</string>
     <string english="Press ENTER to Teleport" comment="" max="40">Premu ENTER por teleporti</string>
     <string english="edit scripts" comment="level editor menu option">redakti skriptojn</string>
