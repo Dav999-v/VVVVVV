@@ -287,7 +287,7 @@
     <string english="CREW" comment="in-game menu" max="8">MIEMBROS</string>
     <string english="STATS" comment="in-game menu" max="8">REGISTRO</string>
     <string english="SAVE" comment="in-game menu" max="8">GUARDAR</string>
-    <string english="[ PAUSE ]" comment="in-game menu" max="40"></string>
+    <string english="[ PAUSE ]" comment="in-game menu" max="40">[ PAUSA ]</string>
     <string english="[ QUIT ]" comment="in-game menu" max="40">[ SALIR ]</string>
     <string english="[ GRAVITRON ]" comment="in-game menu" max="40">[ GRAVITRON ]</string>
     <string english="NO SIGNAL" comment="">SIN SEÑAL</string>
@@ -312,8 +312,8 @@
     <string english="yes, return" comment="" max="24">si, volver</string>
     <string english="[ YES, RETURN ]" comment="" max="28">[ SI, VOLVER ]</string>
     <string english="yes, quit" comment="quit program">si, salir</string>
-    <string english="return to game" comment="pause menu option"></string>
-    <string english="quit to menu" comment="pause menu option"></string>
+    <string english="return to game" comment="pause menu option">volver al juego</string>
+    <string english="quit to menu" comment="pause menu option">salir al menu</string>
     <string english="Press Left/Right to choose a Teleporter" comment="tight fit, so maybe `Left/Right: choose teleporter`" max="40">Izq/Der: elegir teletransportador</string>
     <string english="Press ENTER to Teleport" comment="" max="40">Presiona ENTER para teletransportarte</string>
     <string english="edit scripts" comment="level editor menu option">scripts editados</string>
