@@ -111,7 +111,9 @@ public:
 
 	void printcrewnamedark(int x, int y, int t);
 
-	void map_tab(int opt, std::string text, bool selected = false);
+	void map_tab(int opt, const std::string& text, bool selected = false);
+
+	void map_option(int opt, int num_opts, const std::string& text, bool selected = false);
 
 	void PrintWrap(int _x, int _y, std::string _s, int r, int g, int b, bool cen = false, int linespacing = 10, int maxw = 304);
 

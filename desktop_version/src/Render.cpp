@@ -15,6 +15,17 @@ int tr;
 int tg;
 int tb;
 
+// Macro-like inline function used in maprender()
+// Used to keep some text positions the same in Flip Mode
+int inline FLIP(int ypos)
+{
+    if (graphics.flipmode)
+    {
+        return 220 - ypos;
+    }
+    return ypos;
+}
+
 void menurender()
 {
     int temp = 50;
@@ -1690,25 +1701,57 @@ void maprender()
 
     //Menubar:
     graphics.drawtextbox( -10, 212, 42, 3, 65, 185, 207);
-    switch(game.menupage)
+
+    // Draw the selected page name at the bottom
+    // menupage 0 - 3 is the pause screen
+    if (game.menupage <= 3)
     {
-    case 0:
-        graphics.map_tab(0, loc::gettext("MAP"), true);
+        std::string tab1;
         if (game.insecretlab)
         {
-            graphics.map_tab(1, loc::gettext("GRAV"));
+            tab1 = loc::gettext("GRAV");
         }
         else if (obj.flags[67] && !map.custommode)
         {
-            graphics.map_tab(1, loc::gettext("SHIP"));
+            tab1 = loc::gettext("SHIP");
         }
         else
         {
-            graphics.map_tab(1, loc::gettext("CREW"));
+            tab1 = loc::gettext("CREW");
         }
-        graphics.map_tab(2, loc::gettext("STATS"));
-        graphics.map_tab(3, loc::gettext("SAVE"));
+#define TAB(opt, text) graphics.map_tab(opt, text, game.menupage == opt)
+        TAB(0, loc::gettext("MAP"));
+        TAB(1, tab1);
+        TAB(2, loc::gettext("STATS"));
+        TAB(3, loc::gettext("SAVE"));
+#undef TAB
+    }
 
+    // Draw menu header
+    switch (game.menupage)
+    {
+    case 30:
+    case 31:
+    case 32:
+    case 33:
+        graphics.Print(-1, 220, loc::gettext("[ PAUSE ]"), 196, 196, 255 - help.glow, true);
+    }
+
+    // Draw menu options
+    if (game.menupage >= 30 && game.menupage <= 33)
+    {
+#define OPTION(opt, text) graphics.map_option(opt, 4, text, game.menupage - 30 == opt)
+        OPTION(0, loc::gettext("return to game"));
+        OPTION(1, loc::gettext("quit to menu"));
+        OPTION(2, loc::gettext("graphic options"));
+        OPTION(3, loc::gettext("game options"));
+#undef OPTION
+    }
+
+    // Draw the actual menu
+    switch(game.menupage)
+    {
+    case 0:
         if (map.finalmode || (map.custommode&&!map.customshowmm))
         {
             //draw the map image
@@ -1908,11 +1951,6 @@ void maprender()
     case 1:
         if (game.insecretlab)
         {
-            graphics.map_tab(0, loc::gettext("MAP"));
-            graphics.map_tab(1, loc::gettext("GRAV"), true);
-            graphics.map_tab(2, loc::gettext("STATS"));
-            graphics.map_tab(3, loc::gettext("SAVE"));
-
             if (graphics.flipmode)
             {
                 graphics.PrintWrap(0, 174, loc::gettext("SUPER GRAVITRON HIGHSCORE"), 196, 196, 255 - help.glow, true);
@@ -1982,59 +2020,30 @@ void maprender()
         }
         else if (obj.flags[67] && !map.custommode)
         {
-            graphics.map_tab(0, loc::gettext("MAP"));
-            graphics.map_tab(1, loc::gettext("SHIP"), true);
-            graphics.map_tab(2, loc::gettext("STATS"));
-            graphics.map_tab(3, loc::gettext("SAVE"));
-
             graphics.PrintWrap(0, 105, loc::gettext("Press ACTION to warp to the ship."), 196, 196, 255 - help.glow, true);
         }
 #if !defined(NO_CUSTOM_LEVELS)
         else if(map.custommode){
-            graphics.map_tab(0, loc::gettext("MAP"));
-            graphics.map_tab(1, loc::gettext("CREW"), true);
-            graphics.map_tab(2, loc::gettext("STATS"));
-            graphics.map_tab(3, loc::gettext("SAVE"));
+            LevelMetaData& meta = ed.ListOfMetaData[game.playcustomlevel];
 
-            if (graphics.flipmode)
-            {
-                graphics.bigprint( -1, 220-45, ed.ListOfMetaData[game.playcustomlevel].title, 196, 196, 255 - help.glow, true);
-                graphics.Print( -1, 220-70, "by " + ed.ListOfMetaData[game.playcustomlevel].creator, 196, 196, 255 - help.glow, true); // TODO LOC repeat that thing from above
-                graphics.Print( -1, 220-80, ed.ListOfMetaData[game.playcustomlevel].website, 196, 196, 255 - help.glow, true);
-                graphics.Print( -1, 220-100, ed.ListOfMetaData[game.playcustomlevel].Desc1, 196, 196, 255 - help.glow, true);
-                graphics.Print( -1, 220-110, ed.ListOfMetaData[game.playcustomlevel].Desc2, 196, 196, 255 - help.glow, true);
-                graphics.Print( -1, 220-120, ed.ListOfMetaData[game.playcustomlevel].Desc3, 196, 196, 255 - help.glow, true);
+            graphics.bigprint( -1, FLIP(45), meta.title, 196, 196, 255 - help.glow, true);
+            graphics.Print( -1, FLIP(70), "by " + meta.creator, 196, 196, 255 - help.glow, true); // TODO LOC repeat that thing from above
+            graphics.Print( -1, FLIP(80), meta.website, 196, 196, 255 - help.glow, true);
+            graphics.Print( -1, FLIP(100), meta.Desc1, 196, 196, 255 - help.glow, true);
+            graphics.Print( -1, FLIP(110), meta.Desc2, 196, 196, 255 - help.glow, true);
+            graphics.Print( -1, FLIP(120), meta.Desc3, 196, 196, 255 - help.glow, true);
 
-                if(ed.numcrewmates()-game.crewmates()==1){ // TODO LOC
-                    graphics.Print(1,220-165, help.number(ed.numcrewmates()-game.crewmates())+ " crewmate remains", 196, 196, 255 - help.glow, true);
-                }else if(ed.numcrewmates()-game.crewmates()>0){
-                    graphics.Print(1,220-165, help.number(ed.numcrewmates()-game.crewmates())+ " crewmates remain", 196, 196, 255 - help.glow, true);
-                }
-            }
-            else
-            {
-                graphics.bigprint( -1, 45, ed.ListOfMetaData[game.playcustomlevel].title, 196, 196, 255 - help.glow, true);
-                graphics.Print( -1, 70, "by " + ed.ListOfMetaData[game.playcustomlevel].creator, 196, 196, 255 - help.glow, true); // TODO LOC :D
-                graphics.Print( -1, 80, ed.ListOfMetaData[game.playcustomlevel].website, 196, 196, 255 - help.glow, true);
-                graphics.Print( -1, 100, ed.ListOfMetaData[game.playcustomlevel].Desc1, 196, 196, 255 - help.glow, true);
-                graphics.Print( -1, 110, ed.ListOfMetaData[game.playcustomlevel].Desc2, 196, 196, 255 - help.glow, true);
-                graphics.Print( -1, 120, ed.ListOfMetaData[game.playcustomlevel].Desc3, 196, 196, 255 - help.glow, true);
+            int remaining = ed.numcrewmates() - game.crewmates();
 
-                if(ed.numcrewmates()-game.crewmates()==1){ // TODO LOC :D
-                    graphics.Print(1,165, help.number(ed.numcrewmates()-game.crewmates())+ " crewmate remains", 196, 196, 255 - help.glow, true);
-                }else if(ed.numcrewmates()-game.crewmates()>0){
-                    graphics.Print(1,165, help.number(ed.numcrewmates()-game.crewmates())+ " crewmates remain", 196, 196, 255 - help.glow, true);
-                }
+            if(remaining==1){ // TODO LOC
+                graphics.Print(1,FLIP(165), help.number(remaining)+ " crewmate remains", 196, 196, 255 - help.glow, true);
+            }else if(remaining>0){
+                graphics.Print(1,FLIP(165), help.number(remaining)+ " crewmates remain", 196, 196, 255 - help.glow, true);
             }
         }
 #endif
         else
         {
-            graphics.map_tab(0, loc::gettext("MAP"));
-            graphics.map_tab(1, loc::gettext("CREW"), true);
-            graphics.map_tab(2, loc::gettext("STATS"));
-            graphics.map_tab(3, loc::gettext("SAVE"));
-
             if (graphics.flipmode)
             {
                 for (int i = 0; i < 3; i++)
@@ -2096,22 +2105,6 @@ void maprender()
         }
         break;
     case 2:
-        graphics.map_tab(0, loc::gettext("MAP"));
-        if (game.insecretlab)
-        {
-            graphics.map_tab(1, loc::gettext("GRAV"));
-        }
-        else if (obj.flags[67] && !map.custommode)
-        {
-            graphics.map_tab(1, loc::gettext("SHIP"));
-        }
-        else
-        {
-            graphics.map_tab(1, loc::gettext("CREW"));
-        }
-        graphics.map_tab(2, loc::gettext("STATS"), true);
-        graphics.map_tab(3, loc::gettext("SAVE"));
-
 #if !defined(NO_CUSTOM_LEVELS)
         if(map.custommode)
         {
@@ -2166,22 +2159,6 @@ void maprender()
         }
         break;
     case 3:
-        graphics.map_tab(0, loc::gettext("MAP"));
-        if (game.insecretlab)
-        {
-            graphics.map_tab(1, loc::gettext("GRAV"));
-        }
-        else if (obj.flags[67] && !map.custommode)
-        {
-            graphics.map_tab(1, loc::gettext("SHIP"));
-        }
-        else
-        {
-            graphics.map_tab(1, loc::gettext("CREW"));
-        }
-        graphics.map_tab(2, loc::gettext("STATS"));
-        graphics.map_tab(3, loc::gettext("SAVE"), true);
-
         if (game.inintermission)
         {
             graphics.PrintWrap(0, 115, loc::gettext("Cannot Save in Level Replay"), 146, 146, 180, true);
@@ -2299,7 +2276,7 @@ void maprender()
 
         if (graphics.flipmode)
         {
-            if (game.intimetrial || game.insecretlab || game.nodeathmode)
+            if (game.inspecial())
             {
                 graphics.PrintWrap(0, 135, loc::gettext("Return to main menu?"), 196, 196, 255 - help.glow, true, 12);
             }
@@ -2314,7 +2291,7 @@ void maprender()
         else
         {
 
-            if (game.intimetrial || game.insecretlab || game.nodeathmode)
+            if (game.inspecial())
             {
                 graphics.PrintWrap(0, 80, loc::gettext("Return to main menu?"), 196, 196, 255 - help.glow, true, 12);
             }
@@ -2333,7 +2310,7 @@ void maprender()
 
         if (graphics.flipmode)
         {
-            if (game.intimetrial || game.insecretlab || game.nodeathmode)
+            if (game.inspecial())
             {
                 graphics.PrintWrap(0, 135, loc::gettext("Return to main menu?"), 196, 196, 255 - help.glow, true, 12);
             }
@@ -2347,7 +2324,7 @@ void maprender()
         }
         else
         {
-            if (game.intimetrial || game.insecretlab || game.nodeathmode)
+            if (game.inspecial())
             {
                 graphics.PrintWrap(0, 80, loc::gettext("Return to main menu?"), 196, 196, 255 - help.glow, true, 12);
             }

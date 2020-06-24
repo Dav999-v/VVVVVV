@@ -389,6 +389,10 @@ void Game::init(void)
 
     over30mode = false;
 
+    ingame_titlemode = false;
+    kludge_ingametemp = Menu::mainmenu;
+    shouldreturntopausemenu = false;
+
     /* Terry's Patrons... */
     const char* superpatrons_arr[] = {
     "Anders Ekermo",
@@ -7154,8 +7158,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("animated backgrounds"));
         option(loc::gettext("screen effects"));
         option(loc::gettext("text outline"));
-        option(loc::gettext("invincibility"));
-        option(loc::gettext("slowdown"));
+        option(loc::gettext("invincibility"), !ingame_titlemode || !inspecial());
+        option(loc::gettext("slowdown"), !ingame_titlemode || !inspecial());
         option(loc::gettext("load screen"));
         option(loc::gettext("room name bg"));
         option(loc::gettext("return"));
@@ -7775,3 +7779,16 @@ void Game::returntoeditor()
     map.scrolldir = 0;
 }
 #endif
+
+void Game::returntopausemenu()
+{
+    ingame_titlemode = false;
+    returntomenu(kludge_ingametemp);
+    gamestate = MAPMODE;
+    map.kludge_to_bg();
+    map.tdrawback = true;
+    graphics.backgrounddrawn = false;
+    game.mapheld = true;
+    graphics.flipmode = graphics.setflipmode;
+    game.shouldreturntopausemenu = true;
+}

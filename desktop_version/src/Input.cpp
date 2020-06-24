@@ -1,4 +1,5 @@
 #include "Input.h"
+#include "Logic.h"
 #include "Script.h"
 
 #include "MakeAndPlay.h"
@@ -375,8 +376,15 @@ void menuactionpress()
         default:
             //back
             music.playef(11);
-            game.returnmenu();
-            map.nexttowercolour();
+            if (game.ingame_titlemode)
+            {
+                game.returntopausemenu();
+            }
+            else
+            {
+                game.returnmenu();
+                map.nexttowercolour();
+            }
             break;
         }
         break;
@@ -486,22 +494,38 @@ void menuactionpress()
             break;
         case 3:
             //invincibility
-            if (!map.invincibility)
+            if (!game.ingame_titlemode || (!game.insecretlab && !game.intimetrial && !game.nodeathmode))
             {
-                game.createmenu(Menu::setinvincibility);
-                map.nexttowercolour();
+                if (!map.invincibility)
+                {
+                    game.createmenu(Menu::setinvincibility);
+                    map.nexttowercolour();
+                }
+                else
+                {
+                    map.invincibility = !map.invincibility;
+                }
+                music.playef(11);
             }
             else
             {
-                map.invincibility = !map.invincibility;
+                music.playef(2);
+                map.invincibility = false;
             }
-            music.playef(11);
             break;
         case 4:
             //change game speed
-            game.createmenu(Menu::setslowdown);
-            map.nexttowercolour();
-            music.playef(11);
+            if (!game.ingame_titlemode || (!game.insecretlab && !game.intimetrial && !game.nodeathmode))
+            {
+                game.createmenu(Menu::setslowdown);
+                map.nexttowercolour();
+                music.playef(11);
+            }
+            else
+            {
+                music.playef(2);
+                game.gameframerate = 34;
+            }
             break;
         case 5:
             // toggle fake load screen
@@ -583,15 +607,22 @@ void menuactionpress()
             }
             music.usingmmmmmm = !music.usingmmmmmm;
             music.playef(11);
-            music.play(6);
+            music.play(music.currentsong);
             game.savestats();
         }
         else if (game.currentmenuoption == OFFSET+6+mmmmmm_offset)
         {
             //back
             music.playef(11);
-            game.returnmenu();
-            map.nexttowercolour();
+            if (game.ingame_titlemode)
+            {
+                game.returntopausemenu();
+            }
+            else
+            {
+                game.returnmenu();
+                map.nexttowercolour();
+            }
         }
 #undef OFFSET
         break;
@@ -1522,8 +1553,15 @@ void titleinput()
         if (key.isDown(27) && game.currentmenuname != Menu::youwannaquit && game.menustart)
         {
             music.playef(11);
-            game.createmenu(Menu::youwannaquit);
-            map.nexttowercolour();
+            if (game.ingame_titlemode)
+            {
+                game.returntopausemenu();
+            }
+            else
+            {
+                game.createmenu(Menu::youwannaquit);
+                map.nexttowercolour();
+            }
         }
 
         if(game.menustart)
@@ -1813,7 +1851,7 @@ void gameinput()
                     game.gamestate = MAPMODE;
                     game.gamesaved = false;
                     graphics.resumegamemode = false;
-                    game.menupage = 10; // The Map Page
+                    game.menupage = 30; // Pause screen
 
                     BlitSurfaceStandard(graphics.menubuffer,NULL,graphics.backBuffer, NULL);
                     graphics.menuoffset = 240; //actually this should count the roomname
@@ -1928,6 +1966,8 @@ void gameinput()
     }
 }
 
+void mapmenuactionpress();
+
 void mapinput()
 {
     //TODO Mouse Input!
@@ -1965,7 +2005,7 @@ void mapinput()
         }
     }
 
-    if(graphics.menuoffset==0)
+    if(graphics.menuoffset==0 && game.fadetomenudelay <= 0 && game.fadetolabdelay <= 0)
     {
         if (graphics.flipmode)
         {
@@ -1987,13 +2027,24 @@ void mapinput()
         {
             game.press_action = true;
         }
-        if (game.menupage < 9)
+        if (game.menupage < 12 || (game.menupage >= 30 && game.menupage <= 33))
         {
             if (key.isDown(KEYBOARD_ENTER) || key.isDown(game.controllerButton_map) ) game.press_map = true;
-            if (key.isDown(27))
+            if (key.isDown(27) && !game.mapheld)
             {
                 game.mapheld = true;
-                game.menupage = 10;
+                if (game.menupage < 9)
+                {
+                    game.menupage = 30;
+                }
+                else if (game.menupage < 12)
+                {
+                    game.menupage = 31;
+                }
+                else
+                {
+                    graphics.resumegamemode = true;
+                }
             }
         }
         else
@@ -2042,88 +2093,9 @@ void mapinput()
             game.menupage++;
         }
 
-        if (game.menupage == 1 && obj.flags[67] && game.press_action && !game.insecretlab && !map.custommode)
+        if (game.press_action)
         {
-            //Warp back to the ship
-            graphics.resumegamemode = true;
-
-            game.teleport_to_x = 2;
-            game.teleport_to_y = 11;
-
-            //trace(game.recordstring);
-            //We're teleporting! Yey!
-            game.activetele = false;
-            game.hascontrol = false;
-
-            int i = obj.getplayer();
-            if (i > -1)
-            {
-                obj.entities[i].colour = 102;
-            }
-
-            //which teleporter script do we use? it depends on the companion!
-            game.state = 4000;
-            game.statedelay = 0;
-        }
-
-        if (game.menupage == 3 && !game.gamesaved && game.press_action && !game.intimetrial
-                && !game.nodeathmode && !game.insecretlab && !game.inintermission)
-        {
-            game.flashlight = 5;
-            game.screenshake = 10;
-            music.playef(18);
-            game.gamesaved = true;
-
-            game.savetime = game.timestring();
-            game.savearea = map.currentarea(map.area(game.roomx, game.roomy));
-            game.savetrinkets = game.trinkets();
-
-            if (game.roomx >= 102 && game.roomx <= 104 && game.roomy >= 110 && game.roomy <= 111) game.savearea = "The Ship";
-
-#if !defined(NO_CUSTOM_LEVELS)
-            if(map.custommodeforreal)
-            {
-                game.customsavequick(ed.ListOfMetaData[game.playcustomlevel].filename);
-            }
-            else
-#endif
-            {
-                game.savequick();
-            }
-        }
-
-        if (game.menupage == 10 && game.press_action)
-        {
-            //return to game
-            graphics.resumegamemode = true;
-        }
-        if (game.menupage == 11 && game.press_action)
-        {
-            //quit to menu
-
-            //Kill contents of offset render buffer, since we do that for some reason.
-            //This fixes an apparent frame flicker.
-            FillRect(graphics.tempBuffer, 0x000000);
-            graphics.fademode = 2;
-            music.fadeout();
-            map.nexttowercolour();
-            game.fadetomenu = true;
-            game.fadetomenudelay = 16;
-        }
-
-        if (game.menupage == 20 && game.press_action)
-        {
-            //return to game
-            graphics.resumegamemode = true;
-        }
-        if (game.menupage == 21 && game.press_action)
-        {
-            //quit to menu
-            game.swnmode = false;
-            graphics.fademode = 2;
-            music.fadeout();
-            game.fadetolab = true;
-            game.fadetolabdelay = 16;
+            mapmenuactionpress();
         }
 
         if (game.menupage < 0) game.menupage = 3;
@@ -2135,6 +2107,133 @@ void mapinput()
         if (game.menupage == 19) game.menupage = 21;
         if (game.menupage == 22) game.menupage = 20;
 
+        if (game.menupage == 29) game.menupage = 33;
+        if (game.menupage == 34) game.menupage = 30;
+    }
+}
+
+void mapmenuactionpress()
+{
+    switch (game.menupage)
+    {
+    case 1:
+    if (obj.flags[67] && !game.inspecial() && !map.custommode)
+    {
+        //Warp back to the ship
+        graphics.resumegamemode = true;
+
+        game.teleport_to_x = 2;
+        game.teleport_to_y = 11;
+
+        //trace(game.recordstring);
+        //We're teleporting! Yey!
+        game.activetele = false;
+        game.hascontrol = false;
+
+        int i = obj.getplayer();
+        if (i > -1)
+        {
+            obj.entities[i].colour = 102;
+        }
+
+        //which teleporter script do we use? it depends on the companion!
+        game.state = 4000;
+        game.statedelay = 0;
+    }
+        break;
+    case 3:
+    if (!game.gamesaved && !game.inspecial())
+    {
+        game.flashlight = 5;
+        game.screenshake = 10;
+        music.playef(18);
+        game.gamesaved = true;
+
+        game.savetime = game.timestring();
+        game.savearea = map.currentarea(map.area(game.roomx, game.roomy));
+        game.savetrinkets = game.trinkets();
+
+        if (game.roomx >= 102 && game.roomx <= 104 && game.roomy >= 110 && game.roomy <= 111) game.savearea = "The Ship";
+
+#if !defined(NO_CUSTOM_LEVELS)
+        if(map.custommodeforreal)
+        {
+            game.customsavequick(ed.ListOfMetaData[game.playcustomlevel].filename);
+        }
+        else
+#endif
+        {
+            game.savequick();
+        }
+    }
+        break;
+
+    case 10:
+        //return to pause menu
+        music.playef(11);
+        game.menupage = 31;
+        break;
+    case 11:
+        //quit to menu
+
+        //Kill contents of offset render buffer, since we do that for some reason.
+        //This fixes an apparent frame flicker.
+        FillRect(graphics.tempBuffer, 0x000000);
+        graphics.fademode = 2;
+        music.fadeout();
+        map.nexttowercolour();
+        game.fadetomenu = true;
+        game.fadetomenudelay = 16;
+        break;
+
+    case 20:
+        //return to game
+        graphics.resumegamemode = true;
+        break;
+    case 21:
+        //quit to menu
+        game.swnmode = false;
+        graphics.fademode = 2;
+        music.fadeout();
+        game.fadetolab = true;
+        game.fadetolabdelay = 16;
+        break;
+    case 30:
+        // Return to game
+        graphics.resumegamemode = true;
+        break;
+    case 31:
+        // Go to quit prompt
+        music.playef(11);
+        game.menupage = 10;
+        break;
+    case 32:
+    case 33:
+        // Graphic options and game options
+        music.playef(11);
+        game.gamestate = TITLEMODE;
+        graphics.flipmode = false;
+        game.ingame_titlemode = true;
+        if (game.menupage == 32)
+        {
+            game.createmenu(Menu::graphicoptions);
+        }
+        else
+        {
+            game.createmenu(Menu::options);
+        }
+        map.bg_to_kludge();
+        game.kludge_ingametemp = game.currentmenuname;
+
+        map.scrolldir = 0;
+        map.colstate = ((int) (map.colstate / 5)) * 5;
+        map.bypos = 0;
+        map.nexttowercolour();
+
+        // Fix delta rendering glitch
+        graphics.updatetowerbackground();
+        titleupdatetextcol();
+        break;
     }
 }
 
@@ -2162,6 +2261,14 @@ void teleporterinput()
         //In the menu system, all keypresses are single taps rather than holds. Therefore this test has to be done for all presses
         if (!game.press_action && !game.press_left && !game.press_right) game.jumpheld = false;
         if (!game.press_map) game.mapheld = false;
+
+        if (key.isDown(27))
+        {
+            // Go to "Do you want to quit?" screen
+            game.mapheld = true;
+            game.menupage = 10;
+            game.gamestate = MAPMODE;
+        }
     }
     else
     {

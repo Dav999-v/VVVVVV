@@ -4,6 +4,7 @@
 #include "Map.h"
 #include "Screen.h"
 #include "FileSystemUtils.h"
+#include "Localization.h"
 #include <utf8/unchecked.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -301,7 +302,7 @@ void Graphics::MakeSpriteArray()
 }
 
 
-void Graphics::map_tab(int opt, std::string text, bool selected /*= false*/)
+void Graphics::map_tab(int opt, const std::string& text, bool selected /*= false*/)
 {
     int x = opt*80 + 40 - len(text)/2;
     if (selected)
@@ -311,6 +312,35 @@ void Graphics::map_tab(int opt, std::string text, bool selected /*= false*/)
     else
     {
         Print(x, 220, text, 64, 64, 64);
+    }
+}
+
+void Graphics::map_option(int opt, int num_opts, const std::string& text, bool selected /*= false*/)
+{
+    int x = 80 + opt*32;
+    int y = 136; // start from middle of menu
+
+    int yoff = -(num_opts * 12) / 2; // could be simplified to -num_opts * 6, this conveys my intent better though
+    yoff += opt * 12;
+
+    if (flipmode)
+    {
+        y -= yoff; // going down, which in Flip Mode means going up
+        y -= 40;
+    }
+    else
+    {
+        y += yoff; // going up
+    }
+
+    if (selected)
+    {
+        std::string text_upper(loc::toupper(text));
+        Print(x - 16, y, "[ " + text_upper + " ]", 196, 196, 255 - help.glow);
+    }
+    else
+    {
+        Print(x, y, loc::not_toupper(text), 96, 96, 96);
     }
 }
 
@@ -438,6 +468,9 @@ std::string Graphics::wordwrap(const std::string& _s, int maxwidth)
 {
     // Return a string wordwrapped to a maximum limit by adding newlines.
     // Assumes a language that uses spaces, so won't work well with CJK.
+	if (!loc::langmeta.autowordwrap)
+		return _s;
+
     std::string s = std::string(_s);
     size_t lastsplit = -1, lastspace = -1;
     int linewidth = 0;
@@ -1291,14 +1324,13 @@ void Graphics::drawmenu( int cr, int cg, int cb, int division /*= 30*/ )
             //Draw it highlighted
             if (game.menuoptions[i].active)
             {
-                std::string tempstring = game.menuoptions[i].text;
-                std::transform(tempstring.begin(), tempstring.end(),tempstring.begin(), ::toupper);
+                std::string tempstring = loc::toupper(game.menuoptions[i].text);
                 tempstring = std::string("[ ") + tempstring + std::string(" ]");
                 Print(110 + (i * division) - 16 +game.menuxoff, 140 + (i * 12) +game.menuyoff, tempstring, cr, cg, cb);
             }
             else
             {
-                std::string tempstring = game.menuoptions[i].text;
+                std::string tempstring = loc::not_toupper(game.menuoptions[i].text);
                 tempstring = "[ " + tempstring + " ]";
                 //Draw it in gray
                 Print(110 + (i * division) - 16 +game.menuxoff, 140 + (i * 12)+game.menuyoff, tempstring, 128, 128, 128);
@@ -1309,12 +1341,12 @@ void Graphics::drawmenu( int cr, int cg, int cb, int division /*= 30*/ )
             //Draw it normally
             if (game.menuoptions[i].active)
             {
-                Print(110 + (i * division) +game.menuxoff, 140 + (i * 12)+game.menuyoff, game.menuoptions[i].text, cr, cg, cb);
+                Print(110 + (i * division) +game.menuxoff, 140 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), cr, cg, cb);
             }
             else
             {
                 //Draw it in gray
-                Print(110 + (i * division) +game.menuxoff, 140 + (i * 12)+game.menuyoff, game.menuoptions[i].text, 128, 128, 128);
+                Print(110 + (i * division) +game.menuxoff, 140 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), 128, 128, 128);
             }
         }
     }
@@ -1330,14 +1362,13 @@ void Graphics::drawlevelmenu( int cr, int cg, int cb, int division /*= 30*/ )
             //Draw it highlighted
             if (game.menuoptions[i].active)
             {
-                std::string tempstring = game.menuoptions[i].text;
-                std::transform(tempstring.begin(), tempstring.end(),tempstring.begin(), ::toupper);
+                std::string tempstring = loc::toupper(game.menuoptions[i].text);
                 tempstring = std::string("[ ") + tempstring + std::string(" ]");
                 Print(110 + (i * division) - 16 +game.menuxoff, 140+8 + (i * 12) +game.menuyoff, tempstring, cr, cg, cb);
             }
             else
             {
-                std::string tempstring = game.menuoptions[i].text;
+                std::string tempstring = loc::not_toupper(game.menuoptions[i].text);
                 tempstring = "[ " + tempstring + " ]";
                 //Draw it in gray
                 Print(110 + (i * division) - 16 +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, tempstring, 128, 128, 128);
@@ -1346,14 +1377,13 @@ void Graphics::drawlevelmenu( int cr, int cg, int cb, int division /*= 30*/ )
             //Draw it highlighted
             if (game.menuoptions[i].active)
             {
-                std::string tempstring = game.menuoptions[i].text;
-                std::transform(tempstring.begin(), tempstring.end(),tempstring.begin(), ::toupper);
+                std::string tempstring = loc::toupper(game.menuoptions[i].text);
                 tempstring = std::string("[ ") + tempstring + std::string(" ]");
                 Print(110 + (i * division) - 16 +game.menuxoff, 144 + (i * 12) +game.menuyoff, tempstring, cr, cg, cb);
             }
             else
             {
-                std::string tempstring = game.menuoptions[i].text;
+                std::string tempstring = loc::not_toupper(game.menuoptions[i].text);
                 tempstring = "[ " + tempstring + " ]";
                 //Draw it in gray
                 Print(110 + (i * division) - 16 +game.menuxoff, 144 + (i * 12)+game.menuyoff, tempstring, 128, 128, 128);
@@ -1366,23 +1396,23 @@ void Graphics::drawlevelmenu( int cr, int cg, int cb, int division /*= 30*/ )
             //Draw it normally
             if (game.menuoptions[i].active)
             {
-                Print(110 + (i * division) +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, game.menuoptions[i].text, cr, cg, cb);
+                Print(110 + (i * division) +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), cr, cg, cb);
             }
             else
             {
                 //Draw it in gray
-                Print(110 + (i * division) +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, game.menuoptions[i].text, 128, 128, 128);
+                Print(110 + (i * division) +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), 128, 128, 128);
             }
           }else{
             //Draw it normally
             if (game.menuoptions[i].active)
             {
-                Print(110 + (i * division) +game.menuxoff, 144 + (i * 12)+game.menuyoff, game.menuoptions[i].text, cr, cg, cb);
+                Print(110 + (i * division) +game.menuxoff, 144 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), cr, cg, cb);
             }
             else
             {
                 //Draw it in gray
-                Print(110 + (i * division) +game.menuxoff, 144 + (i * 12)+game.menuyoff, game.menuoptions[i].text, 128, 128, 128);
+                Print(110 + (i * division) +game.menuxoff, 144 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), 128, 128, 128);
             }
           }
         }

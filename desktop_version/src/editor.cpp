@@ -88,19 +88,6 @@ bool compare_nocase (std::string first, std::string second)
         return false;
 }
 
-static bool endsWith(const std::string& str, const std::string& suffix)
-{
-    if (str.size() < suffix.size())
-    {
-        return false;
-    }
-    return str.compare(
-        str.size() - suffix.size(),
-        suffix.size(),
-        suffix
-    ) == 0;
-}
-
 void editorclass::loadZips()
 {
     directoryList = FILESYSTEM_getLevelDirFileNames();
@@ -1636,39 +1623,13 @@ bool editorclass::load(std::string& _path)
     }
 
     FILESYSTEM_unmountassets();
-
-    std::string zippath = "levels/" + _path.substr(7,_path.size()-14) + ".data.zip";
-    std::string dirpath = "levels/" + _path.substr(7,_path.size()-14) + "/";
-    std::string zip_path;
-    const char* cstr = PHYSFS_getRealDir(_path.c_str());
-
-    if (cstr) {
-        zip_path = cstr;
+    if (game.playassets != "")
+    {
+        FILESYSTEM_mountassets(game.playassets.c_str());
     }
-
-    if (cstr && FILESYSTEM_directoryExists(zippath.c_str())) {
-        printf("Custom asset directory exists at %s\n", zippath.c_str());
-        FILESYSTEM_mount(zippath.c_str());
-        graphics.reloadresources();
-        music.init();
-    } else if (zip_path != "data.zip" && !endsWith(zip_path, "/data.zip") && endsWith(zip_path, ".zip")) {
-        printf("Custom asset directory is .zip at %s\n", zip_path.c_str());
-        PHYSFS_File* zip = PHYSFS_openRead(zip_path.c_str());
-        zip_path += ".data.zip";
-        if (zip == NULL) {
-            printf("error loading .zip: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-        } else if (PHYSFS_mountHandle(zip, zip_path.c_str(), "/", 0) == 0) {
-            printf("error mounting .zip: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-        } else {
-            graphics.assetdir = zip_path;
-        }
-        graphics.reloadresources();
-    } else if (FILESYSTEM_directoryExists(dirpath.c_str())) {
-        printf("Custom asset directory exists at %s\n",dirpath.c_str());
-        FILESYSTEM_mount(dirpath.c_str());
-        graphics.reloadresources();
-    } else {
-        printf("Custom asset directory does not exist\n");
+    else
+    {
+        FILESYSTEM_mountassets(_path.c_str());
     }
 
     tinyxml2::XMLDocument doc;
@@ -2299,6 +2260,7 @@ void editorclass::generatecustomminimap()
     }
 }
 
+#if !defined(NO_EDITOR)
 void editormenurender(int tr, int tg, int tb)
 {
     switch (game.currentmenuname)
@@ -5594,6 +5556,7 @@ void editorinput()
         }
     }
 }
+#endif /* NO_EDITOR */
 
 int editorclass::numtrinkets()
 {
