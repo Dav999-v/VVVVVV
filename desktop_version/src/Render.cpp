@@ -63,12 +63,11 @@ void menurender()
 
         }else{
           graphics.bigprint( -1, 15, ed.ListOfMetaData[tmp].title, tr, tg, tb, true);
-          char creatorline[41]; // ouch, but translators may need to add something after the name
-          const std::string& bytext = loc::gettext("by %s").substr(0, 40); // just in case :)
-          sprintf(
-            creatorline,
-            bytext.c_str(),
-            ed.ListOfMetaData[tmp].creator.substr(0, 40-(bytext.size()-2)).c_str()
+          char creatorline[161]; // ouch, but translators may need to add something after the name
+          SDL_snprintf(
+            creatorline, sizeof(creatorline),
+            loc::gettext("by %s").c_str(),
+            ed.ListOfMetaData[tmp].creator.c_str()
           );
           graphics.Print( -1, 40, creatorline, tr, tg, tb, true);
           graphics.Print( -1, 50, ed.ListOfMetaData[tmp].website, tr, tg, tb, true);
@@ -684,10 +683,10 @@ void menurender()
             graphics.Print(220, 90+20, loc::gettext("+1 Rank!"), 255, 255, 255);
         }
 
-        char tempstring_c[40];
-        sprintf(
-            tempstring_c,
-            loc::gettext("%d of %d").substr(0,39).c_str(),
+        char tempstring_c[161];
+        SDL_snprintf(
+            tempstring_c, sizeof(tempstring_c),
+            loc::gettext("%d of %d").c_str(),
             game.trinkets(), game.timetrialshinytarget
         );
         graphics.drawspritesetcol(30, 80+55, 22, 22);
@@ -1620,10 +1619,10 @@ void gamerender()
             {
                 graphics.bprint(8+label_len, 30,help.String(game.deathcounts),  196, 196, 196);
             }
-            char tempstring_c[40];
-            sprintf(
-                tempstring_c,
-                loc::gettext("%d of %d").substr(0,39).c_str(),
+            char tempstring_c[161];
+            SDL_snprintf(
+                tempstring_c, sizeof(tempstring_c),
+                loc::gettext("%d of %d").c_str(),
                 game.trinkets(), game.timetrialshinytarget
             );
             if(game.trinkets()<game.timetrialshinytarget)
@@ -2027,7 +2026,13 @@ void maprender()
             LevelMetaData& meta = ed.ListOfMetaData[game.playcustomlevel];
 
             graphics.bigprint( -1, FLIP(45), meta.title, 196, 196, 255 - help.glow, true);
-            graphics.Print( -1, FLIP(70), "by " + meta.creator, 196, 196, 255 - help.glow, true); // TODO LOC repeat that thing from above
+            char creatorline[161];
+            SDL_snprintf(
+                creatorline, sizeof(creatorline),
+                loc::gettext("by %s").c_str(),
+                meta.creator
+            );
+            graphics.Print( -1, FLIP(70), creatorline, 196, 196, 255 - help.glow, true);
             graphics.Print( -1, FLIP(80), meta.website, 196, 196, 255 - help.glow, true);
             graphics.Print( -1, FLIP(100), meta.Desc1, 196, 196, 255 - help.glow, true);
             graphics.Print( -1, FLIP(110), meta.Desc2, 196, 196, 255 - help.glow, true);

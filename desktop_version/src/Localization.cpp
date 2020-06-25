@@ -276,7 +276,7 @@ namespace loc
 		// There's probably a good reason Cyrillic upper and lower accents are wrapped around the alphabet...
 		if (0x450 <= ch && ch <= 0x45F) return ch - 0x50;
 
-		// Apparently an Ukranian letter is all the way over there, why not.
+		// Apparently a Ukranian letter is all the way over there, why not.
 		if (ch == 0x491) return ch - 1;
 
 		// Time for Greek, thankfully we're not making a lowercasing function with that double sigma!
