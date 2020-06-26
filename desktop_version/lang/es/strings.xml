@@ -1,340 +1,340 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <strings>
-    <string english="Game paused" comment="pause screen" max="40">Juego pausado</string>
-    <string english="[click to resume]" comment="pause screen" max="40">[Click para continuar]</string>
-    <string english="Press M to mute in game" comment="pause screen" max="40">Presiona M para silenciar el juego</string>
-    <string english="Press N to mute music only" comment="pause screen" max="40">Presiona N para silenciar la musica</string>
-    <string english="MAKE AND PLAY EDITION" comment="">EDICION MAKE AND PLAY</string>
-    <string english="[MMMMMM Mod Installed]" comment="" max="32">[MMMMMM Mod Instalado]</string>
-    <string english="start game" comment="main menu option">iniciar Juego</string>
-    <string english="player levels" comment="main menu option">niveles de jugadores</string>
-    <string english="graphic options" comment="main menu option">opciones graficas</string>
-    <string english="game options" comment="main menu option">opciones de juego</string>
-    <string english="view credits" comment="main menu option">ver creditos</string>
-    <string english="quit game" comment="main menu option">salir del juego</string>
-    <string english="continue" comment="menu option">continuar</string>
-    <string english="continue from teleporter" comment="menu option, game save that was made at a teleporter">continuar desde teletransportador</string>
-    <string english="Tele Save" comment="title, game save that was made at a teleporter" max="20">Tele guardado</string>
-    <string english="continue from quicksave" comment="menu option, game save that was made freely from the menu (at any checkpoint)">continuar desde guardado rapido</string>
-    <string english="Quick Save" comment="title, game save that was made freely from the menu (at any checkpoint)" max="20">Guardado rápido</string>
-    <string english="proceed" comment="menu option">continuar</string>
-    <string english="new game" comment="menu option">nuevo juego</string>
-    <string english="start new game" comment="menu option, extra confirmation">empezar un juego nuevo</string>
-    <string english="secret lab" comment="menu option">laboratorio secreto</string>
-    <string english="play modes" comment="menu option">jugar modos</string>
-    <string english="ERROR: No levels found." comment="wrapped">ERROR: No se encontraron niveles.</string>
-    <string english="by %s" comment="%s: author of level">Por %s</string>
-    <string english="ERROR: This level has no start point!" comment="wrapped">ERROR: Este nivel no tiene punto de inicio</string>
-    <string english="unlock play modes" comment="menu option">liberar modos</string>
-    <string english="Unlock Play Modes" comment="title" max="20">Liberar Modos</string>
-    <string english="Unlock parts of the game normally unlocked as you progress" comment="wrapped">Desbloquea partes del juego, normalmente desbloqueadas al completar el juego</string>
-    <string english="From here, you may unlock parts of the game that are normally unlocked as you play." comment="wrapped">Desde aquí podras liberar partes del juego que normalmente se desbloquean al progresar.</string>
-    <string english="unlock ship jukebox" comment="menu option">desbloquear caja de musica en la nave</string>
-    <string english="unlock secret lab" comment="menu option">desbloquear laboratorio secreto</string>
-    <string english="game pad options" comment="menu option">opciones de mando</string>
-    <string english="Game Pad Options" comment="title" max="20">Opciones de mando</string>
-    <string english="Game Pad" comment="title" max="20">Mando</string>
-    <string english="Rebind your controller&apos;s buttons and adjust sensitivity" comment="wrapped">Restablece los botones del mando y ajusta le sensibilidad</string>
-    <string english="Change controller options." comment="wrapped">Cambiar opciones de mando.</string>
-    <string english="language" comment="menu option">idioma</string>
-    <string english="Language" comment="title" max="20">Idioma</string>
-    <string english="Change the language" comment="wrapped">Cambiar idioma</string>
-    <string english="clear data" comment="menu option">limpiar datos</string>
-    <string english="Clear Data" comment="title" max="20">Limpiar Datos</string>
-    <string english="Delete your save data and unlocked play modes" comment="wrapped">Eliminar tus datos de juego y modos de juego</string>
-    <string english="Are you sure? This will delete your current saves..." comment="wrapped">Estás seguro? Esto eliminara tus datos...</string>
-    <string english="Are you sure you want to delete all your saved data?" comment="wrapped">Estás seguro que quieres eliminar todos tus datos?</string>
-    <string english="no! don&apos;t delete" comment="menu option">no!, no borrar</string>
-    <string english="yes, delete everything" comment="menu option">si, borrar todo</string>
-    <string english="soundtrack" comment="menu option">banda sonora</string>
-    <string english="Soundtrack" comment="title" max="20">Banda Sonora</string>
-    <string english="Toggle between MMMMMM and PPPPPP" comment="wrapped">Cambiar entre MMMMMM y PPPPPP</string>
-    <string english="Current soundtrack: MMMMMM" comment="wrapped">Banda sonora actual: MMMMMM</string>
-    <string english="Current soundtrack: PPPPPP" comment="wrapped">Banda sonora actual: PPPPPP</string>
-    <string english="toggle fullscreen" comment="menu option">pantalla completa</string>
-    <string english="Toggle Fullscreen" comment="title" max="20">Pantalla Completa</string>
-    <string english="Change to fullscreen/windowed mode." comment="wrapped">Cambiar a Pantalla Completa/Ventana.</string>
-    <string english="Current mode: FULLSCREEN" comment="wrapped">Modo actual: PANTALLA COMPLETA</string>
-    <string english="Current mode: WINDOWED" comment="wrapped">Modo actual: VENTANA</string>
-    <string english="graphics mode" comment="menu option">modo de graficos</string>
-    <string english="Graphics Mode" comment="title" max="20">Modo de gráficos</string>
-    <string english="Choose letterbox/stretch/integer mode." comment="wrapped">Elegir LETTERBOX/ESTIRADO/ENTERO.</string>
-    <string english="Current mode: INTEGER" comment="wrapped">Modo actual: ENTERO</string>
-    <string english="Current mode: STRETCH" comment="wrapped">Modo actual: ESTIRAR</string>
-    <string english="Current mode: LETTERBOX" comment="wrapped">Modo actual: LETTERBOX</string>
-    <string english="toggle filter" comment="menu option">alternar filtro</string>
-    <string english="Toggle Filter" comment="title" max="20">Alternar Filtro</string>
-    <string english="Change to nearest/linear filter." comment="wrapped">Cambiar filtro a cercano/lineal.</string>
-    <string english="Current mode: LINEAR" comment="wrapped">Modo actual: LINEAL</string>
-    <string english="Current mode: NEAREST" comment="wrapped, nearest neighbor filter">Modo actual: CERCANO</string>
-    <string english="toggle analogue" comment="menu option, analogue mode simulates distortion from bad signal">alternar analogico</string>
-    <string english="Analogue Mode" comment="title, analogue mode simulates distortion from bad signal" max="20">Modo Analógico</string>
-    <string english="There is nothing wrong with your television set. Do not attempt to adjust the picture." comment="wrapped">No hay nada mal con tu televisión. No intentes ajustar la imagen.</string>
-    <string english="toggle mouse" comment="menu option">alternar cursor</string>
-    <string english="Toggle Mouse Cursor" comment="title" max="20">Alternar Cursor</string>
-    <string english="Show/hide the system mouse cursor." comment="wrapped">Mostrar/Ocultar el cursor.</string>
-    <string english="Current mode: SHOW" comment="wrapped, show cursor">Modo actual: MOSTRAR</string>
-    <string english="Current mode: HIDE" comment="wrapped, hide cursor">Modo actual: OCULTAR</string>
-    <string english="toggle fps" comment="menu option">alternar fps</string>
-    <string english="Toggle 30+ FPS" comment="title" max="20">Alternar +30 FPS</string>
-    <string english="Change whether the game runs at 30 or over 30 FPS." comment="wrapped">Cambiar si el juego corre a 30 o mas FPS.</string>
-    <string english="Current mode: 30 FPS" comment="wrapped">Modo actual: 30 FPS</string>
-    <string english="Current mode: Over 30 FPS" comment="wrapped">Modo actual: Mas de 30 FPS</string>
-    <string english="toggle vsync" comment="menu option">alternar sincronizacion vertical</string>
-    <string english="Toggle VSync" comment="title" max="20">Alternar VSync</string>
-    <string english="Turn VSync on or off." comment="wrapped">Acitvar o desactivar VSync.</string>
-    <string english="Current mode: VSYNC OFF" comment="wrapped">Modo actual: VSYNC DESACTIVADO</string>
-    <string english="Current mode: VSYNC ON" comment="wrapped">Modo actual: VSYNC ACTIVADO</string>
-    <string english="VVVVVV is a game by" comment="credits" max="40">VVVVVV es un juego por</string>
-    <string english="Terry Cavanagh" comment="credits" max="20">Terry Cavanagh</string>
-    <string english="and features music by" comment="credits" max="40">y presenta música por</string>
-    <string english="Magnus P~lsson" comment="credits" max="20">Magnus P~lsson</string>
-    <string english="Roomnames are by" comment="credits" max="40">Titulo de las habitación por</string>
-    <string english="Bennett Foddy" comment="credits" max="20">Bennett Foddy</string>
-    <string english="C++ version by" comment="credits" max="40">Version de C++ por</string>
-    <string english="Simon Roth" comment="credits" max="20">Simon Roth</string>
-    <string english="Ethan Lee" comment="credits" max="20">Ethan Lee</string>
-    <string english="Beta Testing by" comment="credits" max="40">Testeo de beta por</string>
-    <string english="Sam Kaplan" comment="credits" max="20">Sam Kaplan</string>
-    <string english="Pauli Kohberger" comment="credits" max="20">Pauli Kohberger</string>
-    <string english="Ending Picture by" comment="credits" max="40">Imagen final por</string>
-    <string english="VVVVVV is supported by the following patrons" comment="credits, wrapped">VVVVVV es apoyado por las siguientes personas</string>
-    <string english="and also by" comment="credits, wrapped, VVVVVV is also supported by the following people">y también por</string>
-    <string english="With contributions on GitHub from" comment="credits, wrapped">Con contribuciones de GitHub desde</string>
-    <string english="and thanks also to:" comment="credits, and thanks also to ... you!">Y también gracias a:</string>
-    <string english="You!" comment="credits, and thanks also to ... you!">Ti!</string>
-    <string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." comment="credits, wrapped">Tu apoyo me hace posible el poder continuar creando los juegos que quiero hacer, ahora y en el futuro.</string>
-    <string english="Thank you!" comment="credits, wrapped">Gracias!</string>
-    <string english="Good luck!" comment="wrapped">Buena Suerte!</string>
-    <string english="You cannot save in this mode." comment="wrapped">No puedes guardar en este modo.</string>
-    <string english="Would you like to disable the cutscenes during the game?" comment="wrapped">Te gustaría desactivar las escenas durante el juego?</string>
-    <string english="disable cutscenes" comment="menu option">desactivar escenas</string>
-    <string english="enable cutscenes" comment="menu option">activar escenas</string>
-    <string english="analog stick sensitivity" comment="menu option">sensibilidad del analogico</string>
-    <string english="Low" comment="analog stick sensitivity">Baja</string>
-    <string english="Medium" comment="analog stick sensitivity">Media</string>
-    <string english="High" comment="analog stick sensitivity">Alta</string>
-    <string english="bind flip" comment="menu option">asociar voltear</string>
-    <string english="bind enter" comment="menu option">asociar enter</string>
-    <string english="bind menu" comment="menu option">asociar menu</string>
-    <string english="Flip is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32">Voltear esta asociado a:</string>
-    <string english="Enter is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32">enter esta asociado a:</string>
-    <string english="Menu is bound to: " comment="controller binds, bound to A, B, X, Y, etc" max="32">Menú esta asociado a:</string>
-    <string english="ERROR: No language files found." comment="wrapped">ERROR: No se encontraron archivos de idioma.</string>
-    <string english="This menu is only shown when having a lang folder in your VVVVVV folder." comment="wrapped, the folder is called lang. Translation maintenance menu">Este menú solo es visible cuando tienes una carpeta lang en tu carpeta de VVVVVV.</string>
-    <string english="translation maintenance" comment="menu option, menu that allows you to apply maintenance to translations">traduccion en mantenimiento</string>
-    <string english="sync language files" comment="menu option">sincronizar archivos de idioma</string>
-    <string english="Sync language files" comment="title, translation maintenance menu" max="20">Sincronizar idiomas</string>
-    <string english="sync" comment="menu option, verb">sincronizar</string>
-    <string english="Merge all new strings from the template files into the translation files, keeping existing translations" comment="wrapped, translation maintenance menu">Combinar todas las cadenas de los archivos de plantilla a los archivos de traducción, dejando traducciones existentes</string>
-    <string english="statistics" comment="menu option">estadísticas</string>
-    <string english="Statistics" comment="title, translation maintenance menu" max="20">Estadísticas</string>
-    <string english="Count the amount of untranslated strings for each language" comment="wrapped, translation maintenance menu">Cantidad de textos sin traducir de cada idioma</string>
-    <string english="toggle test mode" comment="menu option">alternar modo de testeo</string>
-    <string english="Test mode" comment="title, translation maintenance menu" max="20">Modo de testeo</string>
-    <string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." comment="wrapped, translation maintenance menu">Mostrar todas las cadenas traducibles como V o X, revelando cadenas olvidadas o no traducidas. X significa faltante en el archivo.</string>
-    <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." comment="wrapped, translation maintenance menu">Si nuevos textos se añadieron a los archivos de la plantilla de Ingles, esta caracteristica los insertara en los archivos de todos los idiomas, solo los idiomas que estan en la capreta VVVVVV se pueden actualizar. Hacer un respaldo, por si acaso.</string>
-    <string english="accessibility options" comment="menu option">opciones de acesibilidad</string>
-    <string english="Accessibility" comment="title" max="20">Acesibilidad</string>
-    <string english="Disable screen effects, enable slowdown modes or invincibility" comment="wrapped">Desactivar efectos de pantalla, activar desaceleración o invicibilidad</string>
-    <string english="animated backgrounds" comment="menu option">fondos animados</string>
-    <string english="Backgrounds" comment="title" max="20">Fondos</string>
-    <string english="Backgrounds are ON." comment="wrapped">Los fondos están ACTIVADOS.</string>
-    <string english="Backgrounds are OFF." comment="wrapped">Los fondos están DESACTIVADOS.</string>
-    <string english="screen effects" comment="menu option">efectos de pantalla</string>
-    <string english="Screen Effects" comment="title" max="20">Efectos De Pantalla</string>
-    <string english="Disables screen shakes and flashes." comment="wrapped">Desactivar sacudido y parpadeo de pantalla.</string>
-    <string english="Screen Effects are ON." comment="wrapped">Efectos de Pantalla estan ACTIVADOS.</string>
-    <string english="Screen Effects are OFF." comment="wrapped">Efectos de Pantalla estan DESACTIVADOS.</string>
-    <string english="text outline" comment="menu option">contorno de texto</string>
-    <string english="Text Outline" comment="title" max="20">Contorno de Texto</string>
-    <string english="Disables outline on game text" comment="wrapped">Desactivar contorno del texto del juego</string>
-    <string english="Text outlines are ON." comment="wrapped">Contorno de texto está ACTIVADO.</string>
-    <string english="Text outlines are OFF." comment="wrapped">Contorno de texto está DESACTIVADO.</string>
-    <string english="invincibility" comment="menu option">invicibilidad</string>
-    <string english="Invincibility" comment="title" max="20">Invincibilidad</string>
-    <string english="Provided to help disabled gamers explore the game. Can cause glitches." comment="wrapped, invincibility mode">Proveído para ayudar a jugadores discapacitados a explorar el juego. Puede causar errores.</string>
-    <string english="Invincibility is ON." comment="wrapped">Invincibilidad está ACTIVADO.</string>
-    <string english="Invincibility is off." comment="wrapped">Invincibilidad está DESACTIVADO.</string>
-    <string english="Are you sure you want to enable invincibility?" comment="wrapped">Estás seguro que quieres activar la invicibilidad?</string>
-    <string english="no, return to options" comment="menu option">no, regresar a opciones</string>
-    <string english="yes, enable" comment="menu option">si, activar</string>
-    <string english="slowdown" comment="menu option">aceleracion</string>
-    <string english="Game Speed" comment="title" max="20">Velocidad del juego</string>
-    <string english="May be useful for disabled gamers using one switch devices." comment="wrapped">Podría ser útil para jugadores discapacitados.</string>
-    <string english="Select a new game speed below." comment="wrapped">Selecciona la velocidad del juego abajo.</string>
-    <string english="Game speed is normal." comment="wrapped">La velocidad esta normal.</string>
-    <string english="Game speed is at 80%" comment="wrapped">La velocidad esta al 80%</string>
-    <string english="Game speed is at 60%" comment="wrapped">La velocidad esta al 60%</string>
-    <string english="Game speed is at 40%" comment="wrapped">La velocidad esta al 40%</string>
-    <string english="normal speed" comment="menu option">velocidad normal</string>
-    <string english="80% speed" comment="menu option">velocidad 80%</string>
-    <string english="60% speed" comment="menu option">velocidad 60%</string>
-    <string english="40% speed" comment="menu option">velocidad 40%</string>
-    <string english="load screen" comment="menu option">pantalla de carga</string>
-    <string english="Fake Load Screen" comment="title, allows the loading screen which counts to 100% to be turned off" max="20">Carga Falsa</string>
-    <string english="Fake loading screen is OFF" comment="wrapped, allows the loading screen which counts to 100% to be turned off">Carga Falsa esta DESACTIVADO</string>
-    <string english="Fake loading screen is ON" comment="wrapped, allows the loading screen which counts to 100% to be turned off">Carga Falsa esta ACTIVADO</string>
-    <string english="room name bg" comment="menu option, background behind room names">fondo del titulo de la habitación</string>
-    <string english="Room Name BG" comment="title, background behind room names" max="20">Fondo del titulo</string>
-    <string english="Lets you see through what is behind the name at the bottom of the screen." comment="wrapped">Te deja ver a través de lo que está detrás del nombre en la base de la pantalla.</string>
-    <string english="Room name background is TRANSLUCENT" comment="wrapped">El nombre de la habitación es TRANSLÚCIDO</string>
-    <string english="Room name background is OPAQUE" comment="wrapped">El nombre de la habitación es OPACO</string>
-    <string english="play intermission 1" comment="menu option">jugar intermision 1</string>
-    <string english="play intermission 2" comment="menu option">jugar intermision 2</string>
-    <string english="Who do you want to play the level with?" comment="wrapped, choose your NPC companion">Con quién quieres jugar al nivel?</string>
-    <string english="time trials" comment="menu option">contrarreloj</string>
-    <string english="Time Trials" comment="title" max="20">Contrarreloj</string>
-    <string english="Replay any level in the game in a competitive time trial mode." comment="wrapped">Repite cualquier nivel del juego en modo contrarreloj competitivo.</string>
-    <string english="Time Trials are not available with slowdown or invincibility." comment="wrapped">Las pruebas a contrarreloj no están disponibles con desaceleración o invencibilidad.</string>
-    <string english="unlock time trials" comment="menu option">desbloquear contrarreloj</string>
-    <string english="Unlock Time Trials" comment="title" max="20">Liberar Contrarreloj</string>
-    <string english="You can unlock each time trial separately." comment="wrapped">Puedes liberar cada prueba a contrarreloj por separado.</string>
-    <string english="intermissions" comment="menu option">intermisiones</string>
-    <string english="Intermissions" comment="title" max="20">Intermisiones</string>
-    <string english="Replay the intermission levels." comment="wrapped">Repetir los niveles de intermision.</string>
-    <string english="unlock intermissions" comment="menu option">desbloquear intermisiones</string>
-    <string english="TO UNLOCK: Complete the intermission levels in-game." comment="wrapped">PARA LIBERAR: Completa los niveles de intermision en el juego.</string>
-    <string english="no death mode" comment="menu option">modo sin muertes</string>
-    <string english="No Death Mode" comment="title" max="20">Modo Sin Muertes</string>
-    <string english="Play the entire game without dying once." comment="wrapped">Juega al juego entero sin morir una vez.</string>
-    <string english="No Death Mode is not available with slowdown or invincibility." comment="wrapped">El Modo Sin Muertes no está disponible con desaceleración o invencibilidad.</string>
-    <string english="unlock no death mode" comment="menu option">desbloquear modo sin muertes</string>
-    <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." comment="wrapped, ranks are B A S V">PARA LIBERAR: Consigue un rango-S o superior en al menos 4 pruebas a contrarreloj.</string>
-    <string english="flip mode" comment="menu option, mirrors the entire game vertically">modo volteado</string>
-    <string english="Flip Mode" comment="title, mirrors the entire game vertically" max="20">Modo volteado</string>
-    <string english="Flip the entire game vertically. Compatible with other game modes." comment="wrapped">Voltear todo el juego verticalmente. Compatible con otros modos de juego.</string>
-    <string english="unlock flip mode" comment="menu option">desbloquear modo volteado</string>
-    <string english="Currently ENABLED!" comment="wrapped, flip mode">Actualmente ACITVADO!</string>
-    <string english="Currently Disabled." comment="wrapped, flip mode">Actualmente Desactivado.</string>
-    <string english="TO UNLOCK: Complete the game." comment="wrapped">PARA LIBERAR: Completa el juego.</string>
-    <string english="Are you sure you want to quit?" comment="wrapped, quit the program">Estás seguro que quieres salir?</string>
-    <string english="GAME OVER" comment="bigger title" max="13">GAME OVER</string>
-    <string english="You managed to reach:" comment="you managed to reach the following room" max="40">Conseguiste llegar a:</string>
-    <string english="Keep trying! You&apos;ll get there!" comment="wrapped, player died before managing to save anybody">Sigue intentado! Vas a lograrlo!</string>
-    <string english="Nice one!" comment="wrapped, player died after saving one crewmate">Buena esa!</string>
-    <string english="Wow! Congratulations!" comment="wrapped, player died after saving two crewmates">Wow! Felicitaciones!</string>
-    <string english="Incredible!" comment="wrapped, player died after saving three crewmates">Increíble!</string>
-    <string english="Unbelievable! Well done!" comment="wrapped, player died after saving four crewmates">Impresionante! Bien hecho!</string>
-    <string english="Er, how did you do that?" comment="wrapped, player died even though they were finished, lol">Eh, como hiciste eso?</string>
-    <string english="WOW" comment="even bigger title" max="10">WOW</string>
-    <string english="You rescued all the crewmates!" comment="" max="40">Rescataste a todos los miembros!</string>
-    <string english="A new trophy has been awarded and placed in the secret lab to acknowledge your achievement!" comment="wrapped">Un nuevo trofeo fue otorgado y colocado en el laboratorio secreto para reconocer tu logro!</string>
-    <string english="[Trinkets found]" comment="amount of shiny trinkets found" max="40">[Baratijas encontradas]</string>
-    <string english="[Number of Deaths]" comment="" max="40">[Número de muertes]</string>
-    <string english="[Time Taken]" comment="stopwatch time" max="40">[Tiempo tomado]</string>
-    <string english="Results" comment="bigger title" max="13">Resultados</string>
-    <string english="TIME TAKEN:" comment="time the player took playing the level" max="32">TIEMPO TOMADO:</string>
-    <string english="NUMBER OF DEATHS:" comment="amount of times the player died" max="32">NÚMERO DE MUERTES:</string>
-    <string english="SHINY TRINKETS:" comment="amount of trinkets collected">BARATIJAS BRILLANTES:</string>
-    <string english="%d of %d" comment="ex: 2 of 5">%d de %d</string>
-    <string english="+1 Rank!" comment="rank was upgraded (B → A → S → V)" max="12">+1 Rango!</string>
-    <string english="Rank:" comment="time trial rank">Rango:</string>
-    <string english="B" comment="time trial rank">B</string>
-    <string english="A" comment="time trial rank">A</string>
-    <string english="S" comment="time trial rank">S</string>
-    <string english="V" comment="time trial rank">V</string>
-    <string english="Congratulations!" comment="title" max="20">Felicitaciones!</string>
-    <string english="Your save files have been updated." comment="wrapped, player completed game">Tus archivos de guardado han sido actualizados.</string>
-    <string english="If you want to keep exploring the game, select CONTINUE from the play menu." comment="wrapped">Si quieres seguir explorando el juego, selecciona CONTINUAR en el menú de juego.</string>
-    <string english="You have unlocked a new Time Trial." comment="wrapped">Has desbloqueado una nueva prueva a contrarreloj.</string>
-    <string english="You have unlocked some new Time Trials." comment="wrapped">Has desbloqueado nuevas pruebas a contrarreloj.</string>
-    <string english="You have unlocked No Death Mode." comment="wrapped">Has desbloqueado el modo Sin Muertes.</string>
-    <string english="You have unlocked Flip Mode." comment="wrapped">Has desbloqueado el modo Voltear.</string>
-    <string english="You have unlocked the intermission levels." comment="wrapped">Has desbloqueado los niveles intermedio.</string>
-    <string english="play a level" comment="menu option">jugar un nivel</string>
-    <string english="level editor" comment="menu option">editor de niveles</string>
-    <string english="open level folder" comment="menu option">abrir carpeta de niveles</string>
-    <string english="return" comment="menu option">volver</string>
-    <string english="return to play menu" comment="menu option" max="36">volver al menu de juego</string>
-    <string english="ok" comment="button">ok</string>
-    <string english="next page" comment="menu option">siguiente pagina</string>
-    <string english="previous page" comment="menu option">pagina anterior</string>
-    <string english="first page" comment="menu option">primera pagina</string>
-    <string english="last page" comment="menu option">ultima pagina</string>
-    <string english="continue from save" comment="menu option">continuar desde guardado</string>
-    <string english="start from beginning" comment="menu option">empezar desde el principio</string>
-    <string english="back to levels" comment="menu option">volver a los niveles</string>
-    <string english="To install new player levels, copy the .vvvvvv files to this folder:" comment="wrapped">Para instalar nuevos niveles de jugadores, copia los archivos .vvvvvv a esta carpeta</string>
-    <string english="[ Press ACTION to Start ]" comment="wrapped, title screen">[ Presiona ACCIÓN para empezar ]</string>
-    <string english="ACTION = Space, Z, or V" comment="wrapped, title screen">ACCIÓN = Espacio, Z o V</string>
-    <string english="[Press ENTER to return to editor]" comment="`to editor` is sorta redundant" max="40">[Presiona ENTER para volver al editor]</string>
-    <string english="- Press ACTION to advance text -" comment="to dismiss a textbox" max="40">- Presiona ACCIÓN para seguir el texto -</string>
-    <string english="- Press ENTER to Teleport -" comment="" max="40">- Presiona ENTER para trasladarte -</string>
-    <string english="Current Time" comment="super gravitron, stopwatch time" max="20">Tiempo actual</string>
-    <string english="Best Time" comment="super gravitron, best stopwatch time" max="20">Mejor tiempo</string>
-    <string english="Next Trophy at 5 seconds" comment="wrapped">Siguiente trofeo en 5 segundos</string>
-    <string english="Next Trophy at 10 seconds" comment="wrapped">Siguiente trofeo en 10 segundos</string>
-    <string english="Next Trophy at 15 seconds" comment="wrapped">Siguiente trofeo en 15 segundos</string>
-    <string english="Next Trophy at 20 seconds" comment="wrapped">Siguiente trofeo en 20 segundos</string>
-    <string english="Next Trophy at 30 seconds" comment="wrapped">Siguiente trofeo en 30 segundos</string>
-    <string english="Next Trophy at 1 minute" comment="wrapped">Siguiente trofeo en 1 minuto</string>
-    <string english="All Trophies collected!" comment="wrapped">Todos los trofeos conseguidos!</string>
-    <string english="New Record!" comment="" max="20">Nuevo record!</string>
-    <string english="New Trophy!" comment="" max="20">Nuevo trofeo!</string>
-    <string english="[Press ENTER to stop]" comment="stop super gravitron" max="40">[Presiona ENTER para parar]</string>
-    <string english="SUPER GRAVITRON" comment="" max="20">SUPER GRAVITRON</string>
-    <string english="SUPER GRAVITRON HIGHSCORE" comment="wrapped">Puntuacion mas alta en SUPER GRAVITRON</string>
-    <string english="GO!" comment="3, 2, 1, GO!" max="13">YA!</string>
-    <string english="Go!" comment="3, 2, 1, Go!" max="10">Ya!</string>
-    <string english="TIME:" comment="stopwatch time, not too long">TIEMPO:</string>
-    <string english="DEATH:" comment="number of times player died, not too long">MUERTES:</string>
-    <string english="SHINY:" comment="number of shiny trinkets collected, not too long">BRILLANTES:</string>
-    <string english="PAR TIME:" comment="goal time for time trial">MEJOR TIEMPO</string>
-    <string english="MAP" comment="in-game menu" max="8">MAPA</string>
-    <string english="GRAV" comment="in-game menu, Gravitron" max="8">GRAV</string>
-    <string english="SHIP" comment="in-game menu, spaceship" max="8">NAVE</string>
-    <string english="CREW" comment="in-game menu" max="8">MIEMBROS</string>
-    <string english="STATS" comment="in-game menu" max="8">REGISTRO</string>
-    <string english="SAVE" comment="in-game menu" max="8">GUARDAR</string>
-    <string english="[ PAUSE ]" comment="in-game menu" max="40">[ PAUSA ]</string>
-    <string english="[ QUIT ]" comment="in-game menu" max="40">[ SALIR ]</string>
-    <string english="[ GRAVITRON ]" comment="in-game menu" max="40">[ GRAVITRON ]</string>
-    <string english="NO SIGNAL" comment="">SIN SEÑAL</string>
-    <string english="Press ACTION to warp to the ship." comment="wrapped, spaceship. Warp = teleport">Presiona ACCIÓN para transportar la nave.</string>
-    <string english="Missing..." comment="" max="15">Faltando...</string>
-    <string english="Cannot Save in Level Replay" comment="wrapped">No puedes guardar en una repeticion de nivel</string>
-    <string english="Cannot Save in No Death Mode" comment="wrapped">No puedes guardar en el Modo Sin Muertes</string>
-    <string english="Cannot Save in Time Trial" comment="wrapped">No puedes guardar en Contrarreloj</string>
-    <string english="Cannot Save in Secret Lab" comment="wrapped">No puedes guardar en el Laboratorio Secreto</string>
-    <string english="Game saved ok!" comment="wrapped">Juego guardado exitosamente!</string>
-    <string english="[Press ACTION to save your game]" comment="wrapped">[Presiona ACCÍÓN para guardar partida]</string>
-    <string english="(Note: The game is autosaved at every teleporter.)" comment="wrapped">(Nota: El juego se guarda automaticamente en cada teletransportador)</string>
-    <string english="Last Save:" comment="" max="40">Último guardado</string>
-    <string english="Return to main menu?" comment="wrapped">Volver al menu principal?</string>
-    <string english="Do you want to quit? You will lose any unsaved progress." comment="wrapped">Quieres salir? Perderas el progreso no guardado.</string>
-    <string english="Do you want to return to the secret laboratory?" comment="wrapped">Quieres volver al laboratorio secreto?</string>
-    <string english="no, keep playing" comment="" max="28">no, continuar jugando</string>
-    <string english="[ NO, KEEP PLAYING ]" comment="" max="32">[ NO, CONTINUAR JUGANDO ]</string>
-    <string english="no, return" comment="">no, volver</string>
-    <string english="yes, quit to menu" comment="" max="24">si, volver al menu</string>
-    <string english="[ YES, QUIT TO MENU ]" comment="" max="28">[ SI, SALIR AL MENU ]</string>
-    <string english="yes, return" comment="" max="24">si, volver</string>
-    <string english="[ YES, RETURN ]" comment="" max="28">[ SI, VOLVER ]</string>
-    <string english="yes, quit" comment="quit program">si, salir</string>
-    <string english="return to game" comment="pause menu option">volver al juego</string>
-    <string english="quit to menu" comment="pause menu option">salir al menu</string>
-    <string english="Press Left/Right to choose a Teleporter" comment="tight fit, so maybe `Left/Right: choose teleporter`" max="40">Izq/Der: elegir teletransportador</string>
-    <string english="Press ENTER to Teleport" comment="" max="40">Presiona ENTER para teletransportarte</string>
-    <string english="edit scripts" comment="level editor menu option">scripts editados</string>
-    <string english="change music" comment="level editor menu option">cambiar musica</string>
-    <string english="editor ghosts" comment="level editor menu option. Toggles option to show a repetition of the player&apos;s path after playtesting">editar fantasmas</string>
-    <string english="load level" comment="level editor menu option">cargar nivel</string>
-    <string english="save level" comment="level editor menu option">guardar nivel</string>
-    <string english="quit to main menu" comment="level editor menu option" max="19">salir al menu</string>
-    <string english="change name" comment="level editor menu option">cambiar nombre</string>
-    <string english="change author" comment="level editor menu option">cambiar autor</string>
-    <string english="change description" comment="level editor menu option">cambiar descripcion</string>
-    <string english="change website" comment="level editor menu option">cambiar sitio web</string>
-    <string english="next song" comment="level editor menu option">siguiente cancion</string>
-    <string english="back" comment="level editor menu option">atras</string>
-    <string english="yes, save and quit" comment="level editor menu option">si, guardar y salir</string>
-    <string english="no, quit without saving" comment="level editor menu option">no, salir sin guardar</string>
-    <string english="return to editor" comment="level editor menu option">volver al editor</string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
-    <string english="" comment=""></string>
+    <string english="Game paused" explanation="pause screen" max="40" comment="">Juego pausado</string>
+    <string english="[click to resume]" explanation="pause screen" max="40" comment="">[Click para continuar]</string>
+    <string english="Press M to mute in game" explanation="pause screen" max="40" comment="">Presiona M para silenciar el juego</string>
+    <string english="Press N to mute music only" explanation="pause screen" max="40" comment="">Presiona N para silenciar la musica</string>
+    <string english="MAKE AND PLAY EDITION" explanation="" comment="">EDICION MAKE AND PLAY</string>
+    <string english="[MMMMMM Mod Installed]" explanation="" max="32" comment="">[MMMMMM Mod Instalado]</string>
+    <string english="start game" explanation="main menu option" comment="">iniciar Juego</string>
+    <string english="player levels" explanation="main menu option" comment="">niveles de jugadores</string>
+    <string english="graphic options" explanation="main menu option" comment="">opciones graficas</string>
+    <string english="game options" explanation="main menu option" comment="">opciones de juego</string>
+    <string english="view credits" explanation="main menu option" comment="">ver creditos</string>
+    <string english="quit game" explanation="main menu option" comment="">salir del juego</string>
+    <string english="continue" explanation="menu option" comment="">continuar</string>
+    <string english="continue from teleporter" explanation="menu option, game save that was made at a teleporter" comment="">continuar desde teletransportador</string>
+    <string english="Tele Save" explanation="title, game save that was made at a teleporter" max="20" comment="">Tele guardado</string>
+    <string english="continue from quicksave" explanation="menu option, game save that was made freely from the menu (at any checkpoint)" comment="">continuar desde guardado rapido</string>
+    <string english="Quick Save" explanation="title, game save that was made freely from the menu (at any checkpoint)" max="20" comment="">Guardado rápido</string>
+    <string english="proceed" explanation="menu option" comment="">continuar</string>
+    <string english="new game" explanation="menu option" comment="">nuevo juego</string>
+    <string english="start new game" explanation="menu option, extra confirmation" comment="">empezar un juego nuevo</string>
+    <string english="secret lab" explanation="menu option" comment="">laboratorio secreto</string>
+    <string english="play modes" explanation="menu option" comment="">jugar modos</string>
+    <string english="ERROR: No levels found." explanation="wrapped" comment="">ERROR: No se encontraron niveles.</string>
+    <string english="by %s" explanation="%s: author of level" comment="">Por %s</string>
+    <string english="ERROR: This level has no start point!" explanation="wrapped" comment="">ERROR: Este nivel no tiene punto de inicio</string>
+    <string english="unlock play modes" explanation="menu option" comment="">liberar modos</string>
+    <string english="Unlock Play Modes" explanation="title" max="20" comment="">Liberar Modos</string>
+    <string english="Unlock parts of the game normally unlocked as you progress" explanation="wrapped" comment="">Desbloquea partes del juego, normalmente desbloqueadas al completar el juego</string>
+    <string english="From here, you may unlock parts of the game that are normally unlocked as you play." explanation="wrapped" comment="">Desde aquí podras liberar partes del juego que normalmente se desbloquean al progresar.</string>
+    <string english="unlock ship jukebox" explanation="menu option" comment="">desbloquear caja de musica en la nave</string>
+    <string english="unlock secret lab" explanation="menu option" comment="">desbloquear laboratorio secreto</string>
+    <string english="game pad options" explanation="menu option" comment="">opciones de mando</string>
+    <string english="Game Pad Options" explanation="title" max="20" comment="">Opciones de mando</string>
+    <string english="Game Pad" explanation="title" max="20" comment="">Mando</string>
+    <string english="Rebind your controller&apos;s buttons and adjust sensitivity" explanation="wrapped" comment="">Restablece los botones del mando y ajusta le sensibilidad</string>
+    <string english="Change controller options." explanation="wrapped" comment="">Cambiar opciones de mando.</string>
+    <string english="language" explanation="menu option" comment="">idioma</string>
+    <string english="Language" explanation="title" max="20" comment="">Idioma</string>
+    <string english="Change the language" explanation="wrapped" comment="">Cambiar idioma</string>
+    <string english="clear data" explanation="menu option" comment="">limpiar datos</string>
+    <string english="Clear Data" explanation="title" max="20" comment="">Limpiar Datos</string>
+    <string english="Delete your save data and unlocked play modes" explanation="wrapped" comment="">Eliminar tus datos de juego y modos de juego</string>
+    <string english="Are you sure? This will delete your current saves..." explanation="wrapped" comment="">Estás seguro? Esto eliminara tus datos...</string>
+    <string english="Are you sure you want to delete all your saved data?" explanation="wrapped" comment="">Estás seguro que quieres eliminar todos tus datos?</string>
+    <string english="no! don&apos;t delete" explanation="menu option" comment="">no!, no borrar</string>
+    <string english="yes, delete everything" explanation="menu option" comment="">si, borrar todo</string>
+    <string english="soundtrack" explanation="menu option" comment="">banda sonora</string>
+    <string english="Soundtrack" explanation="title" max="20" comment="">Banda Sonora</string>
+    <string english="Toggle between MMMMMM and PPPPPP" explanation="wrapped" comment="">Cambiar entre MMMMMM y PPPPPP</string>
+    <string english="Current soundtrack: MMMMMM" explanation="wrapped" comment="">Banda sonora actual: MMMMMM</string>
+    <string english="Current soundtrack: PPPPPP" explanation="wrapped" comment="">Banda sonora actual: PPPPPP</string>
+    <string english="toggle fullscreen" explanation="menu option" comment="">pantalla completa</string>
+    <string english="Toggle Fullscreen" explanation="title" max="20" comment="">Pantalla Completa</string>
+    <string english="Change to fullscreen/windowed mode." explanation="wrapped" comment="">Cambiar a Pantalla Completa/Ventana.</string>
+    <string english="Current mode: FULLSCREEN" explanation="wrapped" comment="">Modo actual: PANTALLA COMPLETA</string>
+    <string english="Current mode: WINDOWED" explanation="wrapped" comment="">Modo actual: VENTANA</string>
+    <string english="graphics mode" explanation="menu option" comment="">modo de graficos</string>
+    <string english="Graphics Mode" explanation="title" max="20" comment="">Modo de gráficos</string>
+    <string english="Choose letterbox/stretch/integer mode." explanation="wrapped" comment="">Elegir LETTERBOX/ESTIRADO/ENTERO.</string>
+    <string english="Current mode: INTEGER" explanation="wrapped" comment="">Modo actual: ENTERO</string>
+    <string english="Current mode: STRETCH" explanation="wrapped" comment="">Modo actual: ESTIRAR</string>
+    <string english="Current mode: LETTERBOX" explanation="wrapped" comment="">Modo actual: LETTERBOX</string>
+    <string english="toggle filter" explanation="menu option" comment="">alternar filtro</string>
+    <string english="Toggle Filter" explanation="title" max="20" comment="">Alternar Filtro</string>
+    <string english="Change to nearest/linear filter." explanation="wrapped" comment="">Cambiar filtro a cercano/lineal.</string>
+    <string english="Current mode: LINEAR" explanation="wrapped" comment="">Modo actual: LINEAL</string>
+    <string english="Current mode: NEAREST" explanation="wrapped, nearest neighbor filter" comment="">Modo actual: CERCANO</string>
+    <string english="toggle analogue" explanation="menu option, analogue mode simulates distortion from bad signal" comment="">alternar analogico</string>
+    <string english="Analogue Mode" explanation="title, analogue mode simulates distortion from bad signal" max="20" comment="">Modo Analógico</string>
+    <string english="There is nothing wrong with your television set. Do not attempt to adjust the picture." explanation="wrapped" comment="">No hay nada mal con tu televisión. No intentes ajustar la imagen.</string>
+    <string english="toggle mouse" explanation="menu option" comment="">alternar cursor</string>
+    <string english="Toggle Mouse Cursor" explanation="title" max="20" comment="">Alternar Cursor</string>
+    <string english="Show/hide the system mouse cursor." explanation="wrapped" comment="">Mostrar/Ocultar el cursor.</string>
+    <string english="Current mode: SHOW" explanation="wrapped, show cursor" comment="">Modo actual: MOSTRAR</string>
+    <string english="Current mode: HIDE" explanation="wrapped, hide cursor" comment="">Modo actual: OCULTAR</string>
+    <string english="toggle fps" explanation="menu option, kind of a misnomer, toggle between 30 FPS and more than 30 FPS" comment="">alternar fps</string>
+    <string english="Toggle 30+ FPS" explanation="title" max="20" comment="">Alternar +30 FPS</string>
+    <string english="Change whether the game runs at 30 or over 30 FPS." explanation="wrapped" comment="">Cambiar si el juego corre a 30 o mas FPS.</string>
+    <string english="Current mode: 30 FPS" explanation="wrapped" comment="">Modo actual: 30 FPS</string>
+    <string english="Current mode: Over 30 FPS" explanation="wrapped" comment="">Modo actual: Mas de 30 FPS</string>
+    <string english="toggle vsync" explanation="menu option" comment="">alternar sincronizacion vertical</string>
+    <string english="Toggle VSync" explanation="title" max="20" comment="">Alternar VSync</string>
+    <string english="Turn VSync on or off." explanation="wrapped" comment="">Acitvar o desactivar VSync.</string>
+    <string english="Current mode: VSYNC OFF" explanation="wrapped" comment="">Modo actual: VSYNC DESACTIVADO</string>
+    <string english="Current mode: VSYNC ON" explanation="wrapped" comment="">Modo actual: VSYNC ACTIVADO</string>
+    <string english="VVVVVV is a game by" explanation="credits" max="40" comment="">VVVVVV es un juego por</string>
+    <string english="Terry Cavanagh" explanation="credits" max="20" comment="">Terry Cavanagh</string>
+    <string english="and features music by" explanation="credits" max="40" comment="">y presenta música por</string>
+    <string english="Magnus P~lsson" explanation="credits" max="20" comment="">Magnus P~lsson</string>
+    <string english="Roomnames are by" explanation="credits" max="40" comment="">Titulo de las habitación por</string>
+    <string english="Bennett Foddy" explanation="credits" max="20" comment="">Bennett Foddy</string>
+    <string english="C++ version by" explanation="credits" max="40" comment="">Version de C++ por</string>
+    <string english="Simon Roth" explanation="credits" max="20" comment="">Simon Roth</string>
+    <string english="Ethan Lee" explanation="credits" max="20" comment="">Ethan Lee</string>
+    <string english="Beta Testing by" explanation="credits" max="40" comment="">Testeo de beta por</string>
+    <string english="Sam Kaplan" explanation="credits" max="20" comment="">Sam Kaplan</string>
+    <string english="Pauli Kohberger" explanation="credits" max="20" comment="">Pauli Kohberger</string>
+    <string english="Ending Picture by" explanation="credits" max="40" comment="">Imagen final por</string>
+    <string english="VVVVVV is supported by the following patrons" explanation="credits, wrapped" comment="">VVVVVV es apoyado por las siguientes personas</string>
+    <string english="and also by" explanation="credits, wrapped, VVVVVV is also supported by the following people" comment="">y también por</string>
+    <string english="With contributions on GitHub from" explanation="credits, wrapped" comment="">Con contribuciones de GitHub desde</string>
+    <string english="and thanks also to:" explanation="credits, and thanks also to ... you!" comment="">Y también gracias a:</string>
+    <string english="You!" explanation="credits, and thanks also to ... you!" comment="">Ti!</string>
+    <string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." explanation="credits, wrapped" comment="">Tu apoyo me hace posible el poder continuar creando los juegos que quiero hacer, ahora y en el futuro.</string>
+    <string english="Thank you!" explanation="credits, wrapped" comment="">Gracias!</string>
+    <string english="Good luck!" explanation="wrapped" comment="">Buena Suerte!</string>
+    <string english="You cannot save in this mode." explanation="wrapped" comment="">No puedes guardar en este modo.</string>
+    <string english="Would you like to disable the cutscenes during the game?" explanation="wrapped" comment="">Te gustaría desactivar las escenas durante el juego?</string>
+    <string english="disable cutscenes" explanation="menu option" comment="">desactivar escenas</string>
+    <string english="enable cutscenes" explanation="menu option" comment="">activar escenas</string>
+    <string english="analog stick sensitivity" explanation="menu option" comment="">sensibilidad del analogico</string>
+    <string english="Low" explanation="analog stick sensitivity" comment="">Baja</string>
+    <string english="Medium" explanation="analog stick sensitivity" comment="">Media</string>
+    <string english="High" explanation="analog stick sensitivity" comment="">Alta</string>
+    <string english="bind flip" explanation="menu option" comment="">asociar voltear</string>
+    <string english="bind enter" explanation="menu option" comment="">asociar enter</string>
+    <string english="bind menu" explanation="menu option" comment="">asociar menu</string>
+    <string english="Flip is bound to: " explanation="controller binds, bound to A, B, X, Y, etc" max="32" comment="">Voltear esta asociado a:</string>
+    <string english="Enter is bound to: " explanation="controller binds, bound to A, B, X, Y, etc" max="32" comment="">enter esta asociado a:</string>
+    <string english="Menu is bound to: " explanation="controller binds, bound to A, B, X, Y, etc" max="32" comment="">Menú esta asociado a:</string>
+    <string english="ERROR: No language files found." explanation="wrapped" comment="">ERROR: No se encontraron archivos de idioma.</string>
+    <string english="This menu is only shown when having a lang folder in your VVVVVV folder." explanation="wrapped, the folder is called lang. Translation maintenance menu" comment="">Este menú solo es visible cuando tienes una carpeta lang en tu carpeta de VVVVVV.</string>
+    <string english="translation maintenance" explanation="menu option, menu that allows you to apply maintenance to translations" comment="">traduccion en mantenimiento</string>
+    <string english="sync language files" explanation="menu option" comment="">sincronizar archivos de idioma</string>
+    <string english="Sync language files" explanation="title, translation maintenance menu" max="20" comment="">Sincronizar idiomas</string>
+    <string english="sync" explanation="menu option, verb" comment="">sincronizar</string>
+    <string english="Merge all new strings from the template files into the translation files, keeping existing translations" explanation="wrapped, translation maintenance menu" comment="">Combinar todas las cadenas de los archivos de plantilla a los archivos de traducción, dejando traducciones existentes</string>
+    <string english="statistics" explanation="menu option" comment="">estadísticas</string>
+    <string english="Statistics" explanation="title, translation maintenance menu" max="20" comment="">Estadísticas</string>
+    <string english="Count the amount of untranslated strings for each language" explanation="wrapped, translation maintenance menu" comment="">Cantidad de textos sin traducir de cada idioma</string>
+    <string english="toggle test mode" explanation="menu option" comment="">alternar modo de testeo</string>
+    <string english="Test mode" explanation="title, translation maintenance menu" max="20" comment="">Modo de testeo</string>
+    <string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." explanation="wrapped, translation maintenance menu" comment="">Mostrar todas las cadenas traducibles como V o X, revelando cadenas olvidadas o no traducidas. X significa faltante en el archivo.</string>
+    <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." explanation="wrapped, translation maintenance menu" comment="">Si nuevos textos se añadieron a los archivos de la plantilla de Ingles, esta caracteristica los insertara en los archivos de todos los idiomas, solo los idiomas que estan en la capreta VVVVVV se pueden actualizar. Hacer un respaldo, por si acaso.</string>
+    <string english="accessibility options" explanation="menu option" comment="">opciones de acesibilidad</string>
+    <string english="Accessibility" explanation="title" max="20" comment="">Acesibilidad</string>
+    <string english="Disable screen effects, enable slowdown modes or invincibility" explanation="wrapped" comment="">Desactivar efectos de pantalla, activar desaceleración o invicibilidad</string>
+    <string english="animated backgrounds" explanation="menu option" comment="">fondos animados</string>
+    <string english="Backgrounds" explanation="title" max="20" comment="">Fondos</string>
+    <string english="Backgrounds are ON." explanation="wrapped" comment="">Los fondos están ACTIVADOS.</string>
+    <string english="Backgrounds are OFF." explanation="wrapped" comment="">Los fondos están DESACTIVADOS.</string>
+    <string english="screen effects" explanation="menu option" comment="">efectos de pantalla</string>
+    <string english="Screen Effects" explanation="title" max="20" comment="">Efectos De Pantalla</string>
+    <string english="Disables screen shakes and flashes." explanation="wrapped" comment="">Desactivar sacudido y parpadeo de pantalla.</string>
+    <string english="Screen Effects are ON." explanation="wrapped" comment="">Efectos de Pantalla estan ACTIVADOS.</string>
+    <string english="Screen Effects are OFF." explanation="wrapped" comment="">Efectos de Pantalla estan DESACTIVADOS.</string>
+    <string english="text outline" explanation="menu option" comment="">contorno de texto</string>
+    <string english="Text Outline" explanation="title" max="20" comment="">Contorno de Texto</string>
+    <string english="Disables outline on game text" explanation="wrapped" comment="">Desactivar contorno del texto del juego</string>
+    <string english="Text outlines are ON." explanation="wrapped" comment="">Contorno de texto está ACTIVADO.</string>
+    <string english="Text outlines are OFF." explanation="wrapped" comment="">Contorno de texto está DESACTIVADO.</string>
+    <string english="invincibility" explanation="menu option" comment="">invicibilidad</string>
+    <string english="Invincibility" explanation="title" max="20" comment="">Invincibilidad</string>
+    <string english="Provided to help disabled gamers explore the game. Can cause glitches." explanation="wrapped, invincibility mode" comment="">Proveído para ayudar a jugadores discapacitados a explorar el juego. Puede causar errores.</string>
+    <string english="Invincibility is ON." explanation="wrapped" comment="">Invincibilidad está ACTIVADO.</string>
+    <string english="Invincibility is off." explanation="wrapped" comment="">Invincibilidad está DESACTIVADO.</string>
+    <string english="Are you sure you want to enable invincibility?" explanation="wrapped" comment="">Estás seguro que quieres activar la invicibilidad?</string>
+    <string english="no, return to options" explanation="menu option" comment="">no, regresar a opciones</string>
+    <string english="yes, enable" explanation="menu option" comment="">si, activar</string>
+    <string english="slowdown" explanation="menu option" comment="">aceleracion</string>
+    <string english="Game Speed" explanation="title" max="20" comment="">Velocidad del juego</string>
+    <string english="May be useful for disabled gamers using one switch devices." explanation="wrapped" comment="">Podría ser útil para jugadores discapacitados.</string>
+    <string english="Select a new game speed below." explanation="wrapped" comment="">Selecciona la velocidad del juego abajo.</string>
+    <string english="Game speed is normal." explanation="wrapped" comment="">La velocidad esta normal.</string>
+    <string english="Game speed is at 80%" explanation="wrapped" comment="">La velocidad esta al 80%</string>
+    <string english="Game speed is at 60%" explanation="wrapped" comment="">La velocidad esta al 60%</string>
+    <string english="Game speed is at 40%" explanation="wrapped" comment="">La velocidad esta al 40%</string>
+    <string english="normal speed" explanation="menu option" comment="">velocidad normal</string>
+    <string english="80% speed" explanation="menu option" comment="">velocidad 80%</string>
+    <string english="60% speed" explanation="menu option" comment="">velocidad 60%</string>
+    <string english="40% speed" explanation="menu option" comment="">velocidad 40%</string>
+    <string english="load screen" explanation="menu option" comment="">pantalla de carga</string>
+    <string english="Fake Load Screen" explanation="title, allows the loading screen which counts to 100% to be turned off" max="20" comment="">Carga Falsa</string>
+    <string english="Fake loading screen is OFF" explanation="wrapped, allows the loading screen which counts to 100% to be turned off" comment="">Carga Falsa esta DESACTIVADO</string>
+    <string english="Fake loading screen is ON" explanation="wrapped, allows the loading screen which counts to 100% to be turned off" comment="">Carga Falsa esta ACTIVADO</string>
+    <string english="room name bg" explanation="menu option, background behind room names" comment="">fondo del titulo de la habitación</string>
+    <string english="Room Name BG" explanation="title, background behind room names" max="20" comment="">Fondo del titulo</string>
+    <string english="Lets you see through what is behind the name at the bottom of the screen." explanation="wrapped" comment="">Te deja ver a través de lo que está detrás del nombre en la base de la pantalla.</string>
+    <string english="Room name background is TRANSLUCENT" explanation="wrapped" comment="">El nombre de la habitación es TRANSLÚCIDO</string>
+    <string english="Room name background is OPAQUE" explanation="wrapped" comment="">El nombre de la habitación es OPACO</string>
+    <string english="play intermission 1" explanation="menu option" comment="">jugar intermision 1</string>
+    <string english="play intermission 2" explanation="menu option" comment="">jugar intermision 2</string>
+    <string english="Who do you want to play the level with?" explanation="wrapped, choose your NPC companion" comment="">Con quién quieres jugar al nivel?</string>
+    <string english="time trials" explanation="menu option" comment="">contrarreloj</string>
+    <string english="Time Trials" explanation="title" max="20" comment="">Contrarreloj</string>
+    <string english="Replay any level in the game in a competitive time trial mode." explanation="wrapped" comment="">Repite cualquier nivel del juego en modo contrarreloj competitivo.</string>
+    <string english="Time Trials are not available with slowdown or invincibility." explanation="wrapped" comment="">Las pruebas a contrarreloj no están disponibles con desaceleración o invencibilidad.</string>
+    <string english="unlock time trials" explanation="menu option" comment="">desbloquear contrarreloj</string>
+    <string english="Unlock Time Trials" explanation="title" max="20" comment="">Liberar Contrarreloj</string>
+    <string english="You can unlock each time trial separately." explanation="wrapped" comment="">Puedes liberar cada prueba a contrarreloj por separado.</string>
+    <string english="intermissions" explanation="menu option" comment="">intermisiones</string>
+    <string english="Intermissions" explanation="title" max="20" comment="">Intermisiones</string>
+    <string english="Replay the intermission levels." explanation="wrapped" comment="">Repetir los niveles de intermision.</string>
+    <string english="unlock intermissions" explanation="menu option" comment="">desbloquear intermisiones</string>
+    <string english="TO UNLOCK: Complete the intermission levels in-game." explanation="wrapped" comment="">PARA LIBERAR: Completa los niveles de intermision en el juego.</string>
+    <string english="no death mode" explanation="menu option" comment="">modo sin muertes</string>
+    <string english="No Death Mode" explanation="title" max="20" comment="">Modo Sin Muertes</string>
+    <string english="Play the entire game without dying once." explanation="wrapped" comment="">Juega al juego entero sin morir una vez.</string>
+    <string english="No Death Mode is not available with slowdown or invincibility." explanation="wrapped" comment="">El Modo Sin Muertes no está disponible con desaceleración o invencibilidad.</string>
+    <string english="unlock no death mode" explanation="menu option" comment="">desbloquear modo sin muertes</string>
+    <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." explanation="wrapped, ranks are B A S V" comment="">PARA LIBERAR: Consigue un rango-S o superior en al menos 4 pruebas a contrarreloj.</string>
+    <string english="flip mode" explanation="menu option, mirrors the entire game vertically" comment="">modo volteado</string>
+    <string english="Flip Mode" explanation="title, mirrors the entire game vertically" max="20" comment="">Modo volteado</string>
+    <string english="Flip the entire game vertically. Compatible with other game modes." explanation="wrapped" comment="">Voltear todo el juego verticalmente. Compatible con otros modos de juego.</string>
+    <string english="unlock flip mode" explanation="menu option" comment="">desbloquear modo volteado</string>
+    <string english="Currently ENABLED!" explanation="wrapped, flip mode" comment="">Actualmente ACITVADO!</string>
+    <string english="Currently Disabled." explanation="wrapped, flip mode" comment="">Actualmente Desactivado.</string>
+    <string english="TO UNLOCK: Complete the game." explanation="wrapped" comment="">PARA LIBERAR: Completa el juego.</string>
+    <string english="Are you sure you want to quit?" explanation="wrapped, quit the program" comment="">Estás seguro que quieres salir?</string>
+    <string english="GAME OVER" explanation="bigger title" max="13" comment="">GAME OVER</string>
+    <string english="You managed to reach:" explanation="you managed to reach the following room" max="40" comment="">Conseguiste llegar a:</string>
+    <string english="Keep trying! You&apos;ll get there!" explanation="wrapped, player died before managing to save anybody" comment="">Sigue intentado! Vas a lograrlo!</string>
+    <string english="Nice one!" explanation="wrapped, player died after saving one crewmate" comment="">Buena esa!</string>
+    <string english="Wow! Congratulations!" explanation="wrapped, player died after saving two crewmates" comment="">Wow! Felicitaciones!</string>
+    <string english="Incredible!" explanation="wrapped, player died after saving three crewmates" comment="">Increíble!</string>
+    <string english="Unbelievable! Well done!" explanation="wrapped, player died after saving four crewmates" comment="">Impresionante! Bien hecho!</string>
+    <string english="Er, how did you do that?" explanation="wrapped, player died even though they were finished, lol" comment="">Eh, como hiciste eso?</string>
+    <string english="WOW" explanation="even bigger title" max="10" comment="">WOW</string>
+    <string english="You rescued all the crewmates!" explanation="" max="40" comment="">Rescataste a todos los miembros!</string>
+    <string english="A new trophy has been awarded and placed in the secret lab to acknowledge your achievement!" explanation="wrapped" comment="">Un nuevo trofeo fue otorgado y colocado en el laboratorio secreto para reconocer tu logro!</string>
+    <string english="[Trinkets found]" explanation="amount of shiny trinkets found" max="40" comment="">[Baratijas encontradas]</string>
+    <string english="[Number of Deaths]" explanation="" max="40" comment="">[Número de muertes]</string>
+    <string english="[Time Taken]" explanation="stopwatch time" max="40" comment="">[Tiempo tomado]</string>
+    <string english="Results" explanation="bigger title" max="13" comment="">Resultados</string>
+    <string english="TIME TAKEN:" explanation="time the player took playing the level" max="32" comment="">TIEMPO TOMADO:</string>
+    <string english="NUMBER OF DEATHS:" explanation="amount of times the player died" max="32" comment="">NÚMERO DE MUERTES:</string>
+    <string english="SHINY TRINKETS:" explanation="amount of trinkets collected" comment="">BARATIJAS BRILLANTES:</string>
+    <string english="%d of %d" explanation="ex: 2 of 5" comment="">%d de %d</string>
+    <string english="+1 Rank!" explanation="rank was upgraded (B → A → S → V)" max="12" comment="">+1 Rango!</string>
+    <string english="Rank:" explanation="time trial rank" comment="">Rango:</string>
+    <string english="B" explanation="time trial rank" comment="">B</string>
+    <string english="A" explanation="time trial rank" comment="">A</string>
+    <string english="S" explanation="time trial rank" comment="">S</string>
+    <string english="V" explanation="time trial rank" comment="">V</string>
+    <string english="Congratulations!" explanation="title" max="20" comment="">Felicitaciones!</string>
+    <string english="Your save files have been updated." explanation="wrapped, player completed game" comment="">Tus archivos de guardado han sido actualizados.</string>
+    <string english="If you want to keep exploring the game, select CONTINUE from the play menu." explanation="wrapped" comment="">Si quieres seguir explorando el juego, selecciona CONTINUAR en el menú de juego.</string>
+    <string english="You have unlocked a new Time Trial." explanation="wrapped" comment="">Has desbloqueado una nueva prueva a contrarreloj.</string>
+    <string english="You have unlocked some new Time Trials." explanation="wrapped" comment="">Has desbloqueado nuevas pruebas a contrarreloj.</string>
+    <string english="You have unlocked No Death Mode." explanation="wrapped" comment="">Has desbloqueado el modo Sin Muertes.</string>
+    <string english="You have unlocked Flip Mode." explanation="wrapped" comment="">Has desbloqueado el modo Voltear.</string>
+    <string english="You have unlocked the intermission levels." explanation="wrapped" comment="">Has desbloqueado los niveles intermedio.</string>
+    <string english="play a level" explanation="menu option" comment="">jugar un nivel</string>
+    <string english="level editor" explanation="menu option" comment="">editor de niveles</string>
+    <string english="open level folder" explanation="menu option" comment="">abrir carpeta de niveles</string>
+    <string english="return" explanation="menu option" comment="">volver</string>
+    <string english="return to play menu" explanation="menu option" max="36" comment="">volver al menu de juego</string>
+    <string english="ok" explanation="button" comment="">ok</string>
+    <string english="next page" explanation="menu option" comment="">siguiente pagina</string>
+    <string english="previous page" explanation="menu option" comment="">pagina anterior</string>
+    <string english="first page" explanation="menu option" comment="">primera pagina</string>
+    <string english="last page" explanation="menu option" comment="">ultima pagina</string>
+    <string english="continue from save" explanation="menu option" comment="">continuar desde guardado</string>
+    <string english="start from beginning" explanation="menu option" comment="">empezar desde el principio</string>
+    <string english="back to levels" explanation="menu option" comment="">volver a los niveles</string>
+    <string english="To install new player levels, copy the .vvvvvv files to this folder:" explanation="wrapped" comment="">Para instalar nuevos niveles de jugadores, copia los archivos .vvvvvv a esta carpeta</string>
+    <string english="[ Press ACTION to Start ]" explanation="wrapped, title screen" comment="">[ Presiona ACCIÓN para empezar ]</string>
+    <string english="ACTION = Space, Z, or V" explanation="wrapped, title screen" comment="">ACCIÓN = Espacio, Z o V</string>
+    <string english="[Press ENTER to return to editor]" explanation="`to editor` is sorta redundant" max="40" comment="">[Presiona ENTER para volver al editor]</string>
+    <string english="- Press ACTION to advance text -" explanation="to dismiss a textbox" max="40" comment="">- Presiona ACCIÓN para seguir el texto -</string>
+    <string english="- Press ENTER to Teleport -" explanation="" max="40" comment="">- Presiona ENTER para trasladarte -</string>
+    <string english="Current Time" explanation="super gravitron, stopwatch time" max="20" comment="">Tiempo actual</string>
+    <string english="Best Time" explanation="super gravitron, best stopwatch time" max="20" comment="">Mejor tiempo</string>
+    <string english="Next Trophy at 5 seconds" explanation="wrapped" comment="">Siguiente trofeo en 5 segundos</string>
+    <string english="Next Trophy at 10 seconds" explanation="wrapped" comment="">Siguiente trofeo en 10 segundos</string>
+    <string english="Next Trophy at 15 seconds" explanation="wrapped" comment="">Siguiente trofeo en 15 segundos</string>
+    <string english="Next Trophy at 20 seconds" explanation="wrapped" comment="">Siguiente trofeo en 20 segundos</string>
+    <string english="Next Trophy at 30 seconds" explanation="wrapped" comment="">Siguiente trofeo en 30 segundos</string>
+    <string english="Next Trophy at 1 minute" explanation="wrapped" comment="">Siguiente trofeo en 1 minuto</string>
+    <string english="All Trophies collected!" explanation="wrapped" comment="">Todos los trofeos conseguidos!</string>
+    <string english="New Record!" explanation="" max="20" comment="">Nuevo record!</string>
+    <string english="New Trophy!" explanation="" max="20" comment="">Nuevo trofeo!</string>
+    <string english="[Press ENTER to stop]" explanation="stop super gravitron" max="40" comment="">[Presiona ENTER para parar]</string>
+    <string english="SUPER GRAVITRON" explanation="" max="20" comment="">SUPER GRAVITRON</string>
+    <string english="SUPER GRAVITRON HIGHSCORE" explanation="wrapped" comment="">Puntuacion mas alta en SUPER GRAVITRON</string>
+    <string english="GO!" explanation="3, 2, 1, GO!" max="13" comment="">YA!</string>
+    <string english="Go!" explanation="3, 2, 1, Go!" max="10" comment="">Ya!</string>
+    <string english="TIME:" explanation="stopwatch time, not too long" comment="">TIEMPO:</string>
+    <string english="DEATH:" explanation="number of times player died, not too long" comment="">MUERTES:</string>
+    <string english="SHINY:" explanation="number of shiny trinkets collected, not too long" comment="">BRILLANTES:</string>
+    <string english="PAR TIME:" explanation="goal time for time trial" comment="">MEJOR TIEMPO</string>
+    <string english="MAP" explanation="in-game menu" max="8" comment="">MAPA</string>
+    <string english="GRAV" explanation="in-game menu, Gravitron" max="8" comment="">GRAV</string>
+    <string english="SHIP" explanation="in-game menu, spaceship" max="8" comment="">NAVE</string>
+    <string english="CREW" explanation="in-game menu" max="8" comment="">MIEMBROS</string>
+    <string english="STATS" explanation="in-game menu" max="8" comment="">REGISTRO</string>
+    <string english="SAVE" explanation="in-game menu" max="8" comment="">GUARDAR</string>
+    <string english="[ PAUSE ]" explanation="in-game menu" max="40" comment="">[ PAUSA ]</string>
+    <string english="[ QUIT ]" explanation="in-game menu" max="40" comment="">[ SALIR ]</string>
+    <string english="[ GRAVITRON ]" explanation="in-game menu" max="40" comment="">[ GRAVITRON ]</string>
+    <string english="NO SIGNAL" explanation="" comment="">SIN SEÑAL</string>
+    <string english="Press ACTION to warp to the ship." explanation="wrapped, spaceship. Warp = teleport" comment="">Presiona ACCIÓN para transportar la nave.</string>
+    <string english="Missing..." explanation="" max="15" comment="">Faltando...</string>
+    <string english="Cannot Save in Level Replay" explanation="wrapped" comment="">No puedes guardar en una repeticion de nivel</string>
+    <string english="Cannot Save in No Death Mode" explanation="wrapped" comment="">No puedes guardar en el Modo Sin Muertes</string>
+    <string english="Cannot Save in Time Trial" explanation="wrapped" comment="">No puedes guardar en Contrarreloj</string>
+    <string english="Cannot Save in Secret Lab" explanation="wrapped" comment="">No puedes guardar en el Laboratorio Secreto</string>
+    <string english="Game saved ok!" explanation="wrapped" comment="">Juego guardado exitosamente!</string>
+    <string english="[Press ACTION to save your game]" explanation="wrapped" comment="">[Presiona ACCÍÓN para guardar partida]</string>
+    <string english="(Note: The game is autosaved at every teleporter.)" explanation="wrapped" comment="">(Nota: El juego se guarda automaticamente en cada teletransportador)</string>
+    <string english="Last Save:" explanation="" max="40" comment="">Último guardado</string>
+    <string english="Return to main menu?" explanation="wrapped" comment="">Volver al menu principal?</string>
+    <string english="Do you want to quit? You will lose any unsaved progress." explanation="wrapped" comment="">Quieres salir? Perderas el progreso no guardado.</string>
+    <string english="Do you want to return to the secret laboratory?" explanation="wrapped" comment="">Quieres volver al laboratorio secreto?</string>
+    <string english="no, keep playing" explanation="" max="28" comment="">no, continuar jugando</string>
+    <string english="[ NO, KEEP PLAYING ]" explanation="" max="32" comment="">[ NO, CONTINUAR JUGANDO ]</string>
+    <string english="no, return" explanation="" comment="">no, volver</string>
+    <string english="yes, quit to menu" explanation="" max="24" comment="">si, volver al menu</string>
+    <string english="[ YES, QUIT TO MENU ]" explanation="" max="28" comment="">[ SI, SALIR AL MENU ]</string>
+    <string english="yes, return" explanation="" max="24" comment="">si, volver</string>
+    <string english="[ YES, RETURN ]" explanation="" max="28" comment="">[ SI, VOLVER ]</string>
+    <string english="yes, quit" explanation="quit program" comment="">si, salir</string>
+    <string english="return to game" explanation="pause menu option" comment="">volver al juego</string>
+    <string english="quit to menu" explanation="pause menu option" comment="">salir al menu</string>
+    <string english="Press Left/Right to choose a Teleporter" explanation="tight fit, so maybe `Left/Right: choose teleporter`" max="40" comment="">Izq/Der: elegir teletransportador</string>
+    <string english="Press ENTER to Teleport" explanation="" max="40" comment="">Presiona ENTER para teletransportarte</string>
+    <string english="edit scripts" explanation="level editor menu option" comment="">scripts editados</string>
+    <string english="change music" explanation="level editor menu option" comment="">cambiar musica</string>
+    <string english="editor ghosts" explanation="level editor menu option. Toggles option to show a repetition of the player&apos;s path after playtesting" comment="">editar fantasmas</string>
+    <string english="load level" explanation="level editor menu option" comment="">cargar nivel</string>
+    <string english="save level" explanation="level editor menu option" comment="">guardar nivel</string>
+    <string english="quit to main menu" explanation="level editor menu option" max="19" comment="">salir al menu</string>
+    <string english="change name" explanation="level editor menu option" comment="">cambiar nombre</string>
+    <string english="change author" explanation="level editor menu option" comment="">cambiar autor</string>
+    <string english="change description" explanation="level editor menu option" comment="">cambiar descripcion</string>
+    <string english="change website" explanation="level editor menu option" comment="">cambiar sitio web</string>
+    <string english="next song" explanation="level editor menu option" comment="">siguiente cancion</string>
+    <string english="back" explanation="level editor menu option" comment="">atras</string>
+    <string english="yes, save and quit" explanation="level editor menu option" comment="">si, guardar y salir</string>
+    <string english="no, quit without saving" explanation="level editor menu option" comment="">no, salir sin guardar</string>
+    <string english="return to editor" explanation="level editor menu option" comment="">volver al editor</string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
 </strings>
