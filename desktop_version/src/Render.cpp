@@ -2030,7 +2030,7 @@ void maprender()
             SDL_snprintf(
                 creatorline, sizeof(creatorline),
                 loc::gettext("by %s").c_str(),
-                meta.creator
+                meta.creator.c_str()
             );
             graphics.Print( -1, FLIP(70), creatorline, 196, 196, 255 - help.glow, true);
             graphics.Print( -1, FLIP(80), meta.website, 196, 196, 255 - help.glow, true);
