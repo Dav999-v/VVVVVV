@@ -56,12 +56,16 @@
     <string english="Change to fullscreen/windowed mode." explanation="wrapped" comment="">Ŝanĝi al plenekrana/fenestra reĝimo.</string>
     <string english="Current mode: FULLSCREEN" explanation="wrapped" comment="">Nuna reĝimo: PLENEKRANA</string>
     <string english="Current mode: WINDOWED" explanation="wrapped" comment="">Nuna reĝimo: FENESTRA</string>
-    <string english="graphics mode" explanation="menu option" comment="">grafikreĝimo</string>
-    <string english="Graphics Mode" explanation="title" max="20" comment="">Grafikreĝimo</string>
+    <string english="scaling mode" explanation="menu option" comment=""></string>
+    <string english="Scaling Mode" explanation="title" max="20" comment=""></string>
     <string english="Choose letterbox/stretch/integer mode." explanation="wrapped" comment="">Elekti poŝtkestan/streĉan/entjeran reĝimon.</string>
     <string english="Current mode: INTEGER" explanation="wrapped" comment="">Nuna reĝimo: ENTJERA</string>
     <string english="Current mode: STRETCH" explanation="wrapped" comment="">Nuna reĝimo: STREĈA</string>
     <string english="Current mode: LETTERBOX" explanation="wrapped" comment="">Nuna reĝimo: POŜTKESTA</string>
+    <string english="resize to nearest" explanation="menu option" comment=""></string>
+    <string english="Resize to Nearest" explanation="title" max="20" comment=""></string>
+    <string english="Resize to the nearest window size that is of an integer multiple." explanation="wrapped. Explains how the game will be resized to be a multiple of 320x240, so for example if your window is 682x493, it will resize to 640x480" comment=""></string>
+    <string english="You must be in windowed mode to use this option." explanation="wrapped. The game cannot be in fullscreen" comment=""></string>
     <string english="toggle filter" explanation="menu option" comment="">baskuligi filtrilon</string>
     <string english="Toggle Filter" explanation="title" max="20" comment="">Baskuligi filtrilon</string>
     <string english="Change to nearest/linear filter." explanation="wrapped" comment="">Ŝanĝi al bildereca/nebula filtrilo.</string>
@@ -70,11 +74,6 @@
     <string english="toggle analogue" explanation="menu option, analogue mode simulates distortion from bad signal" comment="">baskuligi analogecon</string>
     <string english="Analogue Mode" explanation="title, analogue mode simulates distortion from bad signal" max="20" comment="">Analoga reĝimo</string>
     <string english="There is nothing wrong with your television set. Do not attempt to adjust the picture." explanation="wrapped" comment="">Nenio estas misa pri via televidilo. Ne klopodu ĝustigi la bildigon.</string>
-    <string english="toggle mouse" explanation="menu option" comment="">baskuligi muson</string>
-    <string english="Toggle Mouse Cursor" explanation="title" max="20" comment="">Muskursoro</string>
-    <string english="Show/hide the system mouse cursor." explanation="wrapped" comment="">Montri/kaŝi la sisteman muskursoron.</string>
-    <string english="Current mode: SHOW" explanation="wrapped, show cursor" comment="">Nuna reĝimo: MONTRI</string>
-    <string english="Current mode: HIDE" explanation="wrapped, hide cursor" comment="">Nuna reĝimo: KAŜI</string>
     <string english="toggle fps" explanation="menu option, kind of a misnomer, toggle between 30 FPS and more than 30 FPS" comment="">kadrorapido</string>
     <string english="Toggle 30+ FPS" explanation="title" max="20" comment="">Kadrorapido super 30</string>
     <string english="Change whether the game runs at 30 or over 30 FPS." explanation="wrapped" comment="">Ŝanĝi ĉu la ludo rulas je 30 aŭ super 30 kadroj sekunde.</string>
@@ -134,6 +133,33 @@
     <string english="Test mode" explanation="title, translation maintenance menu" max="20" comment="">Testreĝimo</string>
     <string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." explanation="wrapped, translation maintenance menu" comment="">Montri ĉiujn tradukeblajn ĉenojn kiel V aŭ X, malkaŝante netradukeblajn aŭ forgesitajn ĉenojn. X signifas mankanta de dosiero.</string>
     <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." explanation="wrapped, translation maintenance menu" comment="">Se novaj ĉenoj aldoniĝis al la anglalingvaj ŝablonaj lingvodosieroj, tiu ĉi trajto enigos ilin en la tradukdosierojn por ĉiuj lingvoj. Nur lingvoj kiuj estas en la dosierujo de VVVVVV povas esti ĝisdatigitaj. Faru savkopion, por certeco.</string>
+    <string english="advanced options" explanation="menu option" comment=""></string>
+    <string english="Advanced Options" explanation="title" max="20" comment=""></string>
+    <string english="Hide the mouse cursor, remove the loading screen, turn on glitchrunner mode and more" explanation="wrapped, description for advanced options" comment=""></string>
+    <string english="toggle mouse" explanation="menu option" comment="">baskuligi muson</string>
+    <string english="Toggle Mouse Cursor" explanation="title" max="20" comment="">Muskursoro</string>
+    <string english="Show/hide the system mouse cursor." explanation="wrapped" comment="">Montri/kaŝi la sisteman muskursoron.</string>
+    <string english="Current mode: SHOW" explanation="wrapped, show cursor" comment="">Nuna reĝimo: MONTRI</string>
+    <string english="Current mode: HIDE" explanation="wrapped, hide cursor" comment="">Nuna reĝimo: KAŜI</string>
+    <string english="unfocus pause" explanation="menu option. Turns the pause screen on/off, which shows up when the window is unfocused/inactive (only one window is normally in focus/active at a time). Possible alternative: auto pause screen" comment=""></string>
+    <string english="Unfocus Pause" explanation="title. Turns the pause screen on/off, which shows up when the window is unfocused/inactive (only one window is normally in focus/active at a time). Possible alternative: auto pause screen" max="20" comment=""></string>
+    <string english="Toggle if the game will pause when the window is unfocused." explanation="wrapped" comment=""></string>
+    <string english="Unfocus pause is OFF" explanation="wrapped. Making another window active will not show the pause screen." comment=""></string>
+    <string english="Unfocus pause is ON" explanation="wrapped. Making another window active will show the pause screen." comment=""></string>
+    <string english="fake load screen" explanation="menu option" comment=""></string>
+    <string english="Fake Load Screen" explanation="title, allows the loading screen which counts to 100% to be turned off" max="20" comment="">Falsa ŝarĝekrano</string>
+    <string english="Fake loading screen is OFF" explanation="wrapped, allows the loading screen which counts to 100% to be turned off" comment="">Falsa ŝarĝekrano estas MALŜALTA</string>
+    <string english="Fake loading screen is ON" explanation="wrapped, allows the loading screen which counts to 100% to be turned off" comment="">Falsa ŝarĝekrano estas ŜALTA</string>
+    <string english="room name background" explanation="menu option, background behind room names" comment=""></string>
+    <string english="Room Name BG" explanation="title, background behind room names" max="20" comment="">Fono de ĉambronomo</string>
+    <string english="Lets you see through what is behind the name at the bottom of the screen." explanation="wrapped" comment="">Ebligas vidi tion, kio estas malantaŭ la nomo ĉe la ekranmalsupro</string>
+    <string english="Room name background is TRANSLUCENT" explanation="wrapped" comment="">Ĉambronoma fono estas TRAVIDEBLA</string>
+    <string english="Room name background is OPAQUE" explanation="wrapped" comment="">Ĉambronoma fono estas NETRAVIDEBLA</string>
+    <string english="glitchrunner mode" explanation="menu option, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" comment=""></string>
+    <string english="Glitchrunner Mode" explanation="title, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" max="20" comment=""></string>
+    <string english="Re-enable glitches that existed in previous versions of the game" explanation="wrapped, glitchrunner mode" comment=""></string>
+    <string english="Glitchrunner mode is ON" explanation="wrapped" comment=""></string>
+    <string english="Glitchrunner mode is OFF" explanation="wrapped" comment=""></string>
     <string english="accessibility options" explanation="menu option" comment="">alireblecaj agordoj</string>
     <string english="Accessibility" explanation="title" max="20" comment="">Alirebleco</string>
     <string english="Disable screen effects, enable slowdown modes or invincibility" explanation="wrapped" comment="">Malebligi ekranefikojn, ebligi malrapidigreĝimon aŭ nevundeblecon</string>
@@ -171,15 +197,6 @@
     <string english="80% speed" explanation="menu option" comment="">80%-rapido</string>
     <string english="60% speed" explanation="menu option" comment="">60%-rapido</string>
     <string english="40% speed" explanation="menu option" comment="">40%-rapido</string>
-    <string english="load screen" explanation="menu option" comment="">ŝarĝekrano</string>
-    <string english="Fake Load Screen" explanation="title, allows the loading screen which counts to 100% to be turned off" max="20" comment="">Falsa ŝarĝekrano</string>
-    <string english="Fake loading screen is OFF" explanation="wrapped, allows the loading screen which counts to 100% to be turned off" comment="">Falsa ŝarĝekrano estas MALŜALTA</string>
-    <string english="Fake loading screen is ON" explanation="wrapped, allows the loading screen which counts to 100% to be turned off" comment="">Falsa ŝarĝekrano estas ŜALTA</string>
-    <string english="room name bg" explanation="menu option, background behind room names" comment="">ĉambronomfono</string>
-    <string english="Room Name BG" explanation="title, background behind room names" max="20" comment="">Fono de ĉambronomo</string>
-    <string english="Lets you see through what is behind the name at the bottom of the screen." explanation="wrapped" comment="">Ebligas vidi tion, kio estas malantaŭ la nomo ĉe la ekranmalsupro</string>
-    <string english="Room name background is TRANSLUCENT" explanation="wrapped" comment="">Ĉambronoma fono estas TRAVIDEBLA</string>
-    <string english="Room name background is OPAQUE" explanation="wrapped" comment="">Ĉambronoma fono estas NETRAVIDEBLA</string>
     <string english="play intermission 1" explanation="menu option" comment="">ludi interakton 1</string>
     <string english="play intermission 2" explanation="menu option" comment="">ludi interakton 2</string>
     <string english="Who do you want to play the level with?" explanation="wrapped, choose your NPC companion" comment="">Kun kiu vi volas ludi la nivelon?</string>
@@ -203,6 +220,7 @@
     <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." explanation="wrapped, ranks are B A S V" comment="">POR MALŜLOSI: Atingu S-rangon aŭ pli bone en almenaŭ 4 tempoprovoj.</string>
     <string english="flip mode" explanation="menu option, mirrors the entire game vertically" comment="">renversa reĝimo</string>
     <string english="Flip Mode" explanation="title, mirrors the entire game vertically" max="20" comment="">Renversa reĝimo.</string>
+    <string english="Flip the entire game vertically." explanation="wrapped" comment=""></string>
     <string english="Flip the entire game vertically. Compatible with other game modes." explanation="wrapped" comment="">Renversigu la tutan ludon vertikale. Funkcias kun aliaj ludreĝimoj.</string>
     <string english="unlock flip mode" explanation="menu option" comment="">malŝlosi renversan reĝimon</string>
     <string english="Currently ENABLED!" explanation="wrapped, flip mode" comment="">Nune EBLIGITA!</string>
@@ -331,7 +349,6 @@
     <string english="yes, save and quit" explanation="level editor menu option" comment="">jes, konservu kaj eliru</string>
     <string english="no, quit without saving" explanation="level editor menu option" comment="">ne, eliru sen konservi</string>
     <string english="return to editor" explanation="level editor menu option" comment="">reen al redaktilo</string>
-    <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>

@@ -146,10 +146,15 @@ void menurender()
         }
         else if (game.currentmenuoption == 5+offset)
         {
+            graphics.bigprint( -1, 30, loc::gettext("Language"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Change the language"), tr, tg, tb, true);
+        }
+        else if (game.currentmenuoption == 6+offset)
+        {
             graphics.bigprint( -1, 30, loc::gettext("Clear Data"), tr, tg, tb, true);
             graphics.PrintWrap( -1, 65, loc::gettext("Delete your save data and unlocked play modes"), tr, tg, tb, true);
         }
-        else if (game.currentmenuoption == 6+offset && music.mmmmmm)
+        else if (game.currentmenuoption == 7+offset && music.mmmmmm)
         {
             graphics.bigprint( -1, 30, loc::gettext("Soundtrack"), tr, tg, tb, true);
             graphics.PrintWrap( -1, 65, loc::gettext("Toggle between MMMMMM and PPPPPP"), tr, tg, tb, true);
@@ -445,56 +450,53 @@ void menurender()
         switch (game.currentmenuoption)
         {
         case 0:
-            graphics.bigprint(-1, 30, "Toggle Mouse Cursor", tr, tg, tb, true);
-            graphics.Print(-1, 65, "Show/hide the system mouse cursor.", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Toggle Mouse Cursor"), tr, tg, tb, true);
+            graphics.PrintWrap(-1, 65, loc::gettext("Show/hide the system mouse cursor."), tr, tg, tb, true);
 
             if (graphics.showmousecursor) {
-                graphics.Print(-1, 95, "Current mode: SHOW", tr, tg, tb, true);
+                graphics.PrintWrap(-1, 95, loc::gettext("Current mode: SHOW"), tr, tg, tb, true);
             }
             else {
-                graphics.Print(-1, 95, "Current mode: HIDE", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap(-1, 95, loc::gettext("Current mode: HIDE"), tr/2, tg/2, tb/2, true);
             }
             break;
         case 1:
-            graphics.bigprint( -1, 30, "Unfocus Pause", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Toggle if the game will pause", tr, tg, tb, true);
-            graphics.Print( -1, 75, "when the window is unfocused.", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Unfocus Pause"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Toggle if the game will pause when the window is unfocused."), tr, tg, tb, true);
             if (game.disablepause)
             {
-                graphics.Print(-1, 95, "Unfocus pause is OFF", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap(-1, 95, loc::gettext("Unfocus pause is OFF"), tr/2, tg/2, tb/2, true);
             }
             else
             {
-                graphics.Print(-1, 95, "Unfocus pause is ON", tr, tg, tb, true);
+                graphics.PrintWrap(-1, 95, loc::gettext("Unfocus pause is ON"), tr, tg, tb, true);
             }
             break;
         case 2:
-            graphics.bigprint(-1, 30, "Fake Load Screen", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Fake Load Screen"), tr, tg, tb, true);
             if (game.skipfakeload)
-                graphics.Print(-1, 65, "Fake loading screen is OFF", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap(-1, 65, loc::gettext("Fake loading screen is OFF"), tr/2, tg/2, tb/2, true);
             else
-                graphics.Print(-1, 65, "Fake loading screen is ON", tr, tg, tb, true);
+                graphics.PrintWrap(-1, 65, loc::gettext("Fake loading screen is ON"), tr, tg, tb, true);
             break;
         case 3:
-            graphics.bigprint(-1, 30, "Room Name BG", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Lets you see through what is behind", tr, tg, tb, true);
-            graphics.Print( -1, 75, "the name at the bottom of the screen.", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Room Name BG"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Lets you see through what is behind the name at the bottom of the screen."), tr, tg, tb, true);
             if (graphics.translucentroomname)
-                graphics.Print(-1, 95, "Room name background is TRANSLUCENT", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap(-1, 95, loc::gettext("Room name background is TRANSLUCENT"), tr/2, tg/2, tb/2, true);
             else
-                graphics.Print(-1, 95, "Room name background is OPAQUE", tr, tg, tb, true);
+                graphics.PrintWrap(-1, 95, loc::gettext("Room name background is OPAQUE"), tr, tg, tb, true);
             break;
         case 4:
-            graphics.bigprint( -1, 30, "Glitchrunner Mode", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Re-enable glitches that existed", tr, tg, tb, true);
-            graphics.Print( -1, 75, "in previous versions of the game", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Glitchrunner Mode"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Re-enable glitches that existed in previous versions of the game"), tr, tg, tb, true);
             if (game.glitchrunnermode)
             {
-                graphics.Print( -1, 95, "Glitchrunner mode is ON", tr, tg, tb, true);
+                graphics.PrintWrap( -1, 95, loc::gettext("Glitchrunner mode is ON"), tr, tg, tb, true);
             }
             else
             {
-                graphics.Print( -1, 95, "Glitchrunner mode is OFF", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap( -1, 95, loc::gettext("Glitchrunner mode is OFF"), tr/2, tg/2, tb/2, true);
             }
             break;
         }
@@ -741,7 +743,7 @@ void menurender()
     {
         graphics.bigprint( -1, 20, loc::gettext("Results"), tr, tg, tb, true, 3);
 
-        std::string tempstring = game.resulttimestring() + " / " + game.partimestring() + ".99";
+        std::string tempstring = game.resulttimestring() + " / " + game.partimestring() + ".99"; // TODO LOC localize like said in Game.cpp?
 
         graphics.drawspritesetcol(30, 80-15, 50, 22);
         graphics.Print(65, 80-15, loc::gettext("TIME TAKEN:"), 255, 255, 255);
@@ -1199,10 +1201,6 @@ void titlerender()
         if (game.currentmenuname == Menu::levellist)
         {
             graphics.drawlevelmenu(tr, tg, tb);
-        }
-        else if (game.currentmenuname == Menu::language)
-        {
-            graphics.drawmenu(tr, tg, tb, 5);
         }
         else
         {

@@ -56,13 +56,13 @@
     <string english="Change to fullscreen/windowed mode." explanation="wrapped" comment=""></string>
     <string english="Current mode: FULLSCREEN" explanation="wrapped" comment=""></string>
     <string english="Current mode: WINDOWED" explanation="wrapped" comment=""></string>
-    <string english="HIER MOET SCALING MODE DE MENU-OPTIE" explanation="menu option" comment=""></string>
+    <string english="scaling mode" explanation="menu option" comment=""></string>
     <string english="Scaling Mode" explanation="title" max="20" comment=""></string>
     <string english="Choose letterbox/stretch/integer mode." explanation="wrapped" comment=""></string>
     <string english="Current mode: INTEGER" explanation="wrapped" comment=""></string>
     <string english="Current mode: STRETCH" explanation="wrapped" comment=""></string>
     <string english="Current mode: LETTERBOX" explanation="wrapped" comment=""></string>
-    <string english="HIER MOET RESIZE TO NEAREST" explanation="menu option" comment=""></string>
+    <string english="resize to nearest" explanation="menu option" comment=""></string>
     <string english="Resize to Nearest" explanation="title" max="20" comment=""></string>
     <string english="Resize to the nearest window size that is of an integer multiple." explanation="wrapped. Explains how the game will be resized to be a multiple of 320x240, so for example if your window is 682x493, it will resize to 640x480" comment=""></string>
     <string english="You must be in windowed mode to use this option." explanation="wrapped. The game cannot be in fullscreen" comment=""></string>
@@ -74,11 +74,6 @@
     <string english="toggle analogue" explanation="menu option, analogue mode simulates distortion from bad signal" comment=""></string>
     <string english="Analogue Mode" explanation="title, analogue mode simulates distortion from bad signal" max="20" comment=""></string>
     <string english="There is nothing wrong with your television set. Do not attempt to adjust the picture." explanation="wrapped" comment=""></string>
-    <string english="toggle mouse" explanation="menu option" comment=""></string>
-    <string english="Toggle Mouse Cursor" explanation="title" max="20" comment=""></string>
-    <string english="Show/hide the system mouse cursor." explanation="wrapped" comment=""></string>
-    <string english="Current mode: SHOW" explanation="wrapped, show cursor" comment=""></string>
-    <string english="Current mode: HIDE" explanation="wrapped, hide cursor" comment=""></string>
     <string english="toggle fps" explanation="menu option, kind of a misnomer, toggle between 30 FPS and more than 30 FPS" comment=""></string>
     <string english="Toggle 30+ FPS" explanation="title" max="20" comment=""></string>
     <string english="Change whether the game runs at 30 or over 30 FPS." explanation="wrapped" comment=""></string>
@@ -138,27 +133,33 @@
     <string english="Test mode" explanation="title, translation maintenance menu" max="20" comment=""></string>
     <string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." explanation="wrapped, translation maintenance menu" comment=""></string>
     <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." explanation="wrapped, translation maintenance menu" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="HIER MOET ADVANCED OPTIONS DE MENU-OPTIE" explanation="menu option" comment=""></string>
+    <string english="advanced options" explanation="menu option" comment=""></string>
     <string english="Advanced Options" explanation="title" max="20" comment=""></string>
     <string english="Hide the mouse cursor, remove the loading screen, turn on glitchrunner mode and more" explanation="wrapped, description for advanced options" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
+    <string english="toggle mouse" explanation="menu option" comment=""></string>
+    <string english="Toggle Mouse Cursor" explanation="title" max="20" comment=""></string>
+    <string english="Show/hide the system mouse cursor." explanation="wrapped" comment=""></string>
+    <string english="Current mode: SHOW" explanation="wrapped, show cursor" comment=""></string>
+    <string english="Current mode: HIDE" explanation="wrapped, hide cursor" comment=""></string>
+    <string english="unfocus pause" explanation="menu option. Turns the pause screen on/off, which shows up when the window is unfocused/inactive (only one window is normally in focus/active at a time). Possible alternative: auto pause screen" comment=""></string>
+    <string english="Unfocus Pause" explanation="title. Turns the pause screen on/off, which shows up when the window is unfocused/inactive (only one window is normally in focus/active at a time). Possible alternative: auto pause screen" max="20" comment=""></string>
+    <string english="Toggle if the game will pause when the window is unfocused." explanation="wrapped" comment=""></string>
+    <string english="Unfocus pause is OFF" explanation="wrapped. Making another window active will not show the pause screen." comment=""></string>
+    <string english="Unfocus pause is ON" explanation="wrapped. Making another window active will show the pause screen." comment=""></string>
+    <string english="fake load screen" explanation="menu option" comment=""></string>
+    <string english="Fake Load Screen" explanation="title, allows the loading screen which counts to 100% to be turned off" max="20" comment=""></string>
+    <string english="Fake loading screen is OFF" explanation="wrapped, allows the loading screen which counts to 100% to be turned off" comment=""></string>
+    <string english="Fake loading screen is ON" explanation="wrapped, allows the loading screen which counts to 100% to be turned off" comment=""></string>
+    <string english="room name background" explanation="menu option, background behind room names" comment=""></string>
+    <string english="Room Name BG" explanation="title, background behind room names" max="20" comment=""></string>
+    <string english="Lets you see through what is behind the name at the bottom of the screen." explanation="wrapped" comment=""></string>
+    <string english="Room name background is TRANSLUCENT" explanation="wrapped" comment=""></string>
+    <string english="Room name background is OPAQUE" explanation="wrapped" comment=""></string>
+    <string english="glitchrunner mode" explanation="menu option, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" comment=""></string>
+    <string english="Glitchrunner Mode" explanation="title, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" max="20" comment=""></string>
+    <string english="Re-enable glitches that existed in previous versions of the game" explanation="wrapped, glitchrunner mode" comment=""></string>
+    <string english="Glitchrunner mode is ON" explanation="wrapped" comment=""></string>
+    <string english="Glitchrunner mode is OFF" explanation="wrapped" comment=""></string>
     <string english="accessibility options" explanation="menu option" comment=""></string>
     <string english="Accessibility" explanation="title" max="20" comment=""></string>
     <string english="Disable screen effects, enable slowdown modes or invincibility" explanation="wrapped" comment=""></string>
@@ -196,15 +197,6 @@
     <string english="80% speed" explanation="menu option" comment=""></string>
     <string english="60% speed" explanation="menu option" comment=""></string>
     <string english="40% speed" explanation="menu option" comment=""></string>
-    <string english="load screen" explanation="menu option" comment=""></string>
-    <string english="Fake Load Screen" explanation="title, allows the loading screen which counts to 100% to be turned off" max="20" comment=""></string>
-    <string english="Fake loading screen is OFF" explanation="wrapped, allows the loading screen which counts to 100% to be turned off" comment=""></string>
-    <string english="Fake loading screen is ON" explanation="wrapped, allows the loading screen which counts to 100% to be turned off" comment=""></string>
-    <string english="room name bg" explanation="menu option, background behind room names" comment=""></string>
-    <string english="Room Name BG" explanation="title, background behind room names" max="20" comment=""></string>
-    <string english="Lets you see through what is behind the name at the bottom of the screen." explanation="wrapped" comment=""></string>
-    <string english="Room name background is TRANSLUCENT" explanation="wrapped" comment=""></string>
-    <string english="Room name background is OPAQUE" explanation="wrapped" comment=""></string>
     <string english="play intermission 1" explanation="menu option" comment=""></string>
     <string english="play intermission 2" explanation="menu option" comment=""></string>
     <string english="Who do you want to play the level with?" explanation="wrapped, choose your NPC companion" comment=""></string>

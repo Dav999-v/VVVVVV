@@ -6953,7 +6953,7 @@ std::string Game::resulttimestring()
     {
         tempstring = "00:" + help.twodigits(timetrialresulttime);
     }
-    tempstring += "." + help.twodigits(timetrialresultframes*100 / 30);
+    tempstring += "." + help.twodigits(timetrialresultframes*100 / 30); // TODO LOC maybe localize, as lang meta? 2x!
     return tempstring;
 }
 
@@ -7267,7 +7267,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         if (loc::languagelist.empty())
         {
             option(loc::gettext("ok"));
-            menuxoff = 0;
             menuyoff = -20;
         }
         else
@@ -7282,8 +7281,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
 
             if (loc::show_lang_maint_menu)
                 option(loc::gettext("translation maintenance"));
-            menuxoff = -90;
             menuyoff = 70-(menuoptions.size()*10);
+            maxspacing = 5;
         }
         break;
     case Menu::language_maint:
@@ -7291,13 +7290,11 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("statistics"), false);
         option(loc::gettext("toggle test mode"));
         option(loc::gettext("return"));
-        menuxoff = -40;
         menuyoff = 0;
         break;
     case Menu::language_maint_sync:
         option(loc::gettext("sync"));
         option(loc::gettext("return"));
-        menuxoff = -30;
         menuyoff = 64;
         break;
     case Menu::cleardatamenu:
