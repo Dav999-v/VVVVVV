@@ -707,10 +707,23 @@ void Graphics::drawtile( int x, int y, int t )
 {
     if (!INBOUNDS(t, tiles))
     {
+        WHINE_ONCE("drawtile() out-of-bounds!")
         return;
     }
+
     SDL_Rect rect = { Sint16(x), Sint16(y), tiles_rect.w, tiles_rect.h };
-    BlitSurfaceStandard(tiles[t], NULL, backBuffer, &rect);
+
+#if !defined(NO_CUSTOM_LEVELS)
+    if (t >= 14 && t <= 17 && (!FILESYSTEM_assetsmounted || ed.onewaycol_override))
+    {
+        colourTransform thect = {ed.getonewaycol()};
+        BlitSurfaceTinted(tiles[t], NULL, backBuffer, &rect, thect);
+    }
+    else
+#endif
+    {
+        BlitSurfaceStandard(tiles[t], NULL, backBuffer, &rect);
+    }
 }
 
 
@@ -718,10 +731,23 @@ void Graphics::drawtile2( int x, int y, int t )
 {
     if (!INBOUNDS(t, tiles2))
     {
+        WHINE_ONCE("drawtile2() out-of-bounds!")
         return;
     }
+
     SDL_Rect rect = { Sint16(x), Sint16(y), tiles_rect.w, tiles_rect.h };
-    BlitSurfaceStandard(tiles2[t], NULL, backBuffer, &rect);
+
+#if !defined(NO_CUSTOM_LEVELS)
+    if (t >= 14 && t <= 17 && (!FILESYSTEM_assetsmounted || ed.onewaycol_override))
+    {
+        colourTransform thect = {ed.getonewaycol()};
+        BlitSurfaceTinted(tiles2[t], NULL, backBuffer, &rect, thect);
+    }
+    else
+#endif
+    {
+        BlitSurfaceStandard(tiles2[t], NULL, backBuffer, &rect);
+    }
 }
 
 
@@ -730,6 +756,7 @@ void Graphics::drawtile3( int x, int y, int t, int off )
 {
     if (!INBOUNDS(t, tiles3))
     {
+        WHINE_ONCE("drawtile3() out-of-bounds!")
         return;
     }
     SDL_Rect rect = { Sint16(x), Sint16(y), tiles_rect.w, tiles_rect.h };
@@ -740,6 +767,7 @@ void Graphics::drawentcolours( int x, int y, int t)
 {
     if (!INBOUNDS(t, entcolours))
     {
+        WHINE_ONCE("drawentcolours() out-of-bounds!")
         return;
     }
     SDL_Rect rect = { Sint16(x), Sint16(y), tiles_rect.w, tiles_rect.h };
@@ -750,6 +778,7 @@ void Graphics::drawtowertile( int x, int y, int t )
 {
     if (!INBOUNDS(t, tiles2))
     {
+        WHINE_ONCE("drawtowertile() out-of-bounds!")
         return;
     }
     SDL_Rect rect = { Sint16(x), Sint16(y), tiles_rect.w, tiles_rect.h };
@@ -762,6 +791,7 @@ void Graphics::drawtowertile3( int x, int y, int t, int off )
     t += off*30;
     if (!INBOUNDS(t, tiles3))
     {
+        WHINE_ONCE("drawtowertile3() out-of-bounds!")
         return;
     }
     SDL_Rect rect = { Sint16(x), Sint16(y), tiles_rect.w, tiles_rect.h };
@@ -3156,23 +3186,63 @@ void Graphics::setcolreal(Uint32 t)
 
 void Graphics::drawforetile(int x, int y, int t)
 {
+	if (!INBOUNDS(t, tiles))
+	{
+		WHINE_ONCE("drawforetile() out-of-bounds!")
+		return;
+	}
+
 	SDL_Rect rect;
 	setRect(rect, x,y,tiles_rect.w, tiles_rect.h);
-	BlitSurfaceStandard(tiles[t],NULL, foregroundBuffer, &rect  );
+
+#if !defined(NO_CUSTOM_LEVELS)
+	if (t >= 14 && t <= 17 && (!FILESYSTEM_assetsmounted || ed.onewaycol_override))
+	{
+		colourTransform thect = {ed.getonewaycol()};
+		BlitSurfaceTinted(tiles[t], NULL, foregroundBuffer, &rect, thect);
+	}
+	else
+#endif
+	{
+		BlitSurfaceStandard(tiles[t],NULL, foregroundBuffer, &rect  );
+	}
 }
 
 void Graphics::drawforetile2(int x, int y, int t)
 {
+	if (!INBOUNDS(t, tiles2))
+	{
+		WHINE_ONCE("drawforetile2() out-of-bounds!")
+		return;
+	}
+
 	SDL_Rect rect;
 	setRect(rect, x,y,tiles_rect.w, tiles_rect.h);
-	BlitSurfaceStandard(tiles2[t],NULL, foregroundBuffer, &rect  );
+
+#if !defined(NO_CUSTOM_LEVELS)
+	if (t >= 14 && t <= 17 && (!FILESYSTEM_assetsmounted || ed.onewaycol_override))
+	{
+		colourTransform thect = {ed.getonewaycol()};
+		BlitSurfaceTinted(tiles2[t], NULL, foregroundBuffer, &rect, thect);
+	}
+	else
+#endif
+	{
+		BlitSurfaceStandard(tiles2[t],NULL, foregroundBuffer, &rect  );
+	}
 }
 
 void Graphics::drawforetile3(int x, int y, int t, int off)
 {
+	t += off * 30;
+	if (!INBOUNDS(t, tiles3))
+	{
+		WHINE_ONCE("drawforetile3() out-of-bounds!")
+		return;
+	}
 	SDL_Rect rect;
 	setRect(rect, x,y,tiles_rect.w, tiles_rect.h);
-	BlitSurfaceStandard(tiles3[t+(off*30)],NULL, foregroundBuffer, &rect  );
+	BlitSurfaceStandard(tiles3[t],NULL, foregroundBuffer, &rect  );
 }
 
 void Graphics::drawrect(int x, int y, int w, int h, int r, int g, int b)

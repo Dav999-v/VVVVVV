@@ -398,6 +398,8 @@ void editorclass::reset()
 
     ghosts.clear();
     currentghosts = 0;
+
+    onewaycol_override = false;
 }
 
 void editorclass::gethooks()
@@ -1708,6 +1710,11 @@ bool editorclass::load(std::string& _path)
                 {
                     website = pText;
                 }
+
+                if(pKey == "onewaycol_override")
+                {
+                    onewaycol_override = atoi(pText);
+                }
             }
         }
 
@@ -1992,6 +1999,13 @@ bool editorclass::save(std::string& _path)
     meta = doc.NewElement( "website" );
     meta->LinkEndChild( doc.NewText( website.c_str() ));
     msg->LinkEndChild( meta );
+
+    if (onewaycol_override)
+    {
+        meta = doc.NewElement( "onewaycol_override" );
+        meta->LinkEndChild( doc.NewText( help.String(onewaycol_override).c_str() ));
+        msg->LinkEndChild( meta );
+    }
 
     data->LinkEndChild( msg );
 
@@ -2657,26 +2671,46 @@ void editorrender()
                     int tx=edentity[i].x-(ed.levx*40);
                     int tx2=edentity[i].x-(ed.levx*40);
                     int ty=edentity[i].y-(ed.levy*30);
-                    while(ed.spikefree(tx,ty)==0) tx--;
-                    while(ed.spikefree(tx2,ty)==0) tx2++;
-                    tx++;
+                    if (edentity[i].p4 != 1)
+                    {
+                        // Unlocked
+                        while(ed.spikefree(tx,ty)==0) tx--;
+                        while(ed.spikefree(tx2,ty)==0) tx2++;
+                        tx++;
+                        edentity[i].p2=tx;
+                        edentity[i].p3=(tx2-tx)*8;
+                    }
+                    else
+                    {
+                        // Locked
+                        tx = edentity[i].p2;
+                        tx2 = tx + edentity[i].p3/8;
+                    }
                     FillRect(graphics.backBuffer, (tx*8),(ty*8)+4, (tx2-tx)*8,1, graphics.getRGB(194,194,194));
                     fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),8,8,graphics.getRGB(164,255,164));
-                    edentity[i].p2=tx;
-                    edentity[i].p3=(tx2-tx)*8;
                 }
                 else  //Vertical
                 {
                     int tx=edentity[i].x-(ed.levx*40);
                     int ty=edentity[i].y-(ed.levy*30);
                     int ty2=edentity[i].y-(ed.levy*30);
-                    while(ed.spikefree(tx,ty)==0) ty--;
-                    while(ed.spikefree(tx,ty2)==0) ty2++;
-                    ty++;
+                    if (edentity[i].p4 != 1)
+                    {
+                        // Unlocked
+                        while(ed.spikefree(tx,ty)==0) ty--;
+                        while(ed.spikefree(tx,ty2)==0) ty2++;
+                        ty++;
+                        edentity[i].p2=ty;
+                        edentity[i].p3=(ty2-ty)*8;
+                    }
+                    else
+                    {
+                        // Locked
+                        ty = edentity[i].p2;
+                        ty2 = ty + edentity[i].p3/8;
+                    }
                     FillRect(graphics.backBuffer, (tx*8)+3,(ty*8), 1,(ty2-ty)*8, graphics.getRGB(194,194,194));
                     fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),8,8,graphics.getRGB(164,255,164));
-                    edentity[i].p2=ty;
-                    edentity[i].p3=(ty2-ty)*8;
                 }
                 break;
             case 13://Warp tokens
@@ -2749,26 +2783,46 @@ void editorrender()
                     int tx=edentity[i].x-(ed.levx*40);
                     int tx2=edentity[i].x-(ed.levx*40);
                     int ty=edentity[i].y-(ed.levy*30);
-                    while(ed.free(tx,ty)==0) tx--;
-                    while(ed.free(tx2,ty)==0) tx2++;
-                    tx++;
+                    if (edentity[i].p4 != 1)
+                    {
+                        // Unlocked
+                        while(ed.free(tx,ty)==0) tx--;
+                        while(ed.free(tx2,ty)==0) tx2++;
+                        tx++;
+                        edentity[i].p2=tx;
+                        edentity[i].p3=(tx2-tx)*8;
+                    }
+                    else
+                    {
+                        // Locked
+                        tx = edentity[i].p2;
+                        tx2 = tx + edentity[i].p3/8;
+                    }
                     fillboxabs((tx*8),(ty*8)+1, (tx2-tx)*8,6, graphics.getRGB(255,255,194));
                     fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),8,8,graphics.getRGB(255,255,164));
-                    edentity[i].p2=tx;
-                    edentity[i].p3=(tx2-tx)*8;
                 }
                 else  //Vertical
                 {
                     int tx=edentity[i].x-(ed.levx*40);
                     int ty=edentity[i].y-(ed.levy*30);
                     int ty2=edentity[i].y-(ed.levy*30);
-                    while(ed.free(tx,ty)==0) ty--;
-                    while(ed.free(tx,ty2)==0) ty2++;
-                    ty++;
+                    if (edentity[i].p4 != 1)
+                    {
+                        // Unlocked
+                        while(ed.free(tx,ty)==0) ty--;
+                        while(ed.free(tx,ty2)==0) ty2++;
+                        ty++;
+                        edentity[i].p2=ty;
+                        edentity[i].p3=(ty2-ty)*8;
+                    }
+                    else
+                    {
+                        // Locked
+                        ty = edentity[i].p2;
+                        ty2 = ty + edentity[i].p3/8;
+                    }
                     fillboxabs((tx*8)+1,(ty*8), 6,(ty2-ty)*8, graphics.getRGB(255,255,194));
                     fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),8,8,graphics.getRGB(255,255,164));
-                    edentity[i].p2=ty;
-                    edentity[i].p3=(ty2-ty)*8;
                 }
                 break;
             }
@@ -5557,6 +5611,183 @@ void editorinput()
     }
 }
 #endif /* NO_EDITOR */
+
+// Return a graphics-ready color based off of the given tileset and tilecol
+// Much kudos to Dav999 for saving me a lot of work, because I stole these colors from const.lua in Ved! -Info Teddy
+Uint32 editorclass::getonewaycol(const int rx, const int ry)
+{
+    const int roomnum = rx + ry*maxwidth;
+    if (roomnum < 0 || roomnum >= 400)
+    {
+        return graphics.getRGB(255, 255, 255);
+    }
+    const edlevelclass& room = level[roomnum];
+    switch (room.tileset) {
+
+    case 0: // Space Station
+        switch (room.tilecol) {
+        case -1:
+            return graphics.getRGB(109, 109, 109);
+        case 0:
+            return graphics.getRGB(131, 141, 235);
+        case 1:
+            return graphics.getRGB(227, 140, 227);
+        case 2:
+            return graphics.getRGB(242, 126, 151);
+        case 3:
+            return graphics.getRGB(229, 235, 133);
+        case 4:
+            return graphics.getRGB(148, 238, 130);
+        case 5:
+            return graphics.getRGB(140, 165, 227);
+        case 6:
+            return graphics.getRGB(227, 140, 148);
+        case 7:
+            return graphics.getRGB(140, 173, 228);
+        case 8:
+            return graphics.getRGB(142, 235, 137);
+        case 9:
+            return graphics.getRGB(137, 235, 206);
+        case 10:
+            return graphics.getRGB(235, 139, 223);
+        case 11:
+            return graphics.getRGB(238, 130, 138);
+        case 12:
+            return graphics.getRGB(137, 235, 178);
+        case 13:
+            return graphics.getRGB(125, 205, 247);
+        case 14:
+            return graphics.getRGB(190, 137, 235);
+        case 15:
+            return graphics.getRGB(235, 137, 206);
+        case 16:
+            return graphics.getRGB(229, 247, 127);
+        case 17:
+            return graphics.getRGB(127, 200, 247);
+        case 18:
+            return graphics.getRGB(197, 137, 235);
+        case 19:
+            return graphics.getRGB(235, 131, 175);
+        case 20:
+            return graphics.getRGB(242, 210, 123);
+        case 21:
+            return graphics.getRGB(131, 235, 158);
+        case 22:
+            return graphics.getRGB(242, 126, 151);
+        case 23:
+            return graphics.getRGB(219, 243, 123);
+        case 24:
+            return graphics.getRGB(131, 234, 145);
+        case 25:
+            return graphics.getRGB(131, 199, 234);
+        case 26:
+            return graphics.getRGB(141, 131, 234);
+        case 27:
+            return graphics.getRGB(226, 140, 144);
+        case 28:
+            return graphics.getRGB(129, 236, 144);
+        case 29:
+            return graphics.getRGB(235, 231, 131);
+        case 30:
+            return graphics.getRGB(153, 235, 131);
+        case 31:
+            return graphics.getRGB(207, 131, 235);
+        }
+        break;
+
+    case 1: // Outside
+        switch (room.tilecol) {
+        case 0:
+            return graphics.getRGB(57, 86, 140);
+        case 1:
+            return graphics.getRGB(156, 42, 42);
+        case 2:
+            return graphics.getRGB(42, 156, 155);
+        case 3:
+            return graphics.getRGB(125, 36, 162);
+        case 4:
+            return graphics.getRGB(191, 198, 0);
+        case 5:
+            return graphics.getRGB(0, 198, 126);
+        case 6:
+            return graphics.getRGB(224, 110, 177);
+        case 7:
+            return graphics.getRGB(255, 142, 87);
+        }
+        break;
+
+    case 2: // Lab
+        switch (room.tilecol) {
+        case 0:
+            return graphics.getRGB(0, 165, 206);
+        case 1:
+            return graphics.getRGB(206, 5, 0);
+        case 2:
+            return graphics.getRGB(222, 0, 173);
+        case 3:
+            return graphics.getRGB(27, 67, 255);
+        case 4:
+            return graphics.getRGB(194, 206, 0);
+        case 5:
+            return graphics.getRGB(0, 206, 39);
+        case 6:
+            return graphics.getRGB(0, 165, 206);
+        }
+        break;
+
+    case 3: // Warp Zone
+        switch (room.tilecol) {
+        case 0:
+            return graphics.getRGB(113, 178, 197);
+        case 1:
+            return graphics.getRGB(197, 113, 119);
+        case 2:
+            return graphics.getRGB(196, 113, 197);
+        case 3:
+            return graphics.getRGB(149, 113, 197);
+        case 4:
+            return graphics.getRGB(197, 182, 113);
+        case 5:
+            return graphics.getRGB(141, 197, 113);
+        case 6:
+            return graphics.getRGB(109, 109, 109);
+        }
+        break;
+
+    case 4: // Ship
+        switch (room.tilecol) {
+        case 0:
+            return graphics.getRGB(0, 206, 39);
+        case 1:
+            return graphics.getRGB(0, 165, 206);
+        case 2:
+            return graphics.getRGB(194, 206, 0);
+        case 3:
+            return graphics.getRGB(206, 0, 160);
+        case 4:
+            return graphics.getRGB(27, 67, 255);
+        case 5:
+            return graphics.getRGB(206, 5, 0);
+        }
+        break;
+
+    }
+
+    // Uh, I guess return solid white
+    return graphics.getRGB(255, 255, 255);
+}
+
+// This version detects the room automatically
+Uint32 editorclass::getonewaycol()
+{
+    if (game.gamestate == EDITORMODE)
+        return getonewaycol(ed.levx, ed.levy);
+    else if (map.custommode)
+        return getonewaycol(game.roomx - 100, game.roomy - 100);
+
+    // Uh, I guess return solid white
+    return graphics.getRGB(255, 255, 255);
+}
 
 int editorclass::numtrinkets()
 {
