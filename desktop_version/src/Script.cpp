@@ -16,6 +16,7 @@ scriptclass::scriptclass()
 	position = 0;
 	scriptdelay = 0;
 	running = false;
+	dontrunnextframe = false;
 
 	b = 0;
 	g = 0;
@@ -102,11 +103,11 @@ void scriptclass::run()
 				{
 					ed.level[curlevel].warpdir=ss_toi(words[3]);
 				}
-				//If screen warping, then override all that:
-				graphics.backgrounddrawn = false;
 
 				//Do we update our own room?
 				if(inbounds && game.roomx-100==temprx && game.roomy-100==tempry){
+					//If screen warping, then override all that:
+					graphics.backgrounddrawn = false;
 					map.warpx=false; map.warpy=false;
 					if(ed.level[curlevel].warpdir==0){
 						map.background = 1;
@@ -260,7 +261,7 @@ void scriptclass::run()
 			}
 			if (words[0] == "resumemusic")
 			{
-				music.play(music.resumesong);
+				music.resume();
 			}
 			if (words[0] == "musicfadeout")
 			{
@@ -269,8 +270,7 @@ void scriptclass::run()
 			}
 			if (words[0] == "musicfadein")
 			{
-				music.musicfadein = 90;
-				//if(!game.muted) music.fadeMusicVolumeIn(3000);
+				music.fadein();
 			}
 			if (words[0] == "trinketscriptmusic")
 			{
@@ -703,7 +703,17 @@ void scriptclass::run()
 			}
 			else if (words[0] == "createentity")
 			{
-				obj.createentity(ss_toi(words[1]), ss_toi(words[2]), ss_toi(words[3]), ss_toi(words[4]), ss_toi(words[5]));
+				if (words[6] == "") words[6] = "0";
+				if (words[7] == "") words[7] = "0";
+				if (words[8] == "") words[8] = "320";
+				if (words[9] == "") words[9] = "240";
+				obj.createentity(ss_toi(words[1]), ss_toi(words[2]), ss_toi(words[3]),
+					ss_toi(words[4]), ss_toi(words[5]),
+					ss_toi(words[6]), ss_toi(words[7]), ss_toi(words[8]), ss_toi(words[9]));
+				words[6] = "";
+				words[7] = "";
+				words[8] = "";
+				words[9] = "";
 			}
 			else if (words[0] == "createcrewman")
 			{
@@ -2612,6 +2622,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 
 		load("intro");
 		break;
@@ -2635,6 +2646,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 		graphics.fademode = 4;
 		break;
 	case 2: //Load Quicksave
@@ -2657,6 +2669,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 		//a very special case for here needs to ensure that the tower is set correctly
 		if (map.towermode)
 		{
@@ -2699,6 +2712,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 		graphics.fademode = 4;
 		break;
 	case 4:
@@ -2727,6 +2741,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 		graphics.fademode = 4;
 		break;
 	case 5:
@@ -2755,6 +2770,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 		graphics.fademode = 4;
 		break;
 	case 6:
@@ -2783,6 +2799,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 		graphics.fademode = 4;
 		break;
 	case 7:
@@ -2811,6 +2828,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 		graphics.fademode = 4;
 		break;
 	case 8:
@@ -2845,6 +2863,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 		graphics.fademode = 4;
 		break;
 	case 9:
@@ -2869,6 +2888,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 
 
 		load("intro");
@@ -2897,6 +2917,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 
 
 		load("intro");
@@ -2932,6 +2953,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 		music.play(11);
 		graphics.fademode = 4;
 		break;
@@ -2967,6 +2989,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 
 		load("intermission_1");
 		break;
@@ -3002,6 +3025,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 
 		load("intermission_1");
 		break;
@@ -3037,6 +3061,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 
 		load("intermission_1");
 		break;
@@ -3072,6 +3097,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 
 		load("intermission_1");
 		break;
@@ -3104,6 +3130,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 
 		load("intermission_2");
 		break;
@@ -3136,6 +3163,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 
 		load("intermission_2");
 		break;
@@ -3168,6 +3196,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 
 		load("intermission_2");
 		break;
@@ -3200,6 +3229,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 
 		load("intermission_2");
 		break;
@@ -3223,6 +3253,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 		graphics.fademode = 4;
 		break;
 	case 21:  //play custom level (in editor)
@@ -3258,6 +3289,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 		if(ed.levmusic>0){
 			music.play(ed.levmusic);
 		}else{
@@ -3295,6 +3327,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 
 		ed.generatecustomminimap();
 		map.customshowmm=true;
@@ -3340,6 +3373,7 @@ void scriptclass::startgamemode( int t )
 			map.resetplayer();
 		}
 		map.gotoroom(game.saverx, game.savery);
+		map.initmapdata();
 		ed.generatecustomminimap();
 		graphics.fademode = 4;
 		break;
@@ -3483,8 +3517,12 @@ void scriptclass::hardreset()
 	game.teleport = false;
 	game.companion = 0;
 	game.roomchange = false;
-	game.roomx = 0;
-	game.roomy = 0;
+	if (!game.glitchrunnermode)
+	{
+		// Ironically, resetting more variables makes the janky fadeout system in glitchrunnermode even more glitchy
+		game.roomx = 0;
+		game.roomy = 0;
+	}
 	game.prevroomx = 0;
 	game.prevroomy = 0;
 	game.teleport_to_new_area = false;
@@ -3522,8 +3560,12 @@ void scriptclass::hardreset()
 	game.savetime = "00:00";
 	game.savearea = "nowhere";
 	game.savetrinkets = 0;
-	game.saverx = 0;
-	game.savery = 0;
+	if (!game.glitchrunnermode)
+	{
+		// Ironically, resetting more variables makes the janky fadeout system in glitchrunnermode even more glitchy
+		game.saverx = 0;
+		game.savery = 0;
+	}
 
 	game.intimetrial = false;
 	game.timetrialcountdown = 0;
@@ -3565,7 +3607,12 @@ void scriptclass::hardreset()
 	game.statedelay = 0;
 
 	game.hascontrol = true;
-	game.advancetext = false;
+	if (!game.glitchrunnermode)
+	{
+		// Keep the "- Press ACTION to advance text -" prompt around,
+		// apparently the speedrunners call it the "text storage" glitch
+		game.advancetext = false;
+	}
 
 	game.pausescript = false;
 
@@ -3602,7 +3649,11 @@ void scriptclass::hardreset()
 	map.resetnames();
 	map.custommode=false;
 	map.custommodeforreal=false;
-	map.towermode=false;
+	if (!game.glitchrunnermode)
+	{
+		// Ironically, resetting more variables makes the janky fadeout system even more glitchy
+		map.towermode=false;
+	}
 	map.cameraseekframe = 0;
 	map.resumedelay = 0;
 	map.scrolldir = 0;

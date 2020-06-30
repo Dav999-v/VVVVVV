@@ -204,7 +204,6 @@ int main(int argc, char *argv[])
     graphics.init();
 
     game.init();
-    game.infocus = true;
 
     // This loads music too...
     graphics.reloadresources();
@@ -354,7 +353,6 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    game.infocus = true;
     key.isActive = true;
     game.gametimer = 0;
 
@@ -428,7 +426,7 @@ void inline deltaloop()
     const float alpha = game.over30mode ? static_cast<float>(accumulator) / timesteplimit : 1.0f;
     graphics.alpha = alpha;
 
-    if (game.infocus)
+    if (key.isActive)
     {
         switch (game.gamestate)
         {
@@ -469,8 +467,6 @@ void inline deltaloop()
 
 void inline fixedloop()
 {
-    game.infocus = key.isActive;
-
     // Update network per frame.
     NETWORK_update();
 
@@ -498,13 +494,16 @@ void inline fixedloop()
         key.toggleFullscreen = false;
 
         key.keymap.clear(); //we lost the input due to a new window.
-        game.press_left = false;
-        game.press_right = false;
-        game.press_action = true;
-        game.press_map = false;
+        if (game.glitchrunnermode)
+        {
+            game.press_left = false;
+            game.press_right = false;
+            game.press_action = true;
+            game.press_map = false;
+        }
     }
 
-    if(!game.infocus)
+    if(!key.isActive)
     {
         Mix_Pause(-1);
         Mix_PauseMusic();
@@ -549,7 +548,14 @@ void inline fixedloop()
             titlelogic();
             break;
         case GAMEMODE:
-            if (script.running)
+            // WARNING: If updating this code, don't forget to update Map.cpp mapclass::twoframedelayfix()
+
+            // Ugh, I hate this kludge variable but it's the only way to do it
+            if (script.dontrunnextframe)
+            {
+                script.dontrunnextframe = false;
+            }
+            else if (script.running)
             {
                 script.run();
             }
@@ -608,11 +614,11 @@ void inline fixedloop()
     }
 
     //Screen effects timers
-    if (game.infocus && game.flashlight > 0)
+    if (key.isActive && game.flashlight > 0)
     {
         game.flashlight--;
     }
-    if (game.infocus && game.screenshake > 0)
+    if (key.isActive && game.screenshake > 0)
     {
         game.screenshake--;
         graphics.updatescreenshake();

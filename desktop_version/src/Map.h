@@ -35,6 +35,7 @@ public:
     std::string getglitchname(int x, int y);
 
     void initmapdata();
+    void initcustommapdata();
 
     int finalat(int x, int y);
 
@@ -75,6 +76,8 @@ public:
 
     void loadlevel(int rx, int ry);
 
+    void twoframedelayfix();
+
 
     std::vector <int> roomdeaths;
     std::vector <int> roomdeathsfinal;
@@ -82,7 +85,6 @@ public:
     std::vector <int> contents;
     std::vector <int> explored;
     std::vector <int> vmult;
-    std::vector <std::string> tmap;
 
     int temp;
     int temp2;

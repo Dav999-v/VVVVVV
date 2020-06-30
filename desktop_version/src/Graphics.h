@@ -46,8 +46,8 @@ public:
 
 	void drawcoloredtile(int x, int y, int t, int r, int g, int b);
 
-	void drawmenu(int cr, int cg, int cb, int division = 30);
-	void drawlevelmenu(int cr, int cg, int cb, int division = 30);
+	void drawmenu(int cr, int cg, int cb);
+	void drawlevelmenu(int cr, int cg, int cb);
 
 	void processfade();
 
@@ -194,8 +194,6 @@ public:
 	void drawrect(int x, int y, int w, int h, int r, int g, int b);
 
 	void drawtowermap();
-
-	void drawtowermap_nobackground();
 
 	void drawtowerspikes();
 

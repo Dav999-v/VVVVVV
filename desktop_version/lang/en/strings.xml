@@ -56,12 +56,16 @@
     <string english="Change to fullscreen/windowed mode." explanation="wrapped" comment=""></string>
     <string english="Current mode: FULLSCREEN" explanation="wrapped" comment=""></string>
     <string english="Current mode: WINDOWED" explanation="wrapped" comment=""></string>
-    <string english="graphics mode" explanation="menu option" comment=""></string>
-    <string english="Graphics Mode" explanation="title" max="20" comment=""></string>
+    <string english="HIER MOET SCALING MODE DE MENU-OPTIE" explanation="menu option" comment=""></string>
+    <string english="Scaling Mode" explanation="title" max="20" comment=""></string>
     <string english="Choose letterbox/stretch/integer mode." explanation="wrapped" comment=""></string>
     <string english="Current mode: INTEGER" explanation="wrapped" comment=""></string>
     <string english="Current mode: STRETCH" explanation="wrapped" comment=""></string>
     <string english="Current mode: LETTERBOX" explanation="wrapped" comment=""></string>
+    <string english="HIER MOET RESIZE TO NEAREST" explanation="menu option" comment=""></string>
+    <string english="Resize to Nearest" explanation="title" max="20" comment=""></string>
+    <string english="Resize to the nearest window size that is of an integer multiple." explanation="wrapped. Explains how the game will be resized to be a multiple of 320x240, so for example if your window is 682x493, it will resize to 640x480" comment=""></string>
+    <string english="You must be in windowed mode to use this option." explanation="wrapped. The game cannot be in fullscreen" comment=""></string>
     <string english="toggle filter" explanation="menu option" comment=""></string>
     <string english="Toggle Filter" explanation="title" max="20" comment=""></string>
     <string english="Change to nearest/linear filter." explanation="wrapped" comment=""></string>
@@ -134,6 +138,27 @@
     <string english="Test mode" explanation="title, translation maintenance menu" max="20" comment=""></string>
     <string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." explanation="wrapped, translation maintenance menu" comment=""></string>
     <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." explanation="wrapped, translation maintenance menu" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="HIER MOET ADVANCED OPTIONS DE MENU-OPTIE" explanation="menu option" comment=""></string>
+    <string english="Advanced Options" explanation="title" max="20" comment=""></string>
+    <string english="Hide the mouse cursor, remove the loading screen, turn on glitchrunner mode and more" explanation="wrapped, description for advanced options" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
     <string english="accessibility options" explanation="menu option" comment=""></string>
     <string english="Accessibility" explanation="title" max="20" comment=""></string>
     <string english="Disable screen effects, enable slowdown modes or invincibility" explanation="wrapped" comment=""></string>
@@ -203,6 +228,7 @@
     <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." explanation="wrapped, ranks are B A S V" comment=""></string>
     <string english="flip mode" explanation="menu option, mirrors the entire game vertically" comment=""></string>
     <string english="Flip Mode" explanation="title, mirrors the entire game vertically" max="20" comment=""></string>
+    <string english="Flip the entire game vertically." explanation="wrapped" comment=""></string>
     <string english="Flip the entire game vertically. Compatible with other game modes." explanation="wrapped" comment=""></string>
     <string english="unlock flip mode" explanation="menu option" comment=""></string>
     <string english="Currently ENABLED!" explanation="wrapped, flip mode" comment=""></string>
@@ -331,7 +357,6 @@
     <string english="yes, save and quit" explanation="level editor menu option" comment=""></string>
     <string english="no, quit without saving" explanation="level editor menu option" comment=""></string>
     <string english="return to editor" explanation="level editor menu option" comment=""></string>
-    <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>

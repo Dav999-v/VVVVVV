@@ -324,6 +324,9 @@ void menuactionpress()
             graphics.screenbuffer->toggleFullScreen();
             game.fullscreen = !game.fullscreen;
             game.savestats();
+
+            // Recreate menu to update "resize to nearest"
+            game.createmenu(game.currentmenuname, true);
             game.currentmenuoption = 0;
             break;
         case 1:
@@ -331,34 +334,32 @@ void menuactionpress()
             graphics.screenbuffer->toggleStretchMode();
             game.stretchMode = (game.stretchMode + 1) % 3;
             game.savestats();
-            game.currentmenuoption = 1;
             break;
         case 2:
+            // resize to nearest multiple
+            if (graphics.screenbuffer->isWindowed)
+            {
+                music.playef(11);
+                graphics.screenbuffer->ResizeToNearestMultiple();
+                game.savestats();
+            }
+            else
+            {
+                music.playef(2);
+            }
+            break;
+        case 3:
             music.playef(11);
             graphics.screenbuffer->toggleLinearFilter();
             game.useLinearFilter = !game.useLinearFilter;
             game.savestats();
-            game.currentmenuoption = 2;
             break;
-        case 3:
+        case 4:
             //change smoothing
             music.playef(11);
             game.fullScreenEffect_badSignal = !game.fullScreenEffect_badSignal;
             graphics.screenbuffer->badSignalEffect= !graphics.screenbuffer->badSignalEffect;
             game.savestats();
-            game.currentmenuoption = 3;
-            break;
-        case 4:
-            //toggle mouse cursor
-            music.playef(11);
-            if (graphics.showmousecursor == true) {
-                SDL_ShowCursor(SDL_DISABLE);
-                graphics.showmousecursor = false;
-            }
-            else {
-                SDL_ShowCursor(SDL_ENABLE);
-                graphics.showmousecursor = true;
-            }
             break;
         case 5:
             //toggle 30+ fps
@@ -463,6 +464,49 @@ void menuactionpress()
             break;
         }
         break;
+    case Menu::advancedoptions:
+        switch (game.currentmenuoption)
+        {
+        case 0:
+            //toggle mouse cursor
+            music.playef(11);
+            if (graphics.showmousecursor == true) {
+                SDL_ShowCursor(SDL_DISABLE);
+                graphics.showmousecursor = false;
+            }
+            else {
+                SDL_ShowCursor(SDL_ENABLE);
+                graphics.showmousecursor = true;
+            }
+            break;
+        case 1:
+            // toggle unfocus pause
+            game.disablepause = !game.disablepause;
+            music.playef(11);
+            break;
+        case 2:
+            // toggle fake load screen
+            game.skipfakeload = !game.skipfakeload;
+            music.playef(11);
+            break;
+        case 3:
+            // toggle translucent roomname BG
+            graphics.translucentroomname = !graphics.translucentroomname;
+            music.playef(11);
+            break;
+        case 4:
+            // Glitchrunner mode
+            music.playef(11);
+            game.glitchrunnermode = !game.glitchrunnermode;
+            break;
+        case 5:
+            //back
+            music.playef(11);
+            game.returnmenu();
+            map.nexttowercolour();
+            break;
+        }
+        break;
     case Menu::accessibility:
         switch (game.currentmenuoption)
         {
@@ -528,16 +572,6 @@ void menuactionpress()
             }
             break;
         case 5:
-            // toggle fake load screen
-            game.skipfakeload = !game.skipfakeload;
-            music.playef(11);
-            break;
-        case 6:
-            // toggle translucent roomname BG
-            graphics.translucentroomname = !graphics.translucentroomname;
-            music.playef(11);
-            break;
-        case 7:
             //back
             music.playef(11);
             game.returnmenu();
@@ -552,10 +586,20 @@ void menuactionpress()
     case Menu::options:
     {
 #if defined(MAKEANDPLAY)
-#define OFFSET -1
+        int flipmode_offset = 0;
 #else
-#define OFFSET 0
+        int flipmode_offset = game.ingame_titlemode && game.unlock[18] ? 0 : -1;
 #endif
+
+#if defined(MAKEANDPLAY)
+        int unlockmode_offset = -1;
+#else
+        int unlockmode_offset = 0;
+#endif
+
+        int mmmmmm_offset = music.mmmmmm ? 0 : -1;
+
+        int offset = 0;
 
         switch (game.currentmenuoption)
         {
@@ -565,21 +609,58 @@ void menuactionpress()
             game.createmenu(Menu::accessibility);
             map.nexttowercolour();
             break;
-#if !defined(MAKEANDPLAY)
         case 1:
+            //advanced options
+            music.playef(11);
+            game.createmenu(Menu::advancedoptions);
+            map.nexttowercolour();
+            break;
+        case 2:
+#if !defined(MAKEANDPLAY)
+        if (game.ingame_titlemode && game.unlock[18])
+#endif
+        {
+            // toggle Flip Mode
+            graphics.setflipmode = !graphics.setflipmode;
+            game.savemystats = true;
+            if (graphics.setflipmode)
+            {
+                music.playef(18);
+                game.screenshake = 10;
+                game.flashlight = 5;
+            }
+            else
+            {
+                music.playef(11);
+            }
+        }
+            break;
+        }
+
+        offset += flipmode_offset;
+
+#if !defined(MAKEANDPLAY)
+        if (game.currentmenuoption == 3+offset)
+        {
             //unlock play options
             music.playef(11);
             game.createmenu(Menu::unlockmenu);
             map.nexttowercolour();
-            break;
+        }
 #endif
-        case OFFSET+2:
+
+        offset += unlockmode_offset;
+
+        if (game.currentmenuoption == 4+offset)
+        {
             //game pad menu
             music.playef(11);
             game.createmenu(Menu::controller);
             map.nexttowercolour();
             break;
-        case OFFSET+3:
+        }
+        else if (game.currentmenuoption == 5+offset)
+        {
             //language options
             music.playef(11);
             loc::loadlanguagelist();
@@ -587,17 +668,15 @@ void menuactionpress()
             game.currentmenuoption = loc::languagelist_curlang;
             map.nexttowercolour();
             break;
-
-        case OFFSET+4:
+        }
+        else if (game.currentmenuoption == 6+offset)
+        {
             //clear data menu
             music.playef(11);
             game.createmenu(Menu::cleardatamenu);
             map.nexttowercolour();
-            break;
         }
-
-        int mmmmmm_offset = music.mmmmmm ? 0 : -1;
-        if (game.currentmenuoption == OFFSET+5+mmmmmm_offset)
+        else if (game.currentmenuoption == 7+offset && music.mmmmmm)
         {
             //**** TOGGLE MMMMMM
             if(game.usingmmmmmm > 0){
@@ -610,7 +689,10 @@ void menuactionpress()
             music.play(music.currentsong);
             game.savestats();
         }
-        else if (game.currentmenuoption == OFFSET+6+mmmmmm_offset)
+
+        offset += mmmmmm_offset;
+
+        if (game.currentmenuoption == 8+offset)
         {
             //back
             music.playef(11);
@@ -624,7 +706,6 @@ void menuactionpress()
                 map.nexttowercolour();
             }
         }
-#undef OFFSET
         break;
     }
     case Menu::language:
@@ -1214,6 +1295,7 @@ void menuactionpress()
         }
         else if (game.currentmenuoption == 3 && game.unlock[18])    //enable/disable flip mode
         {
+            // WARNING: Partially duplicated in Menu::options
             graphics.setflipmode = !graphics.setflipmode;
             game.savemystats = true;
             if (graphics.setflipmode)
@@ -1441,7 +1523,7 @@ void menuactionpress()
             //back
             music.playef(11);
             music.play(6);
-            game.returnmenu();
+            game.returntomenu(Menu::timetrials);
             map.nexttowercolour();
             break;
         case 1:
@@ -1661,10 +1743,11 @@ void gameinput()
             }
             else
             {
-                if(!game.glitchrunkludge) game.state++;
+                if(game.glitchrunnermode || !game.glitchrunkludge) game.state++;
                     game.jumpheld = true;
                     game.glitchrunkludge=true;
                     //Bug fix! You should only be able to do this ONCE.
+                    //...Unless you're in glitchrunner mode
             }
         }
     }
@@ -1979,7 +2062,41 @@ void mapinput()
     game.press_action = false;
     game.press_map = false;
 
-    if (game.fadetomenu)
+    if (game.glitchrunnermode && graphics.fademode == 1 && graphics.menuoffset == 0)
+    {
+        // Deliberate re-addition of the glitchy gamestate-based fadeout!
+
+        // First of all, detecting a black screen means if the glitchy fadeout
+        // gets interrupted but you're still on a black screen, opening a menu
+        // immediately quits you to the title. This has the side effect that if
+        // you accidentally press Esc during a cutscene when it's black, you'll
+        // immediately be quit and lose all your progress, but that's fair in
+        // glitchrunner mode.
+        // Also have to check graphics.menuoffset so this doesn't run every frame
+
+        // Have to close the menu in order to run gamestates. This adds
+        // about an extra half second of completely black screen.
+        graphics.resumegamemode = true;
+
+        // Technically this was in <=2.2 as well
+        obj.removeallblocks();
+
+        if (game.menupage >= 20 && game.menupage <= 21)
+        {
+            game.state = 96;
+            game.statedelay = 0;
+        }
+        else
+        {
+            // Produces more glitchiness! Necessary for credits warp to work.
+            script.hardreset();
+
+            game.state = 80;
+            game.statedelay = 0;
+        }
+    }
+
+    if (game.fadetomenu && !game.glitchrunnermode)
     {
         if (game.fadetomenudelay > 0)
         {
@@ -1992,7 +2109,7 @@ void mapinput()
         }
     }
 
-    if (game.fadetolab)
+    if (game.fadetolab && !game.glitchrunnermode)
     {
         if (game.fadetolabdelay > 0)
         {
@@ -2005,7 +2122,9 @@ void mapinput()
         }
     }
 
-    if(graphics.menuoffset==0 && game.fadetomenudelay <= 0 && game.fadetolabdelay <= 0)
+    if(graphics.menuoffset==0
+    && (!game.glitchrunnermode || graphics.fademode == 0)
+    && game.fadetomenudelay <= 0 && game.fadetolabdelay <= 0)
     {
         if (graphics.flipmode)
         {
@@ -2182,8 +2301,11 @@ void mapmenuactionpress()
         graphics.fademode = 2;
         music.fadeout();
         map.nexttowercolour();
-        game.fadetomenu = true;
-        game.fadetomenudelay = 16;
+        if (!game.glitchrunnermode)
+        {
+            game.fadetomenu = true;
+            game.fadetomenudelay = 16;
+        }
         break;
 
     case 20:

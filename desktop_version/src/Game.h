@@ -31,6 +31,7 @@ namespace Menu
         ed_music,
         ed_quit,
         options,
+        advancedoptions,
         accessibility,
         controller,
         language,
@@ -77,6 +78,12 @@ struct MenuStackFrame
 {
     int option;
     enum Menu::MenuName name;
+};
+
+struct CustomLevelStat
+{
+    std::string name;
+    int score; //0 - not played, 1 - finished, 2 - all trinkets, 3 - finished, all trinkets
 };
 
 
@@ -182,7 +189,6 @@ public:
     int jumppressed;
     int gravitycontrol;
 
-    bool infocus;
     bool muted;
     int mutebutton;
     bool musicmuted;
@@ -222,6 +228,7 @@ public:
     enum Menu::MenuName kludge_ingametemp;
     int current_credits_list_index;
     int menuxoff, menuyoff;
+    int menuspacing;
     std::vector<MenuStackFrame> menustack;
 
     void inline option(std::string text, bool active = true)
@@ -262,7 +269,7 @@ public:
     //Time Trials
     bool intimetrial, timetrialparlost;
     int timetrialcountdown, timetrialshinytarget, timetriallevel;
-    int timetrialpar, timetrialresulttime, timetrialrank;
+    int timetrialpar, timetrialresulttime, timetrialresultframes, timetrialrank;
 
     int creditposition;
     int oldcreditposition;
@@ -367,9 +374,7 @@ public:
     void savecustomlevelstats();
     void updatecustomlevelstats(std::string clevel, int cscore);
 
-    std::string customlevelstats[200]; //string array containing level filenames
-    int customlevelscore[200];//0 - not played, 1 - finished, 2 - all trinkets, 3 - finished, all trinkets
-    int numcustomlevelstats;
+    std::vector<CustomLevelStat> customlevelstats;
     bool customlevelstatsloaded;
 
 
@@ -408,11 +413,14 @@ public:
     }
 
     bool over30mode;
+    bool glitchrunnermode; // Have fun speedrunners! <3 Misa
 
     bool ingame_titlemode;
 
     bool shouldreturntopausemenu;
     void returntopausemenu();
+
+    bool disablepause;
 };
 
 extern Game game;

@@ -117,8 +117,14 @@ bool GetButtonFromString(const char *pText, SDL_GameControllerButton *button)
 
 void Game::init(void)
 {
+    roomx = 0;
+    roomy = 0;
+    prevroomx = 0;
+    prevroomy = 0;
+    saverx = 0;
+    savery = 0;
+
     mutebutton = 0;
-    infocus = true;
     muted = false;
     musicmuted = false;
     musicmutebutton = 0;
@@ -252,6 +258,7 @@ void Game::init(void)
     timetrialparlost = false;
     timetrialpar = 0;
     timetrialresulttime = 0;
+    timetrialresultframes = 0;
 
     totalflips = 0;
     hardestroom = "Welcome Aboard";
@@ -388,10 +395,13 @@ void Game::init(void)
 #endif
 
     over30mode = false;
+    glitchrunnermode = false;
 
     ingame_titlemode = false;
     kludge_ingametemp = Menu::mainmenu;
     shouldreturntopausemenu = false;
+
+    disablepause = false;
 
     /* Terry's Patrons... */
     const char* superpatrons_arr[] = {
@@ -533,13 +543,8 @@ void Game::lifesequence()
 
 void Game::clearcustomlevelstats()
 {
-    //just clearing the arrays
-    for(int i=0; i<200; i++)
-    {
-        customlevelstats[i]="";
-        customlevelscore[i]=0;
-    }
-    numcustomlevelstats=0;
+    //just clearing the array
+    customlevelstats.clear();
 
     customlevelstatsloaded=false; //To ensure we don't load it where it isn't needed
 }
@@ -552,28 +557,24 @@ void Game::updatecustomlevelstats(std::string clevel, int cscore)
         clevel = clevel.substr(7);
     }
     int tvar=-1;
-    for(int j=0; j<numcustomlevelstats; j++)
+    for(size_t j=0; j<customlevelstats.size(); j++)
     {
-        if(clevel==customlevelstats[j])
+        if(clevel==customlevelstats[j].name)
         {
             tvar=j;
-            j=numcustomlevelstats+1;
+            break;
         }
     }
-    if(tvar>=0 && cscore > customlevelscore[tvar])
+    if(tvar>=0 && cscore > customlevelstats[tvar].score)
     {
         //update existing entry
-        customlevelscore[tvar]=cscore;
+        customlevelstats[tvar].score=cscore;
     }
     else
     {
         //add a new entry
-        if(numcustomlevelstats<200)
-        {
-            customlevelstats[numcustomlevelstats]=clevel;
-            customlevelscore[numcustomlevelstats]=cscore;
-            numcustomlevelstats++;
-        }
+        CustomLevelStat levelstat = {clevel, cscore};
+        customlevelstats.push_back(levelstat);
     }
     savecustomlevelstats();
 }
@@ -581,76 +582,117 @@ void Game::updatecustomlevelstats(std::string clevel, int cscore)
 void Game::loadcustomlevelstats()
 {
     //testing
-    if(!customlevelstatsloaded)
+    if(customlevelstatsloaded)
     {
-        tinyxml2::XMLDocument doc;
-        if (!FILESYSTEM_loadTiXml2Document("saves/levelstats.vvv", doc))
-        {
-            //No levelstats file exists; start new
-            numcustomlevelstats=0;
-            savecustomlevelstats();
-        }
-        else
-        {
-            tinyxml2::XMLHandle hDoc(&doc);
-            tinyxml2::XMLElement* pElem;
-            tinyxml2::XMLHandle hRoot(NULL);
+        return;
+    }
 
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document("saves/levelstats.vvv", doc))
+    {
+        //No levelstats file exists; start new
+        customlevelstats.clear();
+        savecustomlevelstats();
+        return;
+    }
+
+    // Old system
+    std::vector<std::string> customlevelnames;
+    std::vector<int> customlevelscores;
+
+    tinyxml2::XMLHandle hDoc(&doc);
+    tinyxml2::XMLElement* pElem;
+    tinyxml2::XMLHandle hRoot(NULL);
+
+    {
+        pElem=hDoc.FirstChildElement().ToElement();
+        // should always have a valid root but handle gracefully if it does
+        if (!pElem)
+        {
+            printf("Error: Levelstats file corrupted\n");
+        }
+
+        // save this for later
+        hRoot=tinyxml2::XMLHandle(pElem);
+    }
+
+    // First pass, look for the new system of storing stats
+    // If they don't exist, then fall back to the old system
+    for (pElem = hRoot.FirstChildElement("Data").FirstChild().ToElement(); pElem; pElem = pElem->NextSiblingElement())
+    {
+        std::string pKey(pElem->Value());
+        const char* pText = pElem->GetText();
+        if (pText == NULL)
+        {
+            pText = "";
+        }
+
+        if (pKey == "stats")
+        {
+            for (tinyxml2::XMLElement* stat_el = pElem->FirstChildElement(); stat_el; stat_el = stat_el->NextSiblingElement())
             {
-                pElem=hDoc.FirstChildElement().ToElement();
-                // should always have a valid root but handle gracefully if it does
-                if (!pElem)
+                CustomLevelStat stat = {};
+
+                if (stat_el->GetText() != NULL)
                 {
-                    printf("Error: Levelstats file corrupted\n");
+                    stat.score = atoi(stat_el->GetText());
                 }
 
-                // save this for later
-                hRoot=tinyxml2::XMLHandle(pElem);
+                if (stat_el->Attribute("name"))
+                {
+                    stat.name = stat_el->Attribute("name");
+                }
+
+                customlevelstats.push_back(stat);
             }
 
+            return;
+        }
+    }
 
-            for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
+
+    // Since we're still here, we must be on the old system
+    for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
+    {
+        std::string pKey(pElem->Value());
+        const char* pText = pElem->GetText() ;
+        if(pText == NULL)
+        {
+            pText = "";
+        }
+
+        if (pKey == "customlevelscore")
+        {
+            std::string TextString = (pText);
+            if(TextString.length())
             {
-                std::string pKey(pElem->Value());
-                const char* pText = pElem->GetText() ;
-                if(pText == NULL)
+                std::vector<std::string> values = split(TextString,',');
+                for(size_t i = 0; i < values.size(); i++)
                 {
-                    pText = "";
-                }
-
-                if (pKey == "numcustomlevelstats")
-                {
-                    numcustomlevelstats = atoi(pText);
-                    if(numcustomlevelstats>=200) numcustomlevelstats=199;
-                }
-
-                if (pKey == "customlevelscore")
-                {
-                    std::string TextString = (pText);
-                    if(TextString.length())
-                    {
-                        std::vector<std::string> values = split(TextString,',');
-                        for(size_t i = 0; i < values.size(); i++)
-                        {
-                            if(i<200) customlevelscore[i]=(atoi(values[i].c_str()));
-                        }
-                    }
-                }
-
-                if (pKey == "customlevelstats")
-                {
-                    std::string TextString = (pText);
-                    if(TextString.length())
-                    {
-                        std::vector<std::string> values = split(TextString,'|');
-                        for(size_t i = 0; i < values.size(); i++)
-                        {
-                            if(i<200) customlevelstats[i]=values[i];
-                        }
-                    }
+                    customlevelscores.push_back(atoi(values[i].c_str()));
                 }
             }
         }
+
+        if (pKey == "customlevelstats")
+        {
+            std::string TextString = (pText);
+            if(TextString.length())
+            {
+                std::vector<std::string> values = split(TextString,'|');
+                for(size_t i = 0; i < values.size(); i++)
+                {
+                    customlevelnames.push_back(values[i]);
+                }
+            }
+        }
+    }
+
+    // If the two arrays happen to differ in length, just go with the smallest one
+    for (size_t i = 0; i < std::min(customlevelnames.size(), customlevelscores.size()); i++)
+    {
+        CustomLevelStat stat = {customlevelnames[i], customlevelscores[i]};
+        customlevelstats.push_back(stat);
     }
 }
 
@@ -670,6 +712,7 @@ void Game::savecustomlevelstats()
     tinyxml2::XMLElement * msgs = doc.NewElement( "Data" );
     root->LinkEndChild( msgs );
 
+    int numcustomlevelstats = customlevelstats.size();
     if(numcustomlevelstats>=200)numcustomlevelstats=199;
     msg = doc.NewElement( "numcustomlevelstats" );
     msg->LinkEndChild( doc.NewText( help.String(numcustomlevelstats).c_str() ));
@@ -678,7 +721,7 @@ void Game::savecustomlevelstats()
     std::string customlevelscorestr;
     for(int i = 0; i < numcustomlevelstats; i++ )
     {
-        customlevelscorestr += help.String(customlevelscore[i]) + ",";
+        customlevelscorestr += help.String(customlevelstats[i].score) + ",";
     }
     msg = doc.NewElement( "customlevelscore" );
     msg->LinkEndChild( doc.NewText( customlevelscorestr.c_str() ));
@@ -687,11 +730,26 @@ void Game::savecustomlevelstats()
     std::string customlevelstatsstr;
     for(int i = 0; i < numcustomlevelstats; i++ )
     {
-        customlevelstatsstr += customlevelstats[i] + "|";
+        customlevelstatsstr += customlevelstats[i].name + "|";
     }
     msg = doc.NewElement( "customlevelstats" );
     msg->LinkEndChild( doc.NewText( customlevelstatsstr.c_str() ));
     msgs->LinkEndChild( msg );
+
+    // New system
+    msg = doc.NewElement("stats");
+    tinyxml2::XMLElement* stat_el;
+    for (size_t i = 0; i < customlevelstats.size(); i++)
+    {
+        stat_el = doc.NewElement("stat");
+        CustomLevelStat& stat = customlevelstats[i];
+
+        stat_el->SetAttribute("name", stat.name.c_str());
+        stat_el->LinkEndChild(doc.NewText(help.String(stat.score).c_str()));
+
+        msg->LinkEndChild(stat_el);
+    }
+    msgs->LinkEndChild(msg);
 
     if(FILESYSTEM_saveTiXml2Document("saves/levelstats.vvv", doc))
     {
@@ -1383,6 +1441,7 @@ void Game::updatestate()
             obj.removetrigger(82);
             hascontrol = false;
             timetrialresulttime = seconds + (minutes * 60) + (hours * 60 * 60);
+            timetrialresultframes = frames;
             timetrialrank = 0;
             if (timetrialresulttime <= timetrialpar) timetrialrank++;
             if (trinkets() >= timetrialshinytarget) timetrialrank++;
@@ -1746,6 +1805,7 @@ void Game::updatestate()
             break;
 
 
+        // WARNING: If updating this code, make sure to update Map.cpp mapclass::twoframedelayfix()
         case 300:
             startscript = true;
             newscript="custom_"+customscript[0];
@@ -3211,6 +3271,7 @@ void Game::updatestate()
                 graphics.createtextbox("  All Crew Members Rescued!  ", -1, 64, 0, 0, 0);
             }
             savetime = timestring();
+            savetime += "." + help.twodigits(frames*100 / 30);
             break;
         case 3503:
         {
@@ -4752,9 +4813,19 @@ void Game::loadstats()
             skipfakeload = atoi(pText);
         }
 
+        if (pKey == "disablepause")
+        {
+            disablepause = atoi(pText);
+        }
+
         if (pKey == "over30mode")
         {
             over30mode = atoi(pText);
+        }
+
+        if (pKey == "glitchrunnermode")
+        {
+            glitchrunnermode = atoi(pText);
         }
 
         if (pKey == "vsync")
@@ -5000,6 +5071,10 @@ void Game::savestats()
     msg->LinkEndChild(doc.NewText(help.String((int) skipfakeload).c_str()));
     dataNode->LinkEndChild(msg);
 
+    msg = doc.NewElement("disablepause");
+    msg->LinkEndChild(doc.NewText(help.String((int) disablepause).c_str()));
+    dataNode->LinkEndChild(msg);
+
     msg = doc.NewElement("notextoutline");
     msg->LinkEndChild(doc.NewText(help.String((int) graphics.notextoutline).c_str()));
     dataNode->LinkEndChild(msg);
@@ -5014,6 +5089,10 @@ void Game::savestats()
 
     msg = doc.NewElement("over30mode");
     msg->LinkEndChild(doc.NewText(help.String((int) over30mode).c_str()));
+    dataNode->LinkEndChild(msg);
+
+    msg = doc.NewElement("glitchrunnermode");
+    msg->LinkEndChild(doc.NewText(help.String((int) glitchrunnermode).c_str()));
     dataNode->LinkEndChild(msg);
 
     msg = doc.NewElement("vsync");
@@ -5747,7 +5826,6 @@ void Game::customloadquick(std::string savfile)
 
     map.showteleporters = true;
     if(obj.flags[12]) map.showtargets = true;
-    if (obj.flags[42]) map.showtrinkets = true;
 
 }
 
@@ -6875,6 +6953,7 @@ std::string Game::resulttimestring()
     {
         tempstring = "00:" + help.twodigits(timetrialresulttime);
     }
+    tempstring += "." + help.twodigits(timetrialresultframes*100 / 30);
     return tempstring;
 }
 
@@ -6968,8 +7047,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
 
     currentmenuoption = 0;
     currentmenuname = t;
-    menuxoff = 0;
     menuyoff = 0;
+    int maxspacing = 30; // maximum value for menuspacing, can only become lower.
     menucountdown = 0;
     menuoptions.clear();
 
@@ -6988,8 +7067,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("view credits"));
 #endif
         option(loc::gettext("quit game"));
-        menuxoff = -16;
         menuyoff = -10;
+        maxspacing = 15;
         break;
 #if !defined(NO_CUSTOM_LEVELS)
     case Menu::playerworlds:
@@ -6999,14 +7078,14 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
  #endif
         option(loc::gettext("open level folder"), FILESYSTEM_openDirectoryEnabled());
         option(loc::gettext("return"));
-        menuxoff = -30;
         menuyoff = -40;
+        maxspacing = 15;
         break;
     case Menu::levellist:
         if(ed.ListOfMetaData.size()==0)
         {
             option(loc::gettext("ok"));
-            menuxoff = 0;
+            option("ok");
             menuyoff = -20;
         }
         else
@@ -7017,26 +7096,26 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 {
                     //This is, er, suboptimal. Whatever, life optimisation and all that
                     int tvar=-1;
-                    for(int j=0; j<numcustomlevelstats; j++)
+                    for(size_t j=0; j<customlevelstats.size(); j++)
                     {
-                        if(ed.ListOfMetaData[i].filename.substr(7) == customlevelstats[j])
+                        if(ed.ListOfMetaData[i].filename.substr(7) == customlevelstats[j].name)
                         {
                             tvar=j;
-                            j=numcustomlevelstats+1;
+                            break;
                         }
                     }
                     std::string text;
                     if(tvar>=0)
                     {
-                        if(customlevelscore[tvar]==0)
+                        if(customlevelstats[tvar].score==0)
                         {
                             text = "   " + ed.ListOfMetaData[i].title;
                         }
-                        else if(customlevelscore[tvar]==1)
+                        else if(customlevelstats[tvar].score==1)
                         {
                             text = " * " + ed.ListOfMetaData[i].title;
                         }
-                        else if(customlevelscore[tvar]==3)
+                        else if(customlevelstats[tvar].score==3)
                         {
                             text = "** " + ed.ListOfMetaData[i].title;
                         }
@@ -7067,8 +7146,10 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
             }
             option(loc::gettext("return"));
 
-            menuxoff = -90;
+            menuxoff = 20;
             menuyoff = 70-(menuoptions.size()*10);
+            menuspacing = 5;
+            return; // skip automatic centering, will turn out bad with levels list
         }
         break;
 #endif
@@ -7076,31 +7157,27 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("continue from save"));
         option(loc::gettext("start from beginning"));
         option(loc::gettext("back to levels"));
-        menuxoff = -40;
         menuyoff = -30;
         break;
     case Menu::youwannaquit:
         option(loc::gettext("yes, quit"));
         option(loc::gettext("no, return"));
-        menuxoff = 0;
         menuyoff = -20;
         break;
     case Menu::errornostart:
         option(loc::gettext("ok"));
-        menuxoff = 0;
         menuyoff = -20;
         break;
     case Menu::graphicoptions:
         option(loc::gettext("toggle fullscreen"));
-        option(loc::gettext("graphics mode"));
+        option(loc::gettext("scaling mode"));
+        option(loc::gettext("resize to nearest"), graphics.screenbuffer->isWindowed);
         option(loc::gettext("toggle filter"));
         option(loc::gettext("toggle analogue"));
-        option(loc::gettext("toggle mouse"));
         option(loc::gettext("toggle fps"));
         option(loc::gettext("toggle vsync"));
         option(loc::gettext("return"));
-        menuxoff = -85;
-        menuyoff = 0;
+        menuyoff = -10;
         break;
     case Menu::ed_settings:
         option(loc::gettext("change description"));
@@ -7111,8 +7188,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("save level"));
         option(loc::gettext("quit to main menu"));
 
-        menuxoff = -46;
         menuyoff = -20;
+        maxspacing = 15;
         break;
     case Menu::ed_desc:
         option(loc::gettext("change name"));
@@ -7121,24 +7198,31 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("change website"));
         option(loc::gettext("return"));
 
-        menuxoff = -40;
         menuyoff = 6;
+        maxspacing = 15;
         break;
     case Menu::ed_music:
         option(loc::gettext("next song"));
         option(loc::gettext("return"));
-        menuxoff = -10;
         menuyoff = 16;
+        maxspacing = 15;
         break;
     case Menu::ed_quit:
         option(loc::gettext("yes, save and quit"));
         option(loc::gettext("no, quit without saving"));
         option(loc::gettext("return to editor"));
-        menuxoff = -50;
         menuyoff = 8;
+        maxspacing = 15;
         break;
     case Menu::options:
         option(loc::gettext("accessibility options"));
+        option(loc::gettext("advanced options"));
+#if !defined(MAKEANDPLAY)
+        if (ingame_titlemode && unlock[18])
+#endif
+        {
+            option(loc::gettext("flip mode"));
+        }
 #if !defined(MAKEANDPLAY)
         option(loc::gettext("unlock play modes"));
 #endif
@@ -7151,20 +7235,25 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         }
 
         option(loc::gettext("return"));
-        menuxoff = -40;
+        menuyoff = 0;
+        break;
+    case Menu::advancedoptions:
+        option(loc::gettext("toggle mouse"));
+        option(loc::gettext("unfocus pause"));
+        option(loc::gettext("fake load screen"));
+        option(loc::gettext("room name background"));
+        option(loc::gettext("glitchrunner mode"));
+        option(loc::gettext("return"));
         menuyoff = 0;
         break;
     case Menu::accessibility:
         option(loc::gettext("animated backgrounds"));
         option(loc::gettext("screen effects"));
         option(loc::gettext("text outline"));
-        option(loc::gettext("invincibility"), !ingame_titlemode || !inspecial());
-        option(loc::gettext("slowdown"), !ingame_titlemode || !inspecial());
-        option(loc::gettext("load screen"));
-        option(loc::gettext("room name bg"));
+        option(loc::gettext("invincibility"), !ingame_titlemode || (!game.insecretlab && !game.intimetrial && !game.nodeathmode));
+        option(loc::gettext("slowdown"), !ingame_titlemode || (!game.insecretlab && !game.intimetrial && !game.nodeathmode));
         option(loc::gettext("return"));
-        menuxoff = -85;
-        menuyoff = -10;
+        menuyoff = 0;
         break;
     case Menu::controller:
         option(loc::gettext("analog stick sensitivity"));
@@ -7172,7 +7261,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("bind enter"));
         option(loc::gettext("bind menu"));
         option(loc::gettext("return"));
-        menuxoff = -40;
         menuyoff = 10;
         break;
     case Menu::language:
@@ -7215,13 +7303,11 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
     case Menu::cleardatamenu:
         option(loc::gettext("no! don't delete"));
         option(loc::gettext("yes, delete everything"));
-        menuxoff = -30;
         menuyoff = 64;
         break;
     case Menu::setinvincibility:
         option(loc::gettext("no, return to options"));
         option(loc::gettext("yes, enable"));
-        menuxoff = -30;
         menuyoff = 64;
         break;
     case Menu::setslowdown:
@@ -7229,7 +7315,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("80% speed"));
         option(loc::gettext("60% speed"));
         option(loc::gettext("40% speed"));
-        menuxoff = -40;
         menuyoff = 16;
         break;
     case Menu::unlockmenu:
@@ -7240,14 +7325,12 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("unlock ship jukebox"), (stat_trinkets<20));
         option(loc::gettext("unlock secret lab"), !unlock[8]);
         option(loc::gettext("return"));
-        menuxoff = -70;
         menuyoff = -20;
         break;
     case Menu::credits:
         option(loc::gettext("next page"));
         option(loc::gettext("last page"));
         option(loc::gettext("return"));
-        menuxoff = 20;
         menuyoff = 64;
         break;
     case Menu::credits2:
@@ -7258,14 +7341,12 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("next page"));
         option(loc::gettext("previous page"));
         option(loc::gettext("return"));
-        menuxoff = 20;
         menuyoff = 64;
         break;
     case Menu::credits6:
         option(loc::gettext("first page"));
         option(loc::gettext("previous page"));
         option(loc::gettext("return"));
-        menuxoff = 20;
         menuyoff = 64;
         break;
     case Menu::play:
@@ -7381,12 +7462,10 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 option(loc::gettext("return"));
                 if (unlock[8])
                 {
-                    menuxoff = -40;
                     menuyoff = -30;
                 }
                 else
                 {
-                    menuxoff = -20;
                     menuyoff = -40;
                 }
             }
@@ -7399,13 +7478,11 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
     case Menu::unlockintermission:
     case Menu::unlockflipmode:
         option(loc::gettext("proceed"));
-        menuxoff = 20;
         menuyoff = 70;
         break;
     case Menu::newgamewarning:
         option(loc::gettext("start new game"));
         option(loc::gettext("return"));
-        menuxoff = -30;
         menuyoff = 64;
         break;
     case Menu::playmodes:
@@ -7414,14 +7491,13 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("no death mode"), unlock[17] && !map.invincibility && slowdown == 30);
         option(loc::gettext("flip mode"), unlock[18]);
         option(loc::gettext("return"));
-        menuxoff = -70;
         menuyoff = 8;
+        maxspacing = 20;
         break;
     case Menu::intermissionmenu:
         option(loc::gettext("play intermission 1"));
         option(loc::gettext("play intermission 2"));
         option(loc::gettext("return"));
-        menuxoff = -50;
         menuyoff = -35;
         break;
     case Menu::playint1:
@@ -7430,7 +7506,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("Verdigris");
         option("Victoria");
         option("return");
-        menuxoff = -60;
         menuyoff = 10;
         break;
     case Menu::playint2:
@@ -7439,7 +7514,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("Verdigris");
         option("Victoria");
         option("return");
-        menuxoff = -60;
         menuyoff = 10;
         break;
     case Menu::continuemenu:
@@ -7447,14 +7521,12 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("continue from teleporter"));
         option(loc::gettext("continue from quicksave"));
         option(loc::gettext("return"));
-        menuxoff = -60;
         menuyoff = 20;
         break;
     case Menu::startnodeathmode:
         option(loc::gettext("disable cutscenes"));
         option(loc::gettext("enable cutscenes"));
         option(loc::gettext("return"));
-        menuxoff = -60;
         menuyoff = 40;
         break;
     case Menu::gameover:
@@ -7463,7 +7535,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         break;
     case Menu::gameover2:
         option(loc::gettext("return to play menu"));
-        menuxoff = -25;
         menuyoff = 80;
         break;
     case Menu::unlockmenutrials:
@@ -7475,7 +7546,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("the final level", !unlock[14]);
 
         option(loc::gettext("return"));
-        menuxoff = -80;
         menuyoff = 0;
         break;
     case Menu::timetrials:
@@ -7487,8 +7557,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(unlock[14] ? "the final level" : "???", unlock[14]);
 
         option(loc::gettext("return"));
-        menuxoff = -80;
         menuyoff = 0;
+        maxspacing = 15;
         break;
     case Menu::nodeathmodecomplete:
         menucountdown = 90;
@@ -7496,7 +7566,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         break;
     case Menu::nodeathmodecomplete2:
         option(loc::gettext("return to play menu"));
-        menuxoff = -25;
         menuyoff = 70;
         break;
     case Menu::timetrialcomplete:
@@ -7510,15 +7579,33 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
     case Menu::timetrialcomplete3:
         option(loc::gettext("return to play menu"));
         option("try again");
-        menuxoff = -25;
         menuyoff = 70;
         break;
     case Menu::gamecompletecontinue:
         option(loc::gettext("return to play menu"));
-        menuxoff = -25;
         menuyoff = 70;
         break;
     }
+
+    // Automatically center the menu. We must check the width of the menu with the initial horizontal spacing.
+    // If it's too wide, reduce the horizontal spacing by 5 and retry.
+    // Try to limit the menu width to 272 pixels: 320 minus 16*2 for square brackets, minus 8*2 padding.
+    // The square brackets fall outside the menu width (i.e. selected menu options are printed 16 pixels to the left)
+    bool done_once = false;
+    int menuwidth = 0;
+    for (; !done_once || (menuwidth > 272 && menuspacing > 0); maxspacing -= 5)
+    {
+        done_once = true;
+        menuspacing = maxspacing;
+        menuwidth = 0;
+        for (size_t i = 0; i < menuoptions.size(); i++)
+        {
+            int width = i*menuspacing + graphics.len(menuoptions[i].text);
+            if (width > menuwidth)
+                menuwidth = width;
+        }
+    }
+    menuxoff = (320-menuwidth)/2;
 }
 
 void Game::deletequick()
@@ -7665,7 +7752,7 @@ bool Game::anything_unlocked()
     {
         if (unlock[i] &&
         (i == 8 // Secret Lab
-        || i >= 9 || i <= 14 // any Time Trial
+        || (i >= 9 && i <= 14) // any Time Trial
         || i == 16 // Intermission replays
         || i == 17 // No Death Mode
         || i == 18)) // Flip Mode

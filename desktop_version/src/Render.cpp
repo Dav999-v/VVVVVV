@@ -83,11 +83,20 @@ void menurender()
       graphics.PrintWrap( -1, 65, loc::gettext("ERROR: This level has no start point!"), tr, tg, tb, true);
       break;
     case Menu::options:
+    {
 #if defined(MAKEANDPLAY)
-#define OFFSET -1
+        int flipmode_offset = 0;
 #else
-#define OFFSET 0
+        int flipmode_offset = game.ingame_titlemode && game.unlock[18] ? 0 : -1;
 #endif
+
+#if defined(MAKEANDPLAY)
+        int unlockmode_offset = -1;
+#else
+        int unlockmode_offset = 0;
+#endif
+
+        int offset = 0;
 
         switch (game.currentmenuoption)
         {
@@ -95,38 +104,64 @@ void menurender()
             graphics.bigprint( -1, 30, loc::gettext("Accessibility"), tr, tg, tb, true);
             graphics.PrintWrap( -1, 65, loc::gettext("Disable screen effects, enable slowdown modes or invincibility"), tr, tg, tb, true);
             break;
-#if !defined(MAKEANDPLAY)
         case 1:
+            graphics.bigprint( -1, 30, loc::gettext("Advanced Options"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Hide the mouse cursor, remove the loading screen, turn on glitchrunner mode and more"), tr, tg, tb, true);
+            break;
+        case 2:
+#if !defined(MAKEANDPLAY)
+        if (game.ingame_titlemode && game.unlock[18])
+#endif
+        {
+            graphics.bigprint( -1, 30, loc::gettext("Flip Mode"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Flip the entire game vertically."), tr, tg, tb, true);
+            if (graphics.setflipmode)
+            {
+                graphics.PrintWrap( -1, 85, loc::gettext("Currently ENABLED!"), tr, tg, tb, true);
+            }
+            else
+            {
+                graphics.PrintWrap( -1, 85, loc::gettext("Currently Disabled."), tr/2, tg/2, tb/2, true);
+            }
+        }
+            break;
+        }
+
+        offset += flipmode_offset;
+
+#if !defined(MAKEANDPLAY)
+        if (game.currentmenuoption == 3+offset)
+        {
             graphics.bigprint( -1, 30, loc::gettext("Unlock Play Modes"), tr, tg, tb, true);
             graphics.PrintWrap( -1, 65, loc::gettext("Unlock parts of the game normally unlocked as you progress"), tr, tg, tb, true);
-            break;
+        }
 #endif
-        case OFFSET+2:
+
+        offset += unlockmode_offset;
+
+        if (game.currentmenuoption == 4+offset)
+        {
             graphics.bigprint( -1, 30, loc::gettext("Game Pad Options"), tr, tg, tb, true);
             graphics.PrintWrap( -1, 65, loc::gettext("Rebind your controller's buttons and adjust sensitivity"), tr, tg, tb, true);
-            break;
-        case OFFSET+3:
-            graphics.bigprint( -1, 30, loc::gettext("Language"), tr, tg, tb, true);
-            graphics.PrintWrap( -1, 65, loc::gettext("Change the language"), tr, tg, tb, true);
-            break;
-        case OFFSET+4:
+        }
+        else if (game.currentmenuoption == 5+offset)
+        {
             graphics.bigprint( -1, 30, loc::gettext("Clear Data"), tr, tg, tb, true);
             graphics.PrintWrap( -1, 65, loc::gettext("Delete your save data and unlocked play modes"), tr, tg, tb, true);
-            break;
-        case OFFSET+5:
-            if(music.mmmmmm){
-                graphics.bigprint( -1, 30, loc::gettext("Soundtrack"), tr, tg, tb, true);
-                graphics.PrintWrap( -1, 65, loc::gettext("Toggle between MMMMMM and PPPPPP"), tr, tg, tb, true);
-                if(music.usingmmmmmm){
-                    graphics.PrintWrap( -1, 85, loc::gettext("Current soundtrack: MMMMMM"), tr, tg, tb, true);
-                }else{
-                    graphics.PrintWrap( -1, 85, loc::gettext("Current soundtrack: PPPPPP"), tr, tg, tb, true);
-                }
+        }
+        else if (game.currentmenuoption == 6+offset && music.mmmmmm)
+        {
+            graphics.bigprint( -1, 30, loc::gettext("Soundtrack"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Toggle between MMMMMM and PPPPPP"), tr, tg, tb, true);
+            if(music.usingmmmmmm){
+                graphics.PrintWrap( -1, 85, loc::gettext("Current soundtrack: MMMMMM"), tr, tg, tb, true);
+            }else{
+                graphics.PrintWrap( -1, 85, loc::gettext("Current soundtrack: PPPPPP"), tr, tg, tb, true);
             }
             break;
         }
-#undef OFFSET
         break;
+    }
     case Menu::graphicoptions:
         switch (game.currentmenuoption)
         {
@@ -142,7 +177,7 @@ void menurender()
             break;
 
         case 1:
-            graphics.bigprint( -1, 30, loc::gettext("Graphics Mode"), tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Scaling Mode"), tr, tg, tb, true);
             graphics.PrintWrap( -1, 65, loc::gettext("Choose letterbox/stretch/integer mode."), tr, tg, tb, true);
 
             if(game.stretchMode == 2){
@@ -154,6 +189,14 @@ void menurender()
             }
             break;
         case 2:
+            graphics.bigprint(-1, 30, loc::gettext("Resize to Nearest"), tr, tg, tb, true);
+            graphics.PrintWrap(-1, 65, loc::gettext("Resize to the nearest window size that is of an integer multiple."), tr, tg, tb, true);
+            if (!graphics.screenbuffer->isWindowed)
+            {
+                graphics.PrintWrap(-1, 95, loc::gettext("You must be in windowed mode to use this option."), tr, tg, tb, true);
+            }
+            break;
+        case 3:
             graphics.bigprint( -1, 30, loc::gettext("Toggle Filter"), tr, tg, tb, true);
             graphics.PrintWrap( -1, 65, loc::gettext("Change to nearest/linear filter."), tr, tg, tb, true);
 
@@ -164,20 +207,9 @@ void menurender()
             }
             break;
 
-        case 3:
+        case 4:
             graphics.bigprint( -1, 30, loc::gettext("Analogue Mode"), tr, tg, tb, true);
             graphics.PrintWrap( -1, 65, loc::gettext("There is nothing wrong with your television set. Do not attempt to adjust the picture."), tr, tg, tb, true);
-            break;
-        case 4:
-            graphics.bigprint(-1, 30, loc::gettext("Toggle Mouse Cursor"), tr, tg, tb, true);
-            graphics.PrintWrap(-1, 65, loc::gettext("Show/hide the system mouse cursor."), tr, tg, tb, true);
-
-            if (graphics.showmousecursor) {
-                graphics.PrintWrap(-1, 85, loc::gettext("Current mode: SHOW"), tr, tg, tb, true);
-            }
-            else {
-                graphics.PrintWrap(-1, 85, loc::gettext("Current mode: HIDE"), tr/2, tg/2, tb/2, true);
-            }
             break;
         case 5:
             graphics.bigprint(-1, 30, loc::gettext("Toggle 30+ FPS"), tr, tg, tb, true);
@@ -204,6 +236,7 @@ void menurender()
             {
                 graphics.PrintWrap(-1, 95, loc::gettext("Current mode: VSYNC ON"), tr, tg, tb, true);
             }
+            break;
         }
         break;
     case Menu::credits:
@@ -408,6 +441,64 @@ void menurender()
     case Menu::language_maint_sync:
         graphics.PrintWrap(-1, 80, loc::gettext("If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case."), tr, tg, tb, true);
         break;
+    case Menu::advancedoptions:
+        switch (game.currentmenuoption)
+        {
+        case 0:
+            graphics.bigprint(-1, 30, "Toggle Mouse Cursor", tr, tg, tb, true);
+            graphics.Print(-1, 65, "Show/hide the system mouse cursor.", tr, tg, tb, true);
+
+            if (graphics.showmousecursor) {
+                graphics.Print(-1, 95, "Current mode: SHOW", tr, tg, tb, true);
+            }
+            else {
+                graphics.Print(-1, 95, "Current mode: HIDE", tr/2, tg/2, tb/2, true);
+            }
+            break;
+        case 1:
+            graphics.bigprint( -1, 30, "Unfocus Pause", tr, tg, tb, true);
+            graphics.Print( -1, 65, "Toggle if the game will pause", tr, tg, tb, true);
+            graphics.Print( -1, 75, "when the window is unfocused.", tr, tg, tb, true);
+            if (game.disablepause)
+            {
+                graphics.Print(-1, 95, "Unfocus pause is OFF", tr/2, tg/2, tb/2, true);
+            }
+            else
+            {
+                graphics.Print(-1, 95, "Unfocus pause is ON", tr, tg, tb, true);
+            }
+            break;
+        case 2:
+            graphics.bigprint(-1, 30, "Fake Load Screen", tr, tg, tb, true);
+            if (game.skipfakeload)
+                graphics.Print(-1, 65, "Fake loading screen is OFF", tr/2, tg/2, tb/2, true);
+            else
+                graphics.Print(-1, 65, "Fake loading screen is ON", tr, tg, tb, true);
+            break;
+        case 3:
+            graphics.bigprint(-1, 30, "Room Name BG", tr, tg, tb, true);
+            graphics.Print( -1, 65, "Lets you see through what is behind", tr, tg, tb, true);
+            graphics.Print( -1, 75, "the name at the bottom of the screen.", tr, tg, tb, true);
+            if (graphics.translucentroomname)
+                graphics.Print(-1, 95, "Room name background is TRANSLUCENT", tr/2, tg/2, tb/2, true);
+            else
+                graphics.Print(-1, 95, "Room name background is OPAQUE", tr, tg, tb, true);
+            break;
+        case 4:
+            graphics.bigprint( -1, 30, "Glitchrunner Mode", tr, tg, tb, true);
+            graphics.Print( -1, 65, "Re-enable glitches that existed", tr, tg, tb, true);
+            graphics.Print( -1, 75, "in previous versions of the game", tr, tg, tb, true);
+            if (game.glitchrunnermode)
+            {
+                graphics.Print( -1, 95, "Glitchrunner mode is ON", tr, tg, tb, true);
+            }
+            else
+            {
+                graphics.Print( -1, 95, "Glitchrunner mode is OFF", tr/2, tg/2, tb/2, true);
+            }
+            break;
+        }
+        break;
     case Menu::accessibility:
         switch (game.currentmenuoption)
         {
@@ -479,21 +570,6 @@ void menurender()
                 graphics.PrintWrap( -1, 105, loc::gettext("Game speed is at 40%"), tr, tg, tb, true);
             }
             break;
-        case 5:
-            graphics.bigprint(-1, 30, loc::gettext("Fake Load Screen"), tr, tg, tb, true);
-            if (game.skipfakeload)
-                graphics.PrintWrap(-1, 75, loc::gettext("Fake loading screen is OFF"), tr/2, tg/2, tb/2, true);
-            else
-                graphics.PrintWrap(-1, 75, loc::gettext("Fake loading screen is ON"), tr, tg, tb, true);
-            break;
-        case 6:
-            graphics.bigprint(-1, 30, loc::gettext("Room Name BG"), tr, tg, tb, true);
-            graphics.PrintWrap( -1, 75, loc::gettext("Lets you see through what is behind the name at the bottom of the screen."), tr, tg, tb, true);
-            if (graphics.translucentroomname)
-                graphics.PrintWrap(-1, 105, loc::gettext("Room name background is TRANSLUCENT"), tr/2, tg/2, tb/2, true);
-            else
-                graphics.PrintWrap(-1, 105, loc::gettext("Room name background is OPAQUE"), tr, tg, tb, true);
-            break;
         }
         break;
     case Menu::playint1:
@@ -535,6 +611,7 @@ void menurender()
             }
             break;
         case 3:
+            // WARNING: Partially duplicated in Menu::options
             graphics.bigprint( -1, 30, loc::gettext("Flip Mode"), tr, tg, tb, true);
             graphics.PrintWrap( -1, 65, loc::gettext("Flip the entire game vertically. Compatible with other game modes."), tr, tg, tb, true);
 
@@ -664,7 +741,7 @@ void menurender()
     {
         graphics.bigprint( -1, 20, loc::gettext("Results"), tr, tg, tb, true, 3);
 
-        std::string tempstring = game.resulttimestring() + " / " + game.partimestring();
+        std::string tempstring = game.resulttimestring() + " / " + game.partimestring() + ".99";
 
         graphics.drawspritesetcol(30, 80-15, 50, 22);
         graphics.Print(65, 80-15, loc::gettext("TIME TAKEN:"), 255, 255, 255);
@@ -1119,29 +1196,9 @@ void titlerender()
         if(tg>255) tg=255;
         if (tb < 0) tb = 0;
         if(tb>255) tb=255;
-        if (game.currentmenuname == Menu::timetrials || game.currentmenuname == Menu::unlockmenutrials)
+        if (game.currentmenuname == Menu::levellist)
         {
-            graphics.drawmenu(tr, tg, tb, 15);
-        }
-        else if (game.currentmenuname == Menu::unlockmenu)
-        {
-            graphics.drawmenu(tr, tg, tb, 15);
-        }
-        else if (game.currentmenuname == Menu::playmodes)
-        {
-            graphics.drawmenu(tr, tg, tb, 20);
-        }
-        else if (game.currentmenuname == Menu::mainmenu)
-        {
-            graphics.drawmenu(tr, tg, tb, 15);
-        }
-        else if (game.currentmenuname == Menu::playerworlds)
-        {
-            graphics.drawmenu(tr, tg, tb, 15);
-        }
-        else if (game.currentmenuname == Menu::levellist)
-        {
-            graphics.drawlevelmenu(tr, tg, tb, 5);
+            graphics.drawlevelmenu(tr, tg, tb);
         }
         else if (game.currentmenuname == Menu::language)
         {
@@ -1350,13 +1407,12 @@ void gamerender()
             if (!game.colourblindmode)
             {
                 graphics.drawtowerbackground();
-                graphics.drawtowermap();
             }
             else
             {
                 FillRect(graphics.backBuffer,0x00000);
-                graphics.drawtowermap_nobackground();
             }
+            graphics.drawtowermap();
         }
         else
         {
@@ -1854,6 +1910,22 @@ void maprender()
             }else if (map.cursorstate == 2){
               if (int(map.cursordelay / 15) % 2 == 0){
                 graphics.drawrect(40 + ((game.roomx - 100) * 12) + 2+map.custommmxoff, 21 + ((game.roomy - 100) * 9) + 2+map.custommmyoff, 12 - 4, 9 - 4, 16, 245 - (help.glow), 245 - (help.glow));
+              }
+            }
+          }
+
+          if(map.showtrinkets){
+            for(size_t i=0; i<map.shinytrinkets.size(); i++){
+              if(!obj.collect[i]){
+                int temp = 1086;
+                if(graphics.flipmode) temp += 3;
+                if(map.customzoom==4){
+                  graphics.drawtile(40 + (map.shinytrinkets[i].x * 48) + 20+map.custommmxoff, 21 + (map.shinytrinkets[i].y * 36) + 14+map.custommmyoff, temp);
+                }else if(map.customzoom==2){
+                  graphics.drawtile(40 + (map.shinytrinkets[i].x * 24) + 8+map.custommmxoff, 21 + (map.shinytrinkets[i].y * 18) + 5+map.custommmyoff, temp);
+                }else{
+                  graphics.drawtile(40 + 3 + (map.shinytrinkets[i].x * 12) + map.custommmxoff, 22 + (map.shinytrinkets[i].y * 9) + map.custommmyoff, temp);
+                }
               }
             }
           }
@@ -2380,7 +2452,10 @@ void maprender()
 
 
 
-    if (graphics.fademode == 3 || graphics.fademode == 5)
+    // We need to draw the black screen above the menu in order to disguise it
+    // being jankily brought down in glitchrunner mode when exiting to the title
+    // Otherwise, there's no reason to obscure the menu
+    if (game.glitchrunnermode || graphics.fademode == 3 || graphics.fademode == 5)
     {
         graphics.drawfade();
     }

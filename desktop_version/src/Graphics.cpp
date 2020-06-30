@@ -201,20 +201,58 @@ void Graphics::updatetitlecolours()
     col_trinket = ct.colour;
 }
 
+#define PROCESS_TILESHEET_CHECK_ERROR(tilesheet, tile_square) \
+    if (grphx.im_##tilesheet->w % tile_square != 0 \
+    || grphx.im_##tilesheet->h % tile_square != 0) \
+    { \
+        const char* error = "Error: %s.png dimensions not exact multiples of %i!"; \
+        char message[128]; \
+        SDL_snprintf(message, sizeof(message), error, #tilesheet, tile_square); \
+        \
+        const char* error_title = "Error with %s.png"; \
+        char message_title[128]; \
+        SDL_snprintf(message_title, sizeof(message_title), error_title, #tilesheet); \
+        \
+        puts(message); \
+        \
+        SDL_ShowSimpleMessageBox( \
+            SDL_MESSAGEBOX_ERROR, \
+            message_title, \
+            message, \
+            NULL \
+        ); \
+        \
+        exit(1); \
+    }
+
+#define PROCESS_TILESHEET_RENAME(tilesheet, vector, tile_square, extra_code) \
+    PROCESS_TILESHEET_CHECK_ERROR(tilesheet, tile_square) \
+    \
+    for (int j = 0; j < grphx.im_##tilesheet->h / tile_square; j++) \
+    { \
+        for (int i = 0; i < grphx.im_##tilesheet->w / tile_square; i++) \
+        { \
+            SDL_Surface* temp = GetSubSurface( \
+                grphx.im_##tilesheet, \
+                i * tile_square, j * tile_square, \
+                tile_square, tile_square \
+            ); \
+            vector.push_back(temp); \
+            \
+            extra_code \
+        } \
+    }
+
+#define PROCESS_TILESHEET(tilesheet, tile_square, extra_code) \
+    PROCESS_TILESHEET_RENAME(tilesheet, tilesheet, tile_square, extra_code)
+
 void Graphics::Makebfont()
 {
-    for (int j =  0; j < (grphx.im_bfont->h / 8); j++)
+    PROCESS_TILESHEET(bfont, 8,
     {
-        for (int i = 0; i < 16; i++)
-        {
-
-            SDL_Surface* temp = GetSubSurface(grphx.im_bfont,i*8,j*8,8,8);
-            bfont.push_back(temp);
-
-            SDL_Surface* TempFlipped = FlipSurfaceVerticle(temp);
-            flipbfont.push_back(TempFlipped);
-        }
-    }
+        SDL_Surface* TempFlipped = FlipSurfaceVerticle(temp);
+        flipbfont.push_back(TempFlipped);
+    })
 
     unsigned char* charmap = NULL;
     size_t length;
@@ -242,64 +280,26 @@ int Graphics::bfontlen(uint32_t ch) {
 
 void Graphics::MakeTileArray()
 {
-    for(int j = 0; j <30; j++)
-    {
-        for(int i = 0; i <40; i++)
-        {
-            SDL_Surface* temp = GetSubSurface(grphx.im_tiles,i*8,j*8,8,8);
-            tiles.push_back(temp);
-        }
-    }
-    for(int j = 0; j <30; j++)
-    {
-        for(int i = 0; i <40; i++)
-        {
-            SDL_Surface* temp = GetSubSurface(grphx.im_tiles2,i*8,j*8,8,8);
-            tiles2.push_back(temp);
-        }
-    }
-
-    for(int j = 0; j <30; j++)
-    {
-        for(int i = 0; i <30; i++)
-        {
-            SDL_Surface* temp = GetSubSurface(grphx.im_tiles3,i*8,j*8,8,8);
-            tiles3.push_back(temp);
-        }
-    }
-
-    for(int j = 0; j <60; j++)
-    {
-        for(int i = 0; i <12; i++)
-        {
-            SDL_Surface* temp = GetSubSurface(grphx.im_entcolours,i*8,j*8,8,8);
-            entcolours.push_back(temp);
-        }
-    }
+    PROCESS_TILESHEET(tiles, 8, )
+    PROCESS_TILESHEET(tiles2, 8, )
+    PROCESS_TILESHEET(tiles3, 8, )
+    PROCESS_TILESHEET(entcolours, 8, )
 }
 
 void Graphics::maketelearray()
 {
-    for (int i = 0; i < 10; i++)
-    {
-        SDL_Surface* temp = GetSubSurface(grphx.im_teleporter,i*96,0,96,96);
-        tele.push_back(temp);
-    }
+    PROCESS_TILESHEET_RENAME(teleporter, tele, 96, )
 }
 
 void Graphics::MakeSpriteArray()
 {
-    for(int j = 0; j <16; j++)
-    {
-        for(int i = 0; i <12; i++)
-        {
-            SDL_Surface* temp = GetSubSurface(grphx.im_sprites,i*32,j*32,32,32);
-            sprites.push_back(temp);
-            temp = GetSubSurface(grphx.im_flipsprites,i*32,j*32,32,32);
-            flipsprites.push_back(temp);
-        }
-    }
+    PROCESS_TILESHEET(sprites, 32, )
+    PROCESS_TILESHEET(flipsprites, 32, )
 }
+
+#undef PROCESS_TILESHEET
+#undef PROCESS_TILESHEET_RENAME
+#undef PROCESS_TILESHEET_CHECK_ERROR
 
 
 void Graphics::map_tab(int opt, const std::string& text, bool selected /*= false*/)
@@ -1214,16 +1214,34 @@ void Graphics::textboxremove()
 
 void Graphics::textboxtimer( int t )
 {
+    if (!INBOUNDS(m, textbox))
+    {
+        puts("textboxtimer() out-of-bounds!");
+        return;
+    }
+
     textbox[m].timer=t;
 }
 
 void Graphics::addline( std::string t )
 {
+    if (!INBOUNDS(m, textbox))
+    {
+        puts("addline() out-of-bounds!");
+        return;
+    }
+
     textbox[m].addline(t);
 }
 
 void Graphics::textboxadjust()
 {
+    if (!INBOUNDS(m, textbox))
+    {
+        puts("textboxadjust() out-of-bounds!");
+        return;
+    }
+
     textbox[m].adjust();
 }
 
@@ -1315,7 +1333,7 @@ void Graphics::processfade()
     }
 }
 
-void Graphics::drawmenu( int cr, int cg, int cb, int division /*= 30*/ )
+void Graphics::drawmenu( int cr, int cg, int cb )
 {
     for (size_t i = 0; i < game.menuoptions.size(); i++)
     {
@@ -1326,14 +1344,14 @@ void Graphics::drawmenu( int cr, int cg, int cb, int division /*= 30*/ )
             {
                 std::string tempstring = loc::toupper(game.menuoptions[i].text);
                 tempstring = std::string("[ ") + tempstring + std::string(" ]");
-                Print(110 + (i * division) - 16 +game.menuxoff, 140 + (i * 12) +game.menuyoff, tempstring, cr, cg, cb);
+                Print((i * game.menuspacing) - 16 +game.menuxoff, 140 + (i * 12) +game.menuyoff, tempstring, cr, cg, cb);
             }
             else
             {
                 std::string tempstring = loc::not_toupper(game.menuoptions[i].text);
                 tempstring = "[ " + tempstring + " ]";
                 //Draw it in gray
-                Print(110 + (i * division) - 16 +game.menuxoff, 140 + (i * 12)+game.menuyoff, tempstring, 128, 128, 128);
+                Print((i * game.menuspacing) - 16 +game.menuxoff, 140 + (i * 12)+game.menuyoff, tempstring, 128, 128, 128);
             }
         }
         else
@@ -1341,18 +1359,18 @@ void Graphics::drawmenu( int cr, int cg, int cb, int division /*= 30*/ )
             //Draw it normally
             if (game.menuoptions[i].active)
             {
-                Print(110 + (i * division) +game.menuxoff, 140 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), cr, cg, cb);
+                Print((i * game.menuspacing) +game.menuxoff, 140 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), cr, cg, cb);
             }
             else
             {
                 //Draw it in gray
-                Print(110 + (i * division) +game.menuxoff, 140 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), 128, 128, 128);
+                Print((i * game.menuspacing) +game.menuxoff, 140 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), 128, 128, 128);
             }
         }
     }
 }
 
-void Graphics::drawlevelmenu( int cr, int cg, int cb, int division /*= 30*/ )
+void Graphics::drawlevelmenu( int cr, int cg, int cb )
 {
     for (size_t i = 0; i < game.menuoptions.size(); i++)
     {
@@ -1364,14 +1382,14 @@ void Graphics::drawlevelmenu( int cr, int cg, int cb, int division /*= 30*/ )
             {
                 std::string tempstring = loc::toupper(game.menuoptions[i].text);
                 tempstring = std::string("[ ") + tempstring + std::string(" ]");
-                Print(110 + (i * division) - 16 +game.menuxoff, 140+8 + (i * 12) +game.menuyoff, tempstring, cr, cg, cb);
+                Print((i * game.menuspacing) - 16 +game.menuxoff, 140+8 + (i * 12) +game.menuyoff, tempstring, cr, cg, cb);
             }
             else
             {
                 std::string tempstring = loc::not_toupper(game.menuoptions[i].text);
                 tempstring = "[ " + tempstring + " ]";
                 //Draw it in gray
-                Print(110 + (i * division) - 16 +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, tempstring, 128, 128, 128);
+                Print((i * game.menuspacing) - 16 +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, tempstring, 128, 128, 128);
             }
           }else{
             //Draw it highlighted
@@ -1379,14 +1397,14 @@ void Graphics::drawlevelmenu( int cr, int cg, int cb, int division /*= 30*/ )
             {
                 std::string tempstring = loc::toupper(game.menuoptions[i].text);
                 tempstring = std::string("[ ") + tempstring + std::string(" ]");
-                Print(110 + (i * division) - 16 +game.menuxoff, 144 + (i * 12) +game.menuyoff, tempstring, cr, cg, cb);
+                Print((i * game.menuspacing) - 16 +game.menuxoff, 144 + (i * 12) +game.menuyoff, tempstring, cr, cg, cb);
             }
             else
             {
                 std::string tempstring = loc::not_toupper(game.menuoptions[i].text);
                 tempstring = "[ " + tempstring + " ]";
                 //Draw it in gray
-                Print(110 + (i * division) - 16 +game.menuxoff, 144 + (i * 12)+game.menuyoff, tempstring, 128, 128, 128);
+                Print((i * game.menuspacing) - 16 +game.menuxoff, 144 + (i * 12)+game.menuyoff, tempstring, 128, 128, 128);
             }
           }
         }
@@ -1396,23 +1414,23 @@ void Graphics::drawlevelmenu( int cr, int cg, int cb, int division /*= 30*/ )
             //Draw it normally
             if (game.menuoptions[i].active)
             {
-                Print(110 + (i * division) +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), cr, cg, cb);
+                Print((i * game.menuspacing) +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), cr, cg, cb);
             }
             else
             {
                 //Draw it in gray
-                Print(110 + (i * division) +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), 128, 128, 128);
+                Print((i * game.menuspacing) +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), 128, 128, 128);
             }
           }else{
             //Draw it normally
             if (game.menuoptions[i].active)
             {
-                Print(110 + (i * division) +game.menuxoff, 144 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), cr, cg, cb);
+                Print((i * game.menuspacing) +game.menuxoff, 144 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), cr, cg, cb);
             }
             else
             {
                 //Draw it in gray
-                Print(110 + (i * division) +game.menuxoff, 144 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), 128, 128, 128);
+                Print((i * game.menuspacing) +game.menuxoff, 144 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), 128, 128, 128);
             }
           }
         }
@@ -1618,6 +1636,15 @@ void Graphics::drawentities()
 
     SDL_Rect drawRect;
 
+#if !defined(NO_CUSTOM_LEVELS)
+    // Special case for gray Warp Zone tileset!
+    int room = game.roomx-100 + (game.roomy-100) * ed.maxwidth;
+    bool custom_gray = room >= 0 && room < 400
+    && ed.level[room].tileset == 3 && ed.level[room].tilecol == 6;
+#else
+    bool custom_gray = false;
+#endif
+
     std::vector<SDL_Surface*> *tilesvec;
     if (map.custommode && !map.finalmode)
     {
@@ -1750,7 +1777,16 @@ void Graphics::drawentities()
                 drawRect.x += tpoint.x;
                 drawRect.y += tpoint.y;
                 drawRect.x += 8 * ii;
-                BlitSurfaceStandard((*tilesvec)[obj.entities[i].drawframe],NULL, backBuffer, &drawRect);
+                if (custom_gray)
+                {
+                    colourTransform temp_ct;
+                    temp_ct.colour = 0xFFFFFFFF;
+                    BlitSurfaceTinted((*tilesvec)[obj.entities[i].drawframe],NULL, backBuffer, &drawRect, temp_ct);
+                }
+                else
+                {
+                    BlitSurfaceStandard((*tilesvec)[obj.entities[i].drawframe],NULL, backBuffer, &drawRect);
+                }
             }
             break;
         }
@@ -2475,20 +2511,6 @@ void Graphics::drawtowermap()
     }
 }
 
-void Graphics::drawtowermap_nobackground()
-{
-    int temp;
-    int yoff = lerp(map.oldypos, map.ypos);
-    for (int j = 0; j < 31; j++)
-    {
-        for (int i = 0; i < 40; i++)
-        {
-            temp = map.tower.at(i, j, yoff);
-            if (temp > 0 && temp<28) drawtile3(i * 8, (j * 8) - (yoff % 8), temp, map.colstate);
-        }
-    }
-}
-
 void Graphics::drawtowerspikes()
 {
     int spikeleveltop = lerp(map.oldspikeleveltop, map.spikeleveltop);
@@ -2857,33 +2879,69 @@ void Graphics::setwarprect( int a, int b, int c, int d )
 
 void Graphics::textboxcenter()
 {
+	if (!INBOUNDS(m, textbox))
+	{
+		puts("textboxcenter() out-of-bounds!");
+		return;
+	}
+
 	textbox[m].centerx();
 	textbox[m].centery();
 }
 
 void Graphics::textboxcenterx()
 {
+	if (!INBOUNDS(m, textbox))
+	{
+		puts("textboxcenterx() out-of-bounds!");
+		return;
+	}
+
 	textbox[m].centerx();
 }
 
 int Graphics::textboxwidth()
 {
+	if (!INBOUNDS(m, textbox))
+	{
+		puts("textboxwidth() out-of-bounds!");
+		return 0;
+	}
+
 	return textbox[m].w;
 }
 
 void Graphics::textboxmove(int xo, int yo)
 {
+	if (!INBOUNDS(m, textbox))
+	{
+		puts("textboxmove() out-of-bounds!");
+		return;
+	}
+
 	textbox[m].xp += xo;
 	textbox[m].yp += yo;
 }
 
 void Graphics::textboxmoveto(int xo)
 {
+	if (!INBOUNDS(m, textbox))
+	{
+		puts("textboxmoveto() out-of-bounds!");
+		return;
+	}
+
 	textbox[m].xp = xo;
 }
 
 void Graphics::textboxcentery()
 {
+	if (!INBOUNDS(m, textbox))
+	{
+		puts("textboxcentery() out-of-bounds!");
+		return;
+	}
+
 	textbox[m].centery();
 }
 
