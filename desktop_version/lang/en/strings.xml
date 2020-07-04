@@ -22,68 +22,68 @@
     <string english="start new game" explanation="menu option, extra confirmation" comment=""></string>
     <string english="secret lab" explanation="menu option" comment=""></string>
     <string english="play modes" explanation="menu option" comment=""></string>
-    <string english="ERROR: No levels found." explanation="wrapped" comment=""></string>
+    <string english="ERROR: No levels found." explanation="" max="38*3" comment=""></string>
     <string english="by %s" explanation="%s: author of level" comment=""></string>
-    <string english="ERROR: This level has no start point!" explanation="wrapped" comment=""></string>
+    <string english="ERROR: This level has no start point!" explanation="" max="38*5" comment=""></string>
     <string english="unlock play modes" explanation="menu option" comment=""></string>
     <string english="Unlock Play Modes" explanation="title" max="20" comment=""></string>
-    <string english="Unlock parts of the game normally unlocked as you progress" explanation="wrapped" comment=""></string>
-    <string english="From here, you may unlock parts of the game that are normally unlocked as you play." explanation="wrapped" comment=""></string>
+    <string english="Unlock parts of the game normally unlocked as you progress" explanation="" max="38*5" comment=""></string>
+    <string english="From here, you may unlock parts of the game that are normally unlocked as you play." explanation="" max="38*5" comment=""></string>
     <string english="unlock ship jukebox" explanation="menu option" comment=""></string>
     <string english="unlock secret lab" explanation="menu option" comment=""></string>
     <string english="game pad options" explanation="menu option" comment=""></string>
     <string english="Game Pad Options" explanation="title" max="20" comment=""></string>
     <string english="Game Pad" explanation="title" max="20" comment=""></string>
-    <string english="Rebind your controller&apos;s buttons and adjust sensitivity" explanation="wrapped" comment=""></string>
-    <string english="Change controller options." explanation="wrapped" comment=""></string>
+    <string english="Rebind your controller&apos;s buttons and adjust sensitivity" explanation="" max="38*5" comment=""></string>
+    <string english="Change controller options." explanation="" max="38*2" comment=""></string>
     <string english="language" explanation="menu option" comment=""></string>
     <string english="Language" explanation="title" max="20" comment=""></string>
-    <string english="Change the language" explanation="wrapped" comment=""></string>
+    <string english="Change the language" explanation="" max="38*5" comment=""></string>
     <string english="clear data" explanation="menu option" comment=""></string>
     <string english="Clear Data" explanation="title" max="20" comment=""></string>
-    <string english="Delete your save data and unlocked play modes" explanation="wrapped" comment=""></string>
-    <string english="Are you sure? This will delete your current saves..." explanation="wrapped" comment=""></string>
-    <string english="Are you sure you want to delete all your saved data?" explanation="wrapped" comment=""></string>
+    <string english="Delete your save data and unlocked play modes" explanation="" max="38*5" comment=""></string>
+    <string english="Are you sure? This will delete your current saves..." explanation="" max="38*7" comment=""></string>
+    <string english="Are you sure you want to delete all your saved data?" explanation="" max="38*7" comment=""></string>
     <string english="no! don&apos;t delete" explanation="menu option" comment=""></string>
     <string english="yes, delete everything" explanation="menu option" comment=""></string>
     <string english="soundtrack" explanation="menu option" comment=""></string>
     <string english="Soundtrack" explanation="title" max="20" comment=""></string>
-    <string english="Toggle between MMMMMM and PPPPPP" explanation="wrapped" comment=""></string>
-    <string english="Current soundtrack: MMMMMM" explanation="wrapped" comment=""></string>
-    <string english="Current soundtrack: PPPPPP" explanation="wrapped" comment=""></string>
+    <string english="Toggle between MMMMMM and PPPPPP" explanation="" max="38*2" comment=""></string>
+    <string english="Current soundtrack: MMMMMM" explanation="" max="38*3" comment=""></string>
+    <string english="Current soundtrack: PPPPPP" explanation="" max="38*3" comment=""></string>
     <string english="toggle fullscreen" explanation="menu option" comment=""></string>
     <string english="Toggle Fullscreen" explanation="title" max="20" comment=""></string>
-    <string english="Change to fullscreen/windowed mode." explanation="wrapped" comment=""></string>
-    <string english="Current mode: FULLSCREEN" explanation="wrapped" comment=""></string>
-    <string english="Current mode: WINDOWED" explanation="wrapped" comment=""></string>
+    <string english="Change to fullscreen/windowed mode." explanation="" max="38*3" comment=""></string>
+    <string english="Current mode: FULLSCREEN" explanation="" max="38*2" comment=""></string>
+    <string english="Current mode: WINDOWED" explanation="" max="38*2" comment=""></string>
     <string english="scaling mode" explanation="menu option" comment=""></string>
     <string english="Scaling Mode" explanation="title" max="20" comment=""></string>
-    <string english="Choose letterbox/stretch/integer mode." explanation="wrapped" comment=""></string>
-    <string english="Current mode: INTEGER" explanation="wrapped" comment=""></string>
-    <string english="Current mode: STRETCH" explanation="wrapped" comment=""></string>
-    <string english="Current mode: LETTERBOX" explanation="wrapped" comment=""></string>
-    <string english="resize to nearest" explanation="menu option" comment=""></string>
-    <string english="Resize to Nearest" explanation="title" max="20" comment=""></string>
-    <string english="Resize to the nearest window size that is of an integer multiple." explanation="wrapped. Explains how the game will be resized to be a multiple of 320x240, so for example if your window is 682x493, it will resize to 640x480" comment=""></string>
-    <string english="You must be in windowed mode to use this option." explanation="wrapped. The game cannot be in fullscreen" comment=""></string>
+    <string english="Choose letterbox/stretch/integer mode." explanation="See the `Current mode` explanations for more details on the modes" max="38*3" comment=""></string>
+    <string english="Current mode: INTEGER" explanation="integer (whole number) mode only enlarges the game in exact multiples of 320x240" max="38*2" comment=""></string>
+    <string english="Current mode: STRETCH" explanation="stretch mode just stretches the game to fill the window content" max="38*2" comment=""></string>
+    <string english="Current mode: LETTERBOX" explanation="letterbox mode enlarges the game to the window, but adds black bars to make the aspect ratio 4:3" max="38*2" comment=""></string>
+    <string english="resize to nearest" explanation="menu option. The game will be resized to the closest multiple of the normal resolution, 320x240, so for example if your window is 682x493, it will resize to 640x480" comment=""></string>
+    <string english="Resize to Nearest" explanation="title. The game will be resized to the closest multiple of the normal resolution, 320x240, so for example if your window is 682x493, it will resize to 640x480" max="20" comment=""></string>
+    <string english="Resize to the nearest window size that is of an integer multiple." explanation="The game will be resized to the closest multiple of the normal resolution, 320x240, so for example if your window is 682x493, it will resize to 640x480" max="38*3" comment=""></string>
+    <string english="You must be in windowed mode to use this option." explanation="The game cannot be in fullscreen to resize the window" max="38*2" comment=""></string>
     <string english="toggle filter" explanation="menu option" comment=""></string>
     <string english="Toggle Filter" explanation="title" max="20" comment=""></string>
-    <string english="Change to nearest/linear filter." explanation="wrapped" comment=""></string>
-    <string english="Current mode: LINEAR" explanation="wrapped" comment=""></string>
-    <string english="Current mode: NEAREST" explanation="wrapped, nearest neighbor filter" comment=""></string>
+    <string english="Change to nearest/linear filter." explanation="" max="38*3" comment=""></string>
+    <string english="Current mode: LINEAR" explanation="" max="38*2" comment=""></string>
+    <string english="Current mode: NEAREST" explanation="nearest neighbor filter" max="38*2" comment=""></string>
     <string english="toggle analogue" explanation="menu option, analogue mode simulates distortion from bad signal" comment=""></string>
     <string english="Analogue Mode" explanation="title, analogue mode simulates distortion from bad signal" max="20" comment=""></string>
-    <string english="There is nothing wrong with your television set. Do not attempt to adjust the picture." explanation="wrapped" comment=""></string>
+    <string english="There is nothing wrong with your television set. Do not attempt to adjust the picture." explanation="" max="38*5" comment=""></string>
     <string english="toggle fps" explanation="menu option, kind of a misnomer, toggle between 30 FPS and more than 30 FPS" comment=""></string>
     <string english="Toggle 30+ FPS" explanation="title" max="20" comment=""></string>
-    <string english="Change whether the game runs at 30 or over 30 FPS." explanation="wrapped" comment=""></string>
-    <string english="Current mode: 30 FPS" explanation="wrapped" comment=""></string>
-    <string english="Current mode: Over 30 FPS" explanation="wrapped" comment=""></string>
+    <string english="Change whether the game runs at 30 or over 30 FPS." explanation="" max="38*3" comment=""></string>
+    <string english="Current mode: 30 FPS" explanation="" max="38*2" comment=""></string>
+    <string english="Current mode: Over 30 FPS" explanation="" max="38*2" comment=""></string>
     <string english="toggle vsync" explanation="menu option" comment=""></string>
     <string english="Toggle VSync" explanation="title" max="20" comment=""></string>
-    <string english="Turn VSync on or off." explanation="wrapped" comment=""></string>
-    <string english="Current mode: VSYNC OFF" explanation="wrapped" comment=""></string>
-    <string english="Current mode: VSYNC ON" explanation="wrapped" comment=""></string>
+    <string english="Turn VSync on or off." explanation="" max="38*3" comment=""></string>
+    <string english="Current mode: VSYNC OFF" explanation="" max="38*2" comment=""></string>
+    <string english="Current mode: VSYNC ON" explanation="" max="38*2" comment=""></string>
     <string english="VVVVVV is a game by" explanation="credits" max="40" comment=""></string>
     <string english="Terry Cavanagh" explanation="credits" max="20" comment=""></string>
     <string english="and features music by" explanation="credits" max="40" comment=""></string>
@@ -97,16 +97,16 @@
     <string english="Sam Kaplan" explanation="credits" max="20" comment=""></string>
     <string english="Pauli Kohberger" explanation="credits" max="20" comment=""></string>
     <string english="Ending Picture by" explanation="credits" max="40" comment=""></string>
-    <string english="VVVVVV is supported by the following patrons" explanation="credits, wrapped" comment=""></string>
-    <string english="and also by" explanation="credits, wrapped, VVVVVV is also supported by the following people" comment=""></string>
-    <string english="With contributions on GitHub from" explanation="credits, wrapped" comment=""></string>
-    <string english="and thanks also to:" explanation="credits, and thanks also to ... you!" comment=""></string>
+    <string english="VVVVVV is supported by the following patrons" explanation="credits" max="38*3" comment=""></string>
+    <string english="and also by" explanation="credits, VVVVVV is also supported by the following people" max="38*2" comment=""></string>
+    <string english="With contributions on GitHub from" explanation="credits" max="38*3" comment=""></string>
+    <string english="and thanks also to:" explanation="credits, and thanks also to ... you!" max="38*3" comment=""></string>
     <string english="You!" explanation="credits, and thanks also to ... you!" comment=""></string>
-    <string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." explanation="credits, wrapped" comment=""></string>
-    <string english="Thank you!" explanation="credits, wrapped" comment=""></string>
-    <string english="Good luck!" explanation="wrapped" comment=""></string>
-    <string english="You cannot save in this mode." explanation="wrapped" comment=""></string>
-    <string english="Would you like to disable the cutscenes during the game?" explanation="wrapped" comment=""></string>
+    <string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." explanation="credits" max="38*5" comment=""></string>
+    <string english="Thank you!" explanation="credits" max="38*5" comment=""></string>
+    <string english="Good luck!" explanation="" max="38*3" comment=""></string>
+    <string english="You cannot save in this mode." explanation="" max="38*2" comment=""></string>
+    <string english="Would you like to disable the cutscenes during the game?" explanation="" max="38*7" comment=""></string>
     <string english="disable cutscenes" explanation="menu option" comment=""></string>
     <string english="enable cutscenes" explanation="menu option" comment=""></string>
     <string english="analog stick sensitivity" explanation="menu option" comment=""></string>
@@ -119,125 +119,125 @@
     <string english="Flip is bound to: " explanation="controller binds, bound to A, B, X, Y, etc" max="32" comment=""></string>
     <string english="Enter is bound to: " explanation="controller binds, bound to A, B, X, Y, etc" max="32" comment=""></string>
     <string english="Menu is bound to: " explanation="controller binds, bound to A, B, X, Y, etc" max="32" comment=""></string>
-    <string english="ERROR: No language files found." explanation="wrapped" comment=""></string>
-    <string english="This menu is only shown when having a lang folder in your VVVVVV folder." explanation="wrapped, the folder is called lang. Translation maintenance menu" comment=""></string>
+    <string english="ERROR: No language files found." explanation="" max="38*3" comment=""></string>
+    <string english="This menu is only shown when having a lang folder in your VVVVVV folder." explanation="the folder is called lang. Translation maintenance menu" max="38*3" comment=""></string>
     <string english="translation maintenance" explanation="menu option, menu that allows you to apply maintenance to translations" comment=""></string>
     <string english="sync language files" explanation="menu option" comment=""></string>
     <string english="Sync language files" explanation="title, translation maintenance menu" max="20" comment=""></string>
     <string english="sync" explanation="menu option, verb" comment=""></string>
-    <string english="Merge all new strings from the template files into the translation files, keeping existing translations" explanation="wrapped, translation maintenance menu" comment=""></string>
+    <string english="Merge all new strings from the template files into the translation files, keeping existing translations" explanation="translation maintenance menu" max="38*6" comment=""></string>
     <string english="statistics" explanation="menu option" comment=""></string>
     <string english="Statistics" explanation="title, translation maintenance menu" max="20" comment=""></string>
-    <string english="Count the amount of untranslated strings for each language" explanation="wrapped, translation maintenance menu" comment=""></string>
+    <string english="Count the amount of untranslated strings for each language" explanation="translation maintenance menu" max="38*6" comment=""></string>
     <string english="toggle test mode" explanation="menu option" comment=""></string>
     <string english="Test mode" explanation="title, translation maintenance menu" max="20" comment=""></string>
-    <string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." explanation="wrapped, translation maintenance menu" comment=""></string>
-    <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." explanation="wrapped, translation maintenance menu" comment=""></string>
+    <string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." explanation="translation maintenance menu" max="38*6" comment=""></string>
+    <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." explanation="translation maintenance menu" max="38*12" comment=""></string>
     <string english="advanced options" explanation="menu option" comment=""></string>
     <string english="Advanced Options" explanation="title" max="20" comment=""></string>
-    <string english="Hide the mouse cursor, remove the loading screen, turn on glitchrunner mode and more" explanation="wrapped, description for advanced options" comment=""></string>
+    <string english="Hide the mouse cursor, remove the loading screen, turn on glitchrunner mode and more" explanation="description for advanced options" max="38*5" comment=""></string>
     <string english="toggle mouse" explanation="menu option" comment=""></string>
     <string english="Toggle Mouse Cursor" explanation="title" max="20" comment=""></string>
-    <string english="Show/hide the system mouse cursor." explanation="wrapped" comment=""></string>
-    <string english="Current mode: SHOW" explanation="wrapped, show cursor" comment=""></string>
-    <string english="Current mode: HIDE" explanation="wrapped, hide cursor" comment=""></string>
+    <string english="Show/hide the system mouse cursor." explanation="" max="38*3" comment=""></string>
+    <string english="Current mode: SHOW" explanation="show cursor" max="38*2" comment=""></string>
+    <string english="Current mode: HIDE" explanation="hide cursor" max="38*2" comment=""></string>
     <string english="unfocus pause" explanation="menu option. Turns the pause screen on/off, which shows up when the window is unfocused/inactive (only one window is normally in focus/active at a time). Possible alternative: auto pause screen" comment=""></string>
     <string english="Unfocus Pause" explanation="title. Turns the pause screen on/off, which shows up when the window is unfocused/inactive (only one window is normally in focus/active at a time). Possible alternative: auto pause screen" max="20" comment=""></string>
-    <string english="Toggle if the game will pause when the window is unfocused." explanation="wrapped" comment=""></string>
-    <string english="Unfocus pause is OFF" explanation="wrapped. Making another window active will not show the pause screen." comment=""></string>
-    <string english="Unfocus pause is ON" explanation="wrapped. Making another window active will show the pause screen." comment=""></string>
+    <string english="Toggle if the game will pause when the window is unfocused." explanation="" max="38*3" comment=""></string>
+    <string english="Unfocus pause is OFF" explanation="Making another window active will not show the pause screen." max="38*2" comment=""></string>
+    <string english="Unfocus pause is ON" explanation="Making another window active will show the pause screen." max="38*2" comment=""></string>
     <string english="fake load screen" explanation="menu option" comment=""></string>
     <string english="Fake Load Screen" explanation="title, allows the loading screen which counts to 100% to be turned off" max="20" comment=""></string>
-    <string english="Fake loading screen is OFF" explanation="wrapped, allows the loading screen which counts to 100% to be turned off" comment=""></string>
-    <string english="Fake loading screen is ON" explanation="wrapped, allows the loading screen which counts to 100% to be turned off" comment=""></string>
+    <string english="Fake loading screen is OFF" explanation="allows the loading screen which counts to 100% to be turned off" max="38*5" comment=""></string>
+    <string english="Fake loading screen is ON" explanation="allows the loading screen which counts to 100% to be turned off" max="38*5" comment=""></string>
     <string english="room name background" explanation="menu option, background behind room names" comment=""></string>
     <string english="Room Name BG" explanation="title, background behind room names" max="20" comment=""></string>
-    <string english="Lets you see through what is behind the name at the bottom of the screen." explanation="wrapped" comment=""></string>
-    <string english="Room name background is TRANSLUCENT" explanation="wrapped" comment=""></string>
-    <string english="Room name background is OPAQUE" explanation="wrapped" comment=""></string>
+    <string english="Lets you see through what is behind the name at the bottom of the screen." explanation="" max="38*3" comment=""></string>
+    <string english="Room name background is TRANSLUCENT" explanation="" max="38*2" comment=""></string>
+    <string english="Room name background is OPAQUE" explanation="" max="38*2" comment=""></string>
     <string english="glitchrunner mode" explanation="menu option, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" comment=""></string>
     <string english="Glitchrunner Mode" explanation="title, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" max="20" comment=""></string>
-    <string english="Re-enable glitches that existed in previous versions of the game" explanation="wrapped, glitchrunner mode" comment=""></string>
-    <string english="Glitchrunner mode is ON" explanation="wrapped" comment=""></string>
-    <string english="Glitchrunner mode is OFF" explanation="wrapped" comment=""></string>
+    <string english="Re-enable glitches that existed in previous versions of the game" explanation="glitchrunner mode" max="38*3" comment=""></string>
+    <string english="Glitchrunner mode is ON" explanation="" max="38*2" comment=""></string>
+    <string english="Glitchrunner mode is OFF" explanation="" max="38*2" comment=""></string>
     <string english="accessibility options" explanation="menu option" comment=""></string>
     <string english="Accessibility" explanation="title" max="20" comment=""></string>
-    <string english="Disable screen effects, enable slowdown modes or invincibility" explanation="wrapped" comment=""></string>
+    <string english="Disable screen effects, enable slowdown modes or invincibility" explanation="" max="38*5" comment=""></string>
     <string english="animated backgrounds" explanation="menu option" comment=""></string>
     <string english="Backgrounds" explanation="title" max="20" comment=""></string>
-    <string english="Backgrounds are ON." explanation="wrapped" comment=""></string>
-    <string english="Backgrounds are OFF." explanation="wrapped" comment=""></string>
+    <string english="Backgrounds are ON." explanation="" max="38*5" comment=""></string>
+    <string english="Backgrounds are OFF." explanation="" max="38*5" comment=""></string>
     <string english="screen effects" explanation="menu option" comment=""></string>
     <string english="Screen Effects" explanation="title" max="20" comment=""></string>
-    <string english="Disables screen shakes and flashes." explanation="wrapped" comment=""></string>
-    <string english="Screen Effects are ON." explanation="wrapped" comment=""></string>
-    <string english="Screen Effects are OFF." explanation="wrapped" comment=""></string>
+    <string english="Disables screen shakes and flashes." explanation="" max="38*2" comment=""></string>
+    <string english="Screen Effects are ON." explanation="" max="38*3" comment=""></string>
+    <string english="Screen Effects are OFF." explanation="" max="38*3" comment=""></string>
     <string english="text outline" explanation="menu option" comment=""></string>
     <string english="Text Outline" explanation="title" max="20" comment=""></string>
-    <string english="Disables outline on game text" explanation="wrapped" comment=""></string>
-    <string english="Text outlines are ON." explanation="wrapped" comment=""></string>
-    <string english="Text outlines are OFF." explanation="wrapped" comment=""></string>
+    <string english="Disables outline on game text" explanation="" max="38*2" comment=""></string>
+    <string english="Text outlines are ON." explanation="" max="38*3" comment=""></string>
+    <string english="Text outlines are OFF." explanation="" max="38*3" comment=""></string>
     <string english="invincibility" explanation="menu option" comment=""></string>
     <string english="Invincibility" explanation="title" max="20" comment=""></string>
-    <string english="Provided to help disabled gamers explore the game. Can cause glitches." explanation="wrapped, invincibility mode" comment=""></string>
-    <string english="Invincibility is ON." explanation="wrapped" comment=""></string>
-    <string english="Invincibility is off." explanation="wrapped" comment=""></string>
-    <string english="Are you sure you want to enable invincibility?" explanation="wrapped" comment=""></string>
+    <string english="Provided to help disabled gamers explore the game. Can cause glitches." explanation="invincibility mode" max="38*3" comment=""></string>
+    <string english="Invincibility is ON." explanation="" max="38*2" comment=""></string>
+    <string english="Invincibility is off." explanation="" max="38*2" comment=""></string>
+    <string english="Are you sure you want to enable invincibility?" explanation="" max="38*7" comment=""></string>
     <string english="no, return to options" explanation="menu option" comment=""></string>
     <string english="yes, enable" explanation="menu option" comment=""></string>
     <string english="slowdown" explanation="menu option" comment=""></string>
     <string english="Game Speed" explanation="title" max="20" comment=""></string>
-    <string english="May be useful for disabled gamers using one switch devices." explanation="wrapped" comment=""></string>
-    <string english="Select a new game speed below." explanation="wrapped" comment=""></string>
-    <string english="Game speed is normal." explanation="wrapped" comment=""></string>
-    <string english="Game speed is at 80%" explanation="wrapped" comment=""></string>
-    <string english="Game speed is at 60%" explanation="wrapped" comment=""></string>
-    <string english="Game speed is at 40%" explanation="wrapped" comment=""></string>
+    <string english="May be useful for disabled gamers using one switch devices." explanation="" max="38*3" comment=""></string>
+    <string english="Select a new game speed below." explanation="" max="38*3" comment=""></string>
+    <string english="Game speed is normal." explanation="" max="38*2" comment=""></string>
+    <string english="Game speed is at 80%" explanation="" max="38*2" comment=""></string>
+    <string english="Game speed is at 60%" explanation="" max="38*2" comment=""></string>
+    <string english="Game speed is at 40%" explanation="" max="38*2" comment=""></string>
     <string english="normal speed" explanation="menu option" comment=""></string>
     <string english="80% speed" explanation="menu option" comment=""></string>
     <string english="60% speed" explanation="menu option" comment=""></string>
     <string english="40% speed" explanation="menu option" comment=""></string>
     <string english="play intermission 1" explanation="menu option" comment=""></string>
     <string english="play intermission 2" explanation="menu option" comment=""></string>
-    <string english="Who do you want to play the level with?" explanation="wrapped, choose your NPC companion" comment=""></string>
+    <string english="Who do you want to play the level with?" explanation="choose your NPC companion" max="38*8" comment=""></string>
     <string english="time trials" explanation="menu option" comment=""></string>
     <string english="Time Trials" explanation="title" max="20" comment=""></string>
-    <string english="Replay any level in the game in a competitive time trial mode." explanation="wrapped" comment=""></string>
-    <string english="Time Trials are not available with slowdown or invincibility." explanation="wrapped" comment=""></string>
+    <string english="Replay any level in the game in a competitive time trial mode." explanation="" max="38*4" comment=""></string>
+    <string english="Time Trials are not available with slowdown or invincibility." explanation="" max="38*3" comment=""></string>
     <string english="unlock time trials" explanation="menu option" comment=""></string>
     <string english="Unlock Time Trials" explanation="title" max="20" comment=""></string>
-    <string english="You can unlock each time trial separately." explanation="wrapped" comment=""></string>
+    <string english="You can unlock each time trial separately." explanation="" max="38*5" comment=""></string>
     <string english="intermissions" explanation="menu option" comment=""></string>
     <string english="Intermissions" explanation="title" max="20" comment=""></string>
-    <string english="Replay the intermission levels." explanation="wrapped" comment=""></string>
+    <string english="Replay the intermission levels." explanation="" max="38*3" comment=""></string>
     <string english="unlock intermissions" explanation="menu option" comment=""></string>
-    <string english="TO UNLOCK: Complete the intermission levels in-game." explanation="wrapped" comment=""></string>
+    <string english="TO UNLOCK: Complete the intermission levels in-game." explanation="" max="38*4" comment=""></string>
     <string english="no death mode" explanation="menu option" comment=""></string>
     <string english="No Death Mode" explanation="title" max="20" comment=""></string>
-    <string english="Play the entire game without dying once." explanation="wrapped" comment=""></string>
-    <string english="No Death Mode is not available with slowdown or invincibility." explanation="wrapped" comment=""></string>
+    <string english="Play the entire game without dying once." explanation="" max="38*4" comment=""></string>
+    <string english="No Death Mode is not available with slowdown or invincibility." explanation="" max="38*3" comment=""></string>
     <string english="unlock no death mode" explanation="menu option" comment=""></string>
-    <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." explanation="wrapped, ranks are B A S V" comment=""></string>
+    <string english="TO UNLOCK: Achieve an S-rank or above in at least 4 time trials." explanation="ranks are B A S V" max="38*3" comment=""></string>
     <string english="flip mode" explanation="menu option, mirrors the entire game vertically" comment=""></string>
     <string english="Flip Mode" explanation="title, mirrors the entire game vertically" max="20" comment=""></string>
-    <string english="Flip the entire game vertically." explanation="wrapped" comment=""></string>
-    <string english="Flip the entire game vertically. Compatible with other game modes." explanation="wrapped" comment=""></string>
+    <string english="Flip the entire game vertically." explanation="" max="38*2" comment=""></string>
+    <string english="Flip the entire game vertically. Compatible with other game modes." explanation="" max="38*4" comment=""></string>
     <string english="unlock flip mode" explanation="menu option" comment=""></string>
-    <string english="Currently ENABLED!" explanation="wrapped, flip mode" comment=""></string>
-    <string english="Currently Disabled." explanation="wrapped, flip mode" comment=""></string>
-    <string english="TO UNLOCK: Complete the game." explanation="wrapped" comment=""></string>
-    <string english="Are you sure you want to quit?" explanation="wrapped, quit the program" comment=""></string>
+    <string english="Currently ENABLED!" explanation="flip mode" max="38*3" comment=""></string>
+    <string english="Currently Disabled." explanation="flip mode" max="38*3" comment=""></string>
+    <string english="TO UNLOCK: Complete the game." explanation="" max="38*3" comment=""></string>
+    <string english="Are you sure you want to quit?" explanation="quit the program" max="38*4" comment=""></string>
     <string english="GAME OVER" explanation="bigger title" max="13" comment=""></string>
     <string english="You managed to reach:" explanation="you managed to reach the following room" max="40" comment=""></string>
-    <string english="Keep trying! You&apos;ll get there!" explanation="wrapped, player died before managing to save anybody" comment=""></string>
-    <string english="Nice one!" explanation="wrapped, player died after saving one crewmate" comment=""></string>
-    <string english="Wow! Congratulations!" explanation="wrapped, player died after saving two crewmates" comment=""></string>
-    <string english="Incredible!" explanation="wrapped, player died after saving three crewmates" comment=""></string>
-    <string english="Unbelievable! Well done!" explanation="wrapped, player died after saving four crewmates" comment=""></string>
-    <string english="Er, how did you do that?" explanation="wrapped, player died even though they were finished, lol" comment=""></string>
+    <string english="Keep trying! You&apos;ll get there!" explanation="player died before managing to save anybody" max="38*2" comment=""></string>
+    <string english="Nice one!" explanation="player died after saving one crewmate" max="38*2" comment=""></string>
+    <string english="Wow! Congratulations!" explanation="player died after saving two crewmates" max="38*2" comment=""></string>
+    <string english="Incredible!" explanation="player died after saving three crewmates" max="38*2" comment=""></string>
+    <string english="Unbelievable! Well done!" explanation="player died after saving four crewmates" max="38*2" comment=""></string>
+    <string english="Er, how did you do that?" explanation="player died even though they were finished, lol" max="38*2" comment=""></string>
     <string english="WOW" explanation="even bigger title" max="10" comment=""></string>
     <string english="You rescued all the crewmates!" explanation="" max="40" comment=""></string>
-    <string english="A new trophy has been awarded and placed in the secret lab to acknowledge your achievement!" explanation="wrapped" comment=""></string>
+    <string english="A new trophy has been awarded and placed in the secret lab to acknowledge your achievement!" explanation="" max="38*4" comment=""></string>
     <string english="[Trinkets found]" explanation="amount of shiny trinkets found" max="40" comment=""></string>
     <string english="[Number of Deaths]" explanation="" max="40" comment=""></string>
     <string english="[Time Taken]" explanation="stopwatch time" max="40" comment=""></string>
@@ -253,13 +253,13 @@
     <string english="S" explanation="time trial rank" comment=""></string>
     <string english="V" explanation="time trial rank" comment=""></string>
     <string english="Congratulations!" explanation="title" max="20" comment=""></string>
-    <string english="Your save files have been updated." explanation="wrapped, player completed game" comment=""></string>
-    <string english="If you want to keep exploring the game, select CONTINUE from the play menu." explanation="wrapped" comment=""></string>
-    <string english="You have unlocked a new Time Trial." explanation="wrapped" comment=""></string>
-    <string english="You have unlocked some new Time Trials." explanation="wrapped" comment=""></string>
-    <string english="You have unlocked No Death Mode." explanation="wrapped" comment=""></string>
-    <string english="You have unlocked Flip Mode." explanation="wrapped" comment=""></string>
-    <string english="You have unlocked the intermission levels." explanation="wrapped" comment=""></string>
+    <string english="Your save files have been updated." explanation="player completed game" max="38*6" comment=""></string>
+    <string english="If you want to keep exploring the game, select CONTINUE from the play menu." explanation="" max="38*9" comment=""></string>
+    <string english="You have unlocked a new Time Trial." explanation="" max="38*7" comment=""></string>
+    <string english="You have unlocked some new Time Trials." explanation="" max="38*7" comment=""></string>
+    <string english="You have unlocked No Death Mode." explanation="" max="38*7" comment=""></string>
+    <string english="You have unlocked Flip Mode." explanation="" max="38*7" comment=""></string>
+    <string english="You have unlocked the intermission levels." explanation="" max="38*7" comment=""></string>
     <string english="play a level" explanation="menu option" comment=""></string>
     <string english="level editor" explanation="menu option" comment=""></string>
     <string english="open level folder" explanation="menu option" comment=""></string>
@@ -273,26 +273,26 @@
     <string english="continue from save" explanation="menu option" comment=""></string>
     <string english="start from beginning" explanation="menu option" comment=""></string>
     <string english="back to levels" explanation="menu option" comment=""></string>
-    <string english="To install new player levels, copy the .vvvvvv files to this folder:" explanation="wrapped" comment=""></string>
-    <string english="[ Press ACTION to Start ]" explanation="wrapped, title screen" comment=""></string>
-    <string english="ACTION = Space, Z, or V" explanation="wrapped, title screen" comment=""></string>
+    <string english="To install new player levels, copy the .vvvvvv files to this folder:" explanation="" max="38*3" comment=""></string>
+    <string english="[ Press ACTION to Start ]" explanation="title screen" max="38*2" comment=""></string>
+    <string english="ACTION = Space, Z, or V" explanation="title screen" max="38*3" comment=""></string>
     <string english="[Press ENTER to return to editor]" explanation="`to editor` is sorta redundant" max="40" comment=""></string>
     <string english="- Press ACTION to advance text -" explanation="to dismiss a textbox" max="40" comment=""></string>
     <string english="- Press ENTER to Teleport -" explanation="" max="40" comment=""></string>
     <string english="Current Time" explanation="super gravitron, stopwatch time" max="20" comment=""></string>
     <string english="Best Time" explanation="super gravitron, best stopwatch time" max="20" comment=""></string>
-    <string english="Next Trophy at 5 seconds" explanation="wrapped" comment=""></string>
-    <string english="Next Trophy at 10 seconds" explanation="wrapped" comment=""></string>
-    <string english="Next Trophy at 15 seconds" explanation="wrapped" comment=""></string>
-    <string english="Next Trophy at 20 seconds" explanation="wrapped" comment=""></string>
-    <string english="Next Trophy at 30 seconds" explanation="wrapped" comment=""></string>
-    <string english="Next Trophy at 1 minute" explanation="wrapped" comment=""></string>
-    <string english="All Trophies collected!" explanation="wrapped" comment=""></string>
+    <string english="Next Trophy at 5 seconds" explanation="" max="38*2" comment=""></string>
+    <string english="Next Trophy at 10 seconds" explanation="" max="38*2" comment=""></string>
+    <string english="Next Trophy at 15 seconds" explanation="" max="38*2" comment=""></string>
+    <string english="Next Trophy at 20 seconds" explanation="" max="38*2" comment=""></string>
+    <string english="Next Trophy at 30 seconds" explanation="" max="38*2" comment=""></string>
+    <string english="Next Trophy at 1 minute" explanation="" max="38*2" comment=""></string>
+    <string english="All Trophies collected!" explanation="" max="38*2" comment=""></string>
     <string english="New Record!" explanation="" max="20" comment=""></string>
     <string english="New Trophy!" explanation="" max="20" comment=""></string>
     <string english="[Press ENTER to stop]" explanation="stop super gravitron" max="40" comment=""></string>
     <string english="SUPER GRAVITRON" explanation="" max="20" comment=""></string>
-    <string english="SUPER GRAVITRON HIGHSCORE" explanation="wrapped" comment=""></string>
+    <string english="SUPER GRAVITRON HIGHSCORE" explanation="" max="38*4" comment=""></string>
     <string english="GO!" explanation="3, 2, 1, GO!" max="13" comment=""></string>
     <string english="Go!" explanation="3, 2, 1, Go!" max="10" comment=""></string>
     <string english="TIME:" explanation="stopwatch time, not too long" comment=""></string>
@@ -309,19 +309,19 @@
     <string english="[ QUIT ]" explanation="in-game menu" max="40" comment=""></string>
     <string english="[ GRAVITRON ]" explanation="in-game menu" max="40" comment=""></string>
     <string english="NO SIGNAL" explanation="" comment=""></string>
-    <string english="Press ACTION to warp to the ship." explanation="wrapped, spaceship. Warp = teleport" comment=""></string>
+    <string english="Press ACTION to warp to the ship." explanation="spaceship. Warp = teleport" max="38*7" comment=""></string>
     <string english="Missing..." explanation="" max="15" comment=""></string>
-    <string english="Cannot Save in Level Replay" explanation="wrapped" comment=""></string>
-    <string english="Cannot Save in No Death Mode" explanation="wrapped" comment=""></string>
-    <string english="Cannot Save in Time Trial" explanation="wrapped" comment=""></string>
-    <string english="Cannot Save in Secret Lab" explanation="wrapped" comment=""></string>
-    <string english="Game saved ok!" explanation="wrapped" comment=""></string>
-    <string english="[Press ACTION to save your game]" explanation="wrapped" comment=""></string>
-    <string english="(Note: The game is autosaved at every teleporter.)" explanation="wrapped" comment=""></string>
+    <string english="Cannot Save in Level Replay" explanation="" max="38*7" comment=""></string>
+    <string english="Cannot Save in No Death Mode" explanation="" max="38*7" comment=""></string>
+    <string english="Cannot Save in Time Trial" explanation="" max="38*7" comment=""></string>
+    <string english="Cannot Save in Secret Lab" explanation="" max="38*7" comment=""></string>
+    <string english="Game saved ok!" explanation="" max="38*2" comment=""></string>
+    <string english="[Press ACTION to save your game]" explanation="" max="38*7" comment=""></string>
+    <string english="(Note: The game is autosaved at every teleporter.)" explanation="" max="38*3" comment=""></string>
     <string english="Last Save:" explanation="" max="40" comment=""></string>
-    <string english="Return to main menu?" explanation="wrapped" comment=""></string>
-    <string english="Do you want to quit? You will lose any unsaved progress." explanation="wrapped" comment=""></string>
-    <string english="Do you want to return to the secret laboratory?" explanation="wrapped" comment=""></string>
+    <string english="Return to main menu?" explanation="" max="38*4" comment=""></string>
+    <string english="Do you want to quit? You will lose any unsaved progress." explanation="" max="38*4" comment=""></string>
+    <string english="Do you want to return to the secret laboratory?" explanation="" max="38*4" comment=""></string>
     <string english="no, keep playing" explanation="" max="28" comment=""></string>
     <string english="[ NO, KEEP PLAYING ]" explanation="" max="32" comment=""></string>
     <string english="no, return" explanation="" comment=""></string>

@@ -175,9 +175,9 @@ void menurender()
             graphics.PrintWrap( -1, 65, loc::gettext("Change to fullscreen/windowed mode."), tr, tg, tb, true);
 
             if(game.fullscreen){
-              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: FULLSCREEN"), tr, tg, tb, true);
+              graphics.PrintWrap( -1, 95, loc::gettext("Current mode: FULLSCREEN"), tr, tg, tb, true);
             }else{
-              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: WINDOWED"), tr, tg, tb, true);
+              graphics.PrintWrap( -1, 95, loc::gettext("Current mode: WINDOWED"), tr, tg, tb, true);
             }
             break;
 
@@ -186,11 +186,11 @@ void menurender()
             graphics.PrintWrap( -1, 65, loc::gettext("Choose letterbox/stretch/integer mode."), tr, tg, tb, true);
 
             if(game.stretchMode == 2){
-              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: INTEGER"), tr, tg, tb, true);
+              graphics.PrintWrap( -1, 95, loc::gettext("Current mode: INTEGER"), tr, tg, tb, true);
             }else if (game.stretchMode == 1){
-              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: STRETCH"), tr, tg, tb, true);
+              graphics.PrintWrap( -1, 95, loc::gettext("Current mode: STRETCH"), tr, tg, tb, true);
             }else{
-              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: LETTERBOX"), tr, tg, tb, true);
+              graphics.PrintWrap( -1, 95, loc::gettext("Current mode: LETTERBOX"), tr, tg, tb, true);
             }
             break;
         case 2:
@@ -206,9 +206,9 @@ void menurender()
             graphics.PrintWrap( -1, 65, loc::gettext("Change to nearest/linear filter."), tr, tg, tb, true);
 
             if(game.useLinearFilter){
-              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: LINEAR"), tr, tg, tb, true);
+              graphics.PrintWrap( -1, 95, loc::gettext("Current mode: LINEAR"), tr, tg, tb, true);
             }else{
-              graphics.PrintWrap( -1, 85, loc::gettext("Current mode: NEAREST"), tr, tg, tb, true);
+              graphics.PrintWrap( -1, 95, loc::gettext("Current mode: NEAREST"), tr, tg, tb, true);
             }
             break;
 

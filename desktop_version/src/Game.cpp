@@ -7085,7 +7085,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         if(ed.ListOfMetaData.size()==0)
         {
             option(loc::gettext("ok"));
-            option("ok");
             menuyoff = -20;
         }
         else
