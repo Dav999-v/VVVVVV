@@ -103,6 +103,7 @@ bool binaryBlob::unPackBinary(const char* name)
 
 		if (m_headers[i].valid & ~0x1 || !m_headers[i].valid)
 		{
+			m_headers[i].valid = false;
 			continue; /* Must be EXACTLY 1 or 0 */
 		}
 		if (m_headers[i].size < 1)
@@ -172,4 +173,20 @@ int binaryBlob::getSize(int _index)
 char* binaryBlob::getAddress(int _index)
 {
 	return m_memblocks[_index];
+}
+
+std::vector<int> binaryBlob::getExtra()
+{
+	std::vector<int> result;
+	for (int i = 0; i < 128; i += 1)
+	{
+		if (m_headers[i].valid
+#define FOREACH_TRACK(track_name) && strcmp(m_headers[i].name, track_name) != 0
+		TRACK_NAMES
+#undef FOREACH_TRACK
+		) {
+			result.push_back(i);
+		}
+	}
+	return result;
 }

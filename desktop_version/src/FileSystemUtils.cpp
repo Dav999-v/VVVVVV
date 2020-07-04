@@ -74,18 +74,24 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
 	PHYSFS_setWriteDir(output);
 	printf("Base directory: %s\n", output);
 
-	/* Create save directory */
-	strcpy(saveDir, output);
-	strcat(saveDir, "saves");
-	strcat(saveDir, PHYSFS_getDirSeparator());
-	PHYSFS_mkdir(saveDir);
+	/* Create the save/level folders */
+	mkdirResult |= PHYSFS_mkdir("saves");
+	mkdirResult |= PHYSFS_mkdir("levels");
+
+	/* Store full save directory */
+	SDL_snprintf(saveDir, sizeof(saveDir), "%s%s%s",
+		output,
+		"saves",
+		PHYSFS_getDirSeparator()
+	);
 	printf("Save directory: %s\n", saveDir);
 
-	/* Create level directory */
-	strcpy(levelDir, output);
-	strcat(levelDir, "levels");
-	strcat(levelDir, PHYSFS_getDirSeparator());
-	mkdirResult |= PHYSFS_mkdir(levelDir);
+	/* Store full level directory */
+	SDL_snprintf(levelDir, sizeof(levelDir), "%s%s%s",
+		output,
+		"levels",
+		PHYSFS_getDirSeparator()
+	);
 	printf("Level directory: %s\n", levelDir);
 
 	/* We didn't exist until now, migrate files! */

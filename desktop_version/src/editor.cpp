@@ -293,11 +293,9 @@ void editorclass::reset()
     note="";
     notedelay=0;
     oldnotedelay=0;
-    roomnamemod=false;
     textentry=false;
-    savemod=false;
-    loadmod=false;
     deletekeyheld=false;
+    textmod = TEXT_NONE;
 
     titlemod=false;
     creatormod=false;
@@ -316,7 +314,6 @@ void editorclass::reset()
     boundy1=0;
     boundy2=0;
 
-    scripttextmod=false;
     textent=0;
     scripttexttype=0;
 
@@ -342,8 +339,6 @@ void editorclass::reset()
 
     edentity.clear();
     levmusic=0;
-
-    roomtextmod=false;
 
     for (int j = 0; j < maxheight; j++)
     {
@@ -506,6 +501,25 @@ void editorclass::insertline(int t)
 {
     //insert a blank line into script at line t
     sb.insert(sb.begin() + t, "");
+}
+
+void editorclass::getlin(const enum textmode mode, const std::string& prompt, std::string* ptr)
+{
+    ed.textmod = mode;
+    ed.textptr = ptr;
+    ed.textdesc = prompt;
+    key.enabletextentry();
+    if (ptr)
+    {
+        key.keybuffer = *ptr;
+    }
+    else
+    {
+        key.keybuffer = "";
+        ed.textptr = &(key.keybuffer);
+    }
+
+    ed.oldenttext = key.keybuffer;
 }
 
 std::vector<int> editorclass::loadlevel( int rxi, int ryi )
@@ -1614,6 +1628,138 @@ int editorclass::findwarptoken(int t)
     return 0;
 }
 
+void editorclass::switch_tileset(const bool reversed /*= false*/)
+{
+    const char* tilesets[] = {"Space Station", "Outside", "Lab", "Warp Zone", "Ship"};
+    const size_t roomnum = levx + levy*maxwidth;
+    if (roomnum >= SDL_arraysize(level))
+    {
+        return;
+    }
+    edlevelclass& room = level[roomnum];
+
+    int tiles = room.tileset;
+
+    if (reversed)
+    {
+        tiles--;
+    }
+    else
+    {
+        tiles++;
+    }
+
+    const size_t modulus = SDL_arraysize(tilesets);
+    tiles = (tiles % modulus + modulus) % modulus;
+    room.tileset = tiles;
+
+    clamp_tilecol(levx, levy);
+
+    char buffer[64];
+    SDL_snprintf(buffer, sizeof(buffer), "Now using %s Tileset", tilesets[tiles]);
+
+    note = buffer;
+    notedelay = 45;
+    updatetiles = true;
+}
+
+void editorclass::switch_tilecol(const bool reversed /*= false*/)
+{
+    const size_t roomnum = levx + levy*maxwidth;
+    if (roomnum >= SDL_arraysize(level))
+    {
+        return;
+    }
+    edlevelclass& room = level[roomnum];
+
+    if (reversed)
+    {
+        room.tilecol--;
+    }
+    else
+    {
+        room.tilecol++;
+    }
+
+    clamp_tilecol(levx, levy, true);
+
+    notedelay = 45;
+    note = "Tileset Colour Changed";
+    updatetiles = true;
+}
+
+void editorclass::clamp_tilecol(const int rx, const int ry, const bool wrap /*= false*/)
+{
+    const size_t roomnum = rx + ry*maxwidth;
+    if (roomnum >= SDL_arraysize(level))
+    {
+        return;
+    }
+    edlevelclass& room = level[rx + ry*maxwidth];
+
+    const int tileset = room.tileset;
+    int tilecol = room.tilecol;
+
+    int mincol = -1;
+    int maxcol = 5;
+
+    // Only Space Station allows tileset -1
+    if (tileset != 0)
+    {
+        mincol = 0;
+    }
+
+    switch (tileset)
+    {
+    case 0:
+        maxcol = 31;
+        break;
+    case 1:
+        maxcol = 7;
+        break;
+    case 3:
+        maxcol = 6;
+        break;
+    case 5:
+        maxcol = 29;
+        break;
+    }
+
+    // If wrap is true, wrap-around, otherwise just cap
+    if (tilecol > maxcol)
+    {
+        tilecol = (wrap ? mincol : maxcol);
+    }
+    if (tilecol < mincol)
+    {
+        tilecol = (wrap ? maxcol : mincol);
+    }
+
+    room.tilecol = tilecol;
+}
+
+void editorclass::switch_enemy(const bool reversed /*= false*/)
+{
+    const size_t roomnum = levx + levy*maxwidth;
+    if (roomnum >= SDL_arraysize(level))
+    {
+        return;
+    }
+    edlevelclass& room = level[roomnum];
+
+    if (reversed)
+    {
+        room.enemytype--;
+    }
+    else
+    {
+        room.enemytype++;
+    }
+
+    note = "Enemy Type Changed";
+    notedelay = 45;
+}
+
 bool editorclass::load(std::string& _path)
 {
     reset();
@@ -2382,52 +2528,68 @@ void editormenurender(int tr, int tg, int tb)
         }
         break;
     case Menu::ed_music:
+    {
         graphics.bigprint( -1, 65, "Map Music", tr, tg, tb, true);
 
         graphics.Print( -1, 85, "Current map music:", tr, tg, tb, true);
+        std::string songname;
         switch(ed.levmusic)
         {
         case 0:
-            graphics.Print( -1, 120, "No background music", tr, tg, tb, true);
+            songname = "No background music";
             break;
         case 1:
-            graphics.Print( -1, 120, "1: Pushing Onwards", tr, tg, tb, true);
+            songname = "1: Pushing Onwards";
             break;
         case 2:
-            graphics.Print( -1, 120, "2: Positive Force", tr, tg, tb, true);
+            songname = "2: Positive Force";
             break;
         case 3:
-            graphics.Print( -1, 120, "3: Potential for Anything", tr, tg, tb, true);
+            songname = "3: Potential for Anything";
             break;
         case 4:
-            graphics.Print( -1, 120, "4: Passion for Exploring", tr, tg, tb, true);
+            songname = "4: Passion for Exploring";
+            break;
+        case 5:
+            songname = "N/A: Pause";
             break;
         case 6:
-            graphics.Print( -1, 120, "5: Presenting VVVVVV", tr, tg, tb, true);
+            songname = "5: Presenting VVVVVV";
+            break;
+        case 7:
+            songname = "N/A: Plenary";
             break;
         case 8:
-            graphics.Print( -1, 120, "6: Predestined Fate", tr, tg, tb, true);
+            songname = "6: Predestined Fate";
+            break;
+        case 9:
+            songname = "N/A: ecroF evitisoP";
             break;
         case 10:
-            graphics.Print( -1, 120, "7: Popular Potpourri", tr, tg, tb, true);
+            songname = "7: Popular Potpourri";
             break;
         case 11:
-            graphics.Print( -1, 120, "8: Pipe Dream", tr, tg, tb, true);
+            songname = "8: Pipe Dream";
             break;
         case 12:
-            graphics.Print( -1, 120, "9: Pressure Cooker", tr, tg, tb, true);
+            songname = "9: Pressure Cooker";
             break;
         case 13:
-            graphics.Print( -1, 120, "10: Paced Energy", tr, tg, tb, true);
+            songname = "10: Paced Energy";
             break;
         case 14:
-            graphics.Print( -1, 120, "11: Piercing the Sky", tr, tg, tb, true);
+            songname = "11: Piercing the Sky";
+            break;
+        case 15:
+            songname = "N/A: Predestined Fate Remix";
             break;
         default:
-            graphics.Print( -1, 120, "?: something else", tr, tg, tb, true);
+            songname = "?: something else";
             break;
         }
+        graphics.Print( -1, 120, songname, tr, tg, tb, true);
         break;
+    }
     case Menu::ed_quit:
         graphics.bigprint( -1, 90, "Save before", tr, tg, tb, true);
         graphics.bigprint( -1, 110, "quitting?", tr, tg, tb, true);
@@ -3199,75 +3361,21 @@ void editorrender()
 
         graphics.drawmenu(tr, tg, tb);
     }
-    else if(ed.scripttextmod)
+    else if (ed.textmod)
     {
-        FillRect(graphics.backBuffer, 0,221,320,240, graphics.getRGB(32,32,32));
-        FillRect(graphics.backBuffer, 0,222,320,240, graphics.getRGB(0,0,0));
-        graphics.Print(4, 224, "Enter script id name:", 255,255,255, false);
-        if(ed.entframe<2)
+        FillRect(graphics.backBuffer, 0, 221, 320, 240, graphics.getRGB(32, 32, 32));
+        FillRect(graphics.backBuffer, 0, 222, 320, 240, graphics.getRGB(0, 0, 0));
+        graphics.Print(4, 224, ed.textdesc, 255, 255, 255, false);
+        std::string input = key.keybuffer;
+        if (ed.entframe < 2)
         {
-            graphics.Print(4, 232, edentity[ed.textent].scriptname+"_", 196, 196, 255 - help.glow, true);
+            input += "_";
         }
         else
         {
-            graphics.Print(4, 232, edentity[ed.textent].scriptname+" ", 196, 196, 255 - help.glow, true);
+            input += " ";
         }
-    }
-    else if(ed.savemod)
-    {
-        FillRect(graphics.backBuffer, 0,221,320,240, graphics.getRGB(32,32,32));
-        FillRect(graphics.backBuffer, 0,222,320,240, graphics.getRGB(0,0,0));
-        graphics.Print(4, 224, "Enter filename to save map as:", 255,255,255, false);
-        if(ed.entframe<2)
-        {
-            graphics.Print(4, 232, ed.filename+"_", 196, 196, 255 - help.glow, true);
-        }
-        else
-        {
-            graphics.Print(4, 232, ed.filename+" ", 196, 196, 255 - help.glow, true);
-        }
-    }
-    else if(ed.loadmod)
-    {
-        FillRect(graphics.backBuffer, 0,221,320,240, graphics.getRGB(32,32,32));
-        FillRect(graphics.backBuffer, 0,222,320,240, graphics.getRGB(0,0,0));
-        graphics.Print(4, 224, "Enter map filename to load:", 255,255,255, false);
-        if(ed.entframe<2)
-        {
-            graphics.Print(4, 232, ed.filename+"_", 196, 196, 255 - help.glow, true);
-        }
-        else
-        {
-            graphics.Print(4, 232, ed.filename+" ", 196, 196, 255 - help.glow, true);
-        }
-    }
-    else if(ed.roomnamemod)
-    {
-        FillRect(graphics.backBuffer, 0,221,320,240, graphics.getRGB(32,32,32));
-        FillRect(graphics.backBuffer, 0,222,320,240, graphics.getRGB(0,0,0));
-        graphics.Print(4, 224, "Enter new room name:", 255,255,255, false);
-        if(ed.entframe<2)
-        {
-            graphics.Print(4, 232, ed.level[ed.levx+(ed.levy*ed.maxwidth)].roomname+"_", 196, 196, 255 - help.glow, true);
-        }
-        else
-        {
-            graphics.Print(4, 232, ed.level[ed.levx+(ed.levy*ed.maxwidth)].roomname+" ", 196, 196, 255 - help.glow, true);
-        }
-    }
-    else if(ed.roomtextmod)
-    {
-        FillRect(graphics.backBuffer, 0,221,320,240, graphics.getRGB(32,32,32));
-        FillRect(graphics.backBuffer, 0,222,320,240, graphics.getRGB(0,0,0));
-        graphics.Print(4, 224, "Enter text string:", 255,255,255, false);
-        if(ed.entframe<2)
-        {
-            graphics.Print(4, 232, edentity[ed.textent].scriptname+"_", 196, 196, 255 - help.glow, true);
-        }
-        else
-        {
-            graphics.Print(4, 232, edentity[ed.textent].scriptname+" ", 196, 196, 255 - help.glow, true);
-        }
+        graphics.Print(4, 232, input, 196, 196, 255 - help.glow, true);
     }
     else if(ed.warpmod)
     {
@@ -3779,25 +3887,18 @@ void editormenuactionpress()
             graphics.backgrounddrawn=false;
             map.nexttowercolour();
 
-            ed.loadmod=true;
-            ed.textentry=true;
-            key.enabletextentry();
-            key.keybuffer=ed.filename;
-            ed.keydelay=6;
+            ed.keydelay = 6;
+            ed.getlin(TEXT_LOAD, "Enter map filename to load:", &(ed.filename));
             game.mapheld=true;
             graphics.backgrounddrawn=false;
             break;
         case 5:
             //Save level
             ed.settingsmod=false;
-            graphics.backgrounddrawn=false;
             map.nexttowercolour();
 
-            ed.savemod=true;
-            ed.textentry=true;
-            key.enabletextentry();
-            key.keybuffer=ed.filename;
-            ed.keydelay=6;
+            ed.keydelay = 6;
+            ed.getlin(TEXT_SAVE, "Enter map filename to save as:", &(ed.filename));
             game.mapheld=true;
             graphics.backgrounddrawn=false;
             break;
@@ -3813,10 +3914,7 @@ void editormenuactionpress()
         {
         case 0:
             ed.levmusic++;
-            if(ed.levmusic==5) ed.levmusic=6;
-            if(ed.levmusic==7) ed.levmusic=8;
-            if(ed.levmusic==9) ed.levmusic=10;
-            if(ed.levmusic==15) ed.levmusic=0;
+            if(ed.levmusic==16) ed.levmusic=0;
             if(ed.levmusic>0)
             {
                 music.play(ed.levmusic);
@@ -3843,14 +3941,10 @@ void editormenuactionpress()
             ed.saveandquit=true;
 
             ed.settingsmod=false;
-            graphics.backgrounddrawn=false;
             map.nexttowercolour();
 
-            ed.savemod=true;
-            ed.textentry=true;
-            key.enabletextentry();
-            key.keybuffer=ed.filename;
-            ed.keydelay=6;
+            ed.keydelay = 6;
+            ed.getlin(TEXT_SAVE, "Enter map filename to save as:", &(ed.filename));
             game.mapheld=true;
             graphics.backgrounddrawn=false;
             break;
@@ -3887,20 +3981,25 @@ void editorinput()
         ed.tiley = ed.tiley * 240 / winheight;
     }
 
+    bool up_pressed = key.isDown(SDLK_UP) || key.isDown(SDL_CONTROLLER_BUTTON_DPAD_UP);
+    bool down_pressed = key.isDown(SDLK_DOWN) || key.isDown(SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+    bool left_pressed = key.isDown(SDLK_LEFT) || key.isDown(SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+    bool right_pressed = key.isDown(SDLK_RIGHT) || key.isDown(SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+
     game.press_left = false;
     game.press_right = false;
     game.press_action = false;
     game.press_map = false;
 
-    if (key.isDown(KEYBOARD_LEFT) || key.isDown(KEYBOARD_a))
+    if (key.isDown(KEYBOARD_LEFT) || key.isDown(KEYBOARD_a) || key.controllerWantsLeft(false))
     {
         game.press_left = true;
     }
-    if (key.isDown(KEYBOARD_RIGHT) || key.isDown(KEYBOARD_d))
+    if (key.isDown(KEYBOARD_RIGHT) || key.isDown(KEYBOARD_d) || key.controllerWantsRight(false))
     {
         game.press_right = true;
     }
-    if (key.isDown(KEYBOARD_z) || key.isDown(KEYBOARD_SPACE) || key.isDown(KEYBOARD_v))
+    if (key.isDown(KEYBOARD_z) || key.isDown(KEYBOARD_SPACE) || key.isDown(KEYBOARD_v) || key.isDown(game.controllerButton_flip))
     {
         game.press_action = true;
     };
@@ -3916,12 +4015,26 @@ void editorinput()
     if (key.isDown(27) && !ed.settingskey)
     {
         ed.settingskey=true;
-        if(ed.textentry)
+        if (ed.textmod)
         {
             key.disabletextentry();
-            ed.roomnamemod=false;
-            ed.loadmod=false;
-            ed.savemod=false;
+            if (ed.textmod >= FIRST_ENTTEXT && ed.textmod <= LAST_ENTTEXT)
+            {
+                *ed.textptr = ed.oldenttext;
+                if (ed.oldenttext == "")
+                {
+                    removeedentity(ed.textent);
+                }
+            }
+
+            ed.textmod = TEXT_NONE;
+
+            ed.shiftmenu = false;
+            ed.shiftkey = false;
+        }
+        else if (ed.textentry)
+        {
+            key.disabletextentry();
             ed.textentry=false;
             ed.titlemod=false;
             ed.desc1mod=false;
@@ -3929,20 +4042,7 @@ void editorinput()
             ed.desc3mod=false;
             ed.websitemod=false;
             ed.creatormod=false;
-            if(ed.scripttextmod || ed.roomtextmod)
-            {
-                if (ed.oldenttext == "")
-                {
-                    removeedentity(ed.textent);
-                }
-                else
-                {
-                    edentity[ed.textent].scriptname = ed.oldenttext;
-                }
-            }
 
-            ed.scripttextmod=false;
-            ed.roomtextmod=false;
             ed.shiftmenu=false;
             ed.shiftkey=false;
         }
@@ -3997,13 +4097,13 @@ void editorinput()
             //hook select menu
             if(ed.keydelay>0) ed.keydelay--;
 
-            if(key.keymap[SDLK_UP] && ed.keydelay<=0)
+            if(up_pressed && ed.keydelay<=0)
             {
                 ed.keydelay=6;
                 ed.hookmenu--;
             }
 
-            if(key.keymap[SDLK_DOWN] && ed.keydelay<=0)
+            if(down_pressed && ed.keydelay<=0)
             {
                 ed.keydelay=6;
                 ed.hookmenu++;
@@ -4035,11 +4135,11 @@ void editorinput()
             }
 
             if (!game.press_action && !game.press_left && !game.press_right
-                    && !key.keymap[SDLK_UP] && !key.keymap[SDLK_DOWN] && !key.isDown(27)) game.jumpheld = false;
+                    && !up_pressed && !down_pressed && !key.isDown(27)) game.jumpheld = false;
             if (!game.jumpheld)
             {
                 if (game.press_action || game.press_left || game.press_right || game.press_map
-                        || key.keymap[SDLK_UP] || key.keymap[SDLK_DOWN] || key.isDown(27))
+                        || up_pressed || down_pressed || key.isDown(27))
                 {
                     game.jumpheld = true;
                 }
@@ -4082,7 +4182,7 @@ void editorinput()
 
             if(ed.keydelay>0) ed.keydelay--;
 
-            if(key.keymap[SDLK_UP] && ed.keydelay<=0)
+            if(up_pressed && ed.keydelay<=0)
             {
                 ed.keydelay=6;
                 ed.sby--;
@@ -4101,7 +4201,7 @@ void editorinput()
                 key.keybuffer=ed.sb[ed.pagey+ed.sby];
             }
 
-            if(key.keymap[SDLK_DOWN] && ed.keydelay<=0)
+            if(down_pressed && ed.keydelay<=0)
             {
                 ed.keydelay=6;
                 if(ed.sby+ed.pagey<(int)ed.sb.size()-1)
@@ -4181,29 +4281,92 @@ void editorinput()
             }
         }
     }
-    else if(ed.textentry)
+    else if (ed.textmod)
     {
-        if(ed.roomnamemod)
+        *ed.textptr = key.keybuffer;
+
+        if (!game.press_map && !key.isDown(27))
         {
-            ed.level[ed.levx+(ed.levy*ed.maxwidth)].roomname=key.keybuffer;
+            game.mapheld = false;
         }
-        else if(ed.savemod)
+        if (!game.mapheld && game.press_map)
         {
-            ed.filename=key.keybuffer;
+            game.mapheld = true;
+            key.disabletextentry();
+            switch (ed.textmod)
+            {
+            case TEXT_GOTOROOM:
+            {
+                std::vector<std::string> coords = split(key.keybuffer, ',');
+                if (coords.size() != 2)
+                {
+                    ed.note = "[ ERROR: Invalid format ]";
+                    ed.notedelay = 45;
+                    break;
+                }
+                ed.levx = clamp(atoi(coords[0].c_str()) - 1, 0, ed.mapwidth - 1);
+                ed.levy = clamp(atoi(coords[1].c_str()) - 1, 0, ed.mapheight - 1);
+                graphics.backgrounddrawn = false;
+                break;
+            }
+            case TEXT_LOAD:
+            {
+                std::string loadstring = ed.filename + ".vvvvvv";
+                if (ed.load(loadstring))
+                {
+                    // don't use filename, it has the full path
+                    char buffer[64];
+                    SDL_snprintf(buffer, sizeof(buffer), "[ Loaded map: %s.vvvvvv ]", ed.filename.c_str());
+                    ed.note = buffer;
+                }
+                else
+                {
+                    ed.note = "[ ERROR: Could not load level ]";
+                }
+                ed.notedelay = 45;
+                break;
+            }
+            case TEXT_SAVE:
+            {
+                std::string savestring = ed.filename + ".vvvvvv";
+                if (ed.save(savestring))
+                {
+                    char buffer[64];
+                    SDL_snprintf(buffer, sizeof(buffer), "[ Saved map: %s.vvvvvv ]", ed.filename.c_str());
+                    ed.note = buffer;
+                }
+                else
+                {
+                    ed.note = "[ ERROR: Could not save level! ]";
+                    ed.saveandquit = false;
+                }
+                ed.notedelay = 45;
+
+                if (ed.saveandquit)
+                {
+                    graphics.fademode = 2; // quit editor
+                }
+                break;
+            }
+            case TEXT_SCRIPT:
+                ed.clearscriptbuffer();
+                if (!ed.checkhook(key.keybuffer))
+                {
+                    ed.addhook(key.keybuffer);
+                }
+                break;
+            default:
+                break;
+            }
+
+            ed.shiftmenu = false;
+            ed.shiftkey = false;
+            ed.textmod = TEXT_NONE;
         }
-        else if(ed.loadmod)
-        {
-            ed.filename=key.keybuffer;
-        }
-        else if(ed.roomtextmod)
-        {
-            edentity[ed.textent].scriptname=key.keybuffer;
-        }
-        else if(ed.scripttextmod)
-        {
-            edentity[ed.textent].scriptname=key.keybuffer;
-        }
-        else if(ed.titlemod)
+    }
+    else if (ed.textentry)
+    {
+        if(ed.titlemod)
         {
             EditorData::GetInstance().title=key.keybuffer;
         }
@@ -4234,71 +4397,7 @@ void editorinput()
             if(game.press_map)
             {
                 game.mapheld=true;
-                if(ed.roomnamemod)
-                {
-                    ed.level[ed.levx+(ed.levy*ed.maxwidth)].roomname=key.keybuffer;
-                    ed.roomnamemod=false;
-                }
-                else if(ed.savemod)
-                {
-                    std::string savestring=ed.filename+".vvvvvv";
-                    if (ed.save(savestring))
-                    {
-                        ed.note="[ Saved map: " + ed.filename+ ".vvvvvv]";
-                    }
-                    else
-                    {
-                        ed.note="[ ERROR: Could not save level! ]";
-                        ed.saveandquit = false;
-                    }
-                    ed.notedelay=45;
-                    ed.savemod=false;
-
-                    ed.shiftmenu=false;
-                    ed.shiftkey=false;
-
-                    if(ed.saveandquit)
-                    {
-                        //quit editor
-                        graphics.fademode = 2;
-                    }
-                }
-                else if(ed.loadmod)
-                {
-                    std::string loadstring=ed.filename+".vvvvvv";
-                    if (ed.load(loadstring))
-                    {
-                        ed.note="[ Loaded map: " + ed.filename+ ".vvvvvv]";
-                    }
-                    else
-                    {
-                        ed.note="[ ERROR: Could not load level ]";
-                    }
-                    ed.notedelay=45;
-                    ed.loadmod=false;
-
-                    ed.shiftmenu=false;
-                    ed.shiftkey=false;
-                }
-                else if(ed.roomtextmod)
-                {
-                    edentity[ed.textent].scriptname=key.keybuffer;
-                    ed.roomtextmod=false;
-
-                    ed.shiftmenu=false;
-                    ed.shiftkey=false;
-                }
-                else if(ed.scripttextmod)
-                {
-                    edentity[ed.textent].scriptname=key.keybuffer;
-                    ed.scripttextmod=false;
-                    ed.clearscriptbuffer();
-                    if(!ed.checkhook(edentity[ed.textent].scriptname))
-                    {
-                        ed.addhook(edentity[ed.textent].scriptname);
-                    }
-                }
-                else if(ed.titlemod)
+                if(ed.titlemod)
                 {
                     EditorData::GetInstance().title=key.keybuffer;
                     ed.titlemod=false;
@@ -4355,22 +4454,22 @@ void editorinput()
         if(ed.settingsmod)
         {
             if (!game.press_action && !game.press_left && !game.press_right
-                    && !key.keymap[SDLK_UP] && !key.keymap[SDLK_DOWN]) game.jumpheld = false;
+                    && !up_pressed && !down_pressed) game.jumpheld = false;
             if (!game.jumpheld)
             {
                 if (game.press_action || game.press_left || game.press_right || game.press_map
-                        || key.keymap[SDLK_UP] || key.keymap[SDLK_DOWN])
+                        || up_pressed || down_pressed)
                 {
                     game.jumpheld = true;
                 }
 
                 if(game.menustart)
                 {
-                    if (game.press_left || key.keymap[SDLK_UP])
+                    if (game.press_left || up_pressed)
                     {
                         game.currentmenuoption--;
                     }
-                    else if (game.press_right || key.keymap[SDLK_DOWN])
+                    else if (game.press_right || down_pressed)
                     {
                         game.currentmenuoption++;
                     }
@@ -4385,100 +4484,137 @@ void editorinput()
                 }
             }
         }
+        else if (ed.keydelay > 0)
+        {
+            ed.keydelay--;
+        }
+        else if (key.keymap[SDLK_LCTRL] || key.keymap[SDLK_RCTRL])
+        {
+            // Ctrl modifiers
+            ed.dmtileeditor=10;
+            if(left_pressed)
+            {
+                ed.dmtile--;
+                ed.keydelay=3;
+                if(ed.dmtile<0) ed.dmtile+=1200;
+            }
+            else if(right_pressed)
+            {
+                ed.dmtile++;
+                ed.keydelay=3;
+
+                if(ed.dmtile>=1200) ed.dmtile-=1200;
+            }
+            if(up_pressed)
+            {
+                ed.dmtile-=40;
+                ed.keydelay=3;
+                if(ed.dmtile<0) ed.dmtile+=1200;
+            }
+            else if(down_pressed)
+            {
+                ed.dmtile+=40;
+                ed.keydelay=3;
+
+                if(ed.dmtile>=1200) ed.dmtile-=1200;
+            }
+        }
+        else if (key.keymap[SDLK_LSHIFT] || key.keymap[SDLK_RSHIFT])
+        {
+            // Shift modifiers
+            if (key.keymap[SDLK_F1])
+            {
+                ed.switch_tileset(true);
+                graphics.backgrounddrawn = false;
+                ed.keydelay = 6;
+            }
+            if (key.keymap[SDLK_F2])
+            {
+                ed.switch_tilecol(true);
+                graphics.backgrounddrawn = false;
+                ed.keydelay = 6;
+            }
+            if (key.keymap[SDLK_F3])
+            {
+                ed.switch_enemy(true);
+                ed.keydelay=6;
+            }
+
+            if (up_pressed || down_pressed || left_pressed || right_pressed)
+            {
+                ed.keydelay=6;
+                if(up_pressed)
+                {
+                    ed.mapheight--;
+                }
+                else if(down_pressed)
+                {
+                    ed.mapheight++;
+                }
+                else if(left_pressed)
+                {
+                    ed.mapwidth--;
+                }
+                else if(right_pressed)
+                {
+                    ed.mapwidth++;
+                }
+
+                if(ed.mapwidth<1) ed.mapwidth=1;
+                if(ed.mapheight<1) ed.mapheight=1;
+                if(ed.mapwidth>=ed.maxwidth) ed.mapwidth=ed.maxwidth;
+                if(ed.mapheight>=ed.maxheight) ed.mapheight=ed.maxheight;
+                ed.note = "Mapsize is now [" + help.String(ed.mapwidth) + "," + help.String(ed.mapheight) + "]";
+                ed.notedelay=45;
+            }
+
+            if(!ed.shiftkey)
+            {
+                if(ed.shiftmenu)
+                {
+                    ed.shiftmenu=false;
+                }
+                else
+                {
+                    ed.shiftmenu=true;
+                }
+            }
+            ed.shiftkey=true;
+        }
         else
         {
-            //Shortcut keys
-            //TO DO: make more user friendly
-            if(key.keymap[SDLK_F1] && ed.keydelay==0)
+            // No modifiers
+            ed.shiftkey=false;
+            if(key.keymap[SDLK_F1])
             {
-                ed.level[ed.levx+(ed.levy*ed.maxwidth)].tileset++;
-                graphics.backgrounddrawn=false;
-                if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tileset>=5) ed.level[ed.levx+(ed.levy*ed.maxwidth)].tileset=0;
-                if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tileset==0)
-                {
-                    if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol>=32) ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol=0;
-                }
-                else if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tileset==1)
-                {
-                    if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol>=8) ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol=0;
-                }
-                else
-                {
-                    if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol>=6) ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol=0;
-                }
-                ed.notedelay=45;
-                switch(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tileset)
-                {
-                case 0:
-                    ed.note="Now using Space Station Tileset";
-                    break;
-                case 1:
-                    ed.note="Now using Outside Tileset";
-                    break;
-                case 2:
-                    ed.note="Now using Lab Tileset";
-                    break;
-                case 3:
-                    ed.note="Now using Warp Zone Tileset";
-                    break;
-                case 4:
-                    ed.note="Now using Ship Tileset";
-                    break;
-                case 5:
-                    ed.note="Now using Tower Tileset";
-                    break;
-                default:
-                    ed.note="Tileset Changed";
-                    break;
-                }
-                ed.updatetiles=true;
+                ed.switch_tileset();
+                graphics.backgrounddrawn = false;
+                ed.keydelay = 6;
+            }
+            if(key.keymap[SDLK_F2])
+            {
+                ed.switch_tilecol();
+                graphics.backgrounddrawn = false;
+                ed.keydelay = 6;
+            }
+            if(key.keymap[SDLK_F3])
+            {
+                ed.switch_enemy();
                 ed.keydelay=6;
             }
-            if(key.keymap[SDLK_F2] && ed.keydelay==0)
-            {
-                ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol++;
-                graphics.backgrounddrawn=false;
-                if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tileset==0)
-                {
-                    if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol>=32) ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol=0;
-                }
-                else if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tileset==1)
-                {
-                    if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol>=8) ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol=0;
-                }
-                else if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tileset==3)
-                {
-                    if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol>=7) ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol=0;
-                }
-                else
-                {
-                    if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol>=6) ed.level[ed.levx+(ed.levy*ed.maxwidth)].tilecol=0;
-                }
-                ed.updatetiles=true;
-                ed.keydelay=6;
-                ed.notedelay=45;
-                ed.note="Tileset Colour Changed";
-            }
-            if(key.keymap[SDLK_F3] && ed.keydelay==0)
-            {
-                ed.level[ed.levx+(ed.levy*ed.maxwidth)].enemytype=(ed.level[ed.levx+(ed.levy*ed.maxwidth)].enemytype+1)%10;
-                ed.keydelay=6;
-                ed.notedelay=45;
-                ed.note="Enemy Type Changed";
-            }
-            if(key.keymap[SDLK_F4] && ed.keydelay==0)
+            if(key.keymap[SDLK_F4])
             {
                 ed.keydelay=6;
                 ed.boundarytype=1;
                 ed.boundarymod=1;
             }
-            if(key.keymap[SDLK_F5] && ed.keydelay==0)
+            if(key.keymap[SDLK_F5])
             {
                 ed.keydelay=6;
                 ed.boundarytype=2;
                 ed.boundarymod=1;
             }
-            if(key.keymap[SDLK_F10] && ed.keydelay==0)
+            if(key.keymap[SDLK_F10])
             {
                 if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].directmode==1)
                 {
@@ -4514,7 +4650,7 @@ void editorinput()
             if(key.keymap[SDLK_o]) ed.drawmode=15;
             if(key.keymap[SDLK_p]) ed.drawmode=16;
 
-            if(key.keymap[SDLK_w] && ed.keydelay==0)
+            if(key.keymap[SDLK_w])
             {
                 int j=0, tx=0, ty=0;
                 for(size_t i=0; i<edentity.size(); i++)
@@ -4564,37 +4700,32 @@ void editorinput()
                 }
                 ed.keydelay=6;
             }
-            if(key.keymap[SDLK_e] && ed.keydelay==0)
+            if(key.keymap[SDLK_e])
             {
-                ed.roomnamemod=true;
-                ed.textentry=true;
-                key.enabletextentry();
-                key.keybuffer=ed.level[ed.levx+(ed.levy*ed.maxwidth)].roomname;
-                ed.keydelay=6;
+                ed.keydelay = 6;
+                ed.getlin(TEXT_ROOMNAME, "Enter new room name:", &(ed.level[ed.levx+(ed.levy*ed.maxwidth)].roomname));
+                game.mapheld=true;
+            }
+            if (key.keymap[SDLK_g])
+            {
+                ed.keydelay = 6;
+                ed.getlin(TEXT_GOTOROOM, "Enter room coordinates x,y:", NULL);
                 game.mapheld=true;
             }
 
             //Save and load
-            if(key.keymap[SDLK_s] && ed.keydelay==0)
+            if(key.keymap[SDLK_s])
             {
-                ed.savemod=true;
-                ed.textentry=true;
-                key.enabletextentry();
-                key.keybuffer=ed.filename;
-                ed.keydelay=6;
+                ed.keydelay = 6;
+                ed.getlin(TEXT_SAVE, "Enter map filename to save map as:", &(ed.filename));
                 game.mapheld=true;
-                graphics.backgrounddrawn=false;
             }
 
-            if(key.keymap[SDLK_l] && ed.keydelay==0)
+            if(key.keymap[SDLK_l])
             {
-                ed.loadmod=true;
-                ed.textentry=true;
-                key.enabletextentry();
-                key.keybuffer=ed.filename;
-                ed.keydelay=6;
+                ed.keydelay = 6;
+                ed.getlin(TEXT_LOAD, "Enter map filename to load:", &(ed.filename));
                 game.mapheld=true;
-                graphics.backgrounddrawn=false;
             }
 
             if(!game.press_map) game.mapheld=false;
@@ -4698,170 +4829,73 @@ void editorinput()
             ed.xmod = key.keymap[SDLK_x];
             ed.zmod = key.keymap[SDLK_z];
 
-            //Keyboard shortcuts
-            if(ed.keydelay>0)
+            if(key.keymap[SDLK_COMMA])
             {
-                ed.keydelay--;
+                ed.drawmode--;
+                ed.keydelay=6;
+            }
+            else if(key.keymap[SDLK_PERIOD])
+            {
+                ed.drawmode++;
+                ed.keydelay=6;
+            }
+
+            if(ed.drawmode<0)
+            {
+                ed.drawmode=16;
+                if(ed.spacemod) ed.spacemenu=0;
+            }
+            if(ed.drawmode>16) ed.drawmode=0;
+            if(ed.drawmode>9)
+            {
+                if(ed.spacemod) ed.spacemenu=1;
             }
             else
             {
-                if(key.keymap[SDLK_LSHIFT] || key.keymap[SDLK_RSHIFT])
-                {
-                    if(key.keymap[SDLK_UP])
-                    {
-                        ed.keydelay=6;
-                        ed.mapheight--;
-                    }
-                    else if(key.keymap[SDLK_DOWN])
-                    {
-                        ed.keydelay=6;
-                        ed.mapheight++;
-                    }
+                if(ed.spacemod) ed.spacemenu=0;
+            }
 
-                    if(key.keymap[SDLK_LEFT])
-                    {
-                        ed.keydelay=6;
-                        ed.mapwidth--;
-                    }
-                    else if(key.keymap[SDLK_RIGHT])
-                    {
-                        ed.keydelay=6;
-                        ed.mapwidth++;
-                    }
-                    if(ed.keydelay==6)
-                    {
-                        if(ed.mapwidth<1) ed.mapwidth=1;
-                        if(ed.mapheight<1) ed.mapheight=1;
-                        if(ed.mapwidth>=ed.maxwidth) ed.mapwidth=ed.maxwidth;
-                        if(ed.mapheight>=ed.maxheight) ed.mapheight=ed.maxheight;
-                        ed.note = "Mapsize is now [" + help.String(ed.mapwidth) + "," + help.String(ed.mapheight) + "]";
-                        ed.notedelay=45;
-                    }
-                }
-                else
-                {
-                    if(key.keymap[SDLK_COMMA])
-                    {
-                        ed.drawmode--;
-                        ed.keydelay=6;
-                    }
-                    else if(key.keymap[SDLK_PERIOD])
-                    {
-                        ed.drawmode++;
-                        ed.keydelay=6;
-                    }
+            if(up_pressed)
+            {
+                ed.keydelay=6;
+                graphics.backgrounddrawn=false;
+                ed.levy--;
+                ed.updatetiles=true;
+                ed.changeroom=true;
+            }
+            else if(down_pressed)
+            {
+                ed.keydelay=6;
+                graphics.backgrounddrawn=false;
+                ed.levy++;
+                ed.updatetiles=true;
+                ed.changeroom=true;
+            }
+            else if(left_pressed)
+            {
+                ed.keydelay=6;
+                graphics.backgrounddrawn=false;
+                ed.levx--;
+                ed.updatetiles=true;
+                ed.changeroom=true;
+            }
+            else if(right_pressed)
+            {
+                ed.keydelay=6;
+                graphics.backgrounddrawn=false;
+                ed.levx++;
+                ed.updatetiles=true;
+                ed.changeroom=true;
+            }
 
-                    if(ed.drawmode<0)
-                    {
-                        ed.drawmode=16;
-                        if(ed.spacemod) ed.spacemenu=0;
-                    }
-                    if(ed.drawmode>16) ed.drawmode=0;
-                    if(ed.drawmode>9)
-                    {
-                        if(ed.spacemod) ed.spacemenu=1;
-                    }
-                    else
-                    {
-                        if(ed.spacemod) ed.spacemenu=0;
-                    }
-
-                    if(key.keymap[SDLK_LCTRL] || key.keymap[SDLK_RCTRL])
-                    {
-                        ed.dmtileeditor=10;
-                        if(key.keymap[SDLK_LEFT])
-                        {
-                            ed.dmtile--;
-                            ed.keydelay=3;
-                            if(ed.dmtile<0) ed.dmtile+=1200;
-                        }
-                        else if(key.keymap[SDLK_RIGHT])
-                        {
-                            ed.dmtile++;
-                            ed.keydelay=3;
-
-                            if(ed.dmtile>=1200) ed.dmtile-=1200;
-                        }
-                        if(key.keymap[SDLK_UP])
-                        {
-                            ed.dmtile-=40;
-                            ed.keydelay=3;
-                            if(ed.dmtile<0) ed.dmtile+=1200;
-                        }
-                        else if(key.keymap[SDLK_DOWN])
-                        {
-                            ed.dmtile+=40;
-                            ed.keydelay=3;
-
-                            if(ed.dmtile>=1200) ed.dmtile-=1200;
-                        }
-                    }
-                    else
-                    {
-                        if(key.keymap[SDLK_UP])
-                        {
-                            ed.keydelay=6;
-                            graphics.backgrounddrawn=false;
-                            ed.levy--;
-                            ed.updatetiles=true;
-                            ed.changeroom=true;
-                        }
-                        else if(key.keymap[SDLK_DOWN])
-                        {
-                            ed.keydelay=6;
-                            graphics.backgrounddrawn=false;
-                            ed.levy++;
-                            ed.updatetiles=true;
-                            ed.changeroom=true;
-                        }
-                        else if(key.keymap[SDLK_LEFT])
-                        {
-                            ed.keydelay=6;
-                            graphics.backgrounddrawn=false;
-                            ed.levx--;
-                            ed.updatetiles=true;
-                            ed.changeroom=true;
-                        }
-                        else if(key.keymap[SDLK_RIGHT])
-                        {
-                            ed.keydelay=6;
-                            graphics.backgrounddrawn=false;
-                            ed.levx++;
-                            ed.updatetiles=true;
-                            ed.changeroom=true;
-                        }
-                    }
-
-                    if(ed.levx<0) ed.levx+=ed.mapwidth;
-                    if(ed.levx>= ed.mapwidth) ed.levx-=ed.mapwidth;
-                    if(ed.levy<0) ed.levy+=ed.mapheight;
-                    if(ed.levy>=ed.mapheight) ed.levy-=ed.mapheight;
-                }
-                if(key.keymap[SDLK_SPACE])
-                {
-                    ed.spacemod = !ed.spacemod;
-                    ed.keydelay=6;
-                }
-
-                if(key.keymap[SDLK_LSHIFT] || key.keymap[SDLK_RSHIFT])
-                {
-                    if(!ed.shiftkey)
-                    {
-                        if(ed.shiftmenu)
-                        {
-                            ed.shiftmenu=false;
-                        }
-                        else
-                        {
-                            ed.shiftmenu=true;
-                        }
-                    }
-                    ed.shiftkey=true;
-                }
-                else
-                {
-                    ed.shiftkey=false;
-                }
+            if(ed.levx<0) ed.levx+=ed.mapwidth;
+            if(ed.levx>= ed.mapwidth) ed.levx-=ed.mapwidth;
+            if(ed.levy<0) ed.levy+=ed.mapheight;
+            if(ed.levy>=ed.mapheight) ed.levy-=ed.mapheight;
+            if(key.keymap[SDLK_SPACE])
+            {
+                ed.spacemod = !ed.spacemod;
+                ed.keydelay=6;
             }
         }
 
@@ -4895,16 +4929,11 @@ void editorinput()
                             if(ed.boundarytype==0)
                             {
                                 //Script trigger
-                                ed.scripttextmod=true;
-                                ed.oldenttext="";
+                                ed.lclickdelay=1;
                                 ed.textent=edentity.size();
                                 addedentity((ed.boundx1/8)+(ed.levx*40),(ed.boundy1/8)+ (ed.levy*30),19,
                                             (ed.boundx2-ed.boundx1)/8, (ed.boundy2-ed.boundy1)/8);
-                                ed.lclickdelay=1;
-
-                                ed.textentry=true;
-                                key.enabletextentry();
-                                key.keybuffer="";
+                                ed.getlin(TEXT_SCRIPT, "Enter script name:", &(edentity[ed.textent].scriptname));
                                 ed.lclickdelay=1;
                             }
                             else if(ed.boundarytype==1)
@@ -5180,15 +5209,10 @@ void editorinput()
                             //Room text and script triggers can be placed in walls
                             if(ed.drawmode==10)
                             {
-                                ed.roomtextmod=true;
-                                ed.oldenttext="";
-                                ed.textent=edentity.size();
-                                ed.textentry=true;
-                                key.enabletextentry();
-                                key.keybuffer="";
-                                graphics.backgrounddrawn=false;
-                                addedentity(ed.tilex+ (ed.levx*40),ed.tiley+ (ed.levy*30),17);
                                 ed.lclickdelay=1;
+                                ed.textent=edentity.size();
+                                addedentity(ed.tilex+ (ed.levx*40),ed.tiley+ (ed.levy*30),17);
+                                ed.getlin(TEXT_ROOMTEXT, "Enter roomtext:", &(edentity[ed.textent].scriptname));
                             }
                             else if(ed.drawmode==12)   //Script Trigger
                             {
@@ -5246,14 +5270,10 @@ void editorinput()
                             }
                             else if(ed.drawmode==11)
                             {
-                                ed.scripttextmod=true;
-                                ed.oldenttext="";
-                                ed.textent=edentity.size();
-                                ed.textentry=true;
-                                key.enabletextentry();
-
-                                addedentity(ed.tilex+(ed.levx*40),ed.tiley+ (ed.levy*30),18,0);
                                 ed.lclickdelay=1;
+                                ed.textent=edentity.size();
+                                addedentity(ed.tilex+(ed.levx*40),ed.tiley+ (ed.levy*30),18,0);
+                                ed.getlin(TEXT_SCRIPT, "Enter script name", &(edentity[ed.textent].scriptname));
                             }
                             else if(ed.drawmode==13)
                             {
@@ -5368,23 +5388,15 @@ void editorinput()
                         }
                         else if(edentity[tmp].t==17)
                         {
-                            ed.roomtextmod=true;
-                            ed.oldenttext=edentity[tmp].scriptname;
+                            ed.getlin(TEXT_ROOMTEXT, "Enter roomtext:", &(edentity[tmp].scriptname));
                             ed.textent=tmp;
-                            ed.textentry=true;
-                            key.enabletextentry();
-                            key.keybuffer=ed.oldenttext;
                             ed.lclickdelay=1;
                         }
                         else if(edentity[tmp].t==18 || edentity[tmp].t==19)
                         {
-                            ed.scripttextmod=true;
-                            ed.oldenttext=edentity[tmp].scriptname;
-                            ed.textent=tmp;
-                            ed.textentry=true;
-                            key.enabletextentry();
-                            key.keybuffer=ed.oldenttext;
                             ed.lclickdelay=1;
+                            ed.textent=tmp;
+                            ed.getlin(TEXT_SCRIPT, "Enter script name:", &(edentity[ed.textent].scriptname));
                         }
                     }
                 }

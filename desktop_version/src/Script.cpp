@@ -366,11 +366,23 @@ void scriptclass::run()
 					g = 134;
 					b = 255;
 				}
+				else if (words[1] == "white")
+				{
+					r = 244;
+					g = 244;
+					b = 244;
+				}
 				else if (words[1] == "gray")
 				{
 					r = 174;
 					g = 174;
 					b = 174;
+				}
+				else if (words[1] == "orange")
+				{
+					r = 255;
+					g = 130;
+					b = 20;
 				}
 				else
 				{
@@ -703,17 +715,29 @@ void scriptclass::run()
 			}
 			else if (words[0] == "createentity")
 			{
+				std::string word6 = words[6];
+				std::string word7 = words[7];
+				std::string word8 = words[8];
+				std::string word9 = words[9];
 				if (words[6] == "") words[6] = "0";
 				if (words[7] == "") words[7] = "0";
 				if (words[8] == "") words[8] = "320";
 				if (words[9] == "") words[9] = "240";
-				obj.createentity(ss_toi(words[1]), ss_toi(words[2]), ss_toi(words[3]),
-					ss_toi(words[4]), ss_toi(words[5]),
-					ss_toi(words[6]), ss_toi(words[7]), ss_toi(words[8]), ss_toi(words[9]));
-				words[6] = "";
-				words[7] = "";
-				words[8] = "";
-				words[9] = "";
+				obj.createentity(
+					ss_toi(words[1]),
+					ss_toi(words[2]),
+					ss_toi(words[3]),
+					ss_toi(words[4]),
+					ss_toi(words[5]),
+					ss_toi(words[6]),
+					ss_toi(words[7]),
+					ss_toi(words[8]),
+					ss_toi(words[9])
+				);
+				words[6] = word6;
+				words[7] = word7;
+				words[8] = word8;
+				words[9] = word9;
 			}
 			else if (words[0] == "createcrewman")
 			{
@@ -1491,7 +1515,7 @@ void scriptclass::run()
 			}
 			else if (words[0] == "entersecretlab")
 			{
-				game.unlock[8] = true;
+				game.unlocknum(8);
 				game.insecretlab = true;
 			}
 			else if (words[0] == "leavesecretlab")

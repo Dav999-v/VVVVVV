@@ -140,8 +140,6 @@ void Graphics::init()
     col_tb = 0;
 
     kludgeswnlinewidth = false;
-
-    vsync = false;
 }
 
 int Graphics::font_idx(uint32_t ch) {
@@ -1826,7 +1824,7 @@ void Graphics::drawentities()
             FillRect(backBuffer, prect, obj.entities[i].realcol);
             break;
         case 4:    // Small pickups
-            setcol(obj.entities[i].realcol);
+            setcolreal(obj.entities[i].realcol);
             drawhuetile(xp, yp - yoff, obj.entities[i].tile);
             break;
         case 5:    //Horizontal Line
@@ -3342,27 +3340,4 @@ Uint32 Graphics::crewcolourreal(int t)
 		return col_crewblue;
 	}
 	return col_crewcyan;
-}
-
-void Graphics::processVsync()
-{
-	SDL_SetHintWithPriority(SDL_HINT_RENDER_VSYNC, vsync ? "1" : "0", SDL_HINT_OVERRIDE);
-
-	// FIXME: Sigh... work around SDL2 bug where the VSync hint is only listened to at renderer creation
-	SDL_DestroyRenderer(screenbuffer->m_renderer);
-	screenbuffer->m_renderer = SDL_CreateRenderer(screenbuffer->m_window, -1, 0);
-
-	// Ugh, have to re-create m_screenTexture as well, otherwise the screen will be black...
-	SDL_DestroyTexture(screenbuffer->m_screenTexture);
-	// FIXME: This is duplicated from Screen::init()!
-	screenbuffer->m_screenTexture = SDL_CreateTexture(
-		screenbuffer->m_renderer,
-		SDL_PIXELFORMAT_ARGB8888,
-		SDL_TEXTUREACCESS_STREAMING,
-		320,
-		240
-	);
-
-	// Ugh, have to make sure to re-apply graphics options after doing the above, otherwise letterbox/integer won't be applied...
-	screenbuffer->ResizeScreen(-1, -1);
 }

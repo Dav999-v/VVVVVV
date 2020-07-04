@@ -233,7 +233,7 @@ void menurender()
             graphics.bigprint(-1, 30, loc::gettext("Toggle VSync"), tr, tg, tb, true);
             graphics.PrintWrap(-1, 65, loc::gettext("Turn VSync on or off."), tr, tg, tb, true);
 
-            if (!graphics.vsync)
+            if (!graphics.screenbuffer->vsync)
             {
                 graphics.PrintWrap(-1, 95, loc::gettext("Current mode: VSYNC OFF"), tr/2, tg/2, tb/2, true);
             }

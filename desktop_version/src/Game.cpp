@@ -214,6 +214,7 @@ void Game::init(void)
     tele_crewstats.resize(6);
     quick_crewstats.resize(6);
     besttimes.resize(6, -1);
+    SDL_memset(bestframes, -1, sizeof(bestframes));
     besttrinkets.resize(6, -1);
     bestlives.resize(6, -1);
     bestrank.resize(6, -1);
@@ -1447,9 +1448,12 @@ void Game::updatestate()
             if (trinkets() >= timetrialshinytarget) timetrialrank++;
             if (deathcounts == 0) timetrialrank++;
 
-            if (timetrialresulttime < besttimes[timetriallevel] || besttimes[timetriallevel]==-1)
+            if (timetrialresulttime < besttimes[timetriallevel]
+            || (timetrialresulttime == besttimes[timetriallevel] && timetrialresultframes < bestframes[timetriallevel])
+            || besttimes[timetriallevel]==-1)
             {
                 besttimes[timetriallevel] = timetrialresulttime;
+                bestframes[timetriallevel] = timetrialresultframes;
             }
             if (trinkets() > besttrinkets[timetriallevel] || besttrinkets[timetriallevel]==-1)
             {
@@ -3386,7 +3390,7 @@ void Game::updatestate()
             {
                 //flip mode complete
                 NETWORK_unlockAchievement("vvvvvvgamecompleteflip");
-                unlock[19] = true;
+                unlocknum(19);
             }
 
             if (bestgamedeaths == -1)
@@ -3421,7 +3425,7 @@ void Game::updatestate()
             if (nodeathmode)
             {
                 NETWORK_unlockAchievement("vvvvvvmaster"); //bloody hell
-                unlock[20] = true;
+                unlocknum(20);
                 state = 3520;
                 statedelay = 0;
             }
@@ -4549,6 +4553,7 @@ void Game::deletestats()
         for (int i = 0; i < 6; i++)
         {
             besttimes[i] = -1;
+            bestframes[i] = -1;
             besttrinkets[i] = -1;
             bestlives[i] = -1;
             bestrank[i] = -1;
@@ -4644,6 +4649,19 @@ void Game::loadstats()
                 for(size_t i = 0; i < values.size(); i++)
                 {
                     besttimes.push_back(atoi(values[i].c_str()));
+                }
+            }
+        }
+
+        if (pKey == "bestframes")
+        {
+            std::string TextString = pText;
+            if (TextString.length())
+            {
+                std::vector<std::string> values = split(TextString, ',');
+                for (size_t i = 0; i < std::min(sizeof(bestframes) / sizeof(int), values.size()); i++)
+                {
+                    bestframes[i] = atoi(values[i].c_str());
                 }
             }
         }
@@ -4830,7 +4848,7 @@ void Game::loadstats()
 
         if (pKey == "vsync")
         {
-            graphics.vsync = atoi(pText);
+            graphics.screenbuffer->vsync = atoi(pText);
         }
 
         if (pKey == "notextoutline")
@@ -4958,12 +4976,21 @@ void Game::savestats()
     dataNode->LinkEndChild( msg );
 
     std::string s_besttimes;
-    for(size_t i = 0; i < besttrinkets.size(); i++ )
+    for(size_t i = 0; i < besttimes.size(); i++ )
     {
         s_besttimes += help.String(besttimes[i]) + ",";
     }
     msg = doc.NewElement( "besttimes" );
     msg->LinkEndChild( doc.NewText( s_besttimes.c_str() ));
+    dataNode->LinkEndChild( msg );
+
+    std::string s_bestframes;
+    for (size_t i = 0; i < sizeof(bestframes) / sizeof(int); i++)
+    {
+        s_bestframes += help.String(bestframes[i]) + ",";
+    }
+    msg = doc.NewElement( "bestframes" );
+    msg->LinkEndChild( doc.NewText( s_bestframes.c_str() ) );
     dataNode->LinkEndChild( msg );
 
     std::string s_besttrinkets;
@@ -5096,7 +5123,7 @@ void Game::savestats()
     dataNode->LinkEndChild(msg);
 
     msg = doc.NewElement("vsync");
-    msg->LinkEndChild(doc.NewText(help.String((int) graphics.vsync).c_str()));
+    msg->LinkEndChild(doc.NewText(help.String((int) graphics.screenbuffer->vsync).c_str()));
     dataNode->LinkEndChild(msg);
 
     for (size_t i = 0; i < controllerButton_flip.size(); i += 1)
