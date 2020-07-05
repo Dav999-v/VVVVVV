@@ -15,6 +15,7 @@
 #include "Enums.h"
 
 #include "FileSystemUtils.h"
+#include "Localization.h"
 
 #include <string>
 #include <utf8/unchecked.h>
@@ -86,6 +87,24 @@ bool compare_nocase (std::string first, std::string second)
         return true;
     else
         return false;
+}
+
+// translate_title and translate_creator are used to display default title/author
+// as being translated, while they're actually stored in English in the level file.
+// This way we translate "Untitled Level" and "Unknown" without
+// spreading around translations in level files posted online!
+std::string translate_title(std::string& title)
+{
+    if (title == "Untitled Level")
+        return loc::gettext("Untitled Level");
+    return title;
+}
+
+std::string translate_creator(std::string& creator)
+{
+    if (creator == "Unknown")
+        return loc::gettext("Unknown");
+    return creator;
 }
 
 void editorclass::loadZips()
@@ -217,6 +236,9 @@ void editorclass::getDirectoryData()
         LevelMetaData temp;
         if (getLevelMetaData( directoryList[i], temp))
         {
+            temp.title = translate_title(temp.title);
+            temp.creator = translate_creator(temp.creator);
+
             ListOfMetaData.push_back(temp);
         }
     }
@@ -271,7 +293,7 @@ void editorclass::reset()
     mapwidth=5;
     mapheight=5;
 
-    EditorData::GetInstance().title="Untitled Level";
+    EditorData::GetInstance().title="Untitled Level"; // Already translatable
     EditorData::GetInstance().creator="Unknown";
     Desc1="";
     Desc2="";
@@ -2449,7 +2471,7 @@ void editormenurender(int tr, int tg, int tb)
         }
         else
         {
-            graphics.bigprint( -1, 35, EditorData::GetInstance().title, tr, tg, tb, true);
+            graphics.bigprint( -1, 35, translate_title(EditorData::GetInstance().title), tr, tg, tb, true);
         }
         if(ed.creatormod)
         {
@@ -2464,7 +2486,7 @@ void editormenurender(int tr, int tg, int tb)
         }
         else
         {
-            graphics.Print( -1, 60, "by " + EditorData::GetInstance().creator, tr, tg, tb, true);
+            graphics.Print( -1, 60, "by " + translate_creator(EditorData::GetInstance().creator), tr, tg, tb, true);
         }
         if(ed.websitemod)
         {
@@ -3821,13 +3843,13 @@ void editormenuactionpress()
             ed.textentry=true;
             ed.titlemod=true;
             key.enabletextentry();
-            key.keybuffer=EditorData::GetInstance().title;
+            key.keybuffer=translate_title(EditorData::GetInstance().title);
             break;
         case 1:
             ed.textentry=true;
             ed.creatormod=true;
             key.enabletextentry();
-            key.keybuffer=EditorData::GetInstance().creator;
+            key.keybuffer=translate_creator(EditorData::GetInstance().creator);
             break;
         case 2:
             ed.textentry=true;

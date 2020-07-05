@@ -349,6 +349,16 @@
     <string english="yes, save and quit" explanation="level editor menu option" comment="">jes, konservu kaj eliru</string>
     <string english="no, quit without saving" explanation="level editor menu option" comment="">ne, eliru sen konservi</string>
     <string english="return to editor" explanation="level editor menu option" comment="">reen al redaktilo</string>
+    <string english="Untitled Level" explanation="" max="20" comment=""></string>
+    <string english="Unknown" explanation="By Unknown [author]" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
