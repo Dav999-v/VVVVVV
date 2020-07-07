@@ -1,6 +1,7 @@
 #include "Input.h"
 #include "Logic.h"
 #include "Script.h"
+#include "Credits.h"
 
 #include "MakeAndPlay.h"
 
@@ -969,7 +970,7 @@ void menuactionpress()
             music.playef(11);
             game.current_credits_list_index += 9;
 
-            if (game.current_credits_list_index >= (int)game.superpatrons.size())
+            if (game.current_credits_list_index >= (int)SDL_arraysize(Credits::superpatrons))
             {
                 // No more super patrons. Move to the next credits section
                 game.current_credits_list_index = 0;
@@ -1020,7 +1021,7 @@ void menuactionpress()
             music.playef(11);
             game.current_credits_list_index += 14;
 
-            if (game.current_credits_list_index >= (int)game.patrons.size())
+            if (game.current_credits_list_index >= (int)SDL_arraysize(Credits::patrons))
             {
                 // No more patrons. Move to the next credits section
                 game.current_credits_list_index = 0;
@@ -1042,7 +1043,7 @@ void menuactionpress()
             if (game.current_credits_list_index < 0)
             {
                 //No more patrons. Move to the previous credits section
-                game.current_credits_list_index = game.superpatrons.size() - 1 - (game.superpatrons.size()-1)%9;
+                game.current_credits_list_index = SDL_arraysize(Credits::superpatrons) - 1 - (SDL_arraysize(Credits::superpatrons)-1)%9;
                 game.createmenu(Menu::credits3, true);
             }
             else
@@ -1071,7 +1072,7 @@ void menuactionpress()
             music.playef(11);
             game.current_credits_list_index += 9;
 
-            if (game.current_credits_list_index >= (int)game.githubfriends.size())
+            if (game.current_credits_list_index >= (int)SDL_arraysize(Credits::githubfriends))
             {
                 // No more GitHub contributors. Move to the next credits section
                 game.current_credits_list_index = 0;
@@ -1093,7 +1094,7 @@ void menuactionpress()
             if (game.current_credits_list_index < 0)
             {
                 //No more GitHub contributors. Move to the previous credits section
-                game.current_credits_list_index = game.patrons.size() - 1 - (game.patrons.size()-1)%14;
+                game.current_credits_list_index = SDL_arraysize(Credits::patrons) - 1 - (SDL_arraysize(Credits::patrons)-1)%14;
                 game.createmenu(Menu::credits4, true);
             }
             else
@@ -1126,7 +1127,7 @@ void menuactionpress()
         case 1:
             //previous page
             music.playef(11);
-            game.current_credits_list_index = game.githubfriends.size() - 1 - (game.githubfriends.size()-1)%9;
+            game.current_credits_list_index = SDL_arraysize(Credits::githubfriends) - 1 - (SDL_arraysize(Credits::githubfriends)-1)%9;
             game.createmenu(Menu::credits5, true);
             game.currentmenuoption = 1;
             map.nexttowercolour();
@@ -2405,33 +2406,42 @@ void teleporterinput()
             game.jumpheld = true;
         }
 
-        if (game.press_left)
+        bool any_tele_unlocked = false;
+        if (game.press_left || game.press_right)
         {
-            game.teleport_to_teleporter--;
-            if (game.teleport_to_teleporter < 0) game.teleport_to_teleporter = map.teleporters.size() - 1;
-            tempx = map.teleporters[game.teleport_to_teleporter].x;
-            tempy = map.teleporters[game.teleport_to_teleporter].y;
-            while (map.explored[tempx + (20 * tempy)] == 0)
+            for (size_t i = 0; i < map.teleporters.size(); i++)
+            {
+                point& tele = map.teleporters[i];
+
+                if (map.explored[tele.x + tele.y*20])
+                {
+                    any_tele_unlocked = true;
+                    break;
+                }
+            }
+        }
+
+        if (game.press_left && any_tele_unlocked)
+        {
+            do
             {
                 game.teleport_to_teleporter--;
                 if (game.teleport_to_teleporter < 0) game.teleport_to_teleporter = map.teleporters.size() - 1;
                 tempx = map.teleporters[game.teleport_to_teleporter].x;
                 tempy = map.teleporters[game.teleport_to_teleporter].y;
             }
+            while (map.explored[tempx + (20 * tempy)] == 0);
         }
-        else if (game.press_right)
+        else if (game.press_right && any_tele_unlocked)
         {
-            game.teleport_to_teleporter++;
-            if (game.teleport_to_teleporter >= (int) map.teleporters.size()) game.teleport_to_teleporter = 0;
-            tempx = map.teleporters[game.teleport_to_teleporter].x;
-            tempy = map.teleporters[game.teleport_to_teleporter].y;
-            while (map.explored[tempx + (20 * tempy)] == 0)
+            do
             {
                 game.teleport_to_teleporter++;
                 if (game.teleport_to_teleporter >= (int) map.teleporters.size()) game.teleport_to_teleporter = 0;
                 tempx = map.teleporters[game.teleport_to_teleporter].x;
                 tempy = map.teleporters[game.teleport_to_teleporter].y;
             }
+            while (map.explored[tempx + (20 * tempy)] == 0);
         }
 
         if (game.press_map)
@@ -2495,13 +2505,13 @@ void gamecompleteinput()
     if (key.isDown(KEYBOARD_z) || key.isDown(KEYBOARD_SPACE) || key.isDown(KEYBOARD_v) || key.isDown(game.controllerButton_flip))
     {
         game.creditposition -= 6;
-        if (game.creditposition <= -game.creditmaxposition)
+        if (game.creditposition <= -Credits::creditmaxposition)
         {
             if(graphics.fademode==0)
             {
                 graphics.fademode = 2;
             }
-            game.creditposition = -game.creditmaxposition;
+            game.creditposition = -Credits::creditmaxposition;
         }
         else
         {

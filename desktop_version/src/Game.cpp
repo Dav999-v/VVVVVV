@@ -210,14 +210,14 @@ void Game::init(void)
     }
     customcol=0;
 
-    crewstats.resize(6);
-    tele_crewstats.resize(6);
-    quick_crewstats.resize(6);
-    besttimes.resize(6, -1);
+    SDL_memset(crewstats, false, sizeof(crewstats));
+    SDL_memset(tele_crewstats, false, sizeof(tele_crewstats));
+    SDL_memset(quick_crewstats, false, sizeof(quick_crewstats));
+    SDL_memset(besttimes, -1, sizeof(besttimes));
     SDL_memset(bestframes, -1, sizeof(bestframes));
-    besttrinkets.resize(6, -1);
-    bestlives.resize(6, -1);
-    bestrank.resize(6, -1);
+    SDL_memset(besttrinkets, -1, sizeof(besttrinkets));
+    SDL_memset(bestlives, -1, sizeof(bestlives));
+    SDL_memset(bestrank, -1, sizeof(bestrank));
 
     crewstats[0] = true;
     lastsaved = 0;
@@ -230,8 +230,8 @@ void Game::init(void)
     quick_currentarea = "Error! Error!";
 
     //Menu stuff initiliased here:
-    unlock.resize(25);
-    unlocknotify.resize(25);
+    SDL_memset(unlock, false, sizeof(unlock));
+    SDL_memset(unlocknotify, false, sizeof(unlock));
 
     currentmenuoption = 0;
     current_credits_list_index = 0;
@@ -403,117 +403,6 @@ void Game::init(void)
     shouldreturntopausemenu = false;
 
     disablepause = false;
-
-    /* Terry's Patrons... */
-    const char* superpatrons_arr[] = {
-    "Anders Ekermo",
-    "Andreas K|mper",
-    "Anthony Burch",
-    "Bennett Foddy",
-    "Brendan O'Sullivan",
-    "Christopher Armstrong",
-    "Daniel Benmergui",
-    "David Pittman",
-    "Ian Bogost",
-    "Ian Poma",
-    "Jaz McDougall",
-    "John Faulkenbury",
-    "Jonathan Whiting",
-    "Kyle Pulver",
-    "Markus Persson",
-    "Nathan Ostgard",
-    "Nick Easler",
-    "Stephen Lavelle",
-    };
-    superpatrons.insert(superpatrons.end(), superpatrons_arr, superpatrons_arr + sizeof(superpatrons_arr)/sizeof(superpatrons_arr[0]));
-
-    const char* patrons_arr[] = {
-    "Adam Wendt",
-    "Andreas J{rgensen",
-    "}ngel Louzao Penalva",
-    "Ashley Burton",
-    "Aubrey Hesselgren",
-    "Bradley Rose",
-    "Brendan Urquhart",
-    "Chris Ayotte",
-    "Christopher Zamanillo",
-    "Daniel Schuller",
-    "Hybrid Mind Studios",
-    "Emilie McGinley",
-    "Francisco Solares",
-    "Hal Helms",
-    "Hayden Scott-Baron",
-    "Hermit Games",
-    "Ido Yehieli",
-    "Jade Vault Games",
-    "James Andrews",
-    "James Riley",
-    "James Hsieh",
-    "Jasper Byrne",
-    "Jedediah Baker",
-    "Jens Bergensten",
-    "Jeremy J. Penner",
-    "Jeremy Peterson",
-    "Jim McGinley",
-    "Jonathan Cartwright",
-    "John Nesky",
-    "Jos Yule",
-    "Jose Flores",
-    "Josh Bizeau",
-    "Joshua Buergel",
-    "Joshua Hochner",
-    "Kurt Ostfeld",
-    "Magnus P~lsson",
-    "Mark Neschadimenko",
-    "Matt Antonellis",
-    "Matthew Reppert",
-    "Michael Falkensteiner",
-    "Michael Vendittelli",
-    "Mike Kasprzak",
-    "Mitchel Stein",
-    "Sean Murray",
-    "Simon Michael",
-    "Simon Schmid",
-    "Stephen Maxwell",
-    "Swing Swing Submarine",
-    "Tam Toucan",
-    "Terry Dooher",
-    "Tim W.",
-    "Timothy Bragan",
-    };
-    patrons.insert(patrons.end(), patrons_arr, patrons_arr + sizeof(patrons_arr)/sizeof(patrons_arr[0]));
-
-    /* CONTRIBUTORS.txt, again listed alphabetically (according to `sort`) by last name */
-    const char* githubfriends_arr[] = {
-    "Matt \"Fussmatte\" Aaldenberg", // TODO: Change to "Fußmatte" if/when UTF-8 support is added
-    "AlexApps99",
-    "Christoph B{hmwalder",
-    "Charlie Bruce",
-    "Brian Callahan",
-    "Dav999",
-    "Allison Fleischer",
-    "Daniel Lee",
-    "Fredrik Ljungdahl",
-    "Matt Penny",
-    "Elliott Saltar",
-    "Marvin Scholz",
-    "Keith Stellyes",
-    "Elijah Stone",
-    "Thomas S|nger",
-    "Info Teddy",
-    "Alexandra Tildea",
-    "leo60228",
-    "Emmanuel Vadot",
-    "Remi Verschelde", // TODO: Change to "Rémi" if/when UTF-8 support is added
-    "viri",
-    "Wouter",
-    };
-    githubfriends.insert(githubfriends.end(), githubfriends_arr, githubfriends_arr + sizeof(githubfriends_arr)/sizeof(githubfriends_arr[0]));
-
-    /* Calculate credits length, finally. */
-    creditmaxposition = 1050 + (10 * (
-        superpatrons.size() + patrons.size() + githubfriends.size()
-    ));
 }
 
 Game::~Game(void)
@@ -2085,6 +1974,13 @@ void Game::updatestate()
                 }
             }
             break;
+        case 1002:
+            if (!advancetext)
+            {
+                // Prevent softlocks if we somehow don't have advancetext
+                state++;
+            }
+            break;
         case 1003:
             graphics.textboxremove();
             hascontrol = true;
@@ -2150,6 +2046,13 @@ void Game::updatestate()
                     graphics.createtextbox("     " + help.number(ed.numcrewmates()-crewmates())+ " remain    ", 50, 135, 174, 174, 174);
                 }
                 graphics.textboxcenterx();
+            }
+            break;
+        case 1012:
+            if (!advancetext)
+            {
+                // Prevent softlocks if we somehow don't have advancetext
+                state++;
             }
             break;
         case 1013:
@@ -4545,12 +4448,12 @@ void Game::deletestats()
     }
     else
     {
-        for (int i = 0; i < 25; i++)
+        for (int i = 0; i < numunlock; i++)
         {
             unlock[i] = false;
             unlocknotify[i] = false;
         }
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < numtrials; i++)
         {
             besttimes[i] = -1;
             bestframes[i] = -1;
@@ -4574,6 +4477,22 @@ void Game::unlocknum( int t )
     unlock[t] = true;
     savestats();
 }
+
+#define LOAD_ARRAY_RENAME(ARRAY_NAME, DEST) \
+    if (pKey == #ARRAY_NAME) \
+    { \
+        std::string TextString = pText; \
+        if (TextString.length()) \
+        { \
+            std::vector<std::string> values = split(TextString, ','); \
+            for (size_t i = 0; i < SDL_min(SDL_arraysize(DEST), values.size()); i++) \
+            { \
+                DEST[i] = atoi(values[i].c_str()); \
+            } \
+        } \
+    }
+
+#define LOAD_ARRAY(ARRAY_NAME) LOAD_ARRAY_RENAME(ARRAY_NAME, ARRAY_NAME)
 
 void Game::loadstats()
 {
@@ -4611,104 +4530,21 @@ void Game::loadstats()
         std::string pKey(pElem->Value());
         const char* pText = pElem->GetText() ;
 
-        if (pKey == "unlock")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                unlock.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    unlock.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(unlock)
 
-        if (pKey == "unlocknotify")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                unlocknotify.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    unlocknotify.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(unlocknotify)
 
-        if (pKey == "besttimes")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                besttimes.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    besttimes.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(besttimes)
 
-        if (pKey == "bestframes")
-        {
-            std::string TextString = pText;
-            if (TextString.length())
-            {
-                std::vector<std::string> values = split(TextString, ',');
-                for (size_t i = 0; i < std::min(sizeof(bestframes) / sizeof(int), values.size()); i++)
-                {
-                    bestframes[i] = atoi(values[i].c_str());
-                }
-            }
-        }
+        LOAD_ARRAY(bestframes)
 
-        if (pKey == "besttrinkets")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                besttrinkets.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    besttrinkets.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(besttrinkets)
 
 
-        if (pKey == "bestlives")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                bestlives.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    bestlives.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(bestlives)
 
 
-        if (pKey == "bestrank")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                bestrank.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    bestrank.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(bestrank)
 
 
 
@@ -4958,7 +4794,7 @@ void Game::savestats()
     root->LinkEndChild( dataNode );
 
     std::string s_unlock;
-    for(size_t i = 0; i < unlock.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(unlock); i++ )
     {
         s_unlock += help.String(unlock[i]) + ",";
     }
@@ -4967,7 +4803,7 @@ void Game::savestats()
     dataNode->LinkEndChild( msg );
 
     std::string s_unlocknotify;
-    for(size_t i = 0; i < unlocknotify.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(unlocknotify); i++ )
     {
         s_unlocknotify += help.String(unlocknotify[i]) + ",";
     }
@@ -4976,7 +4812,7 @@ void Game::savestats()
     dataNode->LinkEndChild( msg );
 
     std::string s_besttimes;
-    for(size_t i = 0; i < besttimes.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(besttimes); i++ )
     {
         s_besttimes += help.String(besttimes[i]) + ",";
     }
@@ -4985,7 +4821,7 @@ void Game::savestats()
     dataNode->LinkEndChild( msg );
 
     std::string s_bestframes;
-    for (size_t i = 0; i < sizeof(bestframes) / sizeof(int); i++)
+    for (size_t i = 0; i < SDL_arraysize(bestframes); i++)
     {
         s_bestframes += help.String(bestframes[i]) + ",";
     }
@@ -4994,7 +4830,7 @@ void Game::savestats()
     dataNode->LinkEndChild( msg );
 
     std::string s_besttrinkets;
-    for(size_t i = 0; i < besttrinkets.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(besttrinkets); i++ )
     {
         s_besttrinkets += help.String(besttrinkets[i]) + ",";
     }
@@ -5003,7 +4839,7 @@ void Game::savestats()
     dataNode->LinkEndChild( msg );
 
     std::string s_bestlives;
-    for(size_t i = 0; i < bestlives.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(bestlives); i++ )
     {
         s_bestlives += help.String(bestlives[i]) + ",";
     }
@@ -5012,7 +4848,7 @@ void Game::savestats()
     dataNode->LinkEndChild( msg );
 
     std::string s_bestrank;
-    for(size_t i = 0; i < bestrank.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(bestrank); i++ )
     {
         s_bestrank += help.String(bestrank[i]) + ",";
     }
@@ -5413,61 +5249,13 @@ void Game::loadquick()
             pText = "";
         }
 
-        if (pKey == "worldmap")
-        {
-            std::string TextString = (pText);
-            if(TextString.length()>1)
-            {
-                std::vector<std::string> values = split(TextString,',');
-                map.explored.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    map.explored.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(worldmap, map.explored)
 
-        if (pKey == "flags")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.flags.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.flags.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(flags, obj.flags)
 
-        if (pKey == "crewstats")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                crewstats.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    crewstats.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(crewstats)
 
-        if (pKey == "collect")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.collect.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.collect.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(collect, obj.collect)
 
         if (pKey == "finalmode")
         {
@@ -5640,88 +5428,17 @@ void Game::customloadquick(std::string savfile)
             pText = "";
         }
 
-        if (pKey == "worldmap")
-        {
-            std::string TextString = (pText);
-            if(TextString.length()>1)
-            {
-                std::vector<std::string> values = split(TextString,',');
-                map.explored.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    map.explored.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(worldmap, map.explored)
 
-        if (pKey == "flags")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.flags.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.flags.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(flags, obj.flags)
 
-        if (pKey == "moods")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                for(size_t i = 0; i < 6; i++)
-                {
-                    obj.customcrewmoods[i]=atoi(values[i].c_str());
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(moods, obj.customcrewmoods)
 
-        if (pKey == "crewstats")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                crewstats.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    crewstats.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(crewstats)
 
-        if (pKey == "collect")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.collect.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.collect.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(collect, obj.collect)
 
-        if (pKey == "customcollect")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.customcollect.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.customcollect.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(customcollect, obj.customcollect)
 
         if (pKey == "finalmode")
         {
@@ -5928,19 +5645,7 @@ void Game::loadsummary()
                 map.finalstretch = atoi(pText);
             }
 
-            if (pKey == "crewstats")
-            {
-                std::string TextString = (pText);
-                if(TextString.length())
-                {
-                    std::vector<std::string> values = split(TextString,',');
-                    tele_crewstats.clear();
-                    for(size_t i = 0; i < values.size(); i++)
-                    {
-                        tele_crewstats.push_back(atoi(values[i].c_str()));
-                    }
-                }
-            }
+            LOAD_ARRAY_RENAME(crewstats, tele_crewstats)
 
         }
         tele_gametime = giventimestring(l_hours,l_minute, l_second);
@@ -6017,19 +5722,7 @@ void Game::loadsummary()
                 map.finalstretch = atoi(pText);
             }
 
-            if (pKey == "crewstats")
-            {
-                std::string TextString = (pText);
-                if(TextString.length())
-                {
-                    std::vector<std::string> values = split(TextString,',');
-                    quick_crewstats.clear();
-                    for(size_t i = 0; i < values.size(); i++)
-                    {
-                        quick_crewstats.push_back(atoi(values[i].c_str()));
-                    }
-                }
-            }
+            LOAD_ARRAY_RENAME(crewstats, quick_crewstats)
 
         }
 
@@ -6083,7 +5776,7 @@ void Game::savetele()
     //Flags, map and stats
 
     std::string mapExplored;
-    for(size_t i = 0; i < map.explored.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(map.explored); i++ )
     {
         mapExplored += help.String(map.explored[i]) + ",";
     }
@@ -6092,7 +5785,7 @@ void Game::savetele()
     msgs->LinkEndChild( msg );
 
     std::string flags;
-    for(size_t i = 0; i < obj.flags.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(obj.flags); i++ )
     {
         flags += help.String((int) obj.flags[i]) + ",";
     }
@@ -6101,7 +5794,7 @@ void Game::savetele()
     msgs->LinkEndChild( msg );
 
     std::string crewstatsString;
-    for(size_t i = 0; i < crewstats.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(crewstats); i++ )
     {
         crewstatsString += help.String(crewstats[i]) + ",";
     }
@@ -6110,7 +5803,7 @@ void Game::savetele()
     msgs->LinkEndChild( msg );
 
     std::string collect;
-    for(size_t i = 0; i < obj.collect.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(obj.collect); i++ )
     {
         collect += help.String((int) obj.collect[i]) + ",";
     }
@@ -6279,7 +5972,7 @@ void Game::savequick()
     //Flags, map and stats
 
     std::string mapExplored;
-    for(size_t i = 0; i < map.explored.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(map.explored); i++ )
     {
         mapExplored += help.String(map.explored[i]) + ",";
     }
@@ -6288,7 +5981,7 @@ void Game::savequick()
     msgs->LinkEndChild( msg );
 
     std::string flags;
-    for(size_t i = 0; i < obj.flags.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(obj.flags); i++ )
     {
         flags += help.String((int) obj.flags[i]) + ",";
     }
@@ -6297,7 +5990,7 @@ void Game::savequick()
     msgs->LinkEndChild( msg );
 
     std::string crewstatsString;
-    for(size_t i = 0; i < crewstats.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(crewstats); i++ )
     {
         crewstatsString += help.String(crewstats[i]) + ",";
     }
@@ -6306,7 +5999,7 @@ void Game::savequick()
     msgs->LinkEndChild( msg );
 
     std::string collect;
-    for(size_t i = 0; i < obj.collect.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(obj.collect); i++ )
     {
         collect += help.String((int) obj.collect[i]) + ",";
     }
@@ -6468,7 +6161,7 @@ void Game::customsavequick(std::string savfile)
     //Flags, map and stats
 
     std::string mapExplored;
-    for(size_t i = 0; i < map.explored.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(map.explored); i++ )
     {
         mapExplored += help.String(map.explored[i]) + ",";
     }
@@ -6477,7 +6170,7 @@ void Game::customsavequick(std::string savfile)
     msgs->LinkEndChild( msg );
 
     std::string flags;
-    for(size_t i = 0; i < obj.flags.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(obj.flags); i++ )
     {
         flags += help.String((int) obj.flags[i]) + ",";
     }
@@ -6486,7 +6179,7 @@ void Game::customsavequick(std::string savfile)
     msgs->LinkEndChild( msg );
 
     std::string moods;
-    for(int i = 0; i < 6; i++ )
+    for(size_t i = 0; i < SDL_arraysize(obj.customcrewmoods); i++ )
     {
         moods += help.String(obj.customcrewmoods[i]) + ",";
     }
@@ -6495,7 +6188,7 @@ void Game::customsavequick(std::string savfile)
     msgs->LinkEndChild( msg );
 
     std::string crewstatsString;
-    for(size_t i = 0; i < crewstats.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(crewstats); i++ )
     {
         crewstatsString += help.String(crewstats[i]) + ",";
     }
@@ -6504,7 +6197,7 @@ void Game::customsavequick(std::string savfile)
     msgs->LinkEndChild( msg );
 
     std::string collect;
-    for(size_t i = 0; i < obj.collect.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(obj.collect); i++ )
     {
         collect += help.String((int) obj.collect[i]) + ",";
     }
@@ -6513,7 +6206,7 @@ void Game::customsavequick(std::string savfile)
     msgs->LinkEndChild( msg );
 
     std::string customcollect;
-    for(size_t i = 0; i < obj.customcollect.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(obj.customcollect); i++ )
     {
         customcollect += help.String((int) obj.customcollect[i]) + ",";
     }
@@ -6689,61 +6382,13 @@ void Game::loadtele()
             pText = "";
         }
 
-        if (pKey == "worldmap")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                map.explored.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    map.explored.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(worldmap, map.explored)
 
-        if (pKey == "flags")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.flags.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.flags.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(flags, obj.flags)
 
-        if (pKey == "crewstats")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                crewstats.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    crewstats.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(crewstats)
 
-        if (pKey == "collect")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.collect.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.collect.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(collect, obj.collect)
 
         if (pKey == "finalmode")
         {
@@ -7130,27 +6775,42 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                             break;
                         }
                     }
-                    std::string text;
+                    const char* prefix;
                     if(tvar>=0)
                     {
-                        if(customlevelstats[tvar].score==0)
+                        switch (customlevelstats[tvar].score)
                         {
-                            text = "   " + ed.ListOfMetaData[i].title;
+                        case 0:
+                        {
+                            static const char tmp[] = "   ";
+                            prefix = tmp;
+                            break;
                         }
-                        else if(customlevelstats[tvar].score==1)
+                        case 1:
                         {
-                            text = " * " + ed.ListOfMetaData[i].title;
+                            static const char tmp[] = " * ";
+                            prefix = tmp;
+                            break;
                         }
-                        else if(customlevelstats[tvar].score==3)
+                        case 3:
                         {
-                            text = "** " + ed.ListOfMetaData[i].title;
+                            static const char tmp[] = "** ";
+                            prefix = tmp;
+                            break;
+                        }
                         }
                     }
                     else
                     {
-                        text = "   " + ed.ListOfMetaData[i].title;
+                        static const char tmp[] = "   ";
+                        prefix = tmp;
                     }
-                    std::transform(text.begin(), text.end(), text.begin(), ::tolower);
+                    char text[menutextbytes];
+                    SDL_snprintf(text, sizeof(text), "%s%s", prefix, ed.ListOfMetaData[i].title.c_str());
+                    for (size_t ii = 0; ii < SDL_arraysize(text); ii++)
+                    {
+                        text[ii] = SDL_tolower(text[ii]);
+                    }
                     option(text);
                 }
             }
@@ -7725,7 +7385,7 @@ void Game::swnpenalty()
 int Game::crewrescued()
 {
     int temp = 0;
-    for (size_t i = 0; i < crewstats.size(); i++)
+    for (size_t i = 0; i < SDL_arraysize(crewstats); i++)
     {
         if (crewstats[i])
         {
@@ -7746,7 +7406,7 @@ void Game::resetgameclock()
 int Game::trinkets()
 {
     int temp = 0;
-    for (size_t i = 0; i < obj.collect.size(); i++)
+    for (size_t i = 0; i < SDL_arraysize(obj.collect); i++)
     {
         if (obj.collect[i])
         {
@@ -7759,7 +7419,7 @@ int Game::trinkets()
 int Game::crewmates()
 {
     int temp = 0;
-    for (size_t i = 0; i < obj.customcollect.size(); i++)
+    for (size_t i = 0; i < SDL_arraysize(obj.customcollect); i++)
     {
         if (obj.customcollect[i])
         {
@@ -7771,7 +7431,7 @@ int Game::crewmates()
 
 bool Game::anything_unlocked()
 {
-    for (size_t i = 0; i < unlock.size(); i++)
+    for (size_t i = 0; i < SDL_arraysize(unlock); i++)
     {
         if (unlock[i] &&
         (i == 8 // Secret Lab

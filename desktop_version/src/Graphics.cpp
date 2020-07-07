@@ -17,7 +17,6 @@ void Graphics::init()
     setRect(tiles_rect, 0,0,8,8);
     setRect(sprites_rect, 0,0,32,32);
     setRect(bfont_rect, 0,0,8,8);
-    setRect(bfontmask_rect, 0,0,8,8);
     setRect(bg_rect, 0,0,320,240);
     setRect(footerrect, 0, 230, 320, 10);
     setRect(prect, 0, 0, 4, 4);
@@ -41,13 +40,16 @@ void Graphics::init()
     setflipmode = false;
 
     //Background inits
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < numstars; i++)
     {
         SDL_Rect s = {Sint16(fRandom() * 320), Sint16(fRandom() * 240), 2, 2};
         int s2 = 4+(fRandom()*4);
-        stars.push_back(s);
-        starsspeed.push_back(s2);
+        stars[i] = s;
+        starsspeed[i] = s2;
+    }
 
+    for (int i = 0; i < numbackboxes; i++)
+    {
         SDL_Rect bb;
         int bvx = 0;
         int bvy = 0;
@@ -66,10 +68,10 @@ void Graphics::init()
             setRect(bb, fRandom() * 320, fRandom() * 240, 12, 32) ;
         }
         float bint = 0.5 + ((fRandom() * 100) / 200);
-        backboxes.push_back(bb);
-        backboxvx.push_back(bvx);
-        backboxvy.push_back(bvy);
-        backboxint.push_back(bint);
+        backboxes[i] = bb;
+        backboxvx[i] = bvx;
+        backboxvy[i] = bvy;
+        backboxint[i] = bint;
     }
     backoffset = 0;
     backgrounddrawn = false;
@@ -89,7 +91,7 @@ void Graphics::init()
     resumegamemode = false;
 
     //Fading stuff
-    fadebars.resize(15);
+    SDL_memset(fadebars, 0, sizeof(fadebars));
 
     fadeamount = 0;
     oldfadeamount = 0;
@@ -1302,14 +1304,14 @@ void Graphics::drawfade()
     }
     else if(fademode==3)
     {
-        for (int i = 0; i < 15; i++)
+        for (size_t i = 0; i < SDL_arraysize(fadebars); i++)
         {
             FillRect(backBuffer, fadebars[i], i * 16, usethisamount, 16, 0x000000 );
         }
     }
     else if(fademode==5 )
     {
-        for (int i = 0; i < 15; i++)
+        for (size_t i = 0; i < SDL_arraysize(fadebars); i++)
         {
             FillRect(backBuffer, fadebars[i]-usethisamount, i * 16, 500, 16, 0x000000 );
         }
@@ -1325,7 +1327,7 @@ void Graphics::processfade()
         if (fademode == 2)
         {
             //prepare fade out
-            for (int i = 0; i < 15; i++)
+            for (size_t i = 0; i < SDL_arraysize(fadebars); i++)
             {
                 fadebars[i] = -int(fRandom() * 12) * 8;
             }
@@ -1343,7 +1345,7 @@ void Graphics::processfade()
         else if (fademode == 4)
         {
             //prepare fade in
-            for (int i = 0; i < 15; i++)
+            for (size_t i = 0; i < SDL_arraysize(fadebars); i++)
             {
                 fadebars[i] = 320 + int(fRandom() * 12) * 8;
             }
@@ -1361,107 +1363,74 @@ void Graphics::processfade()
     }
 }
 
-void Graphics::drawmenu( int cr, int cg, int cb )
+void Graphics::drawmenu( int cr, int cg, int cb, bool levelmenu /*= false*/ )
 {
     for (size_t i = 0; i < game.menuoptions.size(); i++)
     {
-        if ((int) i == game.currentmenuoption)
-        {
-            //Draw it highlighted
-            if (game.menuoptions[i].active)
-            {
-                std::string tempstring = loc::toupper(game.menuoptions[i].text);
-                tempstring = std::string("[ ") + tempstring + std::string(" ]");
-                Print((i * game.menuspacing) - 16 +game.menuxoff, 140 + (i * 12) +game.menuyoff, tempstring, cr, cg, cb);
-            }
-            else
-            {
-                std::string tempstring = loc::not_toupper(game.menuoptions[i].text);
-                tempstring = "[ " + tempstring + " ]";
-                //Draw it in gray
-                Print((i * game.menuspacing) - 16 +game.menuxoff, 140 + (i * 12)+game.menuyoff, tempstring, 128, 128, 128);
-            }
-        }
-        else
-        {
-            //Draw it normally
-            if (game.menuoptions[i].active)
-            {
-                Print((i * game.menuspacing) +game.menuxoff, 140 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), cr, cg, cb);
-            }
-            else
-            {
-                //Draw it in gray
-                Print((i * game.menuspacing) +game.menuxoff, 140 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), 128, 128, 128);
-            }
-        }
-    }
-}
+        MenuOption& opt = game.menuoptions[i];
 
-void Graphics::drawlevelmenu( int cr, int cg, int cb )
-{
-    for (size_t i = 0; i < game.menuoptions.size(); i++)
-    {
-        if ((int) i == game.currentmenuoption)
+        int fr, fg, fb;
+        if (opt.active)
         {
-          if(game.menuoptions.size()-i<=3){
-            //Draw it highlighted
-            if (game.menuoptions[i].active)
-            {
-                std::string tempstring = loc::toupper(game.menuoptions[i].text);
-                tempstring = std::string("[ ") + tempstring + std::string(" ]");
-                Print((i * game.menuspacing) - 16 +game.menuxoff, 140+8 + (i * 12) +game.menuyoff, tempstring, cr, cg, cb);
-            }
-            else
-            {
-                std::string tempstring = loc::not_toupper(game.menuoptions[i].text);
-                tempstring = "[ " + tempstring + " ]";
-                //Draw it in gray
-                Print((i * game.menuspacing) - 16 +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, tempstring, 128, 128, 128);
-            }
-          }else{
-            //Draw it highlighted
-            if (game.menuoptions[i].active)
-            {
-                std::string tempstring = loc::toupper(game.menuoptions[i].text);
-                tempstring = std::string("[ ") + tempstring + std::string(" ]");
-                Print((i * game.menuspacing) - 16 +game.menuxoff, 144 + (i * 12) +game.menuyoff, tempstring, cr, cg, cb);
-            }
-            else
-            {
-                std::string tempstring = loc::not_toupper(game.menuoptions[i].text);
-                tempstring = "[ " + tempstring + " ]";
-                //Draw it in gray
-                Print((i * game.menuspacing) - 16 +game.menuxoff, 144 + (i * 12)+game.menuyoff, tempstring, 128, 128, 128);
-            }
-          }
+            // Color it normally
+            fr = cr;
+            fg = cg;
+            fb = cb;
         }
         else
         {
-          if(game.menuoptions.size()-i<=3){
-            //Draw it normally
-            if (game.menuoptions[i].active)
-            {
-                Print((i * game.menuspacing) +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), cr, cg, cb);
-            }
-            else
-            {
-                //Draw it in gray
-                Print((i * game.menuspacing) +game.menuxoff, 140+8 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), 128, 128, 128);
-            }
-          }else{
-            //Draw it normally
-            if (game.menuoptions[i].active)
-            {
-                Print((i * game.menuspacing) +game.menuxoff, 144 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), cr, cg, cb);
-            }
-            else
-            {
-                //Draw it in gray
-                Print((i * game.menuspacing) +game.menuxoff, 144 + (i * 12)+game.menuyoff, loc::not_toupper(game.menuoptions[i].text), 128, 128, 128);
-            }
-          }
+            // Color it gray
+            fr = 128;
+            fg = 128;
+            fb = 128;
         }
+
+        int x = i*game.menuspacing + game.menuxoff;
+        int y = 140 + i*12 + game.menuyoff;
+
+        if (levelmenu)
+        {
+            if (game.menuoptions.size() - i <= 3)
+            {
+                // We're on "next page", "previous page", or "return to menu". Draw them separated by a bit
+                y += 8;
+            }
+            else
+            {
+                // Get out of the way of the level descriptions
+                y += 4;
+            }
+        }
+
+        const char *tempstring;
+        char buffer[Game::menutextbytes];
+        if ((int) i == game.currentmenuoption)
+        {
+            if (opt.active)
+            {
+                // Uppercase the text
+                tempstring = loc::toupper(opt.text).c_str();
+            }
+            else
+            {
+                // Not a convert to lowercase, just some processing
+                tempstring = loc::not_toupper(opt.text).c_str();
+            }
+
+            // Add brackets
+            SDL_snprintf(buffer, sizeof(buffer), "[ %s ]", tempstring);
+            // Account for brackets
+            x -= 16;
+        }
+        else
+        {
+            // Not a convert to lowercase, just some processing
+            tempstring = loc::not_toupper(opt.text).c_str();
+
+            SDL_strlcpy(buffer, tempstring, sizeof(buffer));
+        }
+
+        Print(x, y, buffer, fr, fg, fb);
     }
 }
 
@@ -2009,7 +1978,7 @@ void Graphics::drawbackground( int t )
     case 1:
         //Starfield
         FillRect(backBuffer,0x00000);
-        for (int i = 0; i < 50; i++)
+        for (int i = 0; i < numstars; i++)
         {
             stars[i].w = 2;
             stars[i].h = 2;
@@ -2093,7 +2062,7 @@ void Graphics::drawbackground( int t )
         }
         FillRect(backBuffer,bcol2);
 
-        for (int i = 0; i < 18; i++)
+        for (int i = 0; i < numbackboxes; i++)
         {
             switch(rcol)
             {
@@ -2239,7 +2208,7 @@ void Graphics::drawbackground( int t )
     case 6:
         //Final Starfield
         FillRect(backBuffer,0x000000);
-        for (int i = 0; i < 50; i++)
+        for (int i = 0; i < numstars; i++)
         {
             stars[i].w = 2;
             stars[i].h = 2;
@@ -2287,7 +2256,6 @@ void Graphics::drawbackground( int t )
         break;
     default:
         FillRect(backBuffer, 0x000000 );
-        BlitSurfaceStandard(backgrounds[t], NULL, backBuffer, &bg_rect);
 
         break;
     }
@@ -2299,7 +2267,7 @@ void Graphics::updatebackground(int t)
     {
     case 1:
         //Starfield
-        for (int i = 0; i < 50; i++)
+        for (int i = 0; i < numstars; i++)
         {
             stars[i].w = 2;
             stars[i].h = 2;
@@ -2326,7 +2294,7 @@ void Graphics::updatebackground(int t)
                 if (spcol >= 12) spcol = 0;
             }
         }
-        for (int i = 0; i < 18; i++)
+        for (int i = 0; i < numbackboxes; i++)
         {
             backboxes[i].x += backboxvx[i];
             backboxes[i].y += backboxvy[i];
@@ -2442,7 +2410,7 @@ void Graphics::updatebackground(int t)
         break;
     case 6:
         //Final Starfield
-        for (int i = 0; i < 50; i++)
+        for (int i = 0; i < numstars; i++)
         {
             stars[i].w = 2;
             stars[i].h = 2;
