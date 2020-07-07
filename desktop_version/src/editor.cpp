@@ -3660,10 +3660,20 @@ void editorrender()
 
     if(ed.notedelay>0 || ed.oldnotedelay>0)
     {
+        std::string wrapped = graphics.wordwrap(ed.note, 304);
+        short lines = 1;
+        for (size_t i = 0; i < wrapped.size(); i++)
+        {
+            if (wrapped[i] == '\n')
+                lines++;
+        }
+        short textheight = 8+(lines-1)*10;
+        short banner_y = 120 - textheight/2 - 5;
+
         float alpha = graphics.lerp(ed.oldnotedelay, ed.notedelay);
-        FillRect(graphics.backBuffer, 0,115,320,18, graphics.getRGB(92,92,92));
-        FillRect(graphics.backBuffer, 0,116,320,16, graphics.getRGB(0,0,0));
-        graphics.Print(0,121, ed.note,196-((45.0f-alpha)*4), 196-((45.0f-alpha)*4), 196-((45.0f-alpha)*4), true);
+        FillRect(graphics.backBuffer, 0, banner_y, 320, 10+textheight, graphics.getRGB(92,92,92));
+        FillRect(graphics.backBuffer, 0, banner_y+1, 320, 8+textheight, graphics.getRGB(0,0,0));
+        graphics.PrintWrap(0,banner_y+5, wrapped, 196-((45.0f-alpha)*4), 196-((45.0f-alpha)*4), 196-((45.0f-alpha)*4), true);
     }
 
     graphics.drawfade();
