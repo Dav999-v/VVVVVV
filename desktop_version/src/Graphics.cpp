@@ -1402,32 +1402,27 @@ void Graphics::drawmenu( int cr, int cg, int cb, bool levelmenu /*= false*/ )
             }
         }
 
-        const char *tempstring;
         char buffer[Game::menutextbytes];
         if ((int) i == game.currentmenuoption)
         {
             if (opt.active)
             {
                 // Uppercase the text
-                tempstring = loc::toupper(opt.text).c_str();
+                SDL_snprintf(buffer, sizeof(buffer), "[ %s ]", loc::toupper(opt.text).c_str());
             }
             else
             {
                 // Not a convert to lowercase, just some processing
-                tempstring = loc::not_toupper(opt.text).c_str();
+                SDL_snprintf(buffer, sizeof(buffer), "[ %s ]", loc::not_toupper(opt.text).c_str());
             }
 
-            // Add brackets
-            SDL_snprintf(buffer, sizeof(buffer), "[ %s ]", tempstring);
             // Account for brackets
             x -= 16;
         }
         else
         {
             // Not a convert to lowercase, just some processing
-            tempstring = loc::not_toupper(opt.text).c_str();
-
-            SDL_strlcpy(buffer, tempstring, sizeof(buffer));
+            SDL_strlcpy(buffer, loc::not_toupper(opt.text).c_str(), sizeof(buffer));
         }
 
         Print(x, y, buffer, fr, fg, fb);
