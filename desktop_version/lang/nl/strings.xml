@@ -334,9 +334,12 @@
     <string english="quit to menu" explanation="pause menu option" comment="">stoppen en naar menu</string>
     <string english="Press Left/Right to choose a Teleporter" explanation="tight fit, so maybe `Left/Right: choose teleporter`" max="40" comment="">Links/Rechts: kies teleporter</string>
     <string english="Press ENTER to Teleport" explanation="" max="40" comment="">Druk op ENTER om te teleporteren</string>
+    <string english="Map Settings" explanation="title, editor, Level Settings, map is kinda inconsistent with everything else" max="20" comment="">Levelinstellingen</string>
     <string english="edit scripts" explanation="level editor menu option" comment="">scripts bewerken</string>
     <string english="change music" explanation="level editor menu option" comment="">muziek wijzigen</string>
     <string english="editor ghosts" explanation="level editor menu option. Toggles option to show a repetition of the player&apos;s path after playtesting" comment="">editor-spoken</string>
+    <string english="Editor ghost trail is OFF" explanation="level editor. Repetition of the player&apos;s path after playtesting is disabled" max="40" comment="">Spokenspoor in editor staat UIT</string>
+    <string english="Editor ghost trail is ON" explanation="level editor. Repetition of the player&apos;s path after playtesting is enabled" max="40" comment="">Spokenspoor in editor staat AAN</string>
     <string english="load level" explanation="level editor menu option" comment="">level laden</string>
     <string english="save level" explanation="level editor menu option" comment="">level opslaan</string>
     <string english="quit to main menu" explanation="level editor menu option" max="19" comment="">stop en naar menu</string>
@@ -344,13 +347,93 @@
     <string english="change author" explanation="level editor menu option" comment="">auteur wijzigen</string>
     <string english="change description" explanation="level editor menu option" comment="">beschrijving wijzigen</string>
     <string english="change website" explanation="level editor menu option" comment="">website wijzigen</string>
+    <string english="Map Music" explanation="title, editor, music that starts playing when a level is started. Can be changed with scripting later, so this is really just initial music" max="20" comment="">Levelmuziek</string>
+    <string english="Current map music:" explanation="editor, followed by the number and name of a song, or `No background music`. Can be changed with scripting later, so this is really just initial music" max="38*2" comment="">Huidige levelmuziek:</string>
+    <string english="No background music" explanation="editor, level starts with no song playing" max="38*2" comment="">Geen achtergrondmuziek</string>
+    <string english="1: Pushing Onwards" explanation="editor, song name should probably not be translated" max="38*2" comment="">1: Pushing Onwards</string>
+    <string english="2: Positive Force" explanation="editor, song name should probably not be translated" max="38*2" comment="">2: Positive Force</string>
+    <string english="3: Potential for Anything" explanation="editor, song name should probably not be translated" max="38*2" comment="">3: Potential for Anything</string>
+    <string english="4: Passion for Exploring" explanation="editor, song name should probably not be translated" max="38*2" comment="">4: Passion for Exploring</string>
+    <string english="N/A: Pause" explanation="editor, song name should probably not be translated" max="38*2" comment="">n.v.t.: Pause</string>
+    <string english="5: Presenting VVVVVV" explanation="editor, song name should probably not be translated" max="38*2" comment="">5: Presenting VVVVVV</string>
+    <string english="N/A: Plenary" explanation="editor, song name should probably not be translated" max="38*2" comment="">n.v.t.: Plenary</string>
+    <string english="6: Predestined Fate" explanation="editor, song name should probably not be translated" max="38*2" comment="">6: Predestined Fate</string>
+    <string english="N/A: ecroF evitisoP" explanation="editor, song name should probably not be translated" max="38*2" comment="">n.v.t.: ecroF evitisoP</string>
+    <string english="7: Popular Potpourri" explanation="editor, song name should probably not be translated" max="38*2" comment="">7: Popular Potpourri</string>
+    <string english="8: Pipe Dream" explanation="editor, song name should probably not be translated" max="38*2" comment="">8: Pipe Dream</string>
+    <string english="9: Pressure Cooker" explanation="editor, song name should probably not be translated" max="38*2" comment="">9: Pressure Cooker</string>
+    <string english="10: Paced Energy" explanation="editor, song name should probably not be translated" max="38*2" comment="">10: Paced Energy</string>
+    <string english="11: Piercing the Sky" explanation="editor, song name should probably not be translated" max="38*2" comment="">11: Piercing the Sky</string>
+    <string english="N/A: Predestined Fate Remix" explanation="editor, song name should probably not be translated" max="38*2" comment="">n.v.t.: Predestined Fate Remix</string>
+    <string english="?: something else" explanation="editor, song was not recognized" max="38*2" comment="">?: iets anders</string>
     <string english="next song" explanation="level editor menu option" comment="">volgend nummer</string>
     <string english="back" explanation="level editor menu option" comment="">terug</string>
     <string english="yes, save and quit" explanation="level editor menu option" comment="">ja, opslaan en afsluiten</string>
     <string english="no, quit without saving" explanation="level editor menu option" comment="">nee, afsluiten zonder opslaan</string>
     <string english="return to editor" explanation="level editor menu option" comment="">terug naar editor</string>
     <string english="Untitled Level" explanation="" max="20" comment="">Naamloos level</string>
-    <string english="Unknown" explanation="By Unknown [author]" comment="">onbekend</string>
+    <string english="Unknown" explanation="by Unknown [author]" comment="">onbekend</string>
+    <string english="Space Station" explanation="editor tileset name, Now using Space Station Tileset" comment=""></string>
+    <string english="Outside" explanation="editor tileset name, Now using Outside Tileset" comment=""></string>
+    <string english="Lab" explanation="editor tileset name, Now using Lab Tileset" comment=""></string>
+    <string english="Warp Zone" explanation="editor tileset name, Now using Warp Zone Tileset" comment=""></string>
+    <string english="Ship" explanation="editor tileset name, Now using Ship Tileset" comment=""></string>
+    <string english="Now using %s Tileset" explanation="level editor, user changed the room&apos;s tileset to %s (like Ship, Lab, etc)" max="38*3" comment="">Geschakeld naar %s-tegelset</string>
+    <string english="Tileset Colour Changed" explanation="level editor, user changed the room&apos;s tileset colour/variant" max="38*3" comment="">Tegelsetkleur aangepast</string>
+    <string english="Enemy Type Changed" explanation="level editor, user changed enemy appearance for the room" max="38*3" comment="">Vijandtype aangepast</string>
+    <string english="START" explanation="start point in level editor" comment="">START</string>
+    <string english="Tile:" explanation="editor, selected " max="34" comment="">Tegel:</string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>

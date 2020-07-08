@@ -1617,8 +1617,12 @@ void editorclass::switch_tileset(const bool reversed /*= false*/)
 
     clamp_tilecol(levx, levy);
 
-    char buffer[64];
-    SDL_snprintf(buffer, sizeof(buffer), "Now using %s Tileset", tilesets[tiles]);
+    char buffer[481];
+    SDL_snprintf(
+        buffer, sizeof(buffer),
+        loc::gettext("Now using %s Tileset").c_str(),
+        loc::gettext(tilesets[tiles]).c_str()
+    );
 
     note = buffer;
     notedelay = 45;
@@ -1646,7 +1650,7 @@ void editorclass::switch_tilecol(const bool reversed /*= false*/)
     clamp_tilecol(levx, levy, true);
 
     notedelay = 45;
-    note = "Tileset Colour Changed";
+    note = loc::gettext("Tileset Colour Changed");
     updatetiles = true;
 }
 
@@ -1718,7 +1722,7 @@ void editorclass::switch_enemy(const bool reversed /*= false*/)
         room.enemytype++;
     }
 
-    note = "Enemy Type Changed";
+    note = loc::gettext("Enemy Type Changed");
     notedelay = 45;
 }
 
@@ -2384,16 +2388,17 @@ void editormenurender(int tr, int tg, int tb)
     switch (game.currentmenuname)
     {
     case Menu::ed_settings:
-        graphics.bigprint( -1, 75, "Map Settings", tr, tg, tb, true);
+        graphics.bigprint( -1, 75, loc::gettext("Map Settings"), tr, tg, tb, true);
         if (game.currentmenuoption == 3)
         {
             if (!game.ghostsenabled)
-                graphics.Print(2, 230, "Editor ghost trail is OFF", tr/2, tg/2, tb/2);
+                graphics.Print(2, 230, loc::gettext("Editor ghost trail is OFF"), tr/2, tg/2, tb/2);
             else
-                graphics.Print(2, 230, "Editor ghost trail is ON", tr, tg, tb);
+                graphics.Print(2, 230, loc::gettext("Editor ghost trail is ON"), tr, tg, tb);
         }
         break;
     case Menu::ed_desc:
+    {
         if(ed.titlemod)
         {
             if(ed.entframe<2)
@@ -2409,21 +2414,30 @@ void editormenurender(int tr, int tg, int tb)
         {
             graphics.bigprint( -1, 35, translate_title(EditorData::GetInstance().title), tr, tg, tb, true);
         }
+        std::string creator;
         if(ed.creatormod)
         {
             if(ed.entframe<2)
             {
-                graphics.Print( -1, 60, "by " + key.keybuffer+ "_", tr, tg, tb, true);
+                creator = key.keybuffer + "_";
             }
             else
             {
-                graphics.Print( -1, 60, "by " + key.keybuffer+ " ", tr, tg, tb, true);
+                creator = key.keybuffer + " ";
             }
         }
         else
         {
-            graphics.Print( -1, 60, "by " + translate_creator(EditorData::GetInstance().creator), tr, tg, tb, true);
+            creator = translate_creator(EditorData::GetInstance().creator);
         }
+        char creatorline[161];
+        SDL_snprintf(
+            creatorline, sizeof(creatorline),
+            loc::gettext("by %s").c_str(),
+            creator.c_str()
+        );
+        graphics.Print( -1, 60, creatorline, tr, tg, tb, true);
+
         if(ed.websitemod)
         {
             if(ed.entframe<2)
@@ -2485,71 +2499,72 @@ void editormenurender(int tr, int tg, int tb)
             graphics.Print( -1, 110, ed.Desc3, tr, tg, tb, true);
         }
         break;
+    }
     case Menu::ed_music:
     {
-        graphics.bigprint( -1, 65, "Map Music", tr, tg, tb, true);
+        graphics.bigprint( -1, 65, loc::gettext("Map Music"), tr, tg, tb, true);
 
-        graphics.Print( -1, 85, "Current map music:", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 85, loc::gettext("Current map music:"), tr, tg, tb, true);
         std::string songname;
         switch(ed.levmusic)
         {
         case 0:
-            songname = "No background music";
+            songname = loc::gettext("No background music");
             break;
         case 1:
-            songname = "1: Pushing Onwards";
+            songname = loc::gettext("1: Pushing Onwards");
             break;
         case 2:
-            songname = "2: Positive Force";
+            songname = loc::gettext("2: Positive Force");
             break;
         case 3:
-            songname = "3: Potential for Anything";
+            songname = loc::gettext("3: Potential for Anything");
             break;
         case 4:
-            songname = "4: Passion for Exploring";
+            songname = loc::gettext("4: Passion for Exploring");
             break;
         case 5:
-            songname = "N/A: Pause";
+            songname = loc::gettext("N/A: Pause");
             break;
         case 6:
-            songname = "5: Presenting VVVVVV";
+            songname = loc::gettext("5: Presenting VVVVVV");
             break;
         case 7:
-            songname = "N/A: Plenary";
+            songname = loc::gettext("N/A: Plenary");
             break;
         case 8:
-            songname = "6: Predestined Fate";
+            songname = loc::gettext("6: Predestined Fate");
             break;
         case 9:
-            songname = "N/A: ecroF evitisoP";
+            songname = loc::gettext("N/A: ecroF evitisoP");
             break;
         case 10:
-            songname = "7: Popular Potpourri";
+            songname = loc::gettext("7: Popular Potpourri");
             break;
         case 11:
-            songname = "8: Pipe Dream";
+            songname = loc::gettext("8: Pipe Dream");
             break;
         case 12:
-            songname = "9: Pressure Cooker";
+            songname = loc::gettext("9: Pressure Cooker");
             break;
         case 13:
-            songname = "10: Paced Energy";
+            songname = loc::gettext("10: Paced Energy");
             break;
         case 14:
-            songname = "11: Piercing the Sky";
+            songname = loc::gettext("11: Piercing the Sky");
             break;
         case 15:
-            songname = "N/A: Predestined Fate Remix";
+            songname = loc::gettext("N/A: Predestined Fate Remix");
             break;
         default:
-            songname = "?: something else";
+            songname = loc::gettext("?: something else");
             break;
         }
-        graphics.Print( -1, 120, songname, tr, tg, tb, true);
+        graphics.PrintWrap( -1, 120, songname, tr, tg, tb, true);
         break;
     }
     case Menu::ed_quit:
-        graphics.bigprint( -1, 90, "Save before", tr, tg, tb, true);
+        graphics.bigprint( -1, 90, "Save before", tr, tg, tb, true); // TODO LOC
         graphics.bigprint( -1, 110, "quitting?", tr, tg, tb, true);
         break;
     default:
@@ -2851,6 +2866,7 @@ void editorrender()
                 fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),16,24,graphics.getRGB(164,164,164));
                 break;
             case 16: //Start
+            {
                 if(edentity[i].p1==0)  //Left
                 {
                     graphics.drawsprite((edentity[i].x*8)- (ed.levx*40*8)-4,(edentity[i].y*8)- (ed.levy*30*8),0,graphics.col_crewcyan);
@@ -2860,15 +2876,16 @@ void editorrender()
                     graphics.drawsprite((edentity[i].x*8)- (ed.levx*40*8)-4,(edentity[i].y*8)- (ed.levy*30*8),3,graphics.col_crewcyan);
                 }
                 fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),16,24,graphics.getRGB(164,255,255));
-                if(ed.entframe<2)
-                {
-                    graphics.bprint((edentity[i].x*8)- (ed.levx*40*8)-12,(edentity[i].y*8)- (ed.levy*30*8)-8,"START",255,255,255);
-                }
-                else
-                {
-                    graphics.bprint((edentity[i].x*8)- (ed.levx*40*8)-12,(edentity[i].y*8)- (ed.levy*30*8)-8,"START",196,196,196);
-                }
+                short labelcol = ed.entframe<2 ? 255 : 196;
+                short startlen = graphics.len(loc::gettext("START"));
+                graphics.bprint(
+                    (edentity[i].x*8) - (ed.levx*40*8) + 8 - startlen/2,
+                    (edentity[i].y*8) - (ed.levy*30*8) - 8,
+                    loc::gettext("START"),
+                    labelcol,labelcol,labelcol
+                );
                 break;
+            }
             case 17: //Roomtext
                 if(edentity[i].scriptname.length()<1)
                 {
@@ -3153,34 +3170,36 @@ void editorrender()
 
         if(ed.dmtileeditor>0 && t2<=30)
         {
-            graphics.bprint(2, 45-t2, "Tile:", 196, 196, 255 - help.glow, false);
-            graphics.bprint(58, 45-t2, help.String(ed.dmtile), 196, 196, 255 - help.glow, false);
-            FillRect(graphics.backBuffer, 44,44-t2,10,10, graphics.getRGB(196, 196, 255 - help.glow));
-            FillRect(graphics.backBuffer, 45,45-t2,8,8, graphics.getRGB(0,0,0));
+            short labellen = 2 + graphics.len(loc::gettext("Tile:"));
+            graphics.bprint(2, 45-t2, loc::gettext("Tile:"), 196, 196, 255 - help.glow, false);
+            graphics.bprint(labellen+16, 45-t2, help.String(ed.dmtile), 196, 196, 255 - help.glow, false);
+            FillRect(graphics.backBuffer, labellen+2,44-t2,10,10, graphics.getRGB(196, 196, 255 - help.glow));
+            FillRect(graphics.backBuffer, labellen+3,45-t2,8,8, graphics.getRGB(0,0,0));
 
             if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tileset==0)
             {
-                graphics.drawtile(45,45-t2,ed.dmtile);
+                graphics.drawtile(labellen+3,45-t2,ed.dmtile);
             }
             else
             {
-                graphics.drawtile2(45,45-t2,ed.dmtile);
+                graphics.drawtile2(labellen+3,45-t2,ed.dmtile);
             }
         }
         else
         {
-            graphics.bprint(2, 12, "Tile:", 196, 196, 255 - help.glow, false);
-            graphics.bprint(58, 12, help.String(ed.dmtile), 196, 196, 255 - help.glow, false);
-            FillRect(graphics.backBuffer, 44,11,10,10, graphics.getRGB(196, 196, 255 - help.glow));
-            FillRect(graphics.backBuffer, 45,12,8,8, graphics.getRGB(0,0,0));
+            short labellen = 2 + graphics.len(loc::gettext("Tile:"));
+            graphics.bprint(2, 12, loc::gettext("Tile:"), 196, 196, 255 - help.glow, false);
+            graphics.bprint(labellen+16, 12, help.String(ed.dmtile), 196, 196, 255 - help.glow, false);
+            FillRect(graphics.backBuffer, labellen+2,11,10,10, graphics.getRGB(196, 196, 255 - help.glow));
+            FillRect(graphics.backBuffer, labellen+3,12,8,8, graphics.getRGB(0,0,0));
 
             if(ed.level[ed.levx+(ed.levy*ed.maxwidth)].tileset==0)
             {
-                graphics.drawtile(45,12,ed.dmtile);
+                graphics.drawtile(labellen+3,12,ed.dmtile);
             }
             else
             {
-                graphics.drawtile2(45,12,ed.dmtile);
+                graphics.drawtile2(labellen+3,12,ed.dmtile);
             }
         }
     }
