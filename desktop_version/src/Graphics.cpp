@@ -461,12 +461,28 @@ int Graphics::len(std::string t)
     return bfontpos;
 }
 
-std::string Graphics::wordwrap(const std::string& _s, int maxwidth)
+std::string Graphics::wordwrap(const std::string& _s, int maxwidth, short *lines /*= NULL*/)
 {
     // Return a string wordwrapped to a maximum limit by adding newlines.
     // Assumes a language that uses spaces, so won't work well with CJK.
-	if (!loc::langmeta.autowordwrap)
-		return _s;
+
+    if (lines != NULL)
+        *lines = 1;
+
+    if (!loc::langmeta.autowordwrap)
+    {
+        if (lines != NULL)
+        {
+            // We still need to count the lines...
+            for (size_t i = 0; i < _s.size(); i++)
+            {
+                if (_s[i] == '\n')
+                    (*lines)++;
+            }
+        }
+
+        return _s;
+    }
 
     std::string s = std::string(_s);
     size_t lastsplit = -1, lastspace = -1;
@@ -497,6 +513,8 @@ std::string Graphics::wordwrap(const std::string& _s, int maxwidth)
             lastspace = ix;
             linewidth = 0;
             wordwidth = 0;
+            if (lines != NULL)
+                (*lines)++;
         }
 
         if (linewidth > maxwidth && lastsplit != lastspace)
@@ -504,6 +522,8 @@ std::string Graphics::wordwrap(const std::string& _s, int maxwidth)
             s[lastspace] = '\n';
             lastsplit = lastspace;
             linewidth = wordwidth;
+            if (lines != NULL)
+                (*lines)++;
         }
     }
 

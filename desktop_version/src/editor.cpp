@@ -3209,52 +3209,58 @@ void editorrender()
     //Draw GUI
     if(ed.boundarymod>0)
     {
+        std::string note;
         if(ed.boundarymod==1)
         {
-            FillRect(graphics.backBuffer, 0,230,320,240, graphics.getRGB(32,32,32));
-            FillRect(graphics.backBuffer, 0,231,320,240, graphics.getRGB(0,0,0));
             switch(ed.boundarytype)
             {
             case 0:
-                graphics.Print(4, 232, "SCRIPT BOX: Click on top left", 255,255,255, false);
+                note = loc::gettext("SCRIPT BOX: Click on top left");
                 break;
             case 1:
-                graphics.Print(4, 232, "ENEMY BOUNDS: Click on top left", 255,255,255, false);
+                note = loc::gettext("ENEMY BOUNDS: Click on top left");
                 break;
             case 2:
-                graphics.Print(4, 232, "PLATFORM BOUNDS: Click on top left", 255,255,255, false);
+                note = loc::gettext("PLATFORM BOUNDS: Click on top left");
                 break;
             case 3:
-                graphics.Print(4, 232, "COPY TILES: Click on top left", 255,255,255, false);
+                note = loc::gettext("COPY TILES: Click on top left");
                 break;
             default:
-                graphics.Print(4, 232, "Click on top left", 255,255,255, false);
+                note = loc::gettext("Click on top left");
                 break;
             }
         }
         else if(ed.boundarymod==2)
         {
-            FillRect(graphics.backBuffer, 0,230,320,240, graphics.getRGB(32,32,32));
-            FillRect(graphics.backBuffer, 0,231,320,240, graphics.getRGB(0,0,0));
             switch(ed.boundarytype)
             {
             case 0:
-                graphics.Print(4, 232, "SCRIPT BOX: Click on bottom right", 255,255,255, false);
+                note = loc::gettext("SCRIPT BOX: Click on bottom right");
                 break;
             case 1:
-                graphics.Print(4, 232, "ENEMY BOUNDS: Click on bottom right", 255,255,255, false);
+                note = loc::gettext("ENEMY BOUNDS: Click on bottom right");
                 break;
             case 2:
-                graphics.Print(4, 232, "PLATFORM BOUNDS: Click on bottom right", 255,255,255, false);
+                note = loc::gettext("PLATFORM BOUNDS: Click on bottom right");
                 break;
             case 3:
-                graphics.Print(4, 232, "COPY TILES: Click on bottom right", 255,255,255, false);
+                note = loc::gettext("COPY TILES: Click on bottom right");
                 break;
             default:
-                graphics.Print(4, 232, "Click on bottom right", 255,255,255, false);
+                note = loc::gettext("Click on bottom right");
                 break;
             }
         }
+
+        short lines;
+        note = graphics.wordwrap(note, 312, &lines);
+        short textheight = 8*lines;
+
+        FillRect(graphics.backBuffer, 0,238-textheight,320,240, graphics.getRGB(32,32,32));
+        FillRect(graphics.backBuffer, 0,239-textheight,320,240, graphics.getRGB(0,0,0));
+
+        graphics.PrintWrap(4, 240-textheight, note, 255,255,255, false, 8, 312);
     }
     else if(ed.scripteditmod)
     {
@@ -3264,8 +3270,8 @@ void editorrender()
         switch(ed.scripthelppage)
         {
         case 0:
-            graphics.Print(16,28,"**** VVVVVV SCRIPT EDITOR ****", 123, 111, 218, true);
-            graphics.Print(16,44,"PRESS ESC TO RETURN TO MENU", 123, 111, 218, true);
+            graphics.Print(16,28,loc::gettext("**** VVVVVV SCRIPT EDITOR ****"), 123, 111, 218, true);
+            graphics.Print(16,44,loc::gettext("PRESS ESC TO RETURN TO MENU"), 123, 111, 218, true);
 
             if(!ed.hooklist.empty())
             {
@@ -3291,15 +3297,14 @@ void editorrender()
             }
             else
             {
-                graphics.Print(16,110,"NO SCRIPT IDS FOUND", 123, 111, 218, true);
-                graphics.Print(16,130,"CREATE A SCRIPT WITH EITHER", 123, 111, 218, true);
-                graphics.Print(16,140,"THE TERMINAL OR SCRIPT BOX TOOLS", 123, 111, 218, true);
+                graphics.Print(16,110,loc::gettext("NO SCRIPT IDS FOUND"), 123, 111, 218, true);
+                graphics.PrintWrap(16,130,loc::gettext("CREATE A SCRIPT WITH EITHER THE TERMINAL OR SCRIPT BOX TOOLS"), 123, 111, 218, true, 10, 288);
             }
             break;
         case 1:
             //Current scriptname
             FillRect(graphics.backBuffer, 14,226,292,12, graphics.getRGB(162,48,61));
-            graphics.Print(16,228,"CURRENT SCRIPT: " + ed.sbscript, 123, 111, 218, true);
+            graphics.Print(16,228,loc::gettext("CURRENT SCRIPT: ") + ed.sbscript, 123, 111, 218, true);
             //Draw text
             for(int i=0; i<25; i++)
             {
@@ -3361,8 +3366,8 @@ void editorrender()
         //placing warp token
         FillRect(graphics.backBuffer, 0,221,320,240, graphics.getRGB(32,32,32));
         FillRect(graphics.backBuffer, 0,222,320,240, graphics.getRGB(0,0,0));
-        graphics.Print(4, 224, "Left click to place warp destination", 196, 196, 255 - help.glow, false);
-        graphics.Print(4, 232, "Right click to cancel", 196, 196, 255 - help.glow, false);
+        graphics.Print(4, 224, loc::gettext("Left click to place warp destination"), 196, 196, 255 - help.glow, false);
+        graphics.Print(4, 232, loc::gettext("Right click to cancel"), 196, 196, 255 - help.glow, false);
     }
     else
     {
@@ -3496,67 +3501,70 @@ void editorrender()
                 graphics.Print(4, 232, "2/2", 196, 196, 255 - help.glow, false);
             }
 
-            graphics.Print(128, 232, "< and > keys change tool", 196, 196, 255 - help.glow, false);
+            graphics.Print(128, 232, loc::gettext("< and > keys change tool"), 196, 196, 255 - help.glow, false);
 
-            FillRect(graphics.backBuffer, 0,198,120,10, graphics.getRGB(32,32,32));
-            FillRect(graphics.backBuffer, 0,199,119,9, graphics.getRGB(0,0,0));
+            std::string toolname;
             switch(ed.drawmode)
             {
             case 0:
-                graphics.bprint(2,199, "1: Walls",196, 196, 255 - help.glow);
+                toolname = loc::gettext("1: Walls");
                 break;
             case 1:
-                graphics.bprint(2,199, "2: Backing",196, 196, 255 - help.glow);
+                toolname = loc::gettext("2: Backing");
                 break;
             case 2:
-                graphics.bprint(2,199, "3: Spikes",196, 196, 255 - help.glow);
+                toolname = loc::gettext("3: Spikes");
                 break;
             case 3:
-                graphics.bprint(2,199, "4: Trinkets",196, 196, 255 - help.glow);
+                toolname = loc::gettext("4: Trinkets");
                 break;
             case 4:
-                graphics.bprint(2,199, "5: Checkpoint",196, 196, 255 - help.glow);
+                toolname = loc::gettext("5: Checkpoint");
                 break;
             case 5:
-                graphics.bprint(2,199, "6: Disappear",196, 196, 255 - help.glow);
+                toolname = loc::gettext("6: Disappear");
                 break;
             case 6:
-                graphics.bprint(2,199, "7: Conveyors",196, 196, 255 - help.glow);
+                toolname = loc::gettext("7: Conveyors");
                 break;
             case 7:
-                graphics.bprint(2,199, "8: Moving",196, 196, 255 - help.glow);
+                toolname = loc::gettext("8: Moving");
                 break;
             case 8:
-                graphics.bprint(2,199, "9: Enemies",196, 196, 255 - help.glow);
+                toolname = loc::gettext("9: Enemies");
                 break;
             case 9:
-                graphics.bprint(2,199, "0: Grav Line",196, 196, 255 - help.glow);
+                toolname = loc::gettext("0: Grav Line");
                 break;
             case 10:
-                graphics.bprint(2,199, "R: Roomtext",196, 196, 255 - help.glow);
+                toolname = loc::gettext("R: Roomtext");
                 break;
             case 11:
-                graphics.bprint(2,199, "T: Terminal",196, 196, 255 - help.glow);
+                toolname = loc::gettext("T: Terminal");
                 break;
             case 12:
-                graphics.bprint(2,199, "Y: Script Box",196, 196, 255 - help.glow);
+                toolname = loc::gettext("Y: Script Box");
                 break;
             case 13:
-                graphics.bprint(2,199, "U: Warp Token",196, 196, 255 - help.glow);
+                toolname = loc::gettext("U: Warp Token");
                 break;
             case 14:
-                graphics.bprint(2,199, "I: Warp Lines",196, 196, 255 - help.glow);
+                toolname = loc::gettext("I: Warp Lines");
                 break;
             case 15:
-                graphics.bprint(2,199, "O: Crewmate",196, 196, 255 - help.glow);
+                toolname = loc::gettext("O: Crewmate");
                 break;
             case 16:
-                graphics.bprint(2,199, "P: Start Point",196, 196, 255 - help.glow);
+                toolname = loc::gettext("P: Start Point");
                 break;
             }
+            int toolnamelen = graphics.len(toolname);
+            FillRect(graphics.backBuffer, 0,197,toolnamelen+8,11, graphics.getRGB(32,32,32));
+            FillRect(graphics.backBuffer, 0,198,toolnamelen+7,10, graphics.getRGB(0,0,0));
+            graphics.bprint(2,199, toolname, 196, 196, 255 - help.glow);
 
-            FillRect(graphics.backBuffer, 260,198,80,10, graphics.getRGB(32,32,32));
-            FillRect(graphics.backBuffer, 261,199,80,9, graphics.getRGB(0,0,0));
+            FillRect(graphics.backBuffer, 260,197,80,11, graphics.getRGB(32,32,32));
+            FillRect(graphics.backBuffer, 261,198,80,10, graphics.getRGB(0,0,0));
             graphics.bprint(268,199, "("+help.String(ed.levx+1)+","+help.String(ed.levy+1)+")",196, 196, 255 - help.glow, false);
 
         }
@@ -3678,13 +3686,8 @@ void editorrender()
 
     if(ed.notedelay>0 || ed.oldnotedelay>0)
     {
-        std::string wrapped = graphics.wordwrap(ed.note, 304);
-        short lines = 1;
-        for (size_t i = 0; i < wrapped.size(); i++)
-        {
-            if (wrapped[i] == '\n')
-                lines++;
-        }
+        short lines;
+        std::string wrapped = graphics.wordwrap(ed.note, 304, &lines);
         short textheight = 8+(lines-1)*10;
         short banner_y = 120 - textheight/2 - 5;
 
