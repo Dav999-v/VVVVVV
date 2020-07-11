@@ -232,7 +232,11 @@ void menurender()
             break;
         case 6:
             graphics.bigprint(-1, 30, loc::gettext("Toggle VSync"), tr, tg, tb, true);
+#ifdef __HAIKU__ // FIXME: Remove after SDL VSync bug is fixed! -flibit
+            graphics.Print(-1, 65, "Edit the config file on Haiku!", tr, tg, tb, true);
+#else
             graphics.PrintWrap(-1, 65, loc::gettext("Turn VSync on or off."), tr, tg, tb, true);
+#endif
 
             if (!graphics.screenbuffer->vsync)
             {

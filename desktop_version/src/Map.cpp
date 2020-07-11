@@ -76,6 +76,21 @@ mapclass::mapclass()
 	ypos = 0;
 	oldypos = 0;
 	bypos = 0;
+
+	background = 0;
+	cameramode = 0;
+	cameraseek = 0;
+	minitowermode = false;
+	scrolldir = 0;
+	check = 0;
+	cmode = 0;
+	towercol = 0;
+	tdrawback = false;
+	bscroll = 0;
+	roomtexton = false;
+	kludge_bypos = 0;
+	kludge_colstate = 0;
+	kludge_scrolldir = 0;
 }
 
 //Areamap starts at 100,100 and extends 20x20
@@ -1315,12 +1330,6 @@ void mapclass::loadlevel(int rx, int ry)
 		tileset = otherlevel.roomtileset;
 		//do the appear/remove roomname here
 
-		if (otherlevel.roomtexton)
-		{
-			roomtexton = true;
-			roomtext = std::vector<Roomtext>(otherlevel.roomtext);
-		}
-
 		if (game.roomx >= 102 && game.roomx <= 104 && game.roomy >= 110 && game.roomy <= 111)
 		{
 			hiddenname = "The Ship";
@@ -1412,7 +1421,6 @@ void mapclass::loadlevel(int rx, int ry)
 		roomname = finallevel.roomname;
 		tileset = 1;
 		background = 3;
-		graphics.rcol = finallevel.rcol;
 		graphics.backgrounddrawn = false;
 
 		if (finalstretch)

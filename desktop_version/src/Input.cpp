@@ -371,9 +371,11 @@ void menuactionpress()
         case 6:
             //toggle vsync
             music.playef(11);
+#ifndef __HAIKU__ // FIXME: Remove after SDL VSync bug is fixed! -flibit
             graphics.screenbuffer->vsync = !graphics.screenbuffer->vsync;
             graphics.screenbuffer->resetRendererWorkaround();
             game.savestats();
+#endif
             break;
         default:
             //back
@@ -633,6 +635,23 @@ void menuactionpress()
             else
             {
                 music.playef(11);
+            }
+            // Fix wrong area music in Tower (Positive Force vs. ecroF evitisoP)
+            if (map.custommode)
+            {
+                break;
+            }
+            int area = map.area(game.roomx, game.roomy);
+            if (area == 3 || area == 11)
+            {
+                if (graphics.setflipmode)
+                {
+                    music.play(9); // ecroF evitisoP
+                }
+                else
+                {
+                    music.play(2); // Positive Force
+                }
             }
         }
             break;
@@ -1792,10 +1811,6 @@ void gameinput()
 
                     if (game.activetele && game.readytotele > 20 && !game.intimetrial)
                     {
-                        if(!graphics.flipmode)
-                        {
-                            obj.flags[73] = true; //Flip mode test
-                        }
                         if(int(std::abs(obj.entities[ie].vx))<=1 && int(obj.entities[ie].vy)==0)
                         {
                             //wait! space station 2 debug thingy

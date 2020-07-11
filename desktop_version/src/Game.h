@@ -92,7 +92,6 @@ class Game
 {
 public:
     void init(void);
-    ~Game(void);
 
 
     int crewrescued();
@@ -128,7 +127,7 @@ public:
 
     void unlocknum(int t);
 
-    void loadstats();
+    void loadstats(int *width, int *height, bool *vsync);
 
     void  savestats();
 
@@ -359,7 +358,6 @@ public:
     bool savemystats;
 
 
-    bool advanced_mode;
     bool fullScreenEffect_badSignal;
     bool useLinearFilter;
     int stretchMode;

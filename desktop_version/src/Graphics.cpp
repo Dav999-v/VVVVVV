@@ -115,6 +115,8 @@ void Graphics::init()
     tl = point();
     towerbuffer = NULL;
     towerbuffer_lerp = NULL;
+    footerbuffer = NULL;
+    ghostbuffer = NULL;
     trinketr = 0;
     trinketg = 0;
     trinketb = 0;
@@ -158,11 +160,6 @@ int Graphics::font_idx(uint32_t ch) {
     } else {
         return ch;
     }
-}
-
-Graphics::~Graphics()
-{
-
 }
 
 void Graphics::drawspritesetcol(int x, int y, int t, int c)

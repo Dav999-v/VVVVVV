@@ -12,7 +12,6 @@ public:
     const int* loadlevel(int rx, int ry);
 
     std::string roomname;
-    int coin, rcol;
     bool warpx, warpy;
 };
 
