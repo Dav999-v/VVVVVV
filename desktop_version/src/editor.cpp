@@ -3501,7 +3501,8 @@ void editorrender()
                 graphics.Print(4, 232, "2/2", 196, 196, 255 - help.glow, false);
             }
 
-            graphics.Print(128, 232, loc::gettext("< and > keys change tool"), 196, 196, 255 - help.glow, false);
+            const std::string& changetooltext = loc::gettext("< and > keys change tool");
+            graphics.Print(320-graphics.len(changetooltext), 232, changetooltext, 196, 196, 255 - help.glow, false);
 
             std::string toolname;
             switch(ed.drawmode)
