@@ -378,57 +378,57 @@
     <string english="Lab" explanation="editor tileset name, Now using Lab Tileset" comment=""></string>
     <string english="Warp Zone" explanation="editor tileset name, Now using Warp Zone Tileset" comment=""></string>
     <string english="Ship" explanation="editor tileset name, Now using Ship Tileset" comment=""></string>
-    <string english="Now using %s Tileset" explanation="level editor, user changed the room&apos;s tileset to %s (like Ship, Lab, etc)" max="38*3" comment="">Geschakeld naar %s-tegelset</string>
-    <string english="Tileset Colour Changed" explanation="level editor, user changed the room&apos;s tileset colour/variant" max="38*3" comment="">Tegelsetkleur aangepast</string>
+    <string english="Now using %s Tileset" explanation="level editor, user changed the room&apos;s tileset to %s (like Ship, Lab, etc)" max="38*3" comment="">Geschakeld naar %s-tileset</string>
+    <string english="Tileset Colour Changed" explanation="level editor, user changed the room&apos;s tileset colour/variant" max="38*3" comment="">Tilesetkleur aangepast</string>
     <string english="Enemy Type Changed" explanation="level editor, user changed enemy appearance for the room" max="38*3" comment="">Vijandtype aangepast</string>
     <string english="Tile:" explanation="editor, selected " max="34" comment="">Blok:</string>
-    <string english="SCRIPT BOX: Click on top left" explanation="editor, a script box is an invisible box that runs a script when touched" max="39*3" comment=""></string>
-    <string english="SCRIPT BOX: Click on bottom right" explanation="editor, a script box is an invisible box that runs a script when touched" max="39*3" comment=""></string>
-    <string english="ENEMY BOUNDS: Click on top left" explanation="editor, invisible box which enemies always stay inside of" max="39*3" comment=""></string>
-    <string english="ENEMY BOUNDS: Click on bottom right" explanation="editor, invisible box which enemies always stay inside of" max="39*3" comment=""></string>
-    <string english="PLATFORM BOUNDS: Click on top left" explanation="editor, invisible box which moving platforms always stay inside of" max="39*3" comment=""></string>
-    <string english="PLATFORM BOUNDS: Click on bottom right" explanation="editor, invisible box which moving platforms always stay inside of" max="39*3" comment=""></string>
-    <string english="COPY TILES: Click on top left" explanation="" max="39*3" comment=""></string>
-    <string english="COPY TILES: Click on bottom right" explanation="" max="39*3" comment=""></string>
-    <string english="Click on top left" explanation="" max="39*3" comment=""></string>
-    <string english="Click on bottom right" explanation="" max="39*3" comment=""></string>
-    <string english="**** VVVVVV SCRIPT EDITOR ****" explanation="supposed to look like a Commodore 64 screen" max="36" comment=""></string>
-    <string english="PRESS ESC TO RETURN TO MENU" explanation="Commodore 64-style script editor" max="36" comment=""></string>
-    <string english="NO SCRIPT IDS FOUND" explanation="Commodore 64-style script editor, basically NO SCRIPTS FOUND" max="36" comment=""></string>
-    <string english="CREATE A SCRIPT WITH EITHER THE TERMINAL OR SCRIPT BOX TOOLS" explanation="Commodore 64-style script editor" max="36*5" comment=""></string>
-    <string english="CURRENT SCRIPT: " explanation="Commodore 64-style script editor. Char limit is soft, but the longer this is, the more often users&quot; script names run offscreen. Consider SCRIPT: instead" max="18" comment=""></string>
-    <string english="Left click to place warp destination" explanation="warp token: small teleporter with entrance and destination" max="39" comment=""></string>
-    <string english="Right click to cancel" explanation="" max="39" comment=""></string>
-    <string english="&lt; and &gt; keys change tool" explanation="The &lt; and &gt; keys (actually , and . keys, even on non-US-QWERTY!) can be used to switch between tools" max="36" comment=""></string>
-    <string english="1: Walls" explanation="editor tool. Solid tiles" comment=""></string>
-    <string english="2: Backing" explanation="editor tool. Non-solid background tiles" comment=""></string>
-    <string english="3: Spikes" explanation="editor tool" comment=""></string>
-    <string english="4: Trinkets" explanation="editor tool. Shiny trinkets/collectibles" comment=""></string>
-    <string english="5: Checkpoint" explanation="editor tool. You restart at the last checkpoint after death" comment=""></string>
-    <string english="6: Disappear" explanation="editor tool. Platform that disappears when you step on it (disappearing platform)" comment=""></string>
-    <string english="7: Conveyors" explanation="editor tool. Conveyor belt" comment=""></string>
-    <string english="8: Moving" explanation="editor tool. Moving platform" comment=""></string>
-    <string english="9: Enemies" explanation="editor tool" comment=""></string>
-    <string english="0: Grav Line" explanation="editor tool. Gravity line, which flips your gravity when touching it" comment=""></string>
-    <string english="R: Roomtext" explanation="editor tool. Freely typed text, consider just Text" comment=""></string>
-    <string english="T: Terminal" explanation="editor tool. Computer which can be activated by the player to run a script" comment=""></string>
-    <string english="Y: Script Box" explanation="editor tool. Invisible box that runs a script when touched" comment=""></string>
-    <string english="U: Warp Token" explanation="editor tool. Small teleporter with entrance and destination" comment=""></string>
-    <string english="I: Warp Lines" explanation="editor tool. Makes room edges wrap around" comment=""></string>
-    <string english="O: Crewmate" explanation="editor tool. Crewmate that can be rescued" comment=""></string>
-    <string english="P: Start Point" explanation="editor tool" comment=""></string>
+    <string english="SCRIPT BOX: Click on top left" explanation="editor, a script box is an invisible box that runs a script when touched" max="39*3" comment="">SCRIPTVAK: Klik op de linkerbovenhoek</string>
+    <string english="SCRIPT BOX: Click on bottom right" explanation="editor, a script box is an invisible box that runs a script when touched" max="39*3" comment="">SCRIPTVAK: Klik op de rechteronderhoek</string>
+    <string english="ENEMY BOUNDS: Click on top left" explanation="editor, invisible box which enemies always stay inside of" max="39*3" comment="">VIJANDBEGRENZING: Klik op de linkerbovenhoek</string>
+    <string english="ENEMY BOUNDS: Click on bottom right" explanation="editor, invisible box which enemies always stay inside of" max="39*3" comment="">VIJANDBEGRENZING: Klik op de rechteronderhoek</string>
+    <string english="PLATFORM BOUNDS: Click on top left" explanation="editor, invisible box which moving platforms always stay inside of" max="39*3" comment="">PLATFORMBEGRENZING: Klik op de linkerbovenhoek</string>
+    <string english="PLATFORM BOUNDS: Click on bottom right" explanation="editor, invisible box which moving platforms always stay inside of" max="39*3" comment="">PLATFORMBEGRENZING: Klik op de rechteronderhoek</string>
+    <string english="COPY TILES: Click on top left" explanation="" max="39*3" comment="">BLOKKEN KOPIËREN: Klik op de linkerbovenhoek</string>
+    <string english="COPY TILES: Click on bottom right" explanation="" max="39*3" comment="">BLOKKEN KOPIËREN: Klik op de rechteronderhoek</string>
+    <string english="Click on top left" explanation="" max="39*3" comment="">Klik op de linkerbovenhoek</string>
+    <string english="Click on bottom right" explanation="" max="39*3" comment="">Klik op de rechteronderhoek</string>
+    <string english="**** VVVVVV SCRIPT EDITOR ****" explanation="supposed to look like a Commodore 64 screen" max="36" comment="">**** VVVVVV-SCRIPTEDITOR ****</string>
+    <string english="PRESS ESC TO RETURN TO MENU" explanation="Commodore 64-style script editor, TO MENU is redundant" max="36" comment="">DRUK OP ESC OM TERUG TE GAAN</string>
+    <string english="NO SCRIPT IDS FOUND" explanation="Commodore 64-style script editor, basically NO SCRIPTS FOUND" max="36" comment="">GEEN SCRIPTS GEVONDEN</string>
+    <string english="CREATE A SCRIPT WITH EITHER THE TERMINAL OR SCRIPT BOX TOOLS" explanation="Commodore 64-style script editor" max="36*5" comment="">MAAK EEN SCRIPT MET DE TERMINAL- OF SCRIPTVAK-TOOLS</string>
+    <string english="CURRENT SCRIPT: " explanation="Commodore 64-style script editor. Char limit is soft, but the longer this is, the more often users&quot; script names run offscreen. Consider SCRIPT: instead" max="18" comment="">HUIDIG SCRIPT:</string>
+    <string english="Left click to place warp destination" explanation="warp token: small teleporter with entrance and destination" max="39" comment="">Klik links om bestemming te plaatsen</string>
+    <string english="Right click to cancel" explanation="" max="39" comment="">Klik rechts om te annuleren</string>
+    <string english="&lt; and &gt; keys change tool" explanation="The &lt; and &gt; keys (actually , and . keys, even on non-US-QWERTY!) can be used to switch between tools" max="36" comment="">&lt; en &gt; wijzigen tool</string>
+    <string english="1: Walls" explanation="editor tool. Solid tiles" max="32" comment="">1: Muur</string>
+    <string english="2: Backing" explanation="editor tool. Non-solid background tiles" max="32" comment="">2: Achtergrond</string>
+    <string english="3: Spikes" explanation="editor tool" max="32" comment="">3: Spijker</string>
+    <string english="4: Trinkets" explanation="editor tool. Shiny trinkets/collectibles" max="32" comment="">4: Sieraad</string>
+    <string english="5: Checkpoint" explanation="editor tool. You restart at the last checkpoint after death" max="32" comment="">5: Checkpoint</string>
+    <string english="6: Disappear" explanation="editor tool. Platform that disappears when you step on it (disappearing platform, crumbling platform)" max="32" comment="">6: Brekend platform</string>
+    <string english="7: Conveyors" explanation="editor tool. Conveyor belt" max="32" comment="">7: Lopende band</string>
+    <string english="8: Moving" explanation="editor tool. Moving platform" max="32" comment="">8: Bewegend platform</string>
+    <string english="9: Enemies" explanation="editor tool" max="32" comment="">9: Vijand</string>
+    <string english="0: Grav Line" explanation="editor tool. Gravity line, which flips your gravity when touching it" max="32" comment="">0: Zwaartekrachtlijn</string>
+    <string english="R: Roomtext" explanation="editor tool. Freely typed text, consider just Text" max="32" comment="">R: Tekst</string>
+    <string english="T: Terminal" explanation="editor tool. Computer which can be activated by the player to run a script" max="32" comment="">T: Terminal</string>
+    <string english="Y: Script Box" explanation="editor tool. Invisible box that runs a script when touched" max="32" comment="">Y: Scriptvak</string>
+    <string english="U: Warp Token" explanation="editor tool. Small teleporter with entrance and destination" max="32" comment="">U: Teleportatietoken</string>
+    <string english="I: Warp Lines" explanation="editor tool. Makes room edges wrap around" max="32" comment="">I: Wikkellijn</string>
+    <string english="O: Crewmate" explanation="editor tool. Crewmate that can be rescued" max="32" comment="">O: Bemanningslid</string>
+    <string english="P: Start Point" explanation="editor tool" max="32" comment="">P: Startpunt</string>
     <string english="START" explanation="start point in level editor" comment="">START</string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
+    <string english="SPACE ^  SHIFT ^" explanation="editor, indicates both SPACE key and SHIFT key open up menus. ^ is rendered as up arrow" max="32" comment="">SPATIE ^  SHIFT ^</string>
+    <string english="F1: Change Tileset" explanation="editor shortcut, switch to different tileset" max="25" comment="">F1: Tileset wijzigen</string>
+    <string english="F2: Change Colour" explanation="editor shortcut, switch to different tileset color/variant" max="25" comment="">F2: Kleur wijzigen</string>
+    <string english="F3: Change Enemies" explanation="editor shortcut, change enemy appearance" max="25" comment="">F3: Vijanden wijzigen</string>
+    <string english="F4: Enemy Bounds" explanation="editor shortcut, invisible box which enemies always stay inside of" max="25" comment="">F4: Vijandbegrenzing</string>
+    <string english="F5: Platform Bounds" explanation="editor shortcut, invisible box which platforms always stay inside of" max="25" comment="">F5: Platformbegrenzing</string>
+    <string english="F10: Direct Mode" explanation="editor shortcut, direct mode is manual tile placing mode, where walls aren&apos;t automatically made nice" max="25" comment="">F10: Directe modus</string>
+    <string english="W: Change Warp Dir" explanation="editor shortcut, dir=direction, change which edges of the room wrap around. Can be horizontal, vertical or all sides" max="25" comment="">W: Wikkelrichting</string>
+    <string english="E: Change Roomname" explanation="editor shortcut, the name of the room appears at the bottom" max="25" comment="">E: Kamernaam wijzigen</string>
+    <string english="S: Save Map" explanation="level editor, save level, `Map` is basically redundant" max="12" comment="">S: Opslaan</string>
+    <string english="L: Load Map" explanation="level editor, load level, `Map` is basically redundant" max="12" comment="">L: Laden</string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
