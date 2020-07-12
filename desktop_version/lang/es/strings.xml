@@ -373,14 +373,6 @@
     <string english="return to editor" explanation="level editor menu option" comment="">volver al editor</string>
     <string english="Untitled Level" explanation="" max="20" comment=""></string>
     <string english="Unknown" explanation="by Unknown [author]" comment=""></string>
-    <string english="Space Station" explanation="editor tileset name, Now using Space Station Tileset" comment=""></string>
-    <string english="Outside" explanation="editor tileset name, Now using Outside Tileset" comment=""></string>
-    <string english="Lab" explanation="editor tileset name, Now using Lab Tileset" comment=""></string>
-    <string english="Warp Zone" explanation="editor tileset name, Now using Warp Zone Tileset" comment=""></string>
-    <string english="Ship" explanation="editor tileset name, Now using Ship Tileset" comment=""></string>
-    <string english="Now using %s Tileset" explanation="level editor, user changed the room&apos;s tileset to %s (like Ship, Lab, etc)" max="38*3" comment=""></string>
-    <string english="Tileset Colour Changed" explanation="level editor, user changed the room&apos;s tileset colour/variant" max="38*3" comment=""></string>
-    <string english="Enemy Type Changed" explanation="level editor, user changed enemy appearance for the room" max="38*3" comment=""></string>
     <string english="Tile:" explanation="editor, selected " max="34" comment=""></string>
     <string english="SCRIPT BOX: Click on top left" explanation="editor, a script box is an invisible box that runs a script when touched" max="39*3" comment=""></string>
     <string english="SCRIPT BOX: Click on bottom right" explanation="editor, a script box is an invisible box that runs a script when touched" max="39*3" comment=""></string>
@@ -396,7 +388,7 @@
     <string english="PRESS ESC TO RETURN TO MENU" explanation="Commodore 64-style script editor, TO MENU is redundant" max="36" comment=""></string>
     <string english="NO SCRIPT IDS FOUND" explanation="Commodore 64-style script editor, basically NO SCRIPTS FOUND" max="36" comment=""></string>
     <string english="CREATE A SCRIPT WITH EITHER THE TERMINAL OR SCRIPT BOX TOOLS" explanation="Commodore 64-style script editor" max="36*5" comment=""></string>
-    <string english="CURRENT SCRIPT: " explanation="Commodore 64-style script editor. Char limit is soft, but the longer this is, the more often users&quot; script names run offscreen. Consider SCRIPT: instead" max="18" comment=""></string>
+    <string english="CURRENT SCRIPT: %s" explanation="Commodore 64-style script editor. Char limit is soft, but the longer this is, the more often users&quot; script names run offscreen. Consider SCRIPT: instead" max="20" comment=""></string>
     <string english="Left click to place warp destination" explanation="warp token: small teleporter with entrance and destination" max="39" comment=""></string>
     <string english="Right click to cancel" explanation="" max="39" comment=""></string>
     <string english="&lt; and &gt; keys change tool" explanation="The &lt; and &gt; keys (actually , and . keys, even on non-US-QWERTY!) can be used to switch between tools" max="36" comment=""></string>
@@ -414,7 +406,7 @@
     <string english="T: Terminal" explanation="editor tool. Computer which can be activated by the player to run a script" max="32" comment=""></string>
     <string english="Y: Script Box" explanation="editor tool. Invisible box that runs a script when touched" max="32" comment=""></string>
     <string english="U: Warp Token" explanation="editor tool. Small teleporter with entrance and destination" max="32" comment=""></string>
-    <string english="I: Warp Lines" explanation="editor tool. Makes room edges wrap around" max="32" comment=""></string>
+    <string english="I: Warp Lines" explanation="editor tool. Makes a room edge be connected to its opposite edge" max="32" comment=""></string>
     <string english="O: Crewmate" explanation="editor tool. Crewmate that can be rescued" max="32" comment=""></string>
     <string english="P: Start Point" explanation="editor tool" max="32" comment=""></string>
     <string english="START" explanation="start point in level editor" comment=""></string>
@@ -424,11 +416,49 @@
     <string english="F3: Change Enemies" explanation="editor shortcut, change enemy appearance" max="25" comment=""></string>
     <string english="F4: Enemy Bounds" explanation="editor shortcut, invisible box which enemies always stay inside of" max="25" comment=""></string>
     <string english="F5: Platform Bounds" explanation="editor shortcut, invisible box which platforms always stay inside of" max="25" comment=""></string>
-    <string english="F10: Direct Mode" explanation="editor shortcut, direct mode is manual tile placing mode, where walls aren&apos;t automatically made nice" max="25" comment=""></string>
+    <string english="F10: Direct Mode" explanation="editor shortcut, direct mode is manual tile placing mode, where walls are not automatically made nice" max="25" comment=""></string>
     <string english="W: Change Warp Dir" explanation="editor shortcut, dir=direction, change which edges of the room wrap around. Can be horizontal, vertical or all sides" max="25" comment=""></string>
     <string english="E: Change Roomname" explanation="editor shortcut, the name of the room appears at the bottom" max="25" comment=""></string>
     <string english="S: Save Map" explanation="level editor, save level, `Map` is basically redundant" max="12" comment=""></string>
     <string english="L: Load Map" explanation="level editor, load level, `Map` is basically redundant" max="12" comment=""></string>
+    <string english="Enter map filename to save as:" explanation="level editor text input, save level file as" max="39*3" comment=""></string>
+    <string english="Enter map filename to load:" explanation="level editor text input, load level file" max="39*3" comment=""></string>
+    <string english="Enter new room name:" explanation="level editor text input, the name of the room appears at the bottom" max="39*3" comment=""></string>
+    <string english="Enter room coordinates x,y:" explanation="level editor text input, go to another room by its coordinates, for example, 9,15" max="39*3" comment=""></string>
+    <string english="Enter script name:" explanation="level editor text input, enter name of newly created script, or edit the script name of a terminal/script box" max="39*3" comment=""></string>
+    <string english="Enter roomtext:" explanation="level editor text input, enter text to place in the room" comment=""></string>
+    <string english="Space Station" explanation="editor tileset name, Now using Space Station Tileset" comment=""></string>
+    <string english="Outside" explanation="editor tileset name, Now using Outside Tileset" comment=""></string>
+    <string english="Lab" explanation="editor tileset name, Now using Lab Tileset" comment=""></string>
+    <string english="Warp Zone" explanation="editor tileset name, Now using Warp Zone Tileset. The Warp Zone got its name because its rooms wrap around, but think Star Trek" comment=""></string>
+    <string english="Ship" explanation="editor tileset name, Now using Ship Tileset. Spaceship" comment=""></string>
+    <string english="Now using %s Tileset" explanation="level editor, user changed the tileset of the room to %s (like Ship, Lab, etc)" max="38*3" comment=""></string>
+    <string english="Tileset Colour Changed" explanation="level editor, user changed the tileset colour/variant of the room" max="38*3" comment=""></string>
+    <string english="Enemy Type Changed" explanation="level editor, user changed enemy appearance for the room" max="38*3" comment=""></string>
+    <string english="Reloaded resources" explanation="level editor, reloaded graphics assets/resources, music and sound effects" max="38*3" comment=""></string>
+    <string english="ERROR: Invalid format" explanation="user was supposed to enter something like `12,12`, but entered `as@df`" max="38*3" comment=""></string>
+    <string english="Loaded map: %s.vvvvvv" explanation="successfully loaded level file" max="38*3" comment=""></string>
+    <string english="Saved map: %s.vvvvvv" explanation="successfully saved level file" max="38*3" comment=""></string>
+    <string english="ERROR: Could not load level" explanation="that level could not be loaded, maybe it does not exist" max="38*3" comment=""></string>
+    <string english="ERROR: Could not save level!" explanation="maybe the filename is too long? exclamation mark because you will lose your data if you quit" max="38*3" comment=""></string>
+    <string english="Mapsize is now [%d,%d]" explanation="editor, the map is now %d by %d" max="38*3" comment=""></string>
+    <string english="Direct Mode Disabled" explanation="editor, manual tile placing mode where walls are not automatically made nice, now changed to automatic mode" max="38*3" comment=""></string>
+    <string english="Direct Mode Enabled" explanation="editor, manual tile placing mode where walls are not automatically made nice, now changed to manual mode" max="38*3" comment=""></string>
+    <string english="ERROR: Warp lines must be on edges" explanation="level editor, warp lines make a room edge be connected to its opposite edge. So they must be placed on one of the edges, not in the middle" max="38*3" comment=""></string>
+    <string english="ERROR: Cannot have both warp types" explanation="level editor, not possible to have both warp lines and a warp direction in the same room" max="38*3" comment=""></string>
+    <string english="Room warps in all directions" explanation="level editor, all edges of the room are connected with each other. If the player leaves the room they end up on the other side of the same room." max="38*3" comment=""></string>
+    <string english="Room warps horizontally" explanation="level editor, the left and right edges of the room are connected with each other. The player can still go to other rooms on the top and bottom" max="38*3" comment=""></string>
+    <string english="Room warps vertically" explanation="level editor, the top and bottom edges of the room are connected with each other. The player can still go to other rooms on the left and right" max="38*3" comment=""></string>
+    <string english="Room warping disabled" explanation="level editor, no edges are connected and the player can go to other rooms" max="38*3" comment=""></string>
+    <string english="ERROR: No checkpoint to spawn at" explanation="we cannot playtest because there is no checkpoint in this room that the player could start (be spawned) at" max="38*3" comment=""></string>
+    <string english="ERROR: Max number of trinkets is 100" explanation="" max="38*3" comment=""></string>
+    <string english="ERROR: Max number of crewmates is 100" explanation="" max="38*3" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
+    <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
