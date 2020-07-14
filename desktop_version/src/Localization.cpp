@@ -2,6 +2,7 @@
 
 //#include "Graphics.h"
 #include "FileSystemUtils.h"
+#include "UtilityClass.h"
 #include <stdio.h>
 #include "tinyxml2.h"
 #include <utf8/unchecked.h>
@@ -18,12 +19,13 @@ namespace loc
 	bool show_lang_maint_menu;
 
 	std::map<std::string, std::string> translation;
+	std::string number[102];
 
 	bool load_doc(std::string cat, tinyxml2::XMLDocument& doc, std::string langcode = lang)
 	{
 		if (!FILESYSTEM_loadTiXml2Document(("lang/" + langcode + "/" + cat + ".xml").c_str(), doc))
 		{
-			printf("Could not load language %s/%s.\n", langcode.c_str(), cat.c_str());
+			printf("Could not load language file %s/%s.\n", langcode.c_str(), cat.c_str());
 			return false;
 		}
 		return true;
@@ -79,6 +81,17 @@ namespace loc
 		}
 	}
 
+	void resettext()
+	{
+		// Reset/Initialize strings
+		translation.clear();
+
+		for (size_t i = 0; i <= 101; i++)
+		{
+			number[i] = "";
+		}
+	}
+
 	void loadtext_strings()
 	{
 		tinyxml2::XMLDocument doc;
@@ -93,7 +106,6 @@ namespace loc
 
 		{
 			pElem=hDoc.FirstChildElement().ToElement();
-			//pElem->QueryIntAttribute("nplurals", &nplurals);
 			hRoot=tinyxml2::XMLHandle(pElem);
 		}
 
@@ -118,12 +130,48 @@ namespace loc
 		}
 	}
 
+	void loadtext_numbers()
+	{
+		tinyxml2::XMLDocument doc;
+		if (!load_doc("numbers", doc))
+		{
+			return;
+		}
+
+		tinyxml2::XMLHandle hDoc(&doc);
+		tinyxml2::XMLElement* pElem;
+		tinyxml2::XMLHandle hRoot(NULL);
+
+		{
+			pElem=hDoc.FirstChildElement().ToElement();
+			hRoot=tinyxml2::XMLHandle(pElem);
+		}
+
+		for (pElem = hRoot.FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
+		{
+			std::string pKey(pElem->Value());
+			const char* pText = pElem->GetText();
+			if (pText == NULL)
+			{
+				pText = "";
+			}
+
+			if (pKey == "number")
+			{
+				int value = atoi(pElem->Attribute("value"));
+				if (value >= 0 && value <= 101)
+				{
+					number[value] = std::string(pText);
+				}
+			}
+		}
+	}
+
 	void loadtext()
 	{
 		show_lang_maint_menu = FILESYSTEM_langsAreModded();
 
-		translation.clear();
-
+		resettext();
 		loadmeta(langmeta);
 
 		if (lang == "en" && !test_mode)
@@ -132,6 +180,7 @@ namespace loc
 		}
 
 		loadtext_strings();
+		loadtext_numbers();
 	}
 
 	void loadlanguagelist()
@@ -233,6 +282,25 @@ namespace loc
 		}
 
 		return tra;
+	}
+
+	std::string getnumber(int n)
+	{
+		if (n < 0)
+		{
+			return help.String(n);
+		}
+		int ix = n;
+		if (n >= 101)
+		{
+			ix = 101; // Lots
+		}
+
+		if (number[ix].empty())
+		{
+			return help.String(n);
+		}
+		return number[ix];
 	}
 
 	uint32_t toupper(uint32_t ch)

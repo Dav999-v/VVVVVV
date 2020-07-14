@@ -1,6 +1,7 @@
 #include "UtilityClass.h"
 
 #include "SDL.h"
+#include "Localization.h"
 
 #include <cctype>
 #include <sstream>
@@ -149,13 +150,19 @@ std::string UtilityClass::timestring( int t )
 
 std::string UtilityClass::number( int _t )
 {
+	if (loc::lang != "en")
+	{
+		return loc::getnumber(_t);
+	}
+
 	static const std::string ones_place[] = {"One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"};
 	static const std::string tens_place[] = {"Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
 	static const std::string teens[] = {"Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
 
 	if (_t < 0)
 	{
-		return "???";
+		// Yes, String gives back numeric digits while number gives words
+		return String(_t);
 	}
 	else if (_t > 100)
 	{

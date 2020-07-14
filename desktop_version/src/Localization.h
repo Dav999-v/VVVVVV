@@ -31,6 +31,7 @@ namespace loc
 	void sync_lang_files();
 
 	std::string gettext(const std::string& eng);
+	std::string getnumber(int n);
 
 	std::string toupper(const std::string& lower);
 	std::string not_toupper(const std::string& _s);
