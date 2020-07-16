@@ -1790,6 +1790,8 @@ void gameinput()
             //Return to level editor
             if (game.activeactivity > -1 && game.press_map){
                 //pass, let code block below handle it
+            }else if(game.activetele && game.readytotele > 20 && game.press_map){
+                //pass, let code block below handle it
             }else{
                 game.shouldreturntoeditor = true;
                 game.mapheld = true;
@@ -2402,10 +2404,18 @@ void teleporterinput()
 
         if (key.isDown(27))
         {
-            // Go to "Do you want to quit?" screen
-            game.mapheld = true;
-            game.menupage = 10;
-            game.gamestate = MAPMODE;
+            if (!map.custommode || map.custommodeforreal)
+            {
+                // Go to pause menu
+                game.mapheld = true;
+                game.menupage = 30;
+                game.gamestate = MAPMODE;
+            }
+            else
+            {
+                // Close teleporter menu
+                graphics.resumegamemode = true;
+            }
         }
     }
     else

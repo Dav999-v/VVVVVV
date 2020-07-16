@@ -3648,7 +3648,7 @@ void scriptclass::hardreset()
 
 	//dwgraphicsclass
 	graphics.backgrounddrawn = false;
-	graphics.textboxremovefast();
+	graphics.textbox.clear();
 	graphics.flipmode = false; //This will be reset if needs be elsewhere
 	graphics.showcutscenebars = false;
 	graphics.cutscenebarspos = 0;
@@ -3713,7 +3713,7 @@ void scriptclass::hardreset()
 	// Remove duplicate player entities
 	for (int i = 0; i < (int) obj.entities.size(); i++)
 	{
-		if (i != theplayer)
+		if (obj.entities[i].rule == 0 && i != theplayer)
 		{
 			removeentity_iter(i);
 			theplayer--; // just in case indice of player is not 0

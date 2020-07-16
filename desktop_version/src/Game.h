@@ -395,6 +395,7 @@ public:
     int playrx;
     int playry;
     int playgc;
+    int playmusic;
     std::string playassets;
 
     void quittomenu();

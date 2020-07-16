@@ -770,7 +770,7 @@ void entityclass::generateswnwave( int t )
     }
 }
 
-void entityclass::createblock( int t, int xp, int yp, int w, int h, int trig /*= 0*/ )
+void entityclass::createblock( int t, int xp, int yp, int w, int h, int trig /*= 0*/, const std::string& script /*= ""*/ )
 {
     k = blocks.size();
 
@@ -793,6 +793,7 @@ void entityclass::createblock( int t, int xp, int yp, int w, int h, int trig /*=
         block.hp = h;
         block.rectset(xp, yp, w, h);
         block.trigger = trig;
+        block.script = script;
         break;
     case DAMAGE: //Damage
         block.type = DAMAGE;
@@ -3875,9 +3876,11 @@ void entityclass::settemprect( int t )
     rectset(tempx, tempy, tempw, temph);
 }
 
-int entityclass::checktrigger()
+int entityclass::checktrigger(int* block_idx)
 {
     //Returns an int player entity (rule 0) collides with a trigger
+    //Also returns the index of the block
+    *block_idx = -1;
     for(size_t i=0; i < entities.size(); i++)
     {
         if(entities[i].rule==0)
@@ -3893,6 +3896,7 @@ int entityclass::checktrigger()
                 if (blocks[j].type == TRIGGER && help.intersects(blocks[j].rect, temprect))
                 {
                     activetrigger = blocks[j].trigger;
+                    *block_idx = j;
                     return blocks[j].trigger;
                 }
             }
@@ -4815,9 +4819,20 @@ void entityclass::entitycollisioncheck()
 
     // WARNING: If updating this code, don't forget to update Map.cpp mapclass::twoframedelayfix()
     activetrigger = -1;
-    if (checktrigger() > -1)
+    int block_idx = -1;
+    if (checktrigger(&block_idx) > -1 && block_idx > -1)
     {
-        game.state = activetrigger;
+        if (blocks[block_idx].script != "")
+        {
+            game.startscript = true;
+            game.newscript = blocks[block_idx].script;
+            removetrigger(activetrigger);
+            game.state = 0;
+        }
+        else
+        {
+            game.state = activetrigger;
+        }
         game.statedelay = 0;
     }
 }

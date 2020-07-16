@@ -1878,8 +1878,7 @@ void Game::updatestate()
                 }
                 else
                 {
-                    gamestate = EDITORMODE;
-                    graphics.backgrounddrawn=false;
+                    shouldreturntoeditor = true;
                     if(!muted && ed.levmusic>0) music.fadeMusicVolumeIn(3000);
                     if(ed.levmusic>0) music.fadeout();
                 }
@@ -1925,7 +1924,7 @@ void Game::updatestate()
 
         case 2000:
             //Game Saved!
-            if (intimetrial || nodeathmode || inintermission)
+            if (inspecial() || map.custommode)
             {
                 state = 0;
             }
@@ -4657,7 +4656,15 @@ void Game::savestats()
     dataNode->LinkEndChild( msg );
 
     int width, height;
-    graphics.screenbuffer->GetWindowSize(&width, &height);
+    if (graphics.screenbuffer != NULL)
+    {
+        graphics.screenbuffer->GetWindowSize(&width, &height);
+    }
+    else
+    {
+        width = 320;
+        height = 240;
+    }
     msg = doc.NewElement( "window_width" );
     msg->LinkEndChild( doc.NewText( help.String(width).c_str()));
     dataNode->LinkEndChild( msg );
@@ -4735,8 +4742,17 @@ void Game::savestats()
     msg->LinkEndChild(doc.NewText(help.String((int) glitchrunnermode).c_str()));
     dataNode->LinkEndChild(msg);
 
+    int vsyncOption;
     msg = doc.NewElement("vsync");
-    msg->LinkEndChild(doc.NewText(help.String((int) graphics.screenbuffer->vsync).c_str()));
+    if (graphics.screenbuffer != NULL)
+    {
+        vsyncOption = (int) graphics.screenbuffer->vsync;
+    }
+    else
+    {
+        vsyncOption = 0;
+    }
+    msg->LinkEndChild(doc.NewText(help.String(vsyncOption).c_str()));
     dataNode->LinkEndChild(msg);
 
     for (size_t i = 0; i < controllerButton_flip.size(); i += 1)
@@ -5172,6 +5188,7 @@ void Game::customloadquick(std::string savfile)
         saverx = playrx;
         savery = playry;
         savegc = playgc;
+        music.play(playmusic);
         return;
     }
 
@@ -6122,7 +6139,7 @@ void Game::customsavequick(std::string savfile)
     else
     {
         printf("Could Not Save game!\n");
-        printf("Failed: %s%s%s", saveFilePath.c_str(), levelfile.c_str(), ".vvv");
+        printf("Failed: %s%s%s\n", saveFilePath.c_str(), levelfile.c_str(), ".vvv");
     }
 }
 
@@ -6575,6 +6592,10 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                             prefix = tmp;
                             break;
                         }
+                        default:
+                            SDL_assert(0 && "Unhandled menu text prefix!");
+                            prefix = "";
+                            break;
                         }
                     }
                     else
@@ -7305,13 +7326,19 @@ void Game::returntoeditor()
 {
     game.gamestate = EDITORMODE;
 
-    graphics.textboxremove();
+    graphics.textbox.clear();
     game.hascontrol = true;
     game.advancetext = false;
     game.completestop = false;
     game.state = 0;
     graphics.showcutscenebars = false;
     graphics.fademode = 0;
+
+    ed.keydelay = 6;
+    ed.settingskey = true;
+    ed.oldnotedelay = 0;
+    ed.notedelay = 0;
+    ed.roomnamehide = 0;
 
     graphics.backgrounddrawn=false;
     music.fadeout();

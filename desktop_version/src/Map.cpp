@@ -1544,8 +1544,8 @@ void mapclass::loadlevel(int rx, int ry)
 		cameramode = 0;
 		colstate = 0;
 		colsuperstate = 0;
-	}
 		break;
+	}
 	case 10: //Final Level, Tower 2
 	{
 
@@ -1583,8 +1583,8 @@ void mapclass::loadlevel(int rx, int ry)
 		cameramode = 0;
 		colstate = 0;
 		colsuperstate = 0;
-	}
 		break;
+	}
 	case 11: //Tower Hallways //Content is held in final level routine
 	{
 		const int* tmap = finallevel.loadlevel(rx, ry);
@@ -1606,67 +1606,86 @@ void mapclass::loadlevel(int rx, int ry)
 			background = 9;
 			rcol = 0;
 		}
-	}
 		break;
+	}
 #endif
 #if !defined(NO_CUSTOM_LEVELS)
 	case 12: //Custom level
-		int curlevel=(rx-100)+((ry-100)*ed.maxwidth);
-		game.customcol=ed.getlevelcol(curlevel)+1;
-		obj.customplatformtile=game.customcol*12;
-		switch(ed.level[curlevel].tileset){
-			case 0: //Space Station
+	{
+		const int curlevel = rx-100 + (ry-100) * ed.maxwidth;
+		const edlevelclass* room_ptr = NULL;
+		if (!INBOUNDS_ARR(curlevel, ed.level))
+		{
+			static edlevelclass blank;
+			blank.tileset = 1;
+			room_ptr = &blank;
+		}
+		else
+		{
+			room_ptr = &ed.level[curlevel];
+		}
+		const edlevelclass& room = *room_ptr;
+
+		game.customcol = ed.getlevelcol(curlevel) + 1;
+		obj.customplatformtile = game.customcol * 12;
+
+		switch (room.tileset)
+		{
+		case 0: // Space Station
 			tileset = 0;
 			background = 1;
 			break;
-			case 1: //Outside
+		case 1: // Outside
 			tileset = 1;
 			background = 1;
 			break;
-			case 2: //Lab
+		case 2: // Lab
 			tileset = 1;
 			background = 2;
-			graphics.rcol = ed.level[curlevel].tilecol;
+			graphics.rcol = room.tilecol;
 			break;
-			case 3: //Warp Zone/intermission
+		case 3: // Warp Zone/intermission
 			tileset = 1;
 			background = 6;
 			break;
-			case 4://Ship
+		case 4: // Ship
 			tileset = 1;
 			background = 1;
 			break;
-			default:
+		default:
 			tileset = 1;
 			background = 1;
 			break;
 		}
 
-		//If screen warping, then override all that:
+		// If screen warping, then override all that:
 		bool redrawbg = game.roomx != game.prevroomx || game.roomy != game.prevroomy;
-		if(redrawbg){
+		if (redrawbg)
+		{
 			graphics.backgrounddrawn = false;
 		}
-		if(ed.level[curlevel].warpdir>0){
-			if(ed.level[curlevel].warpdir==1){
-			warpx=true;
-			background=3;
-			graphics.rcol = ed.getwarpbackground(rx-100,ry-100);
-			}else if(ed.level[curlevel].warpdir==2){
-			warpy=true;
-			background=4;
-			graphics.rcol = ed.getwarpbackground(rx-100,ry-100);
-			}else if(ed.level[curlevel].warpdir==3){
-			warpx=true; warpy=true;
+
+		switch (room.warpdir)
+		{
+		case 1:
+			warpx = true;
+			background = 3;
+			graphics.rcol = ed.getwarpbackground(rx - 100, ry - 100);
+			break;
+		case 2:
+			warpy = true;
+			background = 4;
+			graphics.rcol = ed.getwarpbackground(rx - 100, ry - 100);
+			break;
+		case 3:
+			warpx = true;
+			warpy = true;
 			background = 5;
-			graphics.rcol = ed.getwarpbackground(rx-100,ry-100);
-			}
+			graphics.rcol = ed.getwarpbackground(rx - 100, ry - 100);
+			break;
 		}
 
-		roomname="";
-		if(ed.level[curlevel].roomname!=""){
-			roomname=ed.level[curlevel].roomname;
-		}
+		roomname = room.roomname;
 		extrarow = 1;
 		const int* tmap = ed.loadlevel(rx, ry);
 		SDL_memcpy(contents, tmap, sizeof(contents));
@@ -1675,87 +1694,105 @@ void mapclass::loadlevel(int rx, int ry)
 		roomtexton = false;
 		roomtext.clear();
 
-		//Entities have to be created HERE, akwardly
-		int tempcheckpoints=0;
-		int tempscriptbox=0;
-		for(size_t edi=0; edi<edentity.size(); edi++){
-			//If entity is in this room, create it
-			int tsx=(edentity[edi].x-(edentity[edi].x%40))/40;
-			int tsy=(edentity[edi].y-(edentity[edi].y%30))/30;
-			if(tsx==rx-100 && tsy==ry-100){
-			switch(edentity[edi].t){
-				case 1: //Enemies
-				int bx1, by1, bx2, by2;
-				bx1=ed.level[rx-100+((ry-100)*ed.maxwidth)].enemyx1;
-				by1=ed.level[rx-100+((ry-100)*ed.maxwidth)].enemyy1;
-				bx2=ed.level[rx-100+((ry-100)*ed.maxwidth)].enemyx2;
-				by2=ed.level[rx-100+((ry-100)*ed.maxwidth)].enemyy2;
+		// Entities have to be created HERE, akwardly
+		int tempcheckpoints = 0;
+		int tempscriptbox = 0;
+		for (size_t edi = 0; edi < edentity.size(); edi++)
+		{
+			// If entity is in this room, create it
+			const edentities& ent = edentity[edi];
+			const int tsx = ent.x / 40;
+			const int tsy = ent.y / 30;
 
-				if(warpx){ if(bx1==0 && bx2==320){ bx1=-100; bx2=420; } }
-				if(warpy){ if(by1==0 && by2==240){ by1=-100; by2=340; } }
+			if (tsx != rx-100 || tsy != ry-100)
+			{
+				continue;
+			}
 
-				obj.customenemy=ed.level[tsx+((ed.maxwidth)*tsy)].enemytype;
-				obj.createentity((edentity[edi].x*8)- ((rx-100)*40*8),(edentity[edi].y*8)- ((ry-100)*30*8), 56,
-				edentity[edi].p1, 4, bx1, by1, bx2, by2);
+			const int ex = (ent.x % 40) * 8;
+			const int ey = (ent.y % 30) * 8;
+
+			// Platform and enemy bounding boxes
+			int bx1, by1, bx2, by2;
+
+			if (ent.t == 1 || (ent.t == 2 && ent.p1 <= 4))
+			{
+				bx1 = room.platx1;
+				by1 = room.platy1;
+				bx2 = room.platx2;
+				by2 = room.platy2;
+
+				// Enlarge bounding boxes to fix warping entities
+				if (warpx && bx1 == 0 && bx2 == 320)
+				{
+					bx1 -= 100;
+					bx2 += 100;
+				}
+				if (warpy && by1 == 0 && by2 == 240)
+				{
+					by1 -= 100;
+					by2 += 100;
+				}
+			}
+
+			switch (ent.t)
+			{
+			case 1: // Enemies
+				obj.customenemy = room.enemytype;
+				obj.createentity(ex, ey, 56, ent.p1, 4, bx1, by1, bx2, by2);
 				break;
-				case 2: //Platforms and Threadmills
-				if(edentity[edi].p1<=4){
-					int bx1, by1, bx2, by2;
-					bx1=ed.level[rx-100+((ry-100)*ed.maxwidth)].platx1;
-					by1=ed.level[rx-100+((ry-100)*ed.maxwidth)].platy1;
-					bx2=ed.level[rx-100+((ry-100)*ed.maxwidth)].platx2;
-					by2=ed.level[rx-100+((ry-100)*ed.maxwidth)].platy2;
-
-					if(warpx){ if(bx1==0 && bx2==320){ bx1=-100; bx2=420; } }
-					if(warpy){ if(by1==0 && by2==240){ by1=-100; by2=340; } }
-
-					obj.createentity((edentity[edi].x*8)- ((rx-100)*40*8),(edentity[edi].y*8)- ((ry-100)*30*8), 2,
-					edentity[edi].p1, ed.level[rx-100+((ry-100)*ed.mapwidth)].platv, bx1, by1, bx2, by2);
-				}else if(edentity[edi].p1>=5 && edentity[edi].p1<=8){ //Threadmill
-					obj.createentity((edentity[edi].x*8)- ((rx-100)*40*8),(edentity[edi].y*8)- ((ry-100)*30*8), 2,
-					edentity[edi].p1+3, 4);
+			case 2: // Platforms and conveyors
+				if (ent.p1 <= 4)
+				{
+					obj.createentity(ex, ey, 2, ent.p1, room.platv, bx1, by1, bx2, by2);
+				}
+				else if (ent.p1 >= 5 && ent.p1 <= 8) // Conveyor
+				{
+					obj.createentity(ex, ey, 2, ent.p1 + 3, 4);
 				}
 				break;
-				case 3: //Disappearing platforms
-				obj.createentity((edentity[edi].x*8)- ((rx-100)*40*8),(edentity[edi].y*8)- ((ry-100)*30*8), 3);
+			case 3: // Disappearing platforms
+				obj.createentity(ex, ey, 3);
 				break;
-				case 9:
-				obj.createentity((edentity[edi].x*8)- ((rx-100)*40*8),(edentity[edi].y*8)- ((ry-100)*30*8), 9, ed.findtrinket(edi));
+			case 9: // Trinkets
+				obj.createentity(ex, ey, 9, ed.findtrinket(edi));
 				break;
-				case 10: //Checkpoints
-				obj.createentity((edentity[edi].x*8)- ((rx-100)*40*8),(edentity[edi].y*8)- ((ry-100)*30*8), 10,
-				edentity[edi].p1,((rx+(ry*100))*20)+tempcheckpoints);
+			case 10: // Checkpoints
+				obj.createentity(ex, ey, 10, ent.p1, (rx + ry*100) * 20 + tempcheckpoints);
 				tempcheckpoints++;
 				break;
-				case 11: //Gravity Lines
-				if(edentity[edi].p1==0){ //Horizontal
-					obj.createentity((edentity[edi].p2*8),(edentity[edi].y*8)- ((ry-100)*30*8)+4, 11, edentity[edi].p3);
-				}else{ //Vertical
-					obj.createentity((edentity[edi].x*8)- ((rx-100)*40*8)+3,(edentity[edi].p2*8), 12, edentity[edi].p3);
+			case 11: // Gravity Lines
+				if (ent.p1 == 0) //Horizontal
+				{
+					obj.createentity(ent.p2 * 8, ey + 4, 11, ent.p3);
+				}
+				else //Vertical
+				{
+					obj.createentity(ex + 3, ent.p2 * 8, 12, ent.p3);
 				}
 				break;
-				case 13: //Warp Tokens
-				obj.createentity((edentity[edi].x*8)- ((rx-100)*40*8),(edentity[edi].y*8)- ((ry-100)*30*8), 13, edentity[edi].p1, edentity[edi].p2);
+			case 13: // Warp Tokens
+				obj.createentity(ex, ey, 13, ent.p1, ent.p2);
 				break;
-				case 15: //Collectable crewmate
-				obj.createentity((edentity[edi].x*8)- ((rx-100)*40*8)-4,(edentity[edi].y*8)- ((ry-100)*30*8)+1, 55, ed.findcrewmate(edi), edentity[edi].p1, edentity[edi].p2);
+			case 15: // Collectable crewmate
+				obj.createentity(ex - 4, ey + 1, 55, ed.findcrewmate(edi), ent.p1, ent.p2);
 				break;
-				case 17: //Roomtext!
-				{
+			case 17: // Roomtext!
+			{
 				roomtexton = true;
 				Roomtext text;
-				text.x = edentity[edi].x - ((rx-100)*40);
-				text.y = edentity[edi].y - ((ry-100)*30);
-				text.text = edentity[edi].scriptname;
+				text.x = ex / 8;
+				text.y = ey / 8;
+				text.text = ent.scriptname;
 				roomtext.push_back(text);
 				break;
-				}
-				case 18: //Terminals
-				{
-				obj.customscript=edentity[edi].scriptname;
+			}
+			case 18: // Terminals
+			{
+				obj.customscript = ent.scriptname;
 
-				int usethistile = edentity[edi].p1;
-				int usethisy = (edentity[edi].y*8)- ((ry-100)*30*8);
+				int usethistile = ent.p1;
+				int usethisy = ey;
 
 				// This isn't a boolean: we just swap 0 and 1 around and leave the rest alone
 				if (usethistile == 0)
@@ -1768,34 +1805,42 @@ void mapclass::loadlevel(int rx, int ry)
 					usethisy -= 8;
 				}
 
-				obj.createentity((edentity[edi].x*8)- ((rx-100)*40*8), usethisy+8, 20, usethistile);
-				obj.createblock(5, (edentity[edi].x*8)- ((rx-100)*40*8)-8, usethisy+8, 20, 16, 35);
+				obj.createentity(ex, usethisy + 8, 20, usethistile);
+				obj.createblock(ACTIVITY, ex - 8, usethisy + 8, 20, 16, 35);
 				break;
+			}
+			case 19: //Script Box
+				if (INBOUNDS_ARR(tempscriptbox, game.customscript))
+				{
+					game.customscript[tempscriptbox] = ent.scriptname;
 				}
-				case 19: //Script Box
-				game.customscript[tempscriptbox]=edentity[edi].scriptname;
-				obj.createblock(1, (edentity[edi].x*8)- ((rx-100)*40*8), (edentity[edi].y*8)- ((ry-100)*30*8),
-								edentity[edi].p1*8, edentity[edi].p2*8, 300+tempscriptbox);
+				obj.createblock(TRIGGER, ex, ey, ent.p1 * 8, ent.p2 * 8, 300 + tempscriptbox, "custom_" + ent.scriptname);
 				tempscriptbox++;
 				break;
-				case 50: //Warp Lines
+			case 50: // Warp Lines
 				obj.customwarpmode=true;
-				if(edentity[edi].p1==0){ //
-					obj.createentity((edentity[edi].x*8)- ((rx-100)*40*8)+4,(edentity[edi].p2*8), 51, edentity[edi].p3);
-				}else if(edentity[edi].p1==1){ //Horizontal, right
-					obj.createentity((edentity[edi].x*8)- ((rx-100)*40*8)+4,(edentity[edi].p2*8), 52, edentity[edi].p3);
-				}else if(edentity[edi].p1==2){ //Vertical, top
-					obj.createentity((edentity[edi].p2*8),(edentity[edi].y*8)- ((ry-100)*30*8)+7, 53, edentity[edi].p3);
-				}else if(edentity[edi].p1==3){
-					obj.createentity((edentity[edi].p2*8),(edentity[edi].y*8)- ((ry-100)*30*8), 54, edentity[edi].p3);
+				switch (ent.p1)
+				{
+				case 0: // Vertical, left
+					obj.createentity(ex + 4, ent.p2 * 8, 51, ent.p3);
+					break;
+				case 1: //Horizontal, right
+					obj.createentity(ex + 4, ent.p2 * 8, 52, ent.p3);
+					break;
+				case 2: //Vertical, top
+					obj.createentity(ent.p2 * 8, ey + 7, 53, ent.p3);
+					break;
+				case 3: // Horizontal, bottom
+					obj.createentity(ent.p2 * 8, ey, 54, ent.p3);
+					break;
 				}
 				break;
 			}
-			}
-			}
+		}
 
 		//do the appear/remove roomname here
 		break;
+	}
 #endif
 	}
 	//The room's loaded: now we fill out damage blocks based on the tiles.
@@ -2059,16 +2104,18 @@ void mapclass::twoframedelayfix()
 	// and when the script gets loaded script.run() has already ran for that frame, too.
 	// A bit kludge-y, but it's the least we can do without changing the frame ordering.
 
+	int block_idx = -1;
 	if (game.glitchrunnermode
 	|| game.deathseq != -1
-	// obj.checktrigger() sets obj.activetrigger
-	|| obj.checktrigger() <= -1
+	// obj.checktrigger() sets obj.activetrigger and block_idx
+	|| obj.checktrigger(&block_idx) <= -1
+	|| block_idx <= -1
 	|| obj.activetrigger < 300)
 	{
 		return;
 	}
 
-	game.newscript = "custom_" + game.customscript[obj.activetrigger - 300];
+	game.newscript = obj.blocks[block_idx].script;
 	obj.removetrigger(obj.activetrigger);
 	game.state = 0;
 	game.statedelay = 0;
