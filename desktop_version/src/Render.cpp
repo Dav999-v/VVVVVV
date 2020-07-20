@@ -1,16 +1,15 @@
-#include "Render.h"
-
-#include "Graphics.h"
-#include "UtilityClass.h"
-#include "Maths.h"
-#include "Entity.h"
-#include "Map.h"
-#include "Script.h"
-#include "FileSystemUtils.h"
-#include "Localization.h"
 #include "Credits.h"
-
+#include "editor.h"
+#include "Entity.h"
+#include "FileSystemUtils.h"
+#include "Graphics.h"
+#include "Localization.h"
 #include "MakeAndPlay.h"
+#include "Map.h"
+#include "Maths.h"
+#include "Music.h"
+#include "Script.h"
+#include "UtilityClass.h"
 
 int tr;
 int tg;

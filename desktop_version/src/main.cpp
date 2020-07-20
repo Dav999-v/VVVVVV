@@ -1,34 +1,26 @@
 #include <SDL.h>
-#include "SoundSystem.h"
-
-#include "UtilityClass.h"
-#include "Game.h"
-#include "Graphics.h"
-#include "KeyPoll.h"
-#include "Render.h"
-
-#include "Tower.h"
-#include "WarpClass.h"
-#include "Labclass.h"
-#include "Finalclass.h"
-#include "Map.h"
-
-#include "Screen.h"
-
-#include "Script.h"
-
-#include "Logic.h"
-
-#include "Input.h"
-#include "editor.h"
-#include "preloader.h"
-
-#include "FileSystemUtils.h"
-#include "Network.h"
-#include "Localization.h"
-
 #include <stdio.h>
 #include <string.h>
+
+#include "editor.h"
+#include "Enums.h"
+#include "Entity.h"
+#include "FileSystemUtils.h"
+#include "Game.h"
+#include "Graphics.h"
+#include "Input.h"
+#include "KeyPoll.h"
+#include "Localization.h"
+#include "Logic.h"
+#include "Map.h"
+#include "Music.h"
+#include "Network.h"
+#include "preloader.h"
+#include "Render.h"
+#include "Screen.h"
+#include "Script.h"
+#include "SoundSystem.h"
+#include "UtilityClass.h"
 
 scriptclass script;
 
@@ -142,7 +134,7 @@ int main(int argc, char *argv[])
             })
         }
 #undef ARG_INNER
-#undef ARG_IS
+#undef ARG
     }
 
     if(!FILESYSTEM_init(argv[0], baseDir, assetsPath))

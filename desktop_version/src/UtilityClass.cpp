@@ -1,10 +1,10 @@
 #include "UtilityClass.h"
 
-#include "SDL.h"
-#include "Localization.h"
-
 #include <cctype>
+#include <SDL.h>
 #include <sstream>
+
+#include "Localization.h"
 
 /* Used by UtilityClass::GCString to generate a button list */
 const char *GCChar(SDL_GameControllerButton button)

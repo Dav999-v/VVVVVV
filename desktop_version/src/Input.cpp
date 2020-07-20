@@ -1,14 +1,19 @@
-#include "Input.h"
-#include "Logic.h"
-#include "Script.h"
+#include <tinyxml2.h>
+
 #include "Credits.h"
-
-#include "MakeAndPlay.h"
-
-#include "tinyxml2.h"
-
+#include "editor.h"
+#include "Entity.h"
+#include "Enums.h"
 #include "FileSystemUtils.h"
+#include "Game.h"
+#include "Graphics.h"
+#include "KeyPoll.h"
 #include "Localization.h"
+#include "Logic.h"
+#include "MakeAndPlay.h"
+#include "Map.h"
+#include "Music.h"
+#include "Script.h"
 
 void updatebuttonmappings(int bind)
 {
@@ -2141,8 +2146,8 @@ void mapinput()
     }
 
     if(graphics.menuoffset==0
-    && (!game.glitchrunnermode || graphics.fademode == 0)
-    && game.fadetomenudelay <= 0 && game.fadetolabdelay <= 0)
+    && ((!game.glitchrunnermode && game.fadetomenudelay <= 0 && game.fadetolabdelay <= 0)
+    || graphics.fademode == 0))
     {
         if (graphics.flipmode)
         {
@@ -2335,8 +2340,11 @@ void mapmenuactionpress()
         game.swnmode = false;
         graphics.fademode = 2;
         music.fadeout();
-        game.fadetolab = true;
-        game.fadetolabdelay = 16;
+        if (!game.glitchrunnermode)
+        {
+            game.fadetolab = true;
+            game.fadetolabdelay = 16;
+        }
         break;
     case 30:
         // Return to game

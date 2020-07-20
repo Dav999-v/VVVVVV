@@ -1,11 +1,12 @@
 #include "Localization.h"
 
-//#include "Graphics.h"
-#include "FileSystemUtils.h"
-#include "UtilityClass.h"
 #include <stdio.h>
-#include "tinyxml2.h"
+#include <tinyxml2.h>
 #include <utf8/unchecked.h>
+
+#include "FileSystemUtils.h"
+//#include "Graphics.h"
+#include "UtilityClass.h"
 
 namespace loc
 {

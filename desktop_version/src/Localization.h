@@ -2,8 +2,8 @@
 #define LOCALIZATION_H
 
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace loc
 {

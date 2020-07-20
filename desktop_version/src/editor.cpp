@@ -2,24 +2,22 @@
 
 #include "editor.h"
 
-#include "Graphics.h"
-#include "Entity.h"
-#include "Music.h"
-#include "KeyPoll.h"
-#include "Map.h"
-#include "Script.h"
-#include "time.h"
-
-#include "tinyxml2.h"
-
-#include "Enums.h"
-
-#include "FileSystemUtils.h"
-#include "Localization.h"
-
-#include <string>
-#include <utf8/unchecked.h>
 #include <physfs.h>
+#include <stdio.h>
+#include <string>
+#include <tinyxml2.h>
+#include <utf8/unchecked.h>
+
+#include "Entity.h"
+#include "Enums.h"
+#include "FileSystemUtils.h"
+#include "Graphics.h"
+#include "KeyPoll.h"
+#include "Localization.h"
+#include "Map.h"
+#include "Music.h"
+#include "Script.h"
+#include "UtilityClass.h"
 
 #ifndef __STDC_FORMAT_MACROS
 #define __STDC_FORMAT_MACROS
@@ -28,7 +26,6 @@
 #define _POSIX_SOURCE
 #endif
 #include <inttypes.h>
-#include <cstdio>
 
 edlevelclass::edlevelclass()
 {
@@ -534,7 +531,7 @@ void editorclass::getlin(const enum textmode mode, const std::string& prompt, st
     ed.oldenttext = key.keybuffer;
 }
 
-const int* editorclass::loadlevel( int rxi, int ryi )
+const short* editorclass::loadlevel( int rxi, int ryi )
 {
     //Set up our buffer array to be picked up by mapclass
     rxi -= 100;
@@ -544,7 +541,7 @@ const int* editorclass::loadlevel( int rxi, int ryi )
     if(rxi>=mapwidth)rxi-=mapwidth;
     if(ryi>=mapheight)ryi-=mapheight;
 
-    static int result[1200];
+    static short result[1200];
 
     for (int j = 0; j < 30; j++)
     {
@@ -1712,14 +1709,20 @@ void editorclass::switch_enemy(const bool reversed /*= false*/)
     }
     edlevelclass& room = level[roomnum];
 
+    int enemy = room.enemytype;
+
     if (reversed)
     {
-        room.enemytype--;
+        enemy--;
     }
     else
     {
-        room.enemytype++;
+        enemy++;
     }
+
+    const int modulus = 10;
+    enemy = (enemy % modulus + modulus) % modulus;
+    room.enemytype = enemy;
 
     note = loc::gettext("Enemy Type Changed");
     notedelay = 45;
@@ -2055,20 +2058,6 @@ bool editorclass::save(std::string& _path)
     root->LinkEndChild( data );
 
     msg = doc.NewElement( "MetaData" );
-
-    time_t rawtime;
-    struct tm * timeinfo;
-
-    time ( &rawtime );
-    timeinfo = localtime ( &rawtime );
-
-    std::string timeAndDate = asctime (timeinfo);
-
-    EditorData::GetInstance().timeModified =  timeAndDate;
-    if(EditorData::GetInstance().timeModified == "")
-    {
-        EditorData::GetInstance().timeCreated =  timeAndDate;
-    }
 
     //getUser
     tinyxml2::XMLElement* meta = doc.NewElement( "Creator" );

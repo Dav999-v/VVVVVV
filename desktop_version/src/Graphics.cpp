@@ -1,13 +1,17 @@
 #include "Graphics.h"
-#include "Maths.h"
-#include "Entity.h"
-#include "Map.h"
-#include "Screen.h"
-#include "FileSystemUtils.h"
-#include "Localization.h"
-#include <utf8/unchecked.h>
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <utf8/unchecked.h>
+
+#include "editor.h"
+#include "Entity.h"
+#include "FileSystemUtils.h"
+#include "Localization.h"
+#include "Map.h"
+#include "Music.h"
+#include "Screen.h"
+#include "UtilityClass.h"
 
 void Graphics::init()
 {
