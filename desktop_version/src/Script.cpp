@@ -3427,6 +3427,8 @@ void scriptclass::teleport()
 		obj.entities[i].xp = 150;
 		obj.entities[i].yp = 110;
 		if(game.teleport_to_x==17 && game.teleport_to_y==17) obj.entities[i].xp = 88; //prevent falling!
+		obj.entities[i].oldxp = obj.entities[i].xp;
+		obj.entities[i].oldyp = obj.entities[i].yp;
 	}
 
 	if (game.teleportscript == "levelonecomplete")
@@ -3972,7 +3974,7 @@ void scriptclass::loadcustom(const std::string& t)
 					add("text(blue,0,0,"+words[1]+")");
 				break;
 			}
-			int ti=atoi(words[1].c_str());
+			int ti=help.Int(words[1].c_str());
 			int nti = ti>=0 && ti<=50 ? ti : 1;
 			for(int ti2=0; ti2<nti; ti2++){
 				i++;
@@ -3997,7 +3999,7 @@ void scriptclass::loadcustom(const std::string& t)
 			if(squeakmode==0) add("squeak(player)");
 			add("text(cyan,0,0,"+words[1]+")");
 
-			int ti=atoi(words[1].c_str());
+			int ti=help.Int(words[1].c_str());
 			int nti = ti>=0 && ti<=50 ? ti : 1;
 			for(int ti2=0; ti2<nti; ti2++){
 				i++;

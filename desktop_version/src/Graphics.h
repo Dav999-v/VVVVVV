@@ -46,7 +46,7 @@ public:
 
 	void setwarprect(int a, int b, int c, int d);
 
-	void createtextbox(std::string t, int xp, int yp, int r= 255, int g= 255, int b = 255, bool allowspecial = false);
+	void createtextbox(std::string t, int xp, int yp, int r= 255, int g= 255, int b = 255);
 
 	void textboxcenter();
 
@@ -167,7 +167,7 @@ public:
 
 	void drawbackground(int t);
 	void updatebackground(int t);
-	void drawtile3( int x, int y, int t, int off );
+	void drawtile3( int x, int y, int t, int off, int height_subtract = 0 );
 	void drawentcolours( int x, int y, int t);
 	void drawtile2( int x, int y, int t );
 	void drawtile( int x, int y, int t );

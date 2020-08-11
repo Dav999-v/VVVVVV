@@ -889,10 +889,12 @@ void mapclass::warpto(int rx, int ry , int t, int tx, int ty)
 {
 	gotoroom(rx, ry);
 	game.teleport = false;
-	if (t >= 0 && t < (int) obj.entities.size())
+	if (INBOUNDS(t, obj.entities))
 	{
 		obj.entities[t].xp = tx * 8;
 		obj.entities[t].yp = (ty * 8) - obj.entities[t].h;
+		obj.entities[t].oldxp = obj.entities[t].xp;
+		obj.entities[t].oldyp = obj.entities[t].yp;
 	}
 	game.gravitycontrol = 0;
 }
@@ -1719,14 +1721,26 @@ void mapclass::loadlevel(int rx, int ry)
 			const int ey = (ent.y % 30) * 8;
 
 			// Platform and enemy bounding boxes
-			int bx1, by1, bx2, by2;
+			int bx1 = 0, by1 = 0, bx2 = 0, by2 = 0;
 
-			if (ent.t == 1 || (ent.t == 2 && ent.p1 <= 4))
+			bool enemy = ent.t == 1;
+			bool moving_plat = ent.t == 2 && ent.p1 <= 4;
+			if (enemy || moving_plat)
 			{
-				bx1 = room.platx1;
-				by1 = room.platy1;
-				bx2 = room.platx2;
-				by2 = room.platy2;
+				if (enemy)
+				{
+					bx1 = room.enemyx1;
+					by1 = room.enemyy1;
+					bx2 = room.enemyx2;
+					by2 = room.enemyy2;
+				}
+				else if (moving_plat)
+				{
+					bx1 = room.platx1;
+					by1 = room.platy1;
+					bx2 = room.platx2;
+					by2 = room.platy2;
+				}
 
 				// Enlarge bounding boxes to fix warping entities
 				if (warpx && bx1 == 0 && bx2 == 320)

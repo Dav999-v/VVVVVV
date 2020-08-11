@@ -1827,22 +1827,22 @@ bool editorclass::load(std::string& _path)
 
                 if(pKey == "onewaycol_override")
                 {
-                    onewaycol_override = atoi(pText);
+                    onewaycol_override = help.Int(pText);
                 }
             }
         }
 
         if (pKey == "mapwidth")
         {
-            mapwidth = atoi(pText);
+            mapwidth = help.Int(pText);
         }
         if (pKey == "mapheight")
         {
-            mapheight = atoi(pText);
+            mapheight = help.Int(pText);
         }
         if (pKey == "levmusic")
         {
-            levmusic = atoi(pText);
+            levmusic = help.Int(pText);
         }
 
 
@@ -1857,7 +1857,7 @@ bool editorclass::load(std::string& _path)
                 int y =0;
                 for(size_t i = 0; i < values.size(); i++)
                 {
-                    contents[x + (maxwidth*40*y)] = atoi(values[i].c_str());
+                    contents[x + (maxwidth*40*y)] = help.Int(values[i].c_str());
                     x++;
                     if(x == mapwidth*40)
                     {
@@ -1879,7 +1879,7 @@ bool editorclass::load(std::string& _path)
               contents.clear();
               for(int i = 0; i < values.size(); i++)
               {
-                contents.push_back(atoi(values[i].c_str()));
+                contents.push_back(help.Int(values[i].c_str()));
               }
             }
           }
@@ -3085,30 +3085,32 @@ void editorrender()
 
     if(ed.drawmode<3)
     {
-        if(ed.zmod && ed.drawmode<2)
+        if(ed.bmod && ed.drawmode<2)
         {
-            fillboxabs((ed.tilex*8)-8,(ed.tiley*8)-8,24,24, graphics.getRGB(200,32,32));
-        }
-        else if(ed.xmod && ed.drawmode<2)
-        {
-            fillboxabs((ed.tilex*8)-16,(ed.tiley*8)-16,24+16,24+16, graphics.getRGB(200,32,32));
-        }
-        else if(ed.cmod && ed.drawmode<2)
-        {
-            fillboxabs((ed.tilex*8)-24,(ed.tiley*8)-24,24+32,24+32, graphics.getRGB(200,32,32));
-        }
-        else if(ed.vmod && ed.drawmode<2)
-        {
-            fillboxabs((ed.tilex*8)-32,(ed.tiley*8)-32,24+48,24+48, graphics.getRGB(200,32,32));
+            fillboxabs((ed.tilex*8),0,8,240,graphics.getRGB(200,32,32));
         }
         else if(ed.hmod && ed.drawmode<2)
         {
             fillboxabs(0,(ed.tiley*8),320,8,graphics.getRGB(200,32,32));
         }
-        else if(ed.bmod && ed.drawmode<2)
+        else if(ed.vmod && ed.drawmode<2)
         {
-            fillboxabs((ed.tilex*8),0,8,240,graphics.getRGB(200,32,32));
+            fillboxabs((ed.tilex*8)-32,(ed.tiley*8)-32,24+48,24+48, graphics.getRGB(200,32,32));
         }
+        else if(ed.cmod && ed.drawmode<2)
+        {
+            fillboxabs((ed.tilex*8)-24,(ed.tiley*8)-24,24+32,24+32, graphics.getRGB(200,32,32));
+        }
+        else if(ed.xmod && ed.drawmode<2)
+        {
+            fillboxabs((ed.tilex*8)-16,(ed.tiley*8)-16,24+16,24+16, graphics.getRGB(200,32,32));
+        }
+        else if(ed.zmod && ed.drawmode<2)
+        {
+            fillboxabs((ed.tilex*8)-8,(ed.tiley*8)-8,24,24, graphics.getRGB(200,32,32));
+        }
+
+
     }
 
     //If in directmode, show current directmode tile
@@ -3152,8 +3154,8 @@ void editorrender()
                 }
             }
             //Highlight our little block
-            fillboxabs(((ed.dmtile%40)*8)-2,16-2,12,12,graphics.getRGB(196, 196, 255 - help.glow));
-            fillboxabs(((ed.dmtile%40)*8)-1,16-1,10,10,graphics.getRGB(0,0,0));
+            fillboxabs(((ed.dmtile%40)*8)-2,16-t2-2,12,12,graphics.getRGB(196, 196, 255 - help.glow));
+            fillboxabs(((ed.dmtile%40)*8)-1,16-t2-1,10,10,graphics.getRGB(0,0,0));
         }
 
         if(ed.dmtileeditor>0 && t2<=30)
@@ -4310,8 +4312,8 @@ void editorinput()
                     ed.notedelay = 45;
                     break;
                 }
-                ed.levx = clamp(atoi(coords[0].c_str()) - 1, 0, ed.mapwidth - 1);
-                ed.levy = clamp(atoi(coords[1].c_str()) - 1, 0, ed.mapheight - 1);
+                ed.levx = clamp(help.Int(coords[0].c_str()) - 1, 0, ed.mapwidth - 1);
+                ed.levy = clamp(help.Int(coords[1].c_str()) - 1, 0, ed.mapheight - 1);
                 graphics.backgrounddrawn = false;
                 break;
             }
@@ -4796,19 +4798,12 @@ void editorinput()
                             //Checkpoint spawn
                             int tx=(edentity[testeditor].x-(edentity[testeditor].x%40))/40;
                             int ty=(edentity[testeditor].y-(edentity[testeditor].y%30))/30;
-                            game.edsavex = (edentity[testeditor].x%40)*8;
+                            game.edsavex = (edentity[testeditor].x%40)*8 - 4;
                             game.edsavey = (edentity[testeditor].y%30)*8;
                             game.edsaverx = 100+tx;
                             game.edsavery = 100+ty;
-                            game.edsavegc = edentity[testeditor].p1;
-                            if(game.edsavegc==0)
-                            {
-                                game.edsavey--;
-                            }
-                            else
-                            {
-                                game.edsavey-=8;
-                            }
+                            game.edsavegc = 1-edentity[testeditor].p1;
+                            game.edsavey--;
                             game.edsavedir = 0;
                         }
                         else
@@ -4816,7 +4811,7 @@ void editorinput()
                             //Start point spawn
                             int tx=(edentity[testeditor].x-(edentity[testeditor].x%40))/40;
                             int ty=(edentity[testeditor].y-(edentity[testeditor].y%30))/30;
-                            game.edsavex = ((edentity[testeditor].x%40)*8)-4;
+                            game.edsavex = (edentity[testeditor].x%40)*8 - 4;
                             game.edsavey = (edentity[testeditor].y%30)*8;
                             game.edsaverx = 100+tx;
                             game.edsavery = 100+ty;
@@ -5420,58 +5415,64 @@ void editorinput()
                 if(key.rightbutton)
                 {
                     //place tiles
-                    if(ed.bmod)
-                    {
-                        for(int i=0; i<30; i++)
+                    if(ed.drawmode < 2) {
+                        if(ed.bmod)
                         {
-                            ed.placetilelocal(ed.tilex, i, 0);
-                        }
-                    }
-                    else if(ed.hmod)
-                    {
-                        for(int i=0; i<40; i++)
-                        {
-                            ed.placetilelocal(i, ed.tiley, 0);
-                        }
-                    }
-                    else if(ed.vmod)
-                    {
-                        for(int j=-4; j<5; j++)
-                        {
-                            for(int i=-4; i<5; i++)
+                            for(int i=0; i<30; i++)
                             {
-                                ed.placetilelocal(ed.tilex+i, ed.tiley+j, 0);
+                                ed.placetilelocal(ed.tilex, i, 0);
                             }
                         }
-                    }
-                    else if(ed.cmod)
-                    {
-                        for(int j=-3; j<4; j++)
+                        else if(ed.hmod)
                         {
-                            for(int i=-3; i<4; i++)
+                            for(int i=0; i<40; i++)
                             {
-                                ed.placetilelocal(ed.tilex+i, ed.tiley+j, 0);
+                                ed.placetilelocal(i, ed.tiley, 0);
                             }
                         }
-                    }
-                    else if(ed.xmod)
-                    {
-                        for(int j=-2; j<3; j++)
+                        else if(ed.vmod)
                         {
-                            for(int i=-2; i<3; i++)
+                            for(int j=-4; j<5; j++)
                             {
-                                ed.placetilelocal(ed.tilex+i, ed.tiley+j, 0);
+                                for(int i=-4; i<5; i++)
+                                {
+                                    ed.placetilelocal(ed.tilex+i, ed.tiley+j, 0);
+                                }
                             }
                         }
-                    }
-                    else if(ed.zmod)
-                    {
-                        for(int j=-1; j<2; j++)
+                        else if(ed.cmod)
                         {
-                            for(int i=-1; i<2; i++)
+                            for(int j=-3; j<4; j++)
                             {
-                                ed.placetilelocal(ed.tilex+i, ed.tiley+j, 0);
+                                for(int i=-3; i<4; i++)
+                                {
+                                    ed.placetilelocal(ed.tilex+i, ed.tiley+j, 0);
+                                }
                             }
+                        }
+                        else if(ed.xmod)
+                        {
+                            for(int j=-2; j<3; j++)
+                            {
+                                for(int i=-2; i<3; i++)
+                                {
+                                    ed.placetilelocal(ed.tilex+i, ed.tiley+j, 0);
+                                }
+                            }
+                        }
+                        else if(ed.zmod)
+                        {
+                            for(int j=-1; j<2; j++)
+                            {
+                                for(int i=-1; i<2; i++)
+                                {
+                                    ed.placetilelocal(ed.tilex+i, ed.tiley+j, 0);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ed.placetilelocal(ed.tilex, ed.tiley, 0);
                         }
                     }
                     else

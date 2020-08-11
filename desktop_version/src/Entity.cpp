@@ -5,6 +5,7 @@
 #include "Graphics.h"
 #include "Map.h"
 #include "Music.h"
+#include "Script.h"
 #include "UtilityClass.h"
 
 bool entityclass::checktowerspikes(int t)
@@ -1768,6 +1769,8 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
                 entity.tile = 188 + vx;
                 entity.colour = 37;
                 entity.h += 3;
+                entity.oldyp -= 3;
+                entity.yp -= 3;
             }
             break;
         case 8:
@@ -3081,7 +3084,7 @@ bool entityclass::updateentities( int i )
             //wait for collision
             if (entities[i].state == 1)
             {
-                trophytext+=2;
+                if (!script.running) trophytext+=2;
                 if (trophytext > 30) trophytext = 30;
                 trophytype = entities[i].para;
 

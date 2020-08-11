@@ -101,6 +101,16 @@ std::string UtilityClass::String( int _v )
 	return(os.str());
 }
 
+int UtilityClass::Int(const char* str, int fallback /*= 0*/)
+{
+	if (!is_number(str))
+	{
+		return fallback;
+	}
+
+	return SDL_atoi(str);
+}
+
 std::string UtilityClass::GCString(std::vector<SDL_GameControllerButton> buttons)
 {
 	std::string retval = "";
@@ -213,20 +223,32 @@ void UtilityClass::updateglow()
 	}
 }
 
+bool is_number(const char* str)
+{
+	for (int i = 0; str[i] != '\0'; i++)
+	{
+		if (!SDL_isdigit(static_cast<unsigned char>(str[i])) && (i != 0 || str[0] != '-'))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 bool is_positive_num(const std::string& str, bool hex)
 {
 	for (size_t i = 0; i < str.length(); i++)
 	{
 		if (hex)
 		{
-			if (!std::isxdigit(static_cast<unsigned char>(str[i])))
+			if (!isxdigit(static_cast<unsigned char>(str[i])))
 			{
 				return false;
 			}
 		}
 		else
 		{
-			if (!std::isdigit(static_cast<unsigned char>(str[i])))
+			if (!SDL_isdigit(static_cast<unsigned char>(str[i])))
 			{
 				return false;
 			}

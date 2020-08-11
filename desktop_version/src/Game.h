@@ -382,6 +382,7 @@ public:
     std::vector<SDL_GameControllerButton> controllerButton_map;
     std::vector<SDL_GameControllerButton> controllerButton_flip;
     std::vector<SDL_GameControllerButton> controllerButton_esc;
+    std::vector<SDL_GameControllerButton> controllerButton_restart;
 
     bool skipfakeload;
     bool ghostsenabled;
@@ -421,6 +422,7 @@ public:
 
     bool shouldreturntopausemenu;
     void returntopausemenu();
+    void unlockAchievement(const char *name);
 
     bool disablepause;
 };

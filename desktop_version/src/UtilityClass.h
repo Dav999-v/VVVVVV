@@ -11,6 +11,8 @@ std::vector<std::string> split(const std::string &s, char delim, std::vector<std
 
 std::vector<std::string> split(const std::string &s, char delim);
 
+bool is_number(const char* str);
+
 bool is_positive_num(const std::string& str, bool hex);
 
 bool endsWith(const std::string& str, const std::string& suffix);
@@ -34,6 +36,8 @@ public:
     UtilityClass();
 
     static std::string String(int _v);
+
+    static int Int(const char* str, int fallback = 0);
 
     static std::string GCString(std::vector<SDL_GameControllerButton> buttons);
 
