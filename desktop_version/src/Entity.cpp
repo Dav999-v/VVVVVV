@@ -3326,6 +3326,12 @@ void entityclass::animateentities( int _i )
                 }
 
                 if (entities[_i].onroof > 0) entities[_i].drawframe += 6;
+                // Stuck in a wall? Then default to gravitycontrol
+                if (entities[_i].onground > 0 && entities[_i].onroof > 0
+                && game.gravitycontrol == 0)
+                {
+                    entities[_i].drawframe -= 6;
+                }
             }
             else
             {
@@ -4828,7 +4834,8 @@ void entityclass::entitycollisioncheck()
     int block_idx = -1;
     if (checktrigger(&block_idx) > -1 && block_idx > -1)
     {
-        if (blocks[block_idx].script != "")
+        // Load the block's script if its gamestate is out of range
+        if (blocks[block_idx].script != "" && (activetrigger < 300 || activetrigger > 336))
         {
             game.startscript = true;
             game.newscript = blocks[block_idx].script;

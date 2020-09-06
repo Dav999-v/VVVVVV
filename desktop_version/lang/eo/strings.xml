@@ -445,7 +445,6 @@
     <string english="Direct Mode Disabled" explanation="editor, manual tile placing mode where walls are not automatically made nice, now changed to automatic mode" max="38*3" comment=""></string>
     <string english="Direct Mode Enabled" explanation="editor, manual tile placing mode where walls are not automatically made nice, now changed to manual mode" max="38*3" comment=""></string>
     <string english="ERROR: Warp lines must be on edges" explanation="level editor, warp lines make a room edge be connected to its opposite edge. So they must be placed on one of the edges, not in the middle" max="38*3" comment=""></string>
-    <string english="ERROR: Cannot have both warp types" explanation="level editor, not possible to have both warp lines and a warp direction in the same room" max="38*3" comment=""></string>
     <string english="Room warps in all directions" explanation="level editor, all edges of the room are connected with each other. If the player leaves the room they end up on the other side of the same room." max="38*3" comment=""></string>
     <string english="Room warps horizontally" explanation="level editor, the left and right edges of the room are connected with each other. The player can still go to other rooms on the top and bottom" max="38*3" comment=""></string>
     <string english="Room warps vertically" explanation="level editor, the top and bottom edges of the room are connected with each other. The player can still go to other rooms on the left and right" max="38*3" comment=""></string>

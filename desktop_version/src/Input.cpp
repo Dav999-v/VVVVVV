@@ -1979,12 +1979,9 @@ void gameinput()
                     else if (game.intimetrial && graphics.fademode==0)
                     {
                         //Quick restart of time trial
-                        script.hardreset();
-                        if (graphics.setflipmode) graphics.flipmode = true;
                         graphics.fademode = 2;
                         game.completestop = true;
                         music.fadeout();
-                        game.intimetrial = true;
                         game.quickrestartkludge = true;
                     }
                     else if (graphics.fademode==0)
@@ -2170,7 +2167,8 @@ void mapinput()
         else
         {
             // Produces more glitchiness! Necessary for credits warp to work.
-            script.hardreset();
+            script.running = false;
+            graphics.textbox.clear();
 
             game.state = 80;
             game.statedelay = 0;
@@ -2380,7 +2378,9 @@ void mapmenuactionpress()
         //This fixes an apparent frame flicker.
         FillRect(graphics.tempBuffer, 0x000000);
         graphics.fademode = 2;
-        music.fadeout();
+        if (music.currentsong != 6) {
+            music.fadeout();
+        }
         map.nexttowercolour();
         if (!game.glitchrunnermode)
         {

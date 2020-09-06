@@ -154,6 +154,10 @@ int main(int argc, char *argv[])
         SDL_INIT_JOYSTICK |
         SDL_INIT_GAMECONTROLLER
     );
+    if (SDL_IsTextInputActive() == SDL_TRUE)
+    {
+        SDL_StopTextInput();
+    }
 
     NETWORK_init();
 
@@ -324,6 +328,7 @@ int main(int argc, char *argv[])
         game.levelpage = 0;
         game.playcustomlevel = 0;
         game.playassets = playassets;
+        game.menustart = true;
 
         ed.directoryList.clear();
         ed.directoryList.push_back(playtestname);
@@ -620,12 +625,7 @@ void inline fixedloop()
     }
 
     //Mute button
-#if !defined(NO_CUSTOM_LEVELS) && !defined(NO_EDITOR)
-    bool inEditor = ed.textentry || ed.scripthelppage == 1;
-#else
-    bool inEditor = false;
-#endif
-    if (key.isDown(KEYBOARD_m) && game.mutebutton<=0 && !inEditor)
+    if (key.isDown(KEYBOARD_m) && game.mutebutton<=0 && !key.textentry())
     {
         game.mutebutton = 8;
         if (game.muted)
@@ -642,7 +642,7 @@ void inline fixedloop()
         game.mutebutton--;
     }
 
-    if (key.isDown(KEYBOARD_n) && game.musicmutebutton <= 0 && !inEditor)
+    if (key.isDown(KEYBOARD_n) && game.musicmutebutton <= 0 && !key.textentry())
     {
         game.musicmutebutton = 8;
         game.musicmuted = !game.musicmuted;

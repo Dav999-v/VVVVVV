@@ -80,12 +80,22 @@ void musicclass::init()
 
 #define FOREACH_TRACK(track_name) \
 	index = musicReadBlob.getIndex(track_name); \
-	rw = SDL_RWFromMem(musicReadBlob.getAddress(index), musicReadBlob.getSize(index)); \
-	musicTracks.push_back(MusicTrack( rw ));
+	if (index >= 0 && index < musicReadBlob.max_headers) \
+	{ \
+		rw = SDL_RWFromMem(musicReadBlob.getAddress(index), musicReadBlob.getSize(index)); \
+		if (rw == NULL) \
+		{ \
+			printf("Unable to read music file header: %s\n", SDL_GetError()); \
+		} \
+		else \
+		{ \
+			musicTracks.push_back(MusicTrack( rw )); \
+		} \
+	}
 
 		TRACK_NAMES
 
-		num_mmmmmm_tracks += 16;
+		num_mmmmmm_tracks += musicTracks.size();
 
 		const std::vector<int> extra = musicReadBlob.getExtra();
 		for (size_t i = 0; i < extra.size(); i++)
@@ -108,7 +118,7 @@ void musicclass::init()
 
 #undef FOREACH_TRACK
 
-	num_pppppp_tracks += 16;
+	num_pppppp_tracks += musicTracks.size() - num_mmmmmm_tracks;
 
 	const std::vector<int> extra = musicReadBlob.getExtra();
 	for (size_t i = 0; i < extra.size(); i++)
@@ -148,12 +158,15 @@ void songend()
 
 void musicclass::play(int t, const double position_sec /*= 0.0*/, const int fadein_ms /*= 3000*/)
 {
-	// No need to check if num_tracks is greater than 0, we wouldn't be here if it wasn't
 	if (mmmmmm && usingmmmmmm)
 	{
-		t %= num_mmmmmm_tracks;
+		// Don't conjoin this if-statement with the above one...
+		if (num_mmmmmm_tracks > 0)
+		{
+			t %= num_mmmmmm_tracks;
+		}
 	}
-	else
+	else if (num_pppppp_tracks > 0)
 	{
 		t %= num_pppppp_tracks;
 	}
