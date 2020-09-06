@@ -14,9 +14,9 @@
     <string english="quit game" explanation="main menu option" comment="">spel afsluiten</string>
     <string english="continue" explanation="menu option" comment="">hervatten</string>
     <string english="continue from teleporter" explanation="menu option, game save that was made at a teleporter" comment="">hervatten vanaf teleporter</string>
-    <string english="Tele Save" explanation="title, game save that was made at a teleporter" max="20" comment=""></string>
-    <string english="continue from quicksave" explanation="menu option, game save that was made freely from the menu (at any checkpoint)" comment="">hervatten vanaf menu</string>
-    <string english="Quick Save" explanation="title, game save that was made freely from the menu (at any checkpoint)" max="20" comment=""></string>
+    <string english="Tele Save" explanation="title, game save that was made at a teleporter" max="20" comment="">Telesave</string>
+    <string english="continue from quicksave" explanation="menu option, game save that was made freely from the menu (at any checkpoint)" comment="">hervatten vanaf quicksave</string>
+    <string english="Quick Save" explanation="title, game save that was made freely from the menu (at any checkpoint)" max="20" comment="">Quicksave</string>
     <string english="proceed" explanation="menu option" comment="">verder</string>
     <string english="new game" explanation="menu option" comment="">nieuw spel</string>
     <string english="start new game" explanation="menu option, extra confirmation" comment="">nieuw spel starten</string>
