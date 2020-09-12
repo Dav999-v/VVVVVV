@@ -421,12 +421,12 @@
     <string english="E: Change Roomname" explanation="editor shortcut, the name of the room appears at the bottom" max="25" comment="">E: Ĉambronomo</string>
     <string english="S: Save Map" explanation="level editor, save level, `Map` is basically redundant" max="12" comment="">S: Konservi</string>
     <string english="L: Load Map" explanation="level editor, load level, `Map` is basically redundant" max="12" comment="">L: Ŝargi</string>
-    <string english="Enter map filename to save as:" explanation="level editor text input, save level file as" max="39*3" comment=""></string>
-    <string english="Enter map filename to load:" explanation="level editor text input, load level file" max="39*3" comment=""></string>
-    <string english="Enter new room name:" explanation="level editor text input, the name of the room appears at the bottom" max="39*3" comment=""></string>
-    <string english="Enter room coordinates x,y:" explanation="level editor text input, go to another room by its coordinates, for example, 9,15" max="39*3" comment=""></string>
-    <string english="Enter script name:" explanation="level editor text input, enter name of newly created script, or edit the script name of a terminal/script box" max="39*3" comment=""></string>
-    <string english="Enter roomtext:" explanation="level editor text input, enter text to place in the room" comment=""></string>
+    <string english="Enter map filename to save as:" explanation="level editor text input, save level file as" max="39*3" comment="">Enigu dosiernomon por konservi:</string>
+    <string english="Enter map filename to load:" explanation="level editor text input, load level file" max="39*3" comment="">Enigu dosiernomon por ŝargi:</string>
+    <string english="Enter new room name:" explanation="level editor text input, the name of the room appears at the bottom" max="39*3" comment="">Enigu novan ĉambronomon:</string>
+    <string english="Enter room coordinates x,y:" explanation="level editor text input, go to another room by its coordinates, for example, 9,15" max="39*3" comment="">Enigu ĉambrokoordinatojn x,y:</string>
+    <string english="Enter script name:" explanation="level editor text input, enter name of newly created script, or edit the script name of a terminal/script box" max="39*3" comment="">Enigu skriptnomon:</string>
+    <string english="Enter roomtext:" explanation="level editor text input, enter text to place in the room" comment="">Enigu ĉambrotekston:</string>
     <string english="Space Station" explanation="editor tileset name, Now using Space Station Tileset" comment="">Kosmostacio</string>
     <string english="Outside" explanation="editor tileset name, Now using Outside Tileset" comment="">Eksteraĵo</string>
     <string english="Lab" explanation="editor tileset name, Now using Lab Tileset" comment="">Laboratorio</string>
@@ -435,23 +435,23 @@
     <string english="Now using %s Tileset" explanation="level editor, user changed the tileset of the room to %s (like Ship, Lab, etc)" max="38*3" comment="">Nun uzas kahelaron de %s</string>
     <string english="Tileset Colour Changed" explanation="level editor, user changed the tileset colour/variant of the room" max="38*3" comment="">Kahelara koloro ŝanĝita</string>
     <string english="Enemy Type Changed" explanation="level editor, user changed enemy appearance for the room" max="38*3" comment="">Malamik-tipo ŝanĝita</string>
-    <string english="Reloaded resources" explanation="level editor, reloaded graphics assets/resources, music and sound effects" max="38*3" comment=""></string>
-    <string english="ERROR: Invalid format" explanation="user was supposed to enter something like `12,12`, but entered `as@df`" max="38*3" comment=""></string>
-    <string english="Loaded map: %s.vvvvvv" explanation="successfully loaded level file" max="38*3" comment=""></string>
-    <string english="Saved map: %s.vvvvvv" explanation="successfully saved level file" max="38*3" comment=""></string>
-    <string english="ERROR: Could not load level" explanation="that level could not be loaded, maybe it does not exist" max="38*3" comment=""></string>
-    <string english="ERROR: Could not save level!" explanation="maybe the filename is too long? exclamation mark because you will lose your data if you quit" max="38*3" comment=""></string>
-    <string english="Mapsize is now [%d,%d]" explanation="editor, the map is now %d by %d" max="38*3" comment=""></string>
-    <string english="Direct Mode Disabled" explanation="editor, manual tile placing mode where walls are not automatically made nice, now changed to automatic mode" max="38*3" comment=""></string>
-    <string english="Direct Mode Enabled" explanation="editor, manual tile placing mode where walls are not automatically made nice, now changed to manual mode" max="38*3" comment=""></string>
-    <string english="ERROR: Warp lines must be on edges" explanation="level editor, warp lines make a room edge be connected to its opposite edge. So they must be placed on one of the edges, not in the middle" max="38*3" comment=""></string>
-    <string english="Room warps in all directions" explanation="level editor, all edges of the room are connected with each other. If the player leaves the room they end up on the other side of the same room." max="38*3" comment=""></string>
-    <string english="Room warps horizontally" explanation="level editor, the left and right edges of the room are connected with each other. The player can still go to other rooms on the top and bottom" max="38*3" comment=""></string>
-    <string english="Room warps vertically" explanation="level editor, the top and bottom edges of the room are connected with each other. The player can still go to other rooms on the left and right" max="38*3" comment=""></string>
-    <string english="Room warping disabled" explanation="level editor, no edges are connected and the player can go to other rooms" max="38*3" comment=""></string>
-    <string english="ERROR: No checkpoint to spawn at" explanation="we cannot playtest because there is no checkpoint in this room that the player could start (be spawned) at" max="38*3" comment=""></string>
-    <string english="ERROR: Max number of trinkets is 100" explanation="" max="38*3" comment=""></string>
-    <string english="ERROR: Max number of crewmates is 100" explanation="" max="38*3" comment=""></string>
+    <string english="Reloaded resources" explanation="level editor, reloaded graphics assets/resources, music and sound effects" max="38*3" comment="">Reŝargis resursojn</string>
+    <string english="ERROR: Invalid format" explanation="user was supposed to enter something like `12,12`, but entered `as@df`" max="38*3" comment="">ERARO: malĝusta formo</string>
+    <string english="Loaded map: %s.vvvvvv" explanation="successfully loaded level file" max="38*3" comment="">Ŝargis mapon: %s.vvvvvv</string>
+    <string english="Saved map: %s.vvvvvv" explanation="successfully saved level file" max="38*3" comment="">Konservis mapon: %s.vvvvvv</string>
+    <string english="ERROR: Could not load level" explanation="that level could not be loaded, maybe it does not exist" max="38*3" comment="">ERARO: Ne eblis ŝargi nivelon!</string>
+    <string english="ERROR: Could not save level!" explanation="maybe the filename is too long? exclamation mark because you will lose your data if you quit" max="38*3" comment="">ERARO: Ne eblis konservi nivelon!</string>
+    <string english="Mapsize is now [%d,%d]" explanation="editor, the map is now %d by %d" max="38*3" comment="">Mapgrando nun estas [%d,%d]</string>
+    <string english="Direct Mode Disabled" explanation="editor, manual tile placing mode where walls are not automatically made nice, now changed to automatic mode" max="38*3" comment="">Rektan reĝimon malebligita</string>
+    <string english="Direct Mode Enabled" explanation="editor, manual tile placing mode where walls are not automatically made nice, now changed to manual mode" max="38*3" comment="">Rektan reĝimon ebligita</string>
+    <string english="ERROR: Warp lines must be on edges" explanation="level editor, warp lines make a room edge be connected to its opposite edge. So they must be placed on one of the edges, not in the middle" max="38*3" comment="">ERARO: teleportlinioj estu sur randoj</string>
+    <string english="Room warps in all directions" explanation="level editor, all edges of the room are connected with each other. If the player leaves the room they end up on the other side of the same room." max="38*3" comment="">Ĉambro teleportigas ĉiudirekte</string>
+    <string english="Room warps horizontally" explanation="level editor, the left and right edges of the room are connected with each other. The player can still go to other rooms on the top and bottom" max="38*3" comment="">Ĉambro teleportigas horizontale</string>
+    <string english="Room warps vertically" explanation="level editor, the top and bottom edges of the room are connected with each other. The player can still go to other rooms on the left and right" max="38*3" comment="">Ĉambro teleportigas vertikale</string>
+    <string english="Room warping disabled" explanation="level editor, no edges are connected and the player can go to other rooms" max="38*3" comment="">Ĉambro-teleportigo malebligita</string>
+    <string english="ERROR: No checkpoint to spawn at" explanation="we cannot playtest because there is no checkpoint in this room that the player could start (be spawned) at" max="38*3" comment="">ERARO: Ne estas konservpunkto ĉi-ĉambre</string>
+    <string english="ERROR: Max number of trinkets is 100" explanation="" max="38*3" comment="">ERARO: Altlimo de kolektaĵoj estas 100</string>
+    <string english="ERROR: Max number of crewmates is 100" explanation="" max="38*3" comment="">ERARO: Altlimo de ŝipanoj estas 100</string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
