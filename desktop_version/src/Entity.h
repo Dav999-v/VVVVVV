@@ -100,9 +100,7 @@ public:
 
     bool entitycollide(int a, int b);
 
-    bool checkdamage();
-
-    bool scmcheckdamage();
+    bool checkdamage(bool scm = false);
 
     void settemprect(int t);
 
@@ -154,13 +152,15 @@ public:
 
     void entitymapcollision(int t);
 
-    void movingplatformfix(int t);
-
-    void scmmovingplatformfix(int t);
+    void movingplatformfix(int t, int j);
 
     void hormovingplatformfix(int t);
 
     void entitycollisioncheck();
+
+    void collisioncheck(int i, int j, bool scm = false);
+
+    void stuckprevention(int t);
 
 
     std::vector<entclass> entities;

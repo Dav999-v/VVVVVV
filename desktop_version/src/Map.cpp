@@ -829,7 +829,7 @@ void mapclass::resetplayer()
 
 	game.deathseq = -1;
 	int i = obj.getplayer();
-	if(i>-1)
+	if(INBOUNDS_VEC(i, obj.entities))
 	{
 		obj.entities[i].vx = 0;
 		obj.entities[i].vy = 0;
@@ -889,7 +889,7 @@ void mapclass::warpto(int rx, int ry , int t, int tx, int ty)
 {
 	gotoroom(rx, ry);
 	game.teleport = false;
-	if (INBOUNDS(t, obj.entities))
+	if (INBOUNDS_VEC(t, obj.entities))
 	{
 		obj.entities[t].xp = tx * 8;
 		obj.entities[t].yp = (ty * 8) - obj.entities[t].h;
@@ -1097,7 +1097,7 @@ void mapclass::gotoroom(int rx, int ry)
 	//continuations!
 
 	temp = obj.getplayer();
-	if(temp>-1)
+	if(INBOUNDS_VEC(temp, obj.entities))
 	{
 		obj.entities[temp].oldxp = obj.entities[temp].xp - int(obj.entities[temp].vx);
 		obj.entities[temp].oldyp = obj.entities[temp].yp - int(obj.entities[temp].vy);
@@ -1262,7 +1262,7 @@ void mapclass::loadlevel(int rx, int ry)
 			{
 				//entered from ground floor
 				int player = obj.getplayer();
-				if (player > -1)
+				if (INBOUNDS_VEC(player, obj.entities))
 				{
 					obj.entities[player].yp += (671 * 8);
 				}
@@ -1494,7 +1494,7 @@ void mapclass::loadlevel(int rx, int ry)
 		tower.loadminitower1();
 
 		int i = obj.getplayer();
-		if (i > -1)
+		if (INBOUNDS_VEC(i, obj.entities))
 		{
 			obj.entities[i].yp += (71 * 8);
 		}
@@ -1539,7 +1539,7 @@ void mapclass::loadlevel(int rx, int ry)
 		obj.createentity(72, 156, 11, 200); // (horizontal gravity line)
 
 		int i = obj.getplayer();
-		if (i > -1)
+		if (INBOUNDS_VEC(i, obj.entities))
 		{
 			obj.entities[i].yp += (71 * 8);
 		}
@@ -2077,8 +2077,11 @@ void mapclass::loadlevel(int rx, int ry)
 				//A slight varation - she's upside down
 				obj.createentity(249, 62, 18, 16, 0, 18);
 				int j = obj.getcrewman(5);
-				obj.entities[j].rule = 7;
-				obj.entities[j].tile +=6;
+				if (INBOUNDS_VEC(j, obj.entities))
+				{
+					obj.entities[j].rule = 7;
+					obj.entities[j].tile +=6;
+				}
 				//What script do we use?
 				obj.createblock(5, 249-32, 0, 32+32+32, 240, 5);
 			}
@@ -2098,8 +2101,8 @@ void mapclass::twoframedelayfix()
 	|| !custommode
 	|| game.deathseq != -1
 	// obj.checktrigger() sets obj.activetrigger and block_idx
-	|| obj.checktrigger(&block_idx) <= -1
-	|| block_idx <= -1
+	|| !INBOUNDS_VEC(obj.checktrigger(&block_idx), obj.entities)
+	|| !INBOUNDS_VEC(block_idx, obj.blocks)
 	|| obj.activetrigger < 300)
 	{
 		return;

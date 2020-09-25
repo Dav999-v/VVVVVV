@@ -182,7 +182,7 @@ void musicclass::play(int t, const double position_sec /*= 0.0*/, const int fade
 		if (t != -1)
 		{
 			currentsong = t;
-			if (!INBOUNDS(t, musicTracks))
+			if (!INBOUNDS_VEC(t, musicTracks))
 			{
 				puts("play() out-of-bounds!");
 				currentsong = -1;
@@ -352,7 +352,7 @@ void musicclass::changemusicarea(int x, int y)
 
 void musicclass::playef(int t)
 {
-	if (t < 0 || t >= (int) soundTracks.size())
+	if (!INBOUNDS_VEC(t, soundTracks))
 	{
 		return;
 	}
