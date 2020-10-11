@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <strings>
+    <string english="LOADING..." explanation="on loading screen, followed by percentage" max="26" comment=""></string>
     <string english="Game paused" explanation="pause screen" max="40" comment=""></string>
     <string english="[click to resume]" explanation="pause screen" max="40" comment=""></string>
     <string english="Press M to mute in game" explanation="pause screen" max="40" comment=""></string>

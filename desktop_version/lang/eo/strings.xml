@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <strings>
+    <string english="LOADING..." explanation="on loading screen, followed by percentage" max="26" comment=""></string>
     <string english="Game paused" explanation="pause screen" max="40" comment="">Ludo paŭzita</string>
     <string english="[click to resume]" explanation="pause screen" max="40" comment="">[alklaku por daŭrigi]</string>
     <string english="Press M to mute in game" explanation="pause screen" max="40" comment="">Premu M por silentigi enlude</string>
@@ -116,9 +117,11 @@
     <string english="bind flip" explanation="menu option" comment="">agordi renversiĝbutonon</string>
     <string english="bind enter" explanation="menu option" comment="">agordi enter-klavon</string>
     <string english="bind menu" explanation="menu option" comment="">agordi menubutonon</string>
+    <string english="bind restart" explanation="menu option. In-game death key to restart at checkpoint" comment=""></string>
     <string english="Flip is bound to: " explanation="controller binds, bound to A, B, X, Y, etc" max="32" comment="">Renversiĝo agordita al: </string>
     <string english="Enter is bound to: " explanation="controller binds, bound to A, B, X, Y, etc" max="32" comment="">ENTER agordita al: </string>
     <string english="Menu is bound to: " explanation="controller binds, bound to A, B, X, Y, etc" max="32" comment="">Menuo agordita al: </string>
+    <string english="Restart is bound to: " explanation="in-game death key to restart at checkpoint. Controller binds, bound to A, B, X, Y, etc" max="32" comment=""></string>
     <string english="ERROR: No language files found." explanation="" max="38*3" comment="">ERARO: Neniuj lingvodosieroj trovitaj.</string>
     <string english="This menu is only shown when having a lang folder in your VVVVVV folder." explanation="the folder is called lang. Translation maintenance menu" max="38*3" comment="">Tiu ĉi menuo nur montriĝas se vi havas dosierujon lang en via dosierujo de VVVVVV.</string>
     <string english="translation maintenance" explanation="menu option, menu that allows you to apply maintenance to translations" comment="">traduko-prizorgo</string>

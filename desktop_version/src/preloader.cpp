@@ -1,6 +1,7 @@
 #include "Enums.h"
 #include "Game.h"
 #include "Graphics.h"
+#include "Localization.h"
 #include "UtilityClass.h"
 
 int pre_fakepercent=0, pre_transition=30;
@@ -31,6 +32,8 @@ void preloaderlogic()
 
 void preloaderrender()
 {
+  bool print_percentage = false;
+
   if(pre_transition>=30){
     switch(pre_curcol) {
     case 0:
@@ -77,11 +80,7 @@ void preloaderrender()
 
     FillRect(graphics.backBuffer, pre_frontrectx, pre_frontrecty, pre_frontrectw,pre_frontrecth, graphics.getBGR(0x3E,0x31,0xA2));
 
-    if(pre_fakepercent==100){
-      graphics.Print(282-(15*8), 204, "LOADING... " + help.String(int(pre_fakepercent))+"%", 124, 112, 218, false);
-    }else{
-      graphics.Print(282-(14*8), 204, "LOADING... " + help.String(int(pre_fakepercent))+"%", 124, 112, 218, false);
-    }
+    print_percentage = true;
 
     //Render
     if (pre_startgame) {
@@ -97,7 +96,17 @@ void preloaderrender()
     FillRect(graphics.backBuffer, pre_temprectx, pre_temprecty, pre_temprectw,pre_temprecth, 0x000000);
     FillRect(graphics.backBuffer, pre_frontrectx, pre_frontrecty, pre_frontrectw,pre_frontrecth, graphics.getBGR(0x3E,0x31,0xA2));
 
-    graphics.Print(282-(15*8), 204, "LOADING... 100%", 124, 112, 218, false);
+    print_percentage = true;
+  }
+
+  if (print_percentage) {
+    std::string percentage = loc::gettext("LOADING...") + " " + help.String(int(pre_fakepercent)) + "%";
+    int percentage_len = graphics.len(percentage);
+    if (pre_fakepercent < 10) {
+      // Make the 9->10 transition less noticeable, as it has always been
+      percentage_len += graphics.len(" ");
+    }
+    graphics.Print(282-percentage_len, 204, percentage, 124, 112, 218, false);
   }
 
   graphics.drawfade();
