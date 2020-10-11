@@ -1,3 +1,4 @@
+#define GAME_DEFINITION
 #include "Game.h"
 
 #include <sstream>
@@ -6629,8 +6630,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("animated backgrounds"));
         option(loc::gettext("screen effects"));
         option(loc::gettext("text outline"));
-        option(loc::gettext("invincibility"), !ingame_titlemode || (!game.insecretlab && !game.intimetrial && !game.nodeathmode));
-        option(loc::gettext("slowdown"), !ingame_titlemode || (!game.insecretlab && !game.intimetrial && !game.nodeathmode));
+        option(loc::gettext("invincibility"), !ingame_titlemode || (!insecretlab && !intimetrial && !nodeathmode));
+        option(loc::gettext("slowdown"), !ingame_titlemode || (!insecretlab && !intimetrial && !nodeathmode));
         option(loc::gettext("return"));
         menuyoff = 0;
         break;
@@ -7220,13 +7221,13 @@ void Game::returntolab()
 #if !defined(NO_CUSTOM_LEVELS)
 void Game::returntoeditor()
 {
-    game.gamestate = EDITORMODE;
+    gamestate = EDITORMODE;
 
     graphics.textbox.clear();
-    game.hascontrol = true;
-    game.advancetext = false;
-    game.completestop = false;
-    game.state = 0;
+    hascontrol = true;
+    advancetext = false;
+    completestop = false;
+    state = 0;
     graphics.showcutscenebars = false;
     graphics.fademode = 0;
 
@@ -7258,13 +7259,13 @@ void Game::returntopausemenu()
     map.kludge_to_bg();
     map.tdrawback = true;
     graphics.backgrounddrawn = false;
-    game.mapheld = true;
+    mapheld = true;
     graphics.flipmode = graphics.setflipmode;
     if (!map.custommode && !graphics.flipmode)
     {
         obj.flags[73] = true;
     }
-    game.shouldreturntopausemenu = true;
+    shouldreturntopausemenu = true;
 }
 
 void Game::unlockAchievement(const char *name) {

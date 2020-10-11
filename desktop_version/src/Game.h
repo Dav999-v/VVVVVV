@@ -433,6 +433,8 @@ public:
     bool disablepause;
 };
 
+#ifndef GAME_DEFINITION
 extern Game game;
+#endif
 
 #endif /* GAME_H */
