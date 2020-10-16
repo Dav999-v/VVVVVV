@@ -1,4 +1,5 @@
 #include "Textbox.h"
+
 #include <utf8/unchecked.h>
 
 textboxclass::textboxclass()
@@ -9,8 +10,23 @@ textboxclass::textboxclass()
     h = 0;
     lw = 0;
     tl = 0;
+    prev_tl = 0;
     tm = 0;
     timer = 0;
+
+    xp = 0;
+    yp = 0;
+    r = 0;
+    g = 0;
+    b = 0;
+    tr = 0;
+    tg = 0;
+    tb = 0;
+    max = 0;
+    textrect.x = 0;
+    textrect.y = 0;
+    textrect.w = 0;
+    textrect.h = 0;
 }
 
 void textboxclass::centerx()
@@ -56,6 +72,7 @@ void textboxclass::setcol(int rr, int gg, int bb)
 
 void textboxclass::update()
 {
+    prev_tl = tl;
     if (tm == 0)
     {
         tl += .1f;
@@ -64,7 +81,6 @@ void textboxclass::update()
             tl = 1;
             tm = 1;
         }
-        setcol(int(tr * tl), int(tg * tl), int(tb * tl));
     }
     else if (tm == 2)
     {
@@ -72,9 +88,8 @@ void textboxclass::update()
         if (tl <= 0.5)
         {
             tl = 0.5;
-            //this textbox will be removed by drawgui() later
+            //this textbox will be removed by updatetextboxes() later
         }
-        setcol(int(tr * tl), int(tg * tl), int(tb * tl));
     }
     if (timer > 0)
     {

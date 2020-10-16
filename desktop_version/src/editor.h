@@ -3,79 +3,102 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
-#include <vector>
+#include <SDL.h>
 #include <string>
-#include "Script.h"
+#include <vector>
+
+// Text entry field type
+enum textmode {
+  TEXT_NONE,
+
+  // In-editor text fields
+  TEXT_LOAD,
+  TEXT_SAVE,
+  TEXT_ROOMNAME,
+  TEXT_SCRIPT,
+  TEXT_ROOMTEXT,
+  TEXT_GOTOROOM,
+  LAST_EDTEXT = TEXT_GOTOROOM,
+
+  // Settings-mode text fields
+  TEXT_TITLE,
+  TEXT_DESC,
+  TEXT_WEBSITE,
+  TEXT_CREATOR,
+  NUM_TEXTMODES,
+
+  // Text modes with an entity
+  FIRST_ENTTEXT = TEXT_SCRIPT,
+  LAST_ENTTEXT = TEXT_ROOMTEXT
+};
 
 class edentities{
 public:
-	int x, y, t;
-	//parameters
-	int p1, p2, p3, p4, p5, p6;
-	std::string scriptname;
+  int x, y, t;
+  //parameters
+  int p1, p2, p3, p4, p5, p6;
+  std::string scriptname;
 };
 
 
 class edlevelclass{
 public:
   edlevelclass();
-	int tileset, tilecol;
-	std::string roomname;
-	int warpdir;
-	int platx1, platy1, platx2, platy2, platv;
-	int enemyx1, enemyy1, enemyx2, enemyy2, enemytype;
-	int directmode;
+  int tileset, tilecol;
+  std::string roomname;
+  int warpdir;
+  int platx1, platy1, platx2, platy2, platv;
+  int enemyx1, enemyy1, enemyx2, enemyy2, enemytype;
+  int directmode;
 };
 
 struct LevelMetaData
 {
-	std::string title;
-	std::string creator;
-	std::string Desc1;
-	std::string Desc2;
-	std::string Desc3;
-	std::string website;
-	std::string filename;
+  std::string title;
+  std::string creator;
+  std::string Desc1;
+  std::string Desc2;
+  std::string Desc3;
+  std::string website;
+  std::string filename;
 
-	std::string modifier;
-	std::string timeCreated;
-	std::string timeModified;
+  std::string modifier;
+  std::string timeCreated;
+  std::string timeModified;
 
-	int version;
+  int version;
 };
 
 
 extern std::vector<edentities> edentity;
-extern scriptclass script;
 
 class EditorData
 {
-	public:
+  public:
 
-	static EditorData& GetInstance()
-	{
-		static EditorData  instance; // Guaranteed to be destroyed.
-		// Instantiated on first use.
-		return instance;
-	}
-
-
-	std::string title;
-	std::string creator;
-
-	std::string modifier;
-	std::string timeCreated;
-	std::string timeModified;
-
-private:
+  static EditorData& GetInstance()
+  {
+    static EditorData  instance; // Guaranteed to be destroyed.
+    // Instantiated on first use.
+    return instance;
+  }
 
 
-	EditorData()
-	{
-	}
+  std::string title;
+  std::string creator;
 
+  std::string modifier;
 };
 
+struct GhostInfo {
+    int rx; // game.roomx-100
+    int ry; // game.roomy-100
+    int x; // .xp
+    int y; // .yp
+    int col; // .colour
+    Uint32 realcol;
+    int frame; // .drawframe
+};
 
 class editorclass{
   //Special class to handle ALL editor variables locally
@@ -85,17 +108,18 @@ class editorclass{
   std::string Desc1;
   std::string Desc2;
   std::string Desc3;
-	std::string website;
+  std::string website;
 
   std::vector<std::string> directoryList;
   std::vector<LevelMetaData> ListOfMetaData;
 
+  void loadZips();
   void getDirectoryData();
   bool getLevelMetaData(std::string& filename, LevelMetaData& _data );
 
-  void saveconvertor();
   void reset();
-  void loadlevel(int rxi, int ryi);
+  void getlin(const enum textmode mode, const std::string& prompt, std::string* ptr);
+  const short* loadlevel(int rxi, int ryi);
 
   void placetile(int x, int y, int t);
 
@@ -124,8 +148,13 @@ class editorclass{
 
   int backmatch(int x, int y);
 
-  void load(std::string& _path);
-  void save(std::string& _path);
+  void switch_tileset(const bool reversed = false);
+  void switch_tilecol(const bool reversed = false);
+  void clamp_tilecol(const int rx, const int ry, const bool wrap = false);
+  void switch_enemy(const bool reversed = false);
+
+  bool load(std::string& _path);
+  bool save(std::string& _path);
   void generatecustomminimap();
   int edgetile(int x, int y);
   int warpzoneedgetile(int x, int y);
@@ -142,21 +171,23 @@ class editorclass{
   int getlevelcol(int t);
   int getenemycol(int t);
   int entcol;
+  Uint32 entcolreal;
 
   //Colouring stuff
   int getwarpbackground(int rx, int ry);
 
   std::vector<std::string> getLevelDirFileNames( );
-  std::vector <int> swapmap;
-  std::vector <int> contents;
-  std::vector <int> vmult;
+  static const int maxwidth = 20, maxheight = 20; //Special; the physical max the engine allows
+  static const int numrooms = maxwidth * maxheight;
+  short contents[40 * 30 * numrooms];
+  int vmult[30 * maxheight];
   int numtrinkets();
   int numcrewmates();
-  edlevelclass level[400]; //Maxwidth*maxheight
-  int kludgewarpdir[400]; //Also maxwidth*maxheight
+  edlevelclass level[numrooms]; //Maxwidth*maxheight
+  int kludgewarpdir[numrooms]; //Also maxwidth*maxheight
 
-  int temp;
   int notedelay;
+  int oldnotedelay;
   std::string note;
   std::string keybuffer;
   std::string filename;
@@ -168,14 +199,17 @@ class editorclass{
   int levx, levy;
   int entframe, entframedelay;
 
-  bool roomtextmod;
-
-  bool scripttextmod;
-  int textent;
   int scripttexttype;
   std::string oldenttext;
 
-  bool xmod, zmod, spacemod, warpmod, roomnamemod, textentry, savemod, loadmod;
+  enum textmode textmod; // In text entry
+  std::string* textptr; // Pointer to text we're changing
+  std::string textdesc; // Description (for editor mode text fields)
+  union {
+    int desc; // Which description row we're changing
+    int textent; // Entity ID for text prompt
+  };
+  bool xmod, zmod, cmod, vmod, bmod, hmod, spacemod, warpmod;
   bool titlemod, creatormod, desc1mod, desc2mod, desc3mod, websitemod;
 
   int roomnamehide;
@@ -192,7 +226,6 @@ class editorclass{
 
   int levmusic;
   int mapwidth, mapheight; //Actual width and height of stage
-  int maxwidth, maxheight; //Special; the physical max the engine allows
 
   int version;
 
@@ -228,7 +261,15 @@ class editorclass{
   int dmtile;
   int dmtileeditor;
 
+  Uint32 getonewaycol(const int rx, const int ry);
+  Uint32 getonewaycol();
+  bool onewaycol_override;
+
   int returneditoralpha;
+  int oldreturneditoralpha;
+
+  std::vector<GhostInfo> ghosts;
+  int currentghosts;
 };
 
 void addedentity(int xp, int yp, int tp, int p1=0, int p2=0, int p3=0, int p4=0, int p5=320, int p6=240);
@@ -244,11 +285,17 @@ void fillbox(int x, int y, int x2, int y2, int c);
 
 void fillboxabs(int x, int y, int x2, int y2, int c);
 
+#if !defined(NO_EDITOR)
 void editorrender();
 
 void editorlogic();
 
 void editorinput();
+#endif
+
+#ifndef ED_DEFINITION
+extern editorclass ed;
+#endif
 
 #endif /* EDITOR_H */
 

@@ -1,7 +1,13 @@
+#define KEY_DEFINITION
 #include "KeyPoll.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <utf8/unchecked.h>
+
+#include "Game.h"
+#include "Graphics.h"
+#include "Music.h"
 
 void KeyPoll::setSensitivity(int _value)
 {
@@ -33,7 +39,6 @@ KeyPoll::KeyPoll()
 	setSensitivity(2);
 
 	quitProgram = 0;
-	textentrymode=true;
 	keybuffer="";
 	leftbutton=0; rightbutton=0; middlebutton=0;
 	mx=0; my=0;
@@ -53,28 +58,38 @@ KeyPoll::KeyPoll()
 	}
 
 	linealreadyemptykludge = false;
+
+	pauseStart = 0;
+
+	isActive = true;
 }
 
 void KeyPoll::enabletextentry()
 {
 	keybuffer="";
-	textentrymode = true;
 	SDL_StartTextInput();
 }
 
 void KeyPoll::disabletextentry()
 {
-	textentrymode = false;
 	SDL_StopTextInput();
+}
+
+bool KeyPoll::textentry()
+{
+	return SDL_IsTextInputActive() == SDL_TRUE;
 }
 
 void KeyPoll::Poll()
 {
+	bool altpressed = false;
 	SDL_Event evt;
 	while (SDL_PollEvent(&evt))
 	{
+		switch (evt.type)
+		{
 		/* Keyboard Input */
-		if (evt.type == SDL_KEYDOWN)
+		case SDL_KEYDOWN:
 		{
 			keymap[evt.key.keysym.sym] = true;
 
@@ -84,9 +99,9 @@ void KeyPoll::Poll()
 			}
 
 #ifdef __APPLE__ /* OSX prefers the command keys over the alt keys. -flibit */
-			bool altpressed = keymap[SDLK_LGUI] || keymap[SDLK_RGUI];
+			altpressed = keymap[SDLK_LGUI] || keymap[SDLK_RGUI];
 #else
-			bool altpressed = keymap[SDLK_LALT] || keymap[SDLK_RALT];
+			altpressed = keymap[SDLK_LALT] || keymap[SDLK_RALT];
 #endif
 			bool returnpressed = evt.key.keysym.sym == SDLK_RETURN;
 			bool fpressed = evt.key.keysym.sym == SDLK_f;
@@ -96,7 +111,7 @@ void KeyPoll::Poll()
 				toggleFullscreen = true;
 			}
 
-			if (textentrymode)
+			if (textentry())
 			{
 				if (evt.key.keysym.sym == SDLK_BACKSPACE && !keybuffer.empty())
 				{
@@ -114,82 +129,79 @@ void KeyPoll::Poll()
 					keybuffer += SDL_GetClipboardText();
 				}
 			}
+			break;
 		}
-		else if (evt.type == SDL_KEYUP)
-		{
+		case SDL_KEYUP:
 			keymap[evt.key.keysym.sym] = false;
 			if (evt.key.keysym.sym == SDLK_BACKSPACE)
 			{
 				pressedbackspace = false;
 			}
-		}
-		else if (evt.type == SDL_TEXTINPUT)
-		{
-			keybuffer += evt.text.text;
-		}
+			break;
+		case SDL_TEXTINPUT:
+			if (!altpressed)
+			{
+				keybuffer += evt.text.text;
+			}
+			break;
 
 		/* Mouse Input */
-		else if (evt.type == SDL_MOUSEMOTION)
-		{
+		case SDL_MOUSEMOTION:
 			mx = evt.motion.x;
 			my = evt.motion.y;
-		}
-		else if (evt.type == SDL_MOUSEBUTTONDOWN)
-		{
-			if (evt.button.button == SDL_BUTTON_LEFT)
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			switch (evt.button.button)
 			{
+			case SDL_BUTTON_LEFT:
 				mx = evt.button.x;
 				my = evt.button.y;
 				leftbutton = 1;
-			}
-			else if (evt.button.button == SDL_BUTTON_RIGHT)
-			{
+				break;
+			case SDL_BUTTON_RIGHT:
 				mx = evt.button.x;
 				my = evt.button.y;
 				rightbutton = 1;
-			}
-			else if (evt.button.button == SDL_BUTTON_MIDDLE)
-			{
+				break;
+			case SDL_BUTTON_MIDDLE:
 				mx = evt.button.x;
 				my = evt.button.y;
 				middlebutton = 1;
+				break;
 			}
-		}
-		else if (evt.type == SDL_MOUSEBUTTONUP)
-		{
-			if (evt.button.button == SDL_BUTTON_LEFT)
+			break;
+		case SDL_MOUSEBUTTONUP:
+			switch (evt.button.button)
 			{
+			case SDL_BUTTON_LEFT:
 				mx = evt.button.x;
 				my = evt.button.y;
 				leftbutton=0;
-			}
-			else if (evt.button.button == SDL_BUTTON_RIGHT)
-			{
+				break;
+			case SDL_BUTTON_RIGHT:
 				mx = evt.button.x;
 				my = evt.button.y;
 				rightbutton=0;
-			}
-			else if (evt.button.button == SDL_BUTTON_MIDDLE)
-			{
+				break;
+			case SDL_BUTTON_MIDDLE:
 				mx = evt.button.x;
 				my = evt.button.y;
 				middlebutton=0;
+				break;
 			}
-		}
+			break;
 
 		/* Controller Input */
-		else if (evt.type == SDL_CONTROLLERBUTTONDOWN)
-		{
+		case SDL_CONTROLLERBUTTONDOWN:
 			buttonmap[(SDL_GameControllerButton) evt.cbutton.button] = true;
-		}
-		else if (evt.type == SDL_CONTROLLERBUTTONUP)
-		{
+			break;
+		case SDL_CONTROLLERBUTTONUP:
 			buttonmap[(SDL_GameControllerButton) evt.cbutton.button] = false;
-		}
-		else if (evt.type == SDL_CONTROLLERAXISMOTION)
-		{
-			if (evt.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
+			break;
+		case SDL_CONTROLLERAXISMOTION:
+			switch (evt.caxis.axis)
 			{
+			case SDL_CONTROLLER_AXIS_LEFTX:
 				if (	evt.caxis.value > -sensitivity &&
 					evt.caxis.value < sensitivity	)
 				{
@@ -199,9 +211,8 @@ void KeyPoll::Poll()
 				{
 					xVel = (evt.caxis.value > 0) ? 1 : -1;
 				}
-			}
-			if (evt.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
-			{
+				break;
+			case SDL_CONTROLLER_AXIS_LEFTY:
 				if (	evt.caxis.value > -sensitivity &&
 					evt.caxis.value < sensitivity	)
 				{
@@ -211,9 +222,10 @@ void KeyPoll::Poll()
 				{
 					yVel = (evt.caxis.value > 0) ? 1 : -1;
 				}
+				break;
 			}
-		}
-		else if (evt.type == SDL_CONTROLLERDEVICEADDED)
+			break;
+		case SDL_CONTROLLERDEVICEADDED:
 		{
 			SDL_GameController *toOpen = SDL_GameControllerOpen(evt.cdevice.which);
 			printf(
@@ -222,68 +234,85 @@ void KeyPoll::Poll()
 				SDL_GameControllerName(toOpen)
 			);
 			controllers[SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(toOpen))] = toOpen;
+			break;
 		}
-		else if (evt.type == SDL_CONTROLLERDEVICEREMOVED)
+		case SDL_CONTROLLERDEVICEREMOVED:
 		{
 			SDL_GameController *toClose = controllers[evt.cdevice.which];
 			controllers.erase(evt.cdevice.which);
 			printf("Closing %s\n", SDL_GameControllerName(toClose));
 			SDL_GameControllerClose(toClose);
+			break;
 		}
 
 		/* Window Events */
-		else if (evt.type == SDL_WINDOWEVENT)
-		{
-			/* Window Resize */
-			if (evt.window.event == SDL_WINDOWEVENT_RESIZED)
+		case SDL_WINDOWEVENT:
+			switch (evt.window.event)
 			{
+			/* Window Resize */
+			case SDL_WINDOWEVENT_RESIZED:
 				resetWindow = true;
-			}
+				break;
 
 			/* Window Focus */
-			else if (evt.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
-			{
-				isActive = true;
+			case SDL_WINDOWEVENT_FOCUS_GAINED:
+				if (!game.disablepause)
+				{
+					isActive = true;
+				}
 				if (!useFullscreenSpaces)
 				{
-					SDL_Window *window = SDL_GetWindowFromID(evt.window.windowID);
-					wasFullscreen = SDL_GetWindowFlags(window);
-					SDL_SetWindowFullscreen(window, 0);
+					if (wasFullscreen)
+					{
+						graphics.screenbuffer->isWindowed = false;
+						SDL_SetWindowFullscreen(
+							SDL_GetWindowFromID(evt.window.windowID),
+							SDL_WINDOW_FULLSCREEN_DESKTOP
+						);
+					}
 				}
 				SDL_DisableScreenSaver();
-				resetWindow = true;
-			}
-			else if (evt.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
-			{
-				isActive = false;
+				if (!game.disablepause && Mix_PlayingMusic())
+				{
+					// Correct songStart for how long we were paused
+					music.songStart += SDL_GetPerformanceCounter() - pauseStart;
+				}
+				break;
+			case SDL_WINDOWEVENT_FOCUS_LOST:
+				if (!game.disablepause)
+				{
+					isActive = false;
+				}
 				if (!useFullscreenSpaces)
 				{
+					wasFullscreen = !graphics.screenbuffer->isWindowed;
+					graphics.screenbuffer->isWindowed = true;
 					SDL_SetWindowFullscreen(
 						SDL_GetWindowFromID(evt.window.windowID),
-						wasFullscreen
+						0
 					);
 				}
 				SDL_EnableScreenSaver();
-				resetWindow = true;
-			}
+				if (!game.disablepause)
+				{
+					pauseStart = SDL_GetPerformanceCounter();
+				}
+				break;
 
 			/* Mouse Focus */
-			else if (evt.window.event == SDL_WINDOWEVENT_ENTER)
-			{
+			case SDL_WINDOWEVENT_ENTER:
 				SDL_DisableScreenSaver();
-				resetWindow = true;
-			}
-			else if (evt.window.event == SDL_WINDOWEVENT_LEAVE)
-			{
+				break;
+			case SDL_WINDOWEVENT_LEAVE:
 				SDL_EnableScreenSaver();
-				resetWindow = true;
+				break;
 			}
-		}
+			break;
 
 		/* Quit Event */
-		else if (evt.type == SDL_QUIT)
-		{
+		case SDL_QUIT:
 			quitProgram = true;
+			break;
 		}
 	}
 }

@@ -1,23 +1,23 @@
-#include "Enums.h"
-
+#define GAME_DEFINITION
 #include "Game.h"
-#include "Graphics.h"
-#include "Entity.h"
-#include "Map.h"
 
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <tinyxml2.h>
 
-#include <sstream>
-
+#include "editor.h"
+#include "Entity.h"
+#include "Enums.h"
 #include "FileSystemUtils.h"
-
-#include "tinyxml.h"
-
-#include "Network.h"
-
+#include "Graphics.h"
 #include "MakeAndPlay.h"
+#include "Map.h"
+#include "Music.h"
+#include "Network.h"
+#include "Script.h"
+#include "UtilityClass.h"
 
 // lol, Win32 -flibit
 #ifdef _WIN32
@@ -115,8 +115,14 @@ bool GetButtonFromString(const char *pText, SDL_GameControllerButton *button)
 
 void Game::init(void)
 {
+    roomx = 0;
+    roomy = 0;
+    prevroomx = 0;
+    prevroomy = 0;
+    saverx = 0;
+    savery = 0;
+
     mutebutton = 0;
-    infocus = true;
     muted = false;
     musicmuted = false;
     musicmutebutton = 0;
@@ -133,7 +139,6 @@ void Game::init(void)
     roomchange = false;
 
 
-    teleportscript = "";
     savemystats = false;
     quickrestartkludge = false;
 
@@ -144,14 +149,13 @@ void Game::init(void)
     press_left = 0;
 
 
-    advancetext = false;
     pausescript = false;
     completestop = false;
     activeactivity = -1;
     act_fade = 0;
+    prev_act_fade = 0;
     backgroundtext = false;
     startscript = false;
-    newscript = "";
     inintermission = false;
 
     alarmon = false;
@@ -160,17 +164,19 @@ void Game::init(void)
     creditposx = 0;
     creditposy = 0;
     creditposdelay = 0;
+    oldcreditposx = 0;
 
     useteleporter = false;
     teleport_to_teleporter = 0;
 
     activetele = false;
     readytotele = 0;
-    activity_lastprompt = "";
+    oldreadytotele = 0;
     activity_r = 0;
     activity_g = 0;
     activity_b = 0;
     creditposition = 0;
+    oldcreditposition = 0;
     bestgamedeaths = -1;
 
     fullScreenEffect_badSignal = false;
@@ -184,27 +190,22 @@ void Game::init(void)
     fullscreen = false;// true; //Assumed true at first unless overwritten at some point!
     stretchMode = 0;
     useLinearFilter = false;
-    advanced_mode = false;
-    fullScreenEffect_badSignal = false;
     // 0..5
     controllerSensitivity = 2;
 
     nodeathmode = false;
     nocutscenes = false;
 
-    for(int i=0; i<50; i++)
-    {
-        customscript[i]="";
-    }
     customcol=0;
 
-    crewstats.resize(6);
-    tele_crewstats.resize(6);
-    quick_crewstats.resize(6);
-    besttimes.resize(6, -1);
-    besttrinkets.resize(6, -1);
-    bestlives.resize(6, -1);
-    bestrank.resize(6, -1);
+    SDL_memset(crewstats, false, sizeof(crewstats));
+    SDL_memset(tele_crewstats, false, sizeof(tele_crewstats));
+    SDL_memset(quick_crewstats, false, sizeof(quick_crewstats));
+    SDL_memset(besttimes, -1, sizeof(besttimes));
+    SDL_memset(bestframes, -1, sizeof(bestframes));
+    SDL_memset(besttrinkets, -1, sizeof(besttrinkets));
+    SDL_memset(bestlives, -1, sizeof(bestlives));
+    SDL_memset(bestrank, -1, sizeof(bestrank));
 
     crewstats[0] = true;
     lastsaved = 0;
@@ -217,8 +218,8 @@ void Game::init(void)
     quick_currentarea = "Error! Error!";
 
     //Menu stuff initiliased here:
-    unlock.resize(25);
-    unlocknotify.resize(25);
+    SDL_memset(unlock, false, sizeof(unlock));
+    SDL_memset(unlocknotify, false, sizeof(unlock));
 
     currentmenuoption = 0;
     current_credits_list_index = 0;
@@ -227,7 +228,6 @@ void Game::init(void)
     menucountdown = 0;
     levelpage=0;
     playcustomlevel=0;
-    customleveltitle="";
     createmenu(Menu::mainmenu);
 
     deathcounts = 0;
@@ -247,6 +247,7 @@ void Game::init(void)
     timetrialparlost = false;
     timetrialpar = 0;
     timetrialresulttime = 0;
+    timetrialresultframes = 0;
 
     totalflips = 0;
     hardestroom = "Welcome Aboard";
@@ -278,28 +279,28 @@ void Game::init(void)
 
     saveFilePath = FILESYSTEM_getUserSaveDirectory();
 
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/qsave.vvv", &doc))
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document("saves/qsave.vvv", doc))
     {
         quicksummary = "";
         printf("Quick Save Not Found\n");
     }
     else
     {
-        TiXmlHandle hDoc(&doc);
-        TiXmlElement* pElem;
-        TiXmlHandle hRoot(0);
+        tinyxml2::XMLHandle hDoc(&doc);
+        tinyxml2::XMLElement* pElem;
+        tinyxml2::XMLHandle hRoot(NULL);
 
-        pElem=hDoc.FirstChildElement().Element();
+        pElem=hDoc.FirstChildElement().ToElement();
         if (!pElem)
         {
             printf("Quick Save Appears Corrupted: No XML Root\n");
         }
 
         // save this for later
-        hRoot=TiXmlHandle(pElem);
+        hRoot=tinyxml2::XMLHandle(pElem);
 
-        for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+        for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
         {
             std::string pKey(pElem->Value());
             const char* pText = pElem->GetText() ;
@@ -314,21 +315,21 @@ void Game::init(void)
     }
 
 
-    TiXmlDocument docTele;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/tsave.vvv", &docTele))
+    tinyxml2::XMLDocument docTele;
+    if (!FILESYSTEM_loadTiXml2Document("saves/tsave.vvv", docTele))
     {
         telesummary = "";
         printf("Teleporter Save Not Found\n");
     }
     else
     {
-        TiXmlHandle hDoc(&docTele);
-        TiXmlElement* pElem;
-        TiXmlHandle hRoot(0);
+        tinyxml2::XMLHandle hDoc(&docTele);
+        tinyxml2::XMLElement* pElem;
+        tinyxml2::XMLHandle hRoot(NULL);
 
 
         {
-            pElem=hDoc.FirstChildElement().Element();
+            pElem=hDoc.FirstChildElement().ToElement();
             // should always have a valid root but handle gracefully if it does
             if (!pElem)
             {
@@ -336,10 +337,10 @@ void Game::init(void)
             }
 
             // save this for later
-            hRoot=TiXmlHandle(pElem);
+            hRoot=tinyxml2::XMLHandle(pElem);
         }
 
-        for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+        for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
         {
             std::string pKey(pElem->Value());
             const char* pText = pElem->GetText() ;
@@ -363,6 +364,9 @@ void Game::init(void)
 
     skipfakeload = false;
 
+    ghostsenabled = false;
+    gametimer = 0;
+
     cliplaytest = false;
     playx = 0;
     playy = 0;
@@ -379,110 +383,14 @@ void Game::init(void)
     shouldreturntoeditor = false;
 #endif
 
-    /* Terry's Patrons... */
-    superpatrons.push_back("Anders Ekermo");
-    superpatrons.push_back("Andreas K|mper");
-    superpatrons.push_back("Anthony Burch");
-    superpatrons.push_back("Bennett Foddy");
-    superpatrons.push_back("Brendan O'Sullivan");
-    superpatrons.push_back("Christopher Armstrong");
-    superpatrons.push_back("Daniel Benmergui");
-    superpatrons.push_back("David Pittman");
-    superpatrons.push_back("Ian Bogost");
-    superpatrons.push_back("Ian Poma");
-    superpatrons.push_back("Jaz McDougall");
-    superpatrons.push_back("John Faulkenbury");
-    superpatrons.push_back("Jonathan Whiting");
-    superpatrons.push_back("Kyle Pulver");
-    superpatrons.push_back("Markus Persson");
-    superpatrons.push_back("Nathan Ostgard");
-    superpatrons.push_back("Nick Easler");
-    superpatrons.push_back("Stephen Lavelle");
-    patrons.push_back("Adam Wendt");
-    patrons.push_back("Andreas J{rgensen");
-    patrons.push_back("}ngel Louzao Penalva");
-    patrons.push_back("Ashley Burton");
-    patrons.push_back("Aubrey Hesselgren");
-    patrons.push_back("Bradley Rose");
-    patrons.push_back("Brendan Urquhart");
-    patrons.push_back("Chris Ayotte");
-    patrons.push_back("Christopher Zamanillo");
-    patrons.push_back("Daniel Schuller");
-    patrons.push_back("Hybrid Mind Studios");
-    patrons.push_back("Emilie McGinley");
-    patrons.push_back("Francisco Solares");
-    patrons.push_back("Hal Helms");
-    patrons.push_back("Hayden Scott-Baron");
-    patrons.push_back("Hermit Games");
-    patrons.push_back("Ido Yehieli");
-    patrons.push_back("Jade Vault Games");
-    patrons.push_back("James Andrews");
-    patrons.push_back("James Riley");
-    patrons.push_back("James Hsieh");
-    patrons.push_back("Jasper Byrne");
-    patrons.push_back("Jedediah Baker");
-    patrons.push_back("Jens Bergensten");
-    patrons.push_back("Jeremy J. Penner");
-    patrons.push_back("Jeremy Peterson");
-    patrons.push_back("Jim McGinley");
-    patrons.push_back("Jonathan Cartwright");
-    patrons.push_back("John Nesky");
-    patrons.push_back("Jos Yule");
-    patrons.push_back("Jose Flores");
-    patrons.push_back("Josh Bizeau");
-    patrons.push_back("Joshua Buergel");
-    patrons.push_back("Joshua Hochner");
-    patrons.push_back("Kurt Ostfeld");
-    patrons.push_back("Magnus P~lsson");
-    patrons.push_back("Mark Neschadimenko");
-    patrons.push_back("Matt Antonellis");
-    patrons.push_back("Matthew Reppert");
-    patrons.push_back("Michael Falkensteiner");
-    patrons.push_back("Michael Vendittelli");
-    patrons.push_back("Mike Kasprzak");
-    patrons.push_back("Mitchel Stein");
-    patrons.push_back("Sean Murray");
-    patrons.push_back("Simon Michael");
-    patrons.push_back("Simon Schmid");
-    patrons.push_back("Stephen Maxwell");
-    patrons.push_back("Swing Swing Submarine");
-    patrons.push_back("Tam Toucan");
-    patrons.push_back("Terry Dooher");
-    patrons.push_back("Tim W.");
-    patrons.push_back("Timothy Bragan");
+    over30mode = false;
+    glitchrunnermode = false;
 
-    /* CONTRIBUTORS.txt, again listed alphabetically (according to `sort`) by last name */
-    githubfriends.push_back("Matt \"Stelpjo\" Aaldenberg");
-    githubfriends.push_back("AlexApps99");
-    githubfriends.push_back("Christoph B{hmwalder");
-    githubfriends.push_back("Charlie Bruce");
-    githubfriends.push_back("Brian Callahan");
-    githubfriends.push_back("Dav999");
-    githubfriends.push_back("Allison Fleischer");
-    githubfriends.push_back("Daniel Lee");
-    githubfriends.push_back("Fredrik Ljungdahl");
-    githubfriends.push_back("Matt Penny");
-    githubfriends.push_back("Elliott Saltar");
-    githubfriends.push_back("Marvin Scholz");
-    githubfriends.push_back("Keith Stellyes");
-    githubfriends.push_back("Elijah Stone");
-    githubfriends.push_back("Thomas S|nger");
-    githubfriends.push_back("Info Teddy");
-    githubfriends.push_back("Alexandra Tildea");
-    githubfriends.push_back("leo60228");
-    githubfriends.push_back("Emmanuel Vadot");
-    githubfriends.push_back("Remi Verschelde"); // TODO: Change to "Rémi" if/when UTF-8 support is added
-    githubfriends.push_back("viri");
-    githubfriends.push_back("Wouter");
+    ingame_titlemode = false;
+    kludge_ingametemp = Menu::mainmenu;
+    shouldreturntopausemenu = false;
 
-    /* Calculate credits length, finally. */
-    creditmaxposition = 1050 + (10 * (
-        superpatrons.size() + patrons.size() + githubfriends.size()
-    ));
-}
-
-Game::~Game(void)
-{
+    disablepause = false;
 }
 
 void Game::lifesequence()
@@ -490,14 +398,17 @@ void Game::lifesequence()
     if (lifeseq > 0)
     {
         int i = obj.getplayer();
-        obj.entities[i].invis = false;
-        if (lifeseq == 2) obj.entities[i].invis = true;
-        if (lifeseq == 6) obj.entities[i].invis = true;
-        if (lifeseq >= 8) obj.entities[i].invis = true;
+        if (INBOUNDS_VEC(i, obj.entities))
+        {
+            obj.entities[i].invis = false;
+            if (lifeseq == 2) obj.entities[i].invis = true;
+            if (lifeseq == 6) obj.entities[i].invis = true;
+            if (lifeseq >= 8) obj.entities[i].invis = true;
+        }
         if (lifeseq > 5) gravitycontrol = savegc;
 
         lifeseq--;
-        if (lifeseq <= 0)
+        if (INBOUNDS_VEC(i, obj.entities) && lifeseq <= 0)
         {
             obj.entities[i].invis = false;
         }
@@ -506,13 +417,8 @@ void Game::lifesequence()
 
 void Game::clearcustomlevelstats()
 {
-    //just clearing the arrays
-    for(int i=0; i<200; i++)
-    {
-        customlevelstats[i]="";
-        customlevelscore[i]=0;
-    }
-    numcustomlevelstats=0;
+    //just clearing the array
+    customlevelstats.clear();
 
     customlevelstatsloaded=false; //To ensure we don't load it where it isn't needed
 }
@@ -525,28 +431,28 @@ void Game::updatecustomlevelstats(std::string clevel, int cscore)
         clevel = clevel.substr(7);
     }
     int tvar=-1;
-    for(int j=0; j<numcustomlevelstats; j++)
+    for(size_t j=0; j<customlevelstats.size(); j++)
     {
-        if(clevel==customlevelstats[j])
+        if(clevel==customlevelstats[j].name)
         {
             tvar=j;
-            j=numcustomlevelstats+1;
+            break;
         }
     }
-    if(tvar>=0 && cscore > customlevelscore[tvar])
+    if(tvar>=0)
     {
-        //update existing entry
-        customlevelscore[tvar]=cscore;
+        // We have an existing entry
+        // Don't update it unless it's a higher score
+        if (cscore > customlevelstats[tvar].score)
+        {
+            customlevelstats[tvar].score=cscore;
+        }
     }
     else
     {
         //add a new entry
-        if(numcustomlevelstats<200)
-        {
-            customlevelstats[numcustomlevelstats]=clevel;
-            customlevelscore[numcustomlevelstats]=cscore;
-            numcustomlevelstats++;
-        }
+        CustomLevelStat levelstat = {clevel, cscore};
+        customlevelstats.push_back(levelstat);
     }
     savecustomlevelstats();
 }
@@ -554,120 +460,176 @@ void Game::updatecustomlevelstats(std::string clevel, int cscore)
 void Game::loadcustomlevelstats()
 {
     //testing
-    if(!customlevelstatsloaded)
+    if(customlevelstatsloaded)
     {
-        TiXmlDocument doc;
-        if (!FILESYSTEM_loadTiXmlDocument("saves/levelstats.vvv", &doc))
-        {
-            //No levelstats file exists; start new
-            numcustomlevelstats=0;
-            savecustomlevelstats();
-        }
-        else
-        {
-            TiXmlHandle hDoc(&doc);
-            TiXmlElement* pElem;
-            TiXmlHandle hRoot(0);
+        return;
+    }
 
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document("saves/levelstats.vvv", doc))
+    {
+        //No levelstats file exists; start new
+        customlevelstats.clear();
+        savecustomlevelstats();
+        return;
+    }
+
+    // Old system
+    std::vector<std::string> customlevelnames;
+    std::vector<int> customlevelscores;
+
+    tinyxml2::XMLHandle hDoc(&doc);
+    tinyxml2::XMLElement* pElem;
+    tinyxml2::XMLHandle hRoot(NULL);
+
+    {
+        pElem=hDoc.FirstChildElement().ToElement();
+        // should always have a valid root but handle gracefully if it does
+        if (!pElem)
+        {
+            printf("Error: Levelstats file corrupted\n");
+        }
+
+        // save this for later
+        hRoot=tinyxml2::XMLHandle(pElem);
+    }
+
+    // First pass, look for the new system of storing stats
+    // If they don't exist, then fall back to the old system
+    for (pElem = hRoot.FirstChildElement("Data").FirstChild().ToElement(); pElem; pElem = pElem->NextSiblingElement())
+    {
+        std::string pKey(pElem->Value());
+        const char* pText = pElem->GetText();
+        if (pText == NULL)
+        {
+            pText = "";
+        }
+
+        if (pKey == "stats")
+        {
+            for (tinyxml2::XMLElement* stat_el = pElem->FirstChildElement(); stat_el; stat_el = stat_el->NextSiblingElement())
             {
-                pElem=hDoc.FirstChildElement().Element();
-                // should always have a valid root but handle gracefully if it does
-                if (!pElem)
+                CustomLevelStat stat = {};
+
+                if (stat_el->GetText() != NULL)
                 {
-                    printf("Error: Levelstats file corrupted\n");
+                    stat.score = help.Int(stat_el->GetText());
                 }
 
-                // save this for later
-                hRoot=TiXmlHandle(pElem);
+                if (stat_el->Attribute("name"))
+                {
+                    stat.name = stat_el->Attribute("name");
+                }
+
+                customlevelstats.push_back(stat);
             }
 
+            return;
+        }
+    }
 
-            for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+
+    // Since we're still here, we must be on the old system
+    for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
+    {
+        std::string pKey(pElem->Value());
+        const char* pText = pElem->GetText() ;
+        if(pText == NULL)
+        {
+            pText = "";
+        }
+
+        if (pKey == "customlevelscore")
+        {
+            std::string TextString = (pText);
+            if(TextString.length())
             {
-                std::string pKey(pElem->Value());
-                const char* pText = pElem->GetText() ;
-                if(pText == NULL)
+                std::vector<std::string> values = split(TextString,',');
+                for(size_t i = 0; i < values.size(); i++)
                 {
-                    pText = "";
-                }
-
-                if (pKey == "numcustomlevelstats")
-                {
-                    numcustomlevelstats = atoi(pText);
-                    if(numcustomlevelstats>=200) numcustomlevelstats=199;
-                }
-
-                if (pKey == "customlevelscore")
-                {
-                    std::string TextString = (pText);
-                    if(TextString.length())
-                    {
-                        std::vector<std::string> values = split(TextString,',');
-                        for(size_t i = 0; i < values.size(); i++)
-                        {
-                            if(i<200) customlevelscore[i]=(atoi(values[i].c_str()));
-                        }
-                    }
-                }
-
-                if (pKey == "customlevelstats")
-                {
-                    std::string TextString = (pText);
-                    if(TextString.length())
-                    {
-                        std::vector<std::string> values = split(TextString,'|');
-                        for(size_t i = 0; i < values.size(); i++)
-                        {
-                            if(i<200) customlevelstats[i]=values[i];
-                        }
-                    }
+                    customlevelscores.push_back(help.Int(values[i].c_str()));
                 }
             }
         }
+
+        if (pKey == "customlevelstats")
+        {
+            std::string TextString = (pText);
+            if(TextString.length())
+            {
+                std::vector<std::string> values = split(TextString,'|');
+                for(size_t i = 0; i < values.size(); i++)
+                {
+                    customlevelnames.push_back(values[i]);
+                }
+            }
+        }
+    }
+
+    // If the two arrays happen to differ in length, just go with the smallest one
+    for (size_t i = 0; i < std::min(customlevelnames.size(), customlevelscores.size()); i++)
+    {
+        CustomLevelStat stat = {customlevelnames[i], customlevelscores[i]};
+        customlevelstats.push_back(stat);
     }
 }
 
 void Game::savecustomlevelstats()
 {
-    TiXmlDocument doc;
-    TiXmlElement* msg;
-    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* msg;
+    tinyxml2::XMLDeclaration* decl = doc.NewDeclaration();
     doc.LinkEndChild( decl );
 
-    TiXmlElement * root = new TiXmlElement( "Levelstats" );
+    tinyxml2::XMLElement * root = doc.NewElement( "Levelstats" );
     doc.LinkEndChild( root );
 
-    TiXmlComment * comment = new TiXmlComment();
-    comment->SetValue(" Levelstats Save file " );
+    tinyxml2::XMLComment * comment = doc.NewComment(" Levelstats Save file " );
     root->LinkEndChild( comment );
 
-    TiXmlElement * msgs = new TiXmlElement( "Data" );
+    tinyxml2::XMLElement * msgs = doc.NewElement( "Data" );
     root->LinkEndChild( msgs );
 
+    int numcustomlevelstats = customlevelstats.size();
     if(numcustomlevelstats>=200)numcustomlevelstats=199;
-    msg = new TiXmlElement( "numcustomlevelstats" );
-    msg->LinkEndChild( new TiXmlText( help.String(numcustomlevelstats).c_str() ));
+    msg = doc.NewElement( "numcustomlevelstats" );
+    msg->LinkEndChild( doc.NewText( help.String(numcustomlevelstats).c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string customlevelscorestr;
     for(int i = 0; i < numcustomlevelstats; i++ )
     {
-        customlevelscorestr += help.String(customlevelscore[i]) + ",";
+        customlevelscorestr += help.String(customlevelstats[i].score) + ",";
     }
-    msg = new TiXmlElement( "customlevelscore" );
-    msg->LinkEndChild( new TiXmlText( customlevelscorestr.c_str() ));
+    msg = doc.NewElement( "customlevelscore" );
+    msg->LinkEndChild( doc.NewText( customlevelscorestr.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string customlevelstatsstr;
     for(int i = 0; i < numcustomlevelstats; i++ )
     {
-        customlevelstatsstr += customlevelstats[i] + "|";
+        customlevelstatsstr += customlevelstats[i].name + "|";
     }
-    msg = new TiXmlElement( "customlevelstats" );
-    msg->LinkEndChild( new TiXmlText( customlevelstatsstr.c_str() ));
+    msg = doc.NewElement( "customlevelstats" );
+    msg->LinkEndChild( doc.NewText( customlevelstatsstr.c_str() ));
     msgs->LinkEndChild( msg );
 
-    if(FILESYSTEM_saveTiXmlDocument("saves/levelstats.vvv", &doc))
+    // New system
+    msg = doc.NewElement("stats");
+    tinyxml2::XMLElement* stat_el;
+    for (size_t i = 0; i < customlevelstats.size(); i++)
+    {
+        stat_el = doc.NewElement("stat");
+        CustomLevelStat& stat = customlevelstats[i];
+
+        stat_el->SetAttribute("name", stat.name.c_str());
+        stat_el->LinkEndChild(doc.NewText(help.String(stat.score).c_str()));
+
+        msg->LinkEndChild(stat_el);
+    }
+    msgs->LinkEndChild(msg);
+
+    if(FILESYSTEM_saveTiXml2Document("saves/levelstats.vvv", doc))
     {
         printf("Level stats saved\n");
     }
@@ -680,7 +642,6 @@ void Game::savecustomlevelstats()
 
 void Game::updatestate()
 {
-    int i;
     statedelay--;
     if(statedelay<=0){
         statedelay=0;
@@ -692,6 +653,12 @@ void Game::updatestate()
         {
         case 0:
             //Do nothing here! Standard game state
+
+            //Prevent softlocks if there's no cutscene running right now
+            if (!script.running)
+            {
+                hascontrol = true;
+            }
             break;
         case 1:
             //Game initilisation
@@ -893,19 +860,28 @@ void Game::updatestate()
             break;
 
         case 15:
+        {
             //leaving the naughty corner
-            obj.entities[obj.getplayer()].tile = 0;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[obj.getplayer()].tile = 0;
+            }
             state = 0;
             break;
+        }
         case 16:
+        {
             //entering the naughty corner
-            if(obj.entities[obj.getplayer()].tile == 0)
+            int i = obj.getplayer();
+            if(INBOUNDS_VEC(i, obj.entities) && obj.entities[i].tile == 0)
             {
-                obj.entities[obj.getplayer()].tile = 144;
+                obj.entities[i].tile = 144;
                 music.playef(2);
             }
             state = 0;
             break;
+        }
 
         case 17:
             //Arrow key tutorial
@@ -1347,15 +1323,19 @@ void Game::updatestate()
             //Time Trial Complete!
             obj.removetrigger(82);
             hascontrol = false;
-            timetrialresulttime = seconds + (minutes * 60);
+            timetrialresulttime = seconds + (minutes * 60) + (hours * 60 * 60);
+            timetrialresultframes = frames;
             timetrialrank = 0;
             if (timetrialresulttime <= timetrialpar) timetrialrank++;
             if (trinkets() >= timetrialshinytarget) timetrialrank++;
             if (deathcounts == 0) timetrialrank++;
 
-            if (timetrialresulttime < besttimes[timetriallevel] || besttimes[timetriallevel]==-1)
+            if (timetrialresulttime < besttimes[timetriallevel]
+            || (timetrialresulttime == besttimes[timetriallevel] && timetrialresultframes < bestframes[timetriallevel])
+            || besttimes[timetriallevel]==-1)
             {
                 besttimes[timetriallevel] = timetrialresulttime;
+                bestframes[timetriallevel] = timetrialresultframes;
             }
             if (trinkets() > besttrinkets[timetriallevel] || besttrinkets[timetriallevel]==-1)
             {
@@ -1369,12 +1349,12 @@ void Game::updatestate()
             {
                 bestrank[timetriallevel] = timetrialrank;
                 if(timetrialrank>=3){
-                    if(timetriallevel==0) NETWORK_unlockAchievement("vvvvvvtimetrial_station1_fixed");
-                    if(timetriallevel==1) NETWORK_unlockAchievement("vvvvvvtimetrial_lab_fixed");
-                    if(timetriallevel==2) NETWORK_unlockAchievement("vvvvvvtimetrial_tower_fixed");
-                    if(timetriallevel==3) NETWORK_unlockAchievement("vvvvvvtimetrial_station2_fixed");
-                    if(timetriallevel==4) NETWORK_unlockAchievement("vvvvvvtimetrial_warp_fixed");
-                    if(timetriallevel==5) NETWORK_unlockAchievement("vvvvvvtimetrial_final_fixed");
+                    if(timetriallevel==0) unlockAchievement("vvvvvvtimetrial_station1_fixed");
+                    if(timetriallevel==1) unlockAchievement("vvvvvvtimetrial_lab_fixed");
+                    if(timetriallevel==2) unlockAchievement("vvvvvvtimetrial_tower_fixed");
+                    if(timetriallevel==3) unlockAchievement("vvvvvvtimetrial_station2_fixed");
+                    if(timetriallevel==4) unlockAchievement("vvvvvvtimetrial_warp_fixed");
+                    if(timetriallevel==5) unlockAchievement("vvvvvvtimetrial_final_fixed");
                 }
             }
 
@@ -1489,14 +1469,14 @@ void Game::updatestate()
         {
 
 
-            i = obj.getplayer();
+            int i = obj.getplayer();
             hascontrol = false;
-            if (obj.entities[i].onroof > 0 && gravitycontrol == 1)
+            if (INBOUNDS_VEC(i, obj.entities) && obj.entities[i].onroof > 0 && gravitycontrol == 1)
             {
                 gravitycontrol = 0;
                 music.playef(1);
             }
-            if (obj.entities[i].onground > 0)
+            if (INBOUNDS_VEC(i, obj.entities) && obj.entities[i].onground > 0)
             {
                 state++;
             }
@@ -1507,9 +1487,12 @@ void Game::updatestate()
 
 
             companion = 6;
-            i = obj.getcompanion();
-            obj.entities[i].tile = 0;
-            obj.entities[i].state = 1;
+            int i = obj.getcompanion();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].tile = 0;
+                obj.entities[i].state = 1;
+            }
 
             advancetext = true;
             hascontrol = false;
@@ -1533,9 +1516,12 @@ void Game::updatestate()
             state++;
             music.playef(2);
             graphics.textboxactive();
-            i = obj.getcompanion();
-            obj.entities[i].tile = 54;
-            obj.entities[i].state = 0;
+            int i = obj.getcompanion();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].tile = 54;
+                obj.entities[i].state = 0;
+            }
         }
         break;
         case 108:
@@ -1548,9 +1534,12 @@ void Game::updatestate()
         case 110:
         {
 
-            i = obj.getcompanion();
-            obj.entities[i].tile = 0;
-            obj.entities[i].state = 1;
+            int i = obj.getcompanion();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].tile = 0;
+                obj.entities[i].state = 1;
+            }
             graphics.createtextbox("Follow me!", 185, 154, 164, 164, 255);
             state++;
             music.playef(11);
@@ -1570,11 +1559,8 @@ void Game::updatestate()
             //
             //                       Test script for space station, totally delete me!
             //
-        {
-            i = obj.getplayer();
             hascontrol = false;
             state++;
-        }
         break;
         case 116:
             advancetext = true;
@@ -1607,14 +1593,14 @@ void Game::updatestate()
         case 121:
         {
 
-            i = obj.getplayer();
+            int i = obj.getplayer();
             hascontrol = false;
-            if (obj.entities[i].onground > 0 && gravitycontrol == 0)
+            if (INBOUNDS_VEC(i, obj.entities) && obj.entities[i].onground > 0 && gravitycontrol == 0)
             {
                 gravitycontrol = 1;
                 music.playef(1);
             }
-            if (obj.entities[i].onroof > 0)
+            if (INBOUNDS_VEC(i, obj.entities) && obj.entities[i].onroof > 0)
             {
                 state++;
             }
@@ -1622,10 +1608,14 @@ void Game::updatestate()
         }
         break;
         case 122:
+        {
             companion = 7;
-            i = obj.getcompanion();
-            obj.entities[i].tile = 6;
-            obj.entities[i].state = 1;
+            int i = obj.getcompanion();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].tile = 6;
+                obj.entities[i].state = 1;
+            }
 
             advancetext = true;
             hascontrol = false;
@@ -1634,14 +1624,17 @@ void Game::updatestate()
             state++;
             music.playef(14);
             break;
+        }
         case 124:
+        {
             graphics.createtextbox("I've found a teleporter, but", 60-20, 90 - 40, 255, 255, 134);
             graphics.addline("I can't get it to go anywhere...");
             state++;
             music.playef(2);
             graphics.textboxactive();
-            i = obj.getcompanion();	//obj.entities[i].tile = 66;	obj.entities[i].state = 0;
+            int i = obj.getcompanion(); if (INBOUNDS_VEC(i, obj.entities)) {	/*obj.entities[i].tile = 66;	obj.entities[i].state = 0;*/	}
             break;
+        }
         case 126:
             graphics.createtextbox("I can help with that!", 125, 152-40, 164, 164, 255);
             state++;
@@ -1657,14 +1650,19 @@ void Game::updatestate()
             break;
 
         case 130:
+        {
             graphics.createtextbox("Yey! Let's go home!", 60-30, 90-35, 255, 255, 134);
             state++;
             music.playef(14);
             graphics.textboxactive();
-            i = obj.getcompanion();
-            obj.entities[i].tile = 6;
-            obj.entities[i].state = 1;
+            int i = obj.getcompanion();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].tile = 6;
+                obj.entities[i].state = 1;
+            }
             break;
+        }
         case 132:
             graphics.textboxremove();
             hascontrol = true;
@@ -1696,226 +1694,47 @@ void Game::updatestate()
             break;
 
 
+        // WARNING: If updating this code, make sure to update Map.cpp mapclass::twoframedelayfix()
         case 300:
-            startscript = true;
-            newscript="custom_"+customscript[0];
-            obj.removetrigger(300);
-            state = 0;
-            break;
         case 301:
-            startscript = true;
-            newscript="custom_"+customscript[1];
-            obj.removetrigger(301);
-            state = 0;
-            break;
         case 302:
-            startscript = true;
-            newscript="custom_"+customscript[2];
-            obj.removetrigger(302);
-            state = 0;
-            break;
         case 303:
-            startscript = true;
-            newscript="custom_"+customscript[3];
-            obj.removetrigger(303);
-            state = 0;
-            break;
         case 304:
-            startscript = true;
-            newscript="custom_"+customscript[4];
-            obj.removetrigger(304);
-            state = 0;
-            break;
         case 305:
-            startscript = true;
-            newscript="custom_"+customscript[5];
-            obj.removetrigger(305);
-            state = 0;
-            break;
         case 306:
-            startscript = true;
-            newscript="custom_"+customscript[6];
-            obj.removetrigger(306);
-            state = 0;
-            break;
         case 307:
-            startscript = true;
-            newscript="custom_"+customscript[7];
-            obj.removetrigger(307);
-            state = 0;
-            break;
         case 308:
-            startscript = true;
-            newscript="custom_"+customscript[8];
-            obj.removetrigger(308);
-            state = 0;
-            break;
         case 309:
-            startscript = true;
-            newscript="custom_"+customscript[9];
-            obj.removetrigger(309);
-            state = 0;
-            break;
         case 310:
-            startscript = true;
-            newscript="custom_"+customscript[10];
-            obj.removetrigger(310);
-            state = 0;
-            break;
         case 311:
-            startscript = true;
-            newscript="custom_"+customscript[11];
-            obj.removetrigger(311);
-            state = 0;
-            break;
         case 312:
-            startscript = true;
-            newscript="custom_"+customscript[12];
-            obj.removetrigger(312);
-            state = 0;
-            break;
         case 313:
-            startscript = true;
-            newscript="custom_"+customscript[13];
-            obj.removetrigger(313);
-            state = 0;
-            break;
         case 314:
-            startscript = true;
-            newscript="custom_"+customscript[14];
-            obj.removetrigger(314);
-            state = 0;
-            break;
         case 315:
-            startscript = true;
-            newscript="custom_"+customscript[15];
-            obj.removetrigger(315);
-            state = 0;
-            break;
         case 316:
-            startscript = true;
-            newscript="custom_"+customscript[16];
-            obj.removetrigger(316);
-            state = 0;
-            break;
         case 317:
-            startscript = true;
-            newscript="custom_"+customscript[17];
-            obj.removetrigger(317);
-            state = 0;
-            break;
         case 318:
-            startscript = true;
-            newscript="custom_"+customscript[18];
-            obj.removetrigger(318);
-            state = 0;
-            break;
         case 319:
-            startscript = true;
-            newscript="custom_"+customscript[19];
-            obj.removetrigger(319);
-            state = 0;
-            break;
         case 320:
-            startscript = true;
-            newscript="custom_"+customscript[20];
-            obj.removetrigger(320);
-            state = 0;
-            break;
         case 321:
-            startscript = true;
-            newscript="custom_"+customscript[21];
-            obj.removetrigger(321);
-            state = 0;
-            break;
         case 322:
-            startscript = true;
-            newscript="custom_"+customscript[22];
-            obj.removetrigger(322);
-            state = 0;
-            break;
         case 323:
-            startscript = true;
-            newscript="custom_"+customscript[23];
-            obj.removetrigger(323);
-            state = 0;
-            break;
         case 324:
-            startscript = true;
-            newscript="custom_"+customscript[24];
-            obj.removetrigger(324);
-            state = 0;
-            break;
         case 325:
-            startscript = true;
-            newscript="custom_"+customscript[25];
-            obj.removetrigger(325);
-            state = 0;
-            break;
         case 326:
-            startscript = true;
-            newscript="custom_"+customscript[26];
-            obj.removetrigger(326);
-            state = 0;
-            break;
         case 327:
-            startscript = true;
-            newscript="custom_"+customscript[27];
-            obj.removetrigger(327);
-            state = 0;
-            break;
         case 328:
-            startscript = true;
-            newscript="custom_"+customscript[28];
-            obj.removetrigger(328);
-            state = 0;
-            break;
         case 329:
-            startscript = true;
-            newscript="custom_"+customscript[29];
-            obj.removetrigger(329);
-            state = 0;
-            break;
         case 330:
-            startscript = true;
-            newscript="custom_"+customscript[30];
-            obj.removetrigger(330);
-            state = 0;
-            break;
         case 331:
-            startscript = true;
-            newscript="custom_"+customscript[31];
-            obj.removetrigger(331);
-            state = 0;
-            break;
         case 332:
-            startscript = true;
-            newscript="custom_"+customscript[32];
-            obj.removetrigger(332);
-            state = 0;
-            break;
         case 333:
-            startscript = true;
-            newscript="custom_"+customscript[33];
-            obj.removetrigger(333);
-            state = 0;
-            break;
         case 334:
-            startscript = true;
-            newscript="custom_"+customscript[34];
-            obj.removetrigger(334);
-            state = 0;
-            break;
         case 335:
-            startscript = true;
-            newscript="custom_"+customscript[35];
-            obj.removetrigger(335);
-            state = 0;
-            break;
         case 336:
             startscript = true;
-            newscript="custom_"+customscript[36];
-            obj.removetrigger(336);
+            newscript="custom_"+customscript[state - 300];
+            obj.removetrigger(state);
             state = 0;
             break;
 
@@ -1969,6 +1788,13 @@ void Game::updatestate()
                     graphics.createtextbox(" " + help.number(trinkets()) + " out of Twenty ", 50, 135, 174, 174, 174);
                     graphics.textboxcenterx();
                 }
+            }
+            break;
+        case 1002:
+            if (!advancetext)
+            {
+                // Prevent softlocks if we somehow don't have advancetext
+                state++;
             }
             break;
         case 1003:
@@ -2038,6 +1864,13 @@ void Game::updatestate()
                 graphics.textboxcenterx();
             }
             break;
+        case 1012:
+            if (!advancetext)
+            {
+                // Prevent softlocks if we somehow don't have advancetext
+                state++;
+            }
+            break;
         case 1013:
             graphics.textboxremove();
             hascontrol = true;
@@ -2056,8 +1889,7 @@ void Game::updatestate()
                 }
                 else
                 {
-                    gamestate = EDITORMODE;
-                    graphics.backgrounddrawn=false;
+                    shouldreturntoeditor = true;
                     if(!muted && ed.levmusic>0) music.fadeMusicVolumeIn(3000);
                     if(ed.levmusic>0) music.fadeout();
                 }
@@ -2075,12 +1907,6 @@ void Game::updatestate()
             if(graphics.fademode == 1)	state++;
             break;
         case 1015:
-            graphics.flipmode = false;
-            gamestate = TITLEMODE;
-            graphics.fademode = 4;
-            music.play(6);
-            graphics.backgrounddrawn = true;
-            map.tdrawback = true;
 #if !defined(NO_CUSTOM_LEVELS)
             //Update level stats
             if(ed.numcrewmates()-crewmates()==0)
@@ -2097,13 +1923,14 @@ void Game::updatestate()
                 }
             }
 #endif
+            quittomenu();
             state = 0;
             break;
 
 
         case 2000:
             //Game Saved!
-            if (intimetrial || nodeathmode || inintermission)
+            if (inspecial() || map.custommode)
             {
                 state = 0;
             }
@@ -2144,61 +1971,110 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 2502:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 5;
 
-            i = obj.getplayer();
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
 
-            obj.entities[i].xp = obj.entities[obj.getteleporter()].xp+44;
-            obj.entities[i].yp = obj.entities[obj.getteleporter()].yp+44;
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                int j = obj.getteleporter();
+                if (INBOUNDS_VEC(j, obj.entities))
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[i].lerpoldxp = obj.entities[i].xp;
+                    obj.entities[i].lerpoldyp = obj.entities[i].yp;
+                }
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
 
             i = obj.getteleporter();
-            obj.entities[i].tile = 1;
-            obj.entities[i].colour = 101;
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].tile = 1;
+                obj.entities[i].colour = 101;
+            }
             break;
+        }
         case 2503:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
+        }
         case 2504:
+        {
             state++;
-            i = obj.getplayer();
-            //obj.entities[i].xp += 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                //obj.entities[i].xp += 10;
+            }
             break;
+        }
         case 2505:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
+        }
         case 2506:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
+        }
         case 2507:
+        {
             state++;
-            i = obj.getplayer();
-            //obj.entities[i].xp += 4;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                //obj.entities[i].xp += 4;
+            }
             break;
+        }
         case 2508:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 2;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 2;
+            }
             break;
+        }
         case 2509:
+        {
             state++;
             statedelay = 15;
-            i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
+        }
         case 2510:
             advancetext = true;
             hascontrol = false;
@@ -2264,6 +2140,7 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 3005:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 50;
@@ -2292,20 +2169,27 @@ void Game::updatestate()
                 break; //Intermission 1
             }
 
-            i = obj.getplayer();
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = true;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = true;
+            }
 
             i = obj.getcompanion();
-            if(i>-1)
+            if(INBOUNDS_VEC(i, obj.entities))
             {
                 obj.removeentity(i);
             }
 
             i = obj.getteleporter();
-            obj.entities[i].tile = 1;
-            obj.entities[i].colour = 100;
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].tile = 1;
+                obj.entities[i].colour = 100;
+            }
             break;
+        }
 
         case 3006:
             //Level complete! (warp zone)
@@ -2766,7 +2650,6 @@ void Game::updatestate()
                 state++;
                 statedelay = 30;
                 graphics.textboxremove();
-                crewstats[1] = 0; //Set violet's rescue script to 0 to make the next bit easier
                 teleportscript = "";
             }
             break;
@@ -2779,13 +2662,20 @@ void Game::updatestate()
             if(graphics.fademode==1)
             {
                 startscript = true;
-                if (nocutscenes)
+                if (crewrescued() == 6)
                 {
-                    newscript="bigopenworldskip";
+                    newscript = "startlevel_final";
                 }
                 else
                 {
-                    newscript = "bigopenworld";
+                    if (nocutscenes)
+                    {
+                        newscript="bigopenworldskip";
+                    }
+                    else
+                    {
+                        newscript = "bigopenworld";
+                    }
                 }
                 state = 0;
             }
@@ -3089,7 +2979,7 @@ void Game::updatestate()
             break;
         case 3501:
             //Game complete!
-            NETWORK_unlockAchievement("vvvvvvgamecomplete");
+            unlockAchievement("vvvvvvgamecomplete");
             unlocknum(5);
             crewstats[0] = true;
             state++;
@@ -3122,6 +3012,7 @@ void Game::updatestate()
                 graphics.createtextbox("  All Crew Members Rescued!  ", -1, 64, 0, 0, 0);
             }
             savetime = timestring();
+            savetime += "." + help.twodigits(frames*100 / 30);
             break;
         case 3503:
         {
@@ -3235,8 +3126,8 @@ void Game::updatestate()
             if (!obj.flags[73])
             {
                 //flip mode complete
-                NETWORK_unlockAchievement("vvvvvvgamecompleteflip");
-                unlock[19] = true;
+                unlockAchievement("vvvvvvgamecompleteflip");
+                unlocknum(19);
             }
 
             if (bestgamedeaths == -1)
@@ -3253,16 +3144,16 @@ void Game::updatestate()
 
             if (bestgamedeaths > -1) {
                 if (bestgamedeaths <= 500) {
-                    NETWORK_unlockAchievement("vvvvvvcomplete500");
+                    unlockAchievement("vvvvvvcomplete500");
                 }
             if (bestgamedeaths <= 250) {
-                NETWORK_unlockAchievement("vvvvvvcomplete250");
+                unlockAchievement("vvvvvvcomplete250");
             }
             if (bestgamedeaths <= 100) {
-                NETWORK_unlockAchievement("vvvvvvcomplete100");
+                unlockAchievement("vvvvvvcomplete100");
             }
             if (bestgamedeaths <= 50) {
-                NETWORK_unlockAchievement("vvvvvvcomplete50");
+                unlockAchievement("vvvvvvcomplete50");
             }
         }
 
@@ -3270,8 +3161,8 @@ void Game::updatestate()
             savestats();
             if (nodeathmode)
             {
-                NETWORK_unlockAchievement("vvvvvvmaster"); //bloody hell
-                unlock[20] = true;
+                unlockAchievement("vvvvvvmaster"); //bloody hell
+                unlocknum(20);
                 state = 3520;
                 statedelay = 0;
             }
@@ -3282,9 +3173,13 @@ void Game::updatestate()
             }
             break;
         case 3511:
+        {
             //Activating a teleporter (long version for level complete)
-            i = obj.getplayer();
-            obj.entities[i].colour = 102;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].colour = 102;
+            }
 
             state++;
             statedelay = 30;
@@ -3292,6 +3187,7 @@ void Game::updatestate()
             screenshake = 90;
             music.playef(9);
             break;
+        }
         case 3512:
             //Activating a teleporter 2
             state++;
@@ -3314,20 +3210,25 @@ void Game::updatestate()
             music.playef(9);
             break;
         case 3515:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 0;
             flashlight = 5;
             screenshake = 0;
 
-            i = obj.getplayer();
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = true;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = true;
+            }
 
             //we're done here!
             music.playef(10);
             statedelay = 60;
             break;
+        }
         case 3516:
             graphics.fademode = 2;
             state++;
@@ -3355,6 +3256,7 @@ void Game::updatestate()
             map.finaly = 100;
 
             graphics.cutscenebarspos = 320;
+            graphics.oldcutscenebarspos = 320;
 
             teleport_to_new_area = true;
             teleportscript = "gamecomplete";
@@ -3399,6 +3301,7 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 4002:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 10;
@@ -3407,17 +3310,21 @@ void Game::updatestate()
             //state = 3020; //Space Station
             //state = 3040; //Lab
 
-            i = obj.getplayer();
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = true;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = true;
+            }
 
             i = obj.getteleporter();
-            if(i>-1)
+            if(INBOUNDS_VEC(i, obj.entities))
             {
                 obj.entities[i].tile = 1;
                 obj.entities[i].colour = 100;
             }
             break;
+        }
         case 4003:
             state = 0;
             statedelay = 0;
@@ -3441,60 +3348,98 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 4012:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 5;
 
-            i = obj.getplayer();
-            j = obj.getteleporter();
-            if (j != -1)
+            int i = obj.getplayer();
+            int j = obj.getteleporter();
+            if (INBOUNDS_VEC(i, obj.entities))
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (INBOUNDS_VEC(j, obj.entities))
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[i].lerpoldxp = obj.entities[i].xp;
+                    obj.entities[i].lerpoldyp = obj.entities[i].yp;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
+        }
         case 4013:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
+        }
         case 4014:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
+        }
         case 4015:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
+        }
         case 4016:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
+        }
         case 4017:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
+        }
         case 4018:
+        {
             state++;
             statedelay = 15;
-            i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
+        }
         case 4019:
+        {
             if (intimetrial || nodeathmode || inintermission)
             {
             }
@@ -3502,16 +3447,20 @@ void Game::updatestate()
             {
                 savetele();
             }
-            i = obj.getteleporter();
+            int i = obj.getteleporter();
             activetele = true;
-            teleblock.x = obj.entities[i].xp - 32;
-            teleblock.y = obj.entities[i].yp - 32;
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                teleblock.x = obj.entities[i].xp - 32;
+                teleblock.y = obj.entities[i].yp - 32;
+            }
             teleblock.w = 160;
             teleblock.h = 160;
             hascontrol = true;
             advancetext = false;
             state = 0;
             break;
+        }
 
         case 4020:
             //Activating a teleporter (default appear)
@@ -3530,59 +3479,96 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 4022:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 5;
 
-            i = obj.getplayer();
-            j = obj.getteleporter();
-            if (j != -1)
+            int i = obj.getplayer();
+            int j = obj.getteleporter();
+            if (INBOUNDS_VEC(i, obj.entities))
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (INBOUNDS_VEC(j, obj.entities))
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[i].lerpoldxp = obj.entities[i].xp;
+                    obj.entities[i].lerpoldyp = obj.entities[i].yp;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
+        }
         case 4023:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 12;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 12;
+            }
             break;
+        }
         case 4024:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 12;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 12;
+            }
             break;
+        }
         case 4025:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
+        }
         case 4026:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
+        }
         case 4027:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 5;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 5;
+            }
             break;
+        }
         case 4028:
+        {
             state++;
             statedelay = 15;
-            i = obj.getplayer();
-            obj.entities[i].xp += 2;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 2;
+            }
             break;
+        }
         case 4029:
             hascontrol = true;
             advancetext = false;
@@ -3606,59 +3592,96 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 4032:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 5;
 
-            i = obj.getplayer();
-            j = obj.getteleporter();
-            if (j != -1)
+            int i = obj.getplayer();
+            int j = obj.getteleporter();
+            if (INBOUNDS_VEC(i, obj.entities))
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 0;
+                if (INBOUNDS_VEC(j, obj.entities))
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[i].lerpoldxp = obj.entities[i].xp;
+                    obj.entities[i].lerpoldyp = obj.entities[i].yp;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 0;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = -6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = -6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = -6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = -6;
+            }
             break;
+        }
         case 4033:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp -= 12;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp -= 12;
+            }
             break;
+        }
         case 4034:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp -= 12;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp -= 12;
+            }
             break;
+        }
         case 4035:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp -= 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp -= 10;
+            }
             break;
+        }
         case 4036:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp -= 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp -= 8;
+            }
             break;
+        }
         case 4037:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp -= 5;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp -= 5;
+            }
             break;
+        }
         case 4038:
+        {
             state++;
             statedelay = 15;
-            i = obj.getplayer();
-            obj.entities[i].xp -= 2;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp -= 2;
+            }
             break;
+        }
         case 4039:
             hascontrol = true;
             advancetext = false;
@@ -3682,64 +3705,101 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 4042:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 5;
 
-            i = obj.getplayer();
-            j = obj.getteleporter();
-            if (j != -1)
+            int i = obj.getplayer();
+            int j = obj.getteleporter();
+            if (INBOUNDS_VEC(i, obj.entities))
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (INBOUNDS_VEC(j, obj.entities))
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[i].lerpoldxp = obj.entities[i].xp;
+                    obj.entities[i].lerpoldyp = obj.entities[i].yp;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
+        }
         case 4043:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 12;
-            obj.entities[i].yp -= 15;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 12;
+                obj.entities[i].yp -= 15;
+            }
             break;
+        }
         case 4044:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 12;
-            obj.entities[i].yp -= 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 12;
+                obj.entities[i].yp -= 10;
+            }
             break;
+        }
         case 4045:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 12;
-            obj.entities[i].yp -= 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 12;
+                obj.entities[i].yp -= 10;
+            }
             break;
+        }
         case 4046:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 8;
-            obj.entities[i].yp -= 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 8;
+                obj.entities[i].yp -= 8;
+            }
             break;
+        }
         case 4047:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 6;
-            obj.entities[i].yp -= 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 6;
+                obj.entities[i].yp -= 8;
+            }
             break;
+        }
         case 4048:
+        {
             state++;
             statedelay = 15;
-            i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
+        }
         case 4049:
             hascontrol = true;
             advancetext = false;
@@ -3763,64 +3823,101 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 4052:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 5;
 
-            i = obj.getplayer();
-            j = obj.getteleporter();
-            if (j != -1)
+            int i = obj.getplayer();
+            int j = obj.getteleporter();
+            if (INBOUNDS_VEC(i, obj.entities))
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (INBOUNDS_VEC(j, obj.entities))
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[i].lerpoldxp = obj.entities[i].xp;
+                    obj.entities[i].lerpoldyp = obj.entities[i].yp;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
+        }
         case 4053:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 4;
-            obj.entities[i].yp -= 15;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 4;
+                obj.entities[i].yp -= 15;
+            }
             break;
+        }
         case 4054:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 4;
-            obj.entities[i].yp -= 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 4;
+                obj.entities[i].yp -= 10;
+            }
             break;
+        }
         case 4055:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 4;
-            obj.entities[i].yp -= 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 4;
+                obj.entities[i].yp -= 10;
+            }
             break;
+        }
         case 4056:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 4;
-            obj.entities[i].yp -= 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 4;
+                obj.entities[i].yp -= 8;
+            }
             break;
+        }
         case 4057:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 2;
-            obj.entities[i].yp -= 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 2;
+                obj.entities[i].yp -= 8;
+            }
             break;
+        }
         case 4058:
+        {
             state++;
             statedelay = 15;
-            i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
+        }
         case 4059:
             hascontrol = true;
             advancetext = false;
@@ -3844,61 +3941,98 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 4062:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 5;
 
-            i = obj.getplayer();
-            j = obj.getteleporter();
-            if (j != -1)
+            int i = obj.getplayer();
+            int j = obj.getteleporter();
+            if (INBOUNDS_VEC(i, obj.entities))
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 0;
+                if (INBOUNDS_VEC(j, obj.entities))
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[i].lerpoldxp = obj.entities[i].xp;
+                    obj.entities[i].lerpoldyp = obj.entities[i].yp;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 0;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = -6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = -6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = -6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = -6;
+            }
             break;
+        }
         case 4063:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp -= 28;
-            obj.entities[i].yp -= 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp -= 28;
+                obj.entities[i].yp -= 8;
+            }
             break;
+        }
         case 4064:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp -= 28;
-            obj.entities[i].yp -= 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp -= 28;
+                obj.entities[i].yp -= 8;
+            }
             break;
+        }
         case 4065:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp -= 25;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp -= 25;
+            }
             break;
+        }
         case 4066:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp -= 25;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp -= 25;
+            }
             break;
+        }
         case 4067:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp -= 20;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp -= 20;
+            }
             break;
+        }
         case 4068:
+        {
             state++;
             statedelay = 15;
-            i = obj.getplayer();
-            obj.entities[i].xp -= 16;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp -= 16;
+            }
             break;
+        }
         case 4069:
             hascontrol = true;
             advancetext = false;
@@ -3923,59 +4057,96 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 4072:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 5;
 
-            i = obj.getplayer();
-            j = obj.getteleporter();
-            if (j != -1)
+            int i = obj.getplayer();
+            int j = obj.getteleporter();
+            if (INBOUNDS_VEC(i, obj.entities))
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
-            obj.entities[i].colour = obj.crewcolour(lastsaved);
+                if (INBOUNDS_VEC(j, obj.entities))
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[i].lerpoldxp = obj.entities[i].xp;
+                    obj.entities[i].lerpoldyp = obj.entities[i].yp;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
+                obj.entities[i].colour = obj.crewcolour(lastsaved);
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
+        }
         case 4073:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
+        }
         case 4074:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
+        }
         case 4075:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
+        }
         case 4076:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
+        }
         case 4077:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
+        }
         case 4078:
+        {
             state++;
             statedelay = 15;
-            i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
+        }
         case 4079:
             state = 0;
             startscript = true;
@@ -3999,59 +4170,96 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 4082:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 5;
 
-            i = obj.getplayer();
-            j = obj.getteleporter();
-            if (j != -1)
+            int i = obj.getplayer();
+            int j = obj.getteleporter();
+            if (INBOUNDS_VEC(i, obj.entities))
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (INBOUNDS_VEC(j, obj.entities))
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[i].lerpoldxp = obj.entities[i].xp;
+                    obj.entities[i].lerpoldyp = obj.entities[i].yp;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
+        }
         case 4083:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
+        }
         case 4084:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
+        }
         case 4085:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
+        }
         case 4086:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
+        }
         case 4087:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
+        }
         case 4088:
+        {
             state++;
             statedelay = 15;
-            i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
+        }
         case 4089:
             startscript = true;
             newscript = "gamecomplete_ending";
@@ -4075,59 +4283,96 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 4092:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 5;
 
-            i = obj.getplayer();
-            j = obj.getteleporter();
-            if (j != -1)
+            int i = obj.getplayer();
+            int j = obj.getteleporter();
+            if (INBOUNDS_VEC(i, obj.entities))
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (INBOUNDS_VEC(j, obj.entities))
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[i].lerpoldxp = obj.entities[i].xp;
+                    obj.entities[i].lerpoldyp = obj.entities[i].yp;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
+        }
         case 4093:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
+        }
         case 4094:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
+        }
         case 4095:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
+        }
         case 4096:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
+        }
         case 4097:
+        {
             state++;
-            i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
+        }
         case 4098:
+        {
             state++;
             statedelay = 15;
-            i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            int i = obj.getplayer();
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
+        }
         case 4099:
             if (nocutscenes)
             {
@@ -4189,14 +4434,15 @@ void Game::deletestats()
     }
     else
     {
-        for (int i = 0; i < 25; i++)
+        for (int i = 0; i < numunlock; i++)
         {
             unlock[i] = false;
             unlocknotify[i] = false;
         }
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < numtrials; i++)
         {
             besttimes[i] = -1;
+            bestframes[i] = -1;
             besttrinkets[i] = -1;
             bestlives[i] = -1;
             bestrank[i] = -1;
@@ -4208,6 +4454,7 @@ void Game::deletestats()
 
 void Game::unlocknum( int t )
 {
+#if !defined(MAKEANDPLAY)
     if (map.custommode)
     {
         //Don't let custom levels unlock things!
@@ -4216,24 +4463,41 @@ void Game::unlocknum( int t )
 
     unlock[t] = true;
     savestats();
+#endif
 }
 
-void Game::loadstats()
+#define LOAD_ARRAY_RENAME(ARRAY_NAME, DEST) \
+    if (pKey == #ARRAY_NAME) \
+    { \
+        std::string TextString = pText; \
+        if (TextString.length()) \
+        { \
+            std::vector<std::string> values = split(TextString, ','); \
+            for (size_t i = 0; i < SDL_min(SDL_arraysize(DEST), values.size()); i++) \
+            { \
+                DEST[i] = help.Int(values[i].c_str()); \
+            } \
+        } \
+    }
+
+#define LOAD_ARRAY(ARRAY_NAME) LOAD_ARRAY_RENAME(ARRAY_NAME, ARRAY_NAME)
+
+void Game::loadstats(int *width, int *height, bool *vsync)
 {
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/unlock.vvv", &doc))
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document("saves/unlock.vvv", doc))
     {
         savestats();
         printf("No Stats found. Assuming a new player\n");
     }
 
-    TiXmlHandle hDoc(&doc);
-    TiXmlElement* pElem;
-    TiXmlHandle hRoot(0);
+    tinyxml2::XMLHandle hDoc(&doc);
+    tinyxml2::XMLElement* pElem;
+    tinyxml2::XMLHandle hRoot(NULL);
 
 
     {
-        pElem=hDoc.FirstChildElement().Element();
+        pElem=hDoc.FirstChildElement().ToElement();
         // should always have a valid root but handle gracefully if it does
         if (!pElem)
         {
@@ -4242,164 +4506,90 @@ void Game::loadstats()
         ;
 
         // save this for later
-        hRoot=TiXmlHandle(pElem);
+        hRoot=tinyxml2::XMLHandle(pElem);
     }
 
-    // WINDOW DIMS, ADDED AT PATCH 22
-    int width = 320;
-    int height = 240;
-
-    for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+    for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
     {
         std::string pKey(pElem->Value());
         const char* pText = pElem->GetText() ;
 
-        if (pKey == "unlock")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                unlock.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    unlock.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(unlock)
 
-        if (pKey == "unlocknotify")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                unlocknotify.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    unlocknotify.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(unlocknotify)
 
-        if (pKey == "besttimes")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                besttimes.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    besttimes.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(besttimes)
 
-        if (pKey == "besttrinkets")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                besttrinkets.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    besttrinkets.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(bestframes)
+
+        LOAD_ARRAY(besttrinkets)
 
 
-        if (pKey == "bestlives")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                bestlives.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    bestlives.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(bestlives)
 
 
-        if (pKey == "bestrank")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                bestrank.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    bestrank.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(bestrank)
 
 
 
         if (pKey == "bestgamedeaths")
         {
-            bestgamedeaths = atoi(pText);
+            bestgamedeaths = help.Int(pText);
         }
 
         if (pKey == "stat_trinkets")
         {
-            stat_trinkets = atoi(pText);
+            stat_trinkets = help.Int(pText);
         }
 
         if (pKey == "fullscreen")
         {
-            fullscreen = atoi(pText);
+            fullscreen = help.Int(pText);
         }
 
         if (pKey == "stretch")
         {
-            stretchMode = atoi(pText);
+            stretchMode = help.Int(pText);
         }
 
         if (pKey == "useLinearFilter")
         {
-            useLinearFilter = atoi(pText);
+            useLinearFilter = help.Int(pText);
         }
 
         if (pKey == "window_width")
         {
-            width = atoi(pText);
+            *width = help.Int(pText);
         }
         if (pKey == "window_height")
         {
-            height = atoi(pText);
+            *height = help.Int(pText);
         }
 
 
         if (pKey == "noflashingmode")
         {
-            noflashingmode = atoi(pText);
+            noflashingmode = help.Int(pText);
         }
 
         if (pKey == "colourblindmode")
         {
-            colourblindmode = atoi(pText);
+            colourblindmode = help.Int(pText);
         }
 
         if (pKey == "setflipmode")
         {
-            graphics.setflipmode = atoi(pText);
+            graphics.setflipmode = help.Int(pText);
         }
 
         if (pKey == "invincibility")
         {
-            map.invincibility = atoi(pText);
+            map.invincibility = help.Int(pText);
         }
 
         if (pKey == "slowdown")
         {
-            slowdown = atoi(pText);
+            slowdown = help.Int(pText);
             switch(slowdown)
             {
             case 30:
@@ -4423,52 +4613,71 @@ void Game::loadstats()
 
         if (pKey == "swnbestrank")
         {
-            swnbestrank = atoi(pText);
+            swnbestrank = help.Int(pText);
         }
 
         if (pKey == "swnrecord")
         {
-            swnrecord = atoi(pText);
-        }
-
-        if (pKey == "advanced_mode")
-        {
-            advanced_mode = atoi(pText);
+            swnrecord = help.Int(pText);
         }
 
         if (pKey == "advanced_smoothing")
         {
-            fullScreenEffect_badSignal = atoi(pText);
-            graphics.screenbuffer->badSignalEffect = fullScreenEffect_badSignal;
+            fullScreenEffect_badSignal = help.Int(pText);
         }
 
         if (pKey == "usingmmmmmm")
         {
-            if(atoi(pText)>0){
+            if(help.Int(pText)>0){
                 usingmmmmmm = 1;
             }else{
                 usingmmmmmm = 0;
             }
         }
 
+        if (pKey == "ghostsenabled")
+        {
+            ghostsenabled = help.Int(pText);
+        }
+
         if (pKey == "skipfakeload")
         {
-            skipfakeload = atoi(pText);
+            skipfakeload = help.Int(pText);
+        }
+
+        if (pKey == "disablepause")
+        {
+            disablepause = help.Int(pText);
+        }
+
+        if (pKey == "over30mode")
+        {
+            over30mode = help.Int(pText);
+        }
+
+        if (pKey == "glitchrunnermode")
+        {
+            glitchrunnermode = help.Int(pText);
+        }
+
+        if (pKey == "vsync")
+        {
+            *vsync = help.Int(pText);
         }
 
         if (pKey == "notextoutline")
         {
-            graphics.notextoutline = atoi(pText);
+            graphics.notextoutline = help.Int(pText);
         }
 
         if (pKey == "translucentroomname")
         {
-            graphics.translucentroomname = atoi(pText);
+            graphics.translucentroomname = help.Int(pText);
         }
 
         if (pKey == "showmousecursor")
         {
-            graphics.showmousecursor = atoi(pText);
+            graphics.showmousecursor = help.Int(pText);
         }
 
         if (pKey == "flipButton")
@@ -4498,26 +4707,21 @@ void Game::loadstats()
             }
         }
 
+        if (pKey == "restartButton")
+        {
+            SDL_GameControllerButton newButton;
+            if (GetButtonFromString(pText, &newButton))
+            {
+                controllerButton_restart.push_back(newButton);
+            }
+        }
+
         if (pKey == "controllerSensitivity")
         {
-            controllerSensitivity = atoi(pText);
+            controllerSensitivity = help.Int(pText);
         }
 
     }
-
-    if(fullscreen)
-    {
-        graphics.screenbuffer->toggleFullScreen();
-    }
-    for (int i = 0; i < stretchMode; i += 1)
-    {
-        graphics.screenbuffer->toggleStretchMode();
-    }
-    if (useLinearFilter)
-    {
-        graphics.screenbuffer->toggleLinearFilter();
-    }
-    graphics.screenbuffer->ResizeScreen(width, height);
 
     if (graphics.showmousecursor == true)
     {
@@ -4539,189 +4743,240 @@ void Game::loadstats()
     {
         controllerButton_esc.push_back(SDL_CONTROLLER_BUTTON_B);
     }
+    if (controllerButton_restart.size() < 1)
+    {
+        controllerButton_restart.push_back(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
+    }
 }
 
 void Game::savestats()
 {
-    TiXmlDocument doc;
-    TiXmlElement* msg;
-    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement * msg;
+    tinyxml2::XMLDeclaration * decl = doc.NewDeclaration();
     doc.LinkEndChild( decl );
 
-    TiXmlElement * root = new TiXmlElement( "Save" );
+    tinyxml2::XMLElement * root = doc.NewElement( "Save" );
     doc.LinkEndChild( root );
 
-    TiXmlComment * comment = new TiXmlComment();
-    comment->SetValue(" Save file " );
+    tinyxml2::XMLComment * comment = doc.NewComment(" Save file " );
     root->LinkEndChild( comment );
 
-    TiXmlElement * dataNode = new TiXmlElement( "Data" );
+    tinyxml2::XMLElement * dataNode = doc.NewElement( "Data" );
     root->LinkEndChild( dataNode );
 
     std::string s_unlock;
-    for(size_t i = 0; i < unlock.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(unlock); i++ )
     {
         s_unlock += help.String(unlock[i]) + ",";
     }
-    msg = new TiXmlElement( "unlock" );
-    msg->LinkEndChild( new TiXmlText( s_unlock.c_str() ));
+    msg = doc.NewElement( "unlock" );
+    msg->LinkEndChild( doc.NewText( s_unlock.c_str() ));
     dataNode->LinkEndChild( msg );
 
     std::string s_unlocknotify;
-    for(size_t i = 0; i < unlocknotify.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(unlocknotify); i++ )
     {
         s_unlocknotify += help.String(unlocknotify[i]) + ",";
     }
-    msg = new TiXmlElement( "unlocknotify" );
-    msg->LinkEndChild( new TiXmlText( s_unlocknotify.c_str() ));
+    msg = doc.NewElement( "unlocknotify" );
+    msg->LinkEndChild( doc.NewText( s_unlocknotify.c_str() ));
     dataNode->LinkEndChild( msg );
 
     std::string s_besttimes;
-    for(size_t i = 0; i < besttrinkets.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(besttimes); i++ )
     {
         s_besttimes += help.String(besttimes[i]) + ",";
     }
-    msg = new TiXmlElement( "besttimes" );
-    msg->LinkEndChild( new TiXmlText( s_besttimes.c_str() ));
+    msg = doc.NewElement( "besttimes" );
+    msg->LinkEndChild( doc.NewText( s_besttimes.c_str() ));
+    dataNode->LinkEndChild( msg );
+
+    std::string s_bestframes;
+    for (size_t i = 0; i < SDL_arraysize(bestframes); i++)
+    {
+        s_bestframes += help.String(bestframes[i]) + ",";
+    }
+    msg = doc.NewElement( "bestframes" );
+    msg->LinkEndChild( doc.NewText( s_bestframes.c_str() ) );
     dataNode->LinkEndChild( msg );
 
     std::string s_besttrinkets;
-    for(size_t i = 0; i < besttrinkets.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(besttrinkets); i++ )
     {
         s_besttrinkets += help.String(besttrinkets[i]) + ",";
     }
-    msg = new TiXmlElement( "besttrinkets" );
-    msg->LinkEndChild( new TiXmlText( s_besttrinkets.c_str() ));
+    msg = doc.NewElement( "besttrinkets" );
+    msg->LinkEndChild( doc.NewText( s_besttrinkets.c_str() ));
     dataNode->LinkEndChild( msg );
 
     std::string s_bestlives;
-    for(size_t i = 0; i < bestlives.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(bestlives); i++ )
     {
         s_bestlives += help.String(bestlives[i]) + ",";
     }
-    msg = new TiXmlElement( "bestlives" );
-    msg->LinkEndChild( new TiXmlText( s_bestlives.c_str() ));
+    msg = doc.NewElement( "bestlives" );
+    msg->LinkEndChild( doc.NewText( s_bestlives.c_str() ));
     dataNode->LinkEndChild( msg );
 
     std::string s_bestrank;
-    for(size_t i = 0; i < bestrank.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(bestrank); i++ )
     {
         s_bestrank += help.String(bestrank[i]) + ",";
     }
-    msg = new TiXmlElement( "bestrank" );
-    msg->LinkEndChild( new TiXmlText( s_bestrank.c_str() ));
+    msg = doc.NewElement( "bestrank" );
+    msg->LinkEndChild( doc.NewText( s_bestrank.c_str() ));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "bestgamedeaths" );
-    msg->LinkEndChild( new TiXmlText( help.String(bestgamedeaths).c_str() ));
+    msg = doc.NewElement( "bestgamedeaths" );
+    msg->LinkEndChild( doc.NewText( help.String(bestgamedeaths).c_str() ));
     dataNode->LinkEndChild( msg );
-    msg = new TiXmlElement( "stat_trinkets" );
-    msg->LinkEndChild( new TiXmlText( help.String(stat_trinkets).c_str()));
-    dataNode->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "fullscreen" );
-    msg->LinkEndChild( new TiXmlText( help.String(fullscreen).c_str()));
+    msg = doc.NewElement( "stat_trinkets" );
+    msg->LinkEndChild( doc.NewText( help.String(stat_trinkets).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "stretch" );
-    msg->LinkEndChild( new TiXmlText( help.String(stretchMode).c_str()));
+    msg = doc.NewElement( "fullscreen" );
+    msg->LinkEndChild( doc.NewText( help.String(fullscreen).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "useLinearFilter" );
-    msg->LinkEndChild( new TiXmlText( help.String(useLinearFilter).c_str()));
+    msg = doc.NewElement( "stretch" );
+    msg->LinkEndChild( doc.NewText( help.String(stretchMode).c_str()));
+    dataNode->LinkEndChild( msg );
+
+    msg = doc.NewElement( "useLinearFilter" );
+    msg->LinkEndChild( doc.NewText( help.String(useLinearFilter).c_str()));
     dataNode->LinkEndChild( msg );
 
     int width, height;
-    graphics.screenbuffer->GetWindowSize(&width, &height);
-    msg = new TiXmlElement( "window_width" );
-    msg->LinkEndChild( new TiXmlText( help.String(width).c_str()));
+    if (graphics.screenbuffer != NULL)
+    {
+        graphics.screenbuffer->GetWindowSize(&width, &height);
+    }
+    else
+    {
+        width = 320;
+        height = 240;
+    }
+    msg = doc.NewElement( "window_width" );
+    msg->LinkEndChild( doc.NewText( help.String(width).c_str()));
     dataNode->LinkEndChild( msg );
-    msg = new TiXmlElement( "window_height" );
-    msg->LinkEndChild( new TiXmlText( help.String(height).c_str()));
-    dataNode->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "noflashingmode" );
-    msg->LinkEndChild( new TiXmlText( help.String(noflashingmode).c_str()));
-    dataNode->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "colourblindmode" );
-    msg->LinkEndChild( new TiXmlText( help.String(colourblindmode).c_str()));
-    dataNode->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "setflipmode" );
-    msg->LinkEndChild( new TiXmlText( help.String(graphics.setflipmode).c_str()));
+    msg = doc.NewElement( "window_height" );
+    msg->LinkEndChild( doc.NewText( help.String(height).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "invincibility" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.invincibility).c_str()));
+    msg = doc.NewElement( "noflashingmode" );
+    msg->LinkEndChild( doc.NewText( help.String(noflashingmode).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "slowdown" );
-    msg->LinkEndChild( new TiXmlText( help.String(slowdown).c_str()));
+    msg = doc.NewElement( "colourblindmode" );
+    msg->LinkEndChild( doc.NewText( help.String(colourblindmode).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "swnbestrank" );
-    msg->LinkEndChild( new TiXmlText( help.String(swnbestrank).c_str()));
+    msg = doc.NewElement( "setflipmode" );
+    msg->LinkEndChild( doc.NewText( help.String(graphics.setflipmode).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "swnrecord" );
-    msg->LinkEndChild( new TiXmlText( help.String(swnrecord).c_str()));
+    msg = doc.NewElement( "invincibility" );
+    msg->LinkEndChild( doc.NewText( help.String(map.invincibility).c_str()));
+    dataNode->LinkEndChild( msg );
+
+    msg = doc.NewElement( "slowdown" );
+    msg->LinkEndChild( doc.NewText( help.String(slowdown).c_str()));
+    dataNode->LinkEndChild( msg );
+
+    msg = doc.NewElement( "swnbestrank" );
+    msg->LinkEndChild( doc.NewText( help.String(swnbestrank).c_str()));
+    dataNode->LinkEndChild( msg );
+
+    msg = doc.NewElement( "swnrecord" );
+    msg->LinkEndChild( doc.NewText( help.String(swnrecord).c_str()));
     dataNode->LinkEndChild( msg );
 
 
-    msg = new TiXmlElement( "advanced_mode" );
-    msg->LinkEndChild( new TiXmlText( help.String(advanced_mode).c_str()));
-    dataNode->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "advanced_smoothing" );
-    msg->LinkEndChild( new TiXmlText( help.String(fullScreenEffect_badSignal).c_str()));
+    msg = doc.NewElement( "advanced_smoothing" );
+    msg->LinkEndChild( doc.NewText( help.String(fullScreenEffect_badSignal).c_str()));
     dataNode->LinkEndChild( msg );
 
 
-    msg = new TiXmlElement( "usingmmmmmm" );
-    msg->LinkEndChild( new TiXmlText( help.String(usingmmmmmm).c_str()));
+    msg = doc.NewElement( "usingmmmmmm" );
+    msg->LinkEndChild( doc.NewText( help.String(usingmmmmmm).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement("skipfakeload");
-    msg->LinkEndChild(new TiXmlText(help.String((int) skipfakeload).c_str()));
+    msg = doc.NewElement("ghostsenabled");
+    msg->LinkEndChild(doc.NewText(help.String((int) ghostsenabled).c_str()));
     dataNode->LinkEndChild(msg);
 
-    msg = new TiXmlElement("notextoutline");
-    msg->LinkEndChild(new TiXmlText(help.String((int) graphics.notextoutline).c_str()));
+    msg = doc.NewElement("skipfakeload");
+    msg->LinkEndChild(doc.NewText(help.String((int) skipfakeload).c_str()));
     dataNode->LinkEndChild(msg);
 
-    msg = new TiXmlElement("translucentroomname");
-    msg->LinkEndChild(new TiXmlText(help.String((int) graphics.translucentroomname).c_str()));
+    msg = doc.NewElement("disablepause");
+    msg->LinkEndChild(doc.NewText(help.String((int) disablepause).c_str()));
     dataNode->LinkEndChild(msg);
 
-    msg = new TiXmlElement("showmousecursor");
-    msg->LinkEndChild(new TiXmlText(help.String((int)graphics.showmousecursor).c_str()));
+    msg = doc.NewElement("notextoutline");
+    msg->LinkEndChild(doc.NewText(help.String((int) graphics.notextoutline).c_str()));
+    dataNode->LinkEndChild(msg);
+
+    msg = doc.NewElement("translucentroomname");
+    msg->LinkEndChild(doc.NewText(help.String((int) graphics.translucentroomname).c_str()));
+    dataNode->LinkEndChild(msg);
+
+    msg = doc.NewElement("showmousecursor");
+    msg->LinkEndChild(doc.NewText(help.String((int)graphics.showmousecursor).c_str()));
+    dataNode->LinkEndChild(msg);
+
+    msg = doc.NewElement("over30mode");
+    msg->LinkEndChild(doc.NewText(help.String((int) over30mode).c_str()));
+    dataNode->LinkEndChild(msg);
+
+    msg = doc.NewElement("glitchrunnermode");
+    msg->LinkEndChild(doc.NewText(help.String((int) glitchrunnermode).c_str()));
+    dataNode->LinkEndChild(msg);
+
+    int vsyncOption;
+    msg = doc.NewElement("vsync");
+    if (graphics.screenbuffer != NULL)
+    {
+        vsyncOption = (int) graphics.screenbuffer->vsync;
+    }
+    else
+    {
+        vsyncOption = 0;
+    }
+    msg->LinkEndChild(doc.NewText(help.String(vsyncOption).c_str()));
     dataNode->LinkEndChild(msg);
 
     for (size_t i = 0; i < controllerButton_flip.size(); i += 1)
     {
-        msg = new TiXmlElement("flipButton");
-        msg->LinkEndChild(new TiXmlText(help.String((int) controllerButton_flip[i]).c_str()));
+        msg = doc.NewElement("flipButton");
+        msg->LinkEndChild(doc.NewText(help.String((int) controllerButton_flip[i]).c_str()));
         dataNode->LinkEndChild(msg);
     }
     for (size_t i = 0; i < controllerButton_map.size(); i += 1)
     {
-        msg = new TiXmlElement("enterButton");
-        msg->LinkEndChild(new TiXmlText(help.String((int) controllerButton_map[i]).c_str()));
+        msg = doc.NewElement("enterButton");
+        msg->LinkEndChild(doc.NewText(help.String((int) controllerButton_map[i]).c_str()));
         dataNode->LinkEndChild(msg);
     }
     for (size_t i = 0; i < controllerButton_esc.size(); i += 1)
     {
-        msg = new TiXmlElement("escButton");
-        msg->LinkEndChild(new TiXmlText(help.String((int) controllerButton_esc[i]).c_str()));
+        msg = doc.NewElement("escButton");
+        msg->LinkEndChild(doc.NewText(help.String((int) controllerButton_esc[i]).c_str()));
+        dataNode->LinkEndChild(msg);
+    }
+    for (size_t i = 0; i < controllerButton_restart.size(); i += 1)
+    {
+        msg = doc.NewElement("restartButton");
+        msg->LinkEndChild(doc.NewText(help.String((int) controllerButton_restart[i]).c_str()));
         dataNode->LinkEndChild(msg);
     }
 
-    msg = new TiXmlElement( "controllerSensitivity" );
-    msg->LinkEndChild( new TiXmlText( help.String(controllerSensitivity).c_str()));
+    msg = doc.NewElement( "controllerSensitivity" );
+    msg->LinkEndChild( doc.NewText( help.String(controllerSensitivity).c_str()));
     dataNode->LinkEndChild( msg );
 
-    FILESYSTEM_saveTiXmlDocument("saves/unlock.vvv", &doc);
+    FILESYSTEM_saveTiXml2Document("saves/unlock.vvv", doc);
 }
 
 void Game::customstart()
@@ -4784,9 +5039,12 @@ void Game::deathsequence()
     {
         i = obj.getplayer();
     }
-    obj.entities[i].colour = 1;
+    if (INBOUNDS_VEC(i, obj.entities))
+    {
+        obj.entities[i].colour = 1;
 
-    obj.entities[i].invis = false;
+        obj.entities[i].invis = false;
+    }
     if (deathseq == 30)
     {
         if (nodeathmode)
@@ -4796,27 +5054,39 @@ void Game::deathsequence()
         }
         deathcounts++;
         music.playef(2);
-        obj.entities[i].invis = true;
+        if (INBOUNDS_VEC(i, obj.entities))
+        {
+            obj.entities[i].invis = true;
+        }
         if (map.finalmode)
         {
-            map.roomdeathsfinal[roomx - 41 + (20 * (roomy - 48))]++;
-            currentroomdeaths = map.roomdeathsfinal[roomx - 41 + (20 * (roomy - 48))];
+            if (roomx - 41 >= 0 && roomx - 41 < 20 && roomy - 48 >= 0 && roomy - 48 < 20)
+            {
+                map.roomdeathsfinal[roomx - 41 + (20 * (roomy - 48))]++;
+                currentroomdeaths = map.roomdeathsfinal[roomx - 41 + (20 * (roomy - 48))];
+            }
         }
         else
         {
-            map.roomdeaths[roomx - 100 + (20*(roomy - 100))]++;
-            currentroomdeaths = map.roomdeaths[roomx - 100 + (20 * (roomy - 100))];
+            if (roomx - 100 >= 0 && roomx - 100 < 20 && roomy - 100 >= 0 && roomy - 100 < 20)
+            {
+                map.roomdeaths[roomx - 100 + (20*(roomy - 100))]++;
+                currentroomdeaths = map.roomdeaths[roomx - 100 + (20 * (roomy - 100))];
+            }
         }
     }
-    if (deathseq == 25) obj.entities[i].invis = true;
-    if (deathseq == 20) obj.entities[i].invis = true;
-    if (deathseq == 16) obj.entities[i].invis = true;
-    if (deathseq == 14) obj.entities[i].invis = true;
-    if (deathseq == 12) obj.entities[i].invis = true;
-    if (deathseq < 10) obj.entities[i].invis = true;
+    if (INBOUNDS_VEC(i, obj.entities))
+    {
+        if (deathseq == 25) obj.entities[i].invis = true;
+        if (deathseq == 20) obj.entities[i].invis = true;
+        if (deathseq == 16) obj.entities[i].invis = true;
+        if (deathseq == 14) obj.entities[i].invis = true;
+        if (deathseq == 12) obj.entities[i].invis = true;
+        if (deathseq < 10) obj.entities[i].invis = true;
+    }
     if (!nodeathmode)
     {
-        if (deathseq <= 1) obj.entities[i].invis = false;
+        if (INBOUNDS_VEC(i, obj.entities) && deathseq <= 1) obj.entities[i].invis = false;
     }
     else
     {
@@ -4937,16 +5207,21 @@ void Game::starttrial( int t )
 
 void Game::loadquick()
 {
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/qsave.vvv", &doc)) return;
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document("saves/qsave.vvv", doc)) return;
 
-    TiXmlHandle hDoc(&doc);
-    TiXmlElement* pElem;
-    TiXmlHandle hRoot(0);
+    readmaingamesave(doc);
+}
+
+void Game::readmaingamesave(tinyxml2::XMLDocument& doc)
+{
+    tinyxml2::XMLHandle hDoc(&doc);
+    tinyxml2::XMLElement* pElem;
+    tinyxml2::XMLHandle hRoot(NULL);
 
 
     {
-        pElem=hDoc.FirstChildElement().Element();
+        pElem=hDoc.FirstChildElement().ToElement();
         // should always have a valid root but handle gracefully if it does
         if (!pElem)
         {
@@ -4954,10 +5229,10 @@ void Game::loadquick()
         }
 
         // save this for later
-        hRoot=TiXmlHandle(pElem);
+        hRoot=tinyxml2::XMLHandle(pElem);
     }
 
-    for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+    for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
     {
         std::string pKey(pElem->Value());
         const char* pText = pElem->GetText() ;
@@ -4966,114 +5241,66 @@ void Game::loadquick()
             pText = "";
         }
 
-        if (pKey == "worldmap")
-        {
-            std::string TextString = (pText);
-            if(TextString.length()>1)
-            {
-                std::vector<std::string> values = split(TextString,',');
-                map.explored.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    map.explored.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(worldmap, map.explored)
 
-        if (pKey == "flags")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.flags.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.flags.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(flags, obj.flags)
 
-        if (pKey == "crewstats")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                crewstats.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    crewstats.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(crewstats)
 
-        if (pKey == "collect")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.collect.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.collect.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(collect, obj.collect)
 
         if (pKey == "finalmode")
         {
-            map.finalmode = atoi(pText);
+            map.finalmode = help.Int(pText);
         }
         if (pKey == "finalstretch")
         {
-            map.finalstretch = atoi(pText);
+            map.finalstretch = help.Int(pText);
         }
 
         if (pKey == "finalx")
         {
-            map.finalx = atoi(pText);
+            map.finalx = help.Int(pText);
         }
         else if (pKey == "finaly")
         {
-            map.finaly = atoi(pText);
+            map.finaly = help.Int(pText);
         }
         else if (pKey == "savex")
         {
-            savex = atoi(pText);
+            savex = help.Int(pText);
         }
         else if (pKey == "savey")
         {
-            savey = atoi(pText);
+            savey = help.Int(pText);
         }
         else if (pKey == "saverx")
         {
-            saverx = atoi(pText);
+            saverx = help.Int(pText);
         }
         else if (pKey == "savery")
         {
-            savery = atoi(pText);
+            savery = help.Int(pText);
         }
         else if (pKey == "savegc")
         {
-            savegc = atoi(pText);
+            savegc = help.Int(pText);
         }
         else if (pKey == "savedir")
         {
-            savedir= atoi(pText);
+            savedir= help.Int(pText);
         }
         else if (pKey == "savepoint")
         {
-            savepoint = atoi(pText);
+            savepoint = help.Int(pText);
         }
         else if (pKey == "companion")
         {
-            companion = atoi(pText);
+            companion = help.Int(pText);
         }
         else if (pKey == "lastsaved")
         {
-            lastsaved = atoi(pText);
+            lastsaved = help.Int(pText);
         }
         else if (pKey == "teleportscript")
         {
@@ -5081,52 +5308,56 @@ void Game::loadquick()
         }
         else if (pKey == "supercrewmate")
         {
-            supercrewmate = atoi(pText);
+            supercrewmate = help.Int(pText);
         }
         else if (pKey == "scmprogress")
         {
-            scmprogress = atoi(pText);
+            scmprogress = help.Int(pText);
         }
         else if (pKey == "scmmoveme")
         {
-            scmmoveme = atoi(pText);
+            scmmoveme = help.Int(pText);
         }
         else if (pKey == "frames")
         {
-            frames = atoi(pText);
+            frames = help.Int(pText);
             frames = 0;
         }
         else if (pKey == "seconds")
         {
-            seconds = atoi(pText);
+            seconds = help.Int(pText);
         }
         else if (pKey == "minutes")
         {
-            minutes = atoi(pText);
+            minutes = help.Int(pText);
         }
         else if (pKey == "hours")
         {
-            hours = atoi(pText);
+            hours = help.Int(pText);
         }
         else if (pKey == "deathcounts")
         {
-            deathcounts = atoi(pText);
+            deathcounts = help.Int(pText);
         }
         else if (pKey == "totalflips")
         {
-            totalflips = atoi(pText);
+            totalflips = help.Int(pText);
         }
         else if (pKey == "hardestroom")
         {
-            hardestroom = atoi(pText);
+            hardestroom = pText;
         }
         else if (pKey == "hardestroomdeaths")
         {
-            hardestroomdeaths = atoi(pText);
+            hardestroomdeaths = help.Int(pText);
         }
         else if (pKey == "currentsong")
         {
-            music.play(atoi(pText));
+            int song = help.Int(pText);
+            if (song != -1)
+            {
+                music.play(song);
+            }
         }
 
     }
@@ -5160,20 +5391,21 @@ void Game::customloadquick(std::string savfile)
         saverx = playrx;
         savery = playry;
         savegc = playgc;
+        music.play(playmusic);
         return;
     }
 
     std::string levelfile = savfile.substr(7);
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument(("saves/"+levelfile+".vvv").c_str(), &doc)) return;
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document(("saves/"+levelfile+".vvv").c_str(), doc)) return;
 
-    TiXmlHandle hDoc(&doc);
-    TiXmlElement* pElem;
-    TiXmlHandle hRoot(0);
+    tinyxml2::XMLHandle hDoc(&doc);
+    tinyxml2::XMLElement* pElem;
+    tinyxml2::XMLHandle hRoot(NULL);
 
 
     {
-        pElem=hDoc.FirstChildElement().Element();
+        pElem=hDoc.FirstChildElement().ToElement();
         // should always have a valid root but handle gracefully if it does
         if (!pElem)
         {
@@ -5181,10 +5413,10 @@ void Game::customloadquick(std::string savfile)
         }
 
         // save this for later
-        hRoot=TiXmlHandle(pElem);
+        hRoot=tinyxml2::XMLHandle(pElem);
     }
 
-    for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+    for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
     {
         std::string pKey(pElem->Value());
         const char* pText = pElem->GetText() ;
@@ -5193,96 +5425,25 @@ void Game::customloadquick(std::string savfile)
             pText = "";
         }
 
-        if (pKey == "worldmap")
-        {
-            std::string TextString = (pText);
-            if(TextString.length()>1)
-            {
-                std::vector<std::string> values = split(TextString,',');
-                map.explored.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    map.explored.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(worldmap, map.explored)
 
-        if (pKey == "flags")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.flags.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.flags.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(flags, obj.flags)
 
-        if (pKey == "moods")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                for(size_t i = 0; i < 6; i++)
-                {
-                    obj.customcrewmoods[i]=atoi(values[i].c_str());
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(moods, obj.customcrewmoods)
 
-        if (pKey == "crewstats")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                crewstats.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    crewstats.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY(crewstats)
 
-        if (pKey == "collect")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.collect.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.collect.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(collect, obj.collect)
 
-        if (pKey == "customcollect")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.customcollect.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.customcollect.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(customcollect, obj.customcollect)
 
         if (pKey == "finalmode")
         {
-            map.finalmode = atoi(pText);
+            map.finalmode = help.Int(pText);
         }
         if (pKey == "finalstretch")
         {
-            map.finalstretch = atoi(pText);
+            map.finalstretch = help.Int(pText);
         }
 
         if (map.finalmode)
@@ -5302,47 +5463,47 @@ void Game::customloadquick(std::string savfile)
 
         if (pKey == "finalx")
         {
-            map.finalx = atoi(pText);
+            map.finalx = help.Int(pText);
         }
         else if (pKey == "finaly")
         {
-            map.finaly = atoi(pText);
+            map.finaly = help.Int(pText);
         }
         else if (pKey == "savex")
         {
-            savex = atoi(pText);
+            savex = help.Int(pText);
         }
         else if (pKey == "savey")
         {
-            savey = atoi(pText);
+            savey = help.Int(pText);
         }
         else if (pKey == "saverx")
         {
-            saverx = atoi(pText);
+            saverx = help.Int(pText);
         }
         else if (pKey == "savery")
         {
-            savery = atoi(pText);
+            savery = help.Int(pText);
         }
         else if (pKey == "savegc")
         {
-            savegc = atoi(pText);
+            savegc = help.Int(pText);
         }
         else if (pKey == "savedir")
         {
-            savedir= atoi(pText);
+            savedir= help.Int(pText);
         }
         else if (pKey == "savepoint")
         {
-            savepoint = atoi(pText);
+            savepoint = help.Int(pText);
         }
         else if (pKey == "companion")
         {
-            companion = atoi(pText);
+            companion = help.Int(pText);
         }
         else if (pKey == "lastsaved")
         {
-            lastsaved = atoi(pText);
+            lastsaved = help.Int(pText);
         }
         else if (pKey == "teleportscript")
         {
@@ -5350,82 +5511,85 @@ void Game::customloadquick(std::string savfile)
         }
         else if (pKey == "supercrewmate")
         {
-            supercrewmate = atoi(pText);
+            supercrewmate = help.Int(pText);
         }
         else if (pKey == "scmprogress")
         {
-            scmprogress = atoi(pText);
+            scmprogress = help.Int(pText);
         }
         else if (pKey == "scmmoveme")
         {
-            scmmoveme = atoi(pText);
+            scmmoveme = help.Int(pText);
         }
         else if (pKey == "frames")
         {
-            frames = atoi(pText);
+            frames = help.Int(pText);
             frames = 0;
         }
         else if (pKey == "seconds")
         {
-            seconds = atoi(pText);
+            seconds = help.Int(pText);
         }
         else if (pKey == "minutes")
         {
-            minutes = atoi(pText);
+            minutes = help.Int(pText);
         }
         else if (pKey == "hours")
         {
-            hours = atoi(pText);
+            hours = help.Int(pText);
         }
         else if (pKey == "deathcounts")
         {
-            deathcounts = atoi(pText);
+            deathcounts = help.Int(pText);
         }
         else if (pKey == "totalflips")
         {
-            totalflips = atoi(pText);
+            totalflips = help.Int(pText);
         }
         else if (pKey == "hardestroom")
         {
-            hardestroom = atoi(pText);
+            hardestroom = pText;
         }
         else if (pKey == "hardestroomdeaths")
         {
-            hardestroomdeaths = atoi(pText);
+            hardestroomdeaths = help.Int(pText);
         }
         else if (pKey == "currentsong")
         {
-            music.play(atoi(pText));
+            int song = help.Int(pText);
+            if (song != -1)
+            {
+                music.play(song);
+            }
         }
         else if (pKey == "showminimap")
         {
-            map.customshowmm = atoi(pText);
+            map.customshowmm = help.Int(pText);
         }
 
     }
 
     map.showteleporters = true;
     if(obj.flags[12]) map.showtargets = true;
-    if (obj.flags[42]) map.showtrinkets = true;
 
 }
 
 void Game::loadsummary()
 {
-    TiXmlDocument docTele;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/tsave.vvv", &docTele))
+    tinyxml2::XMLDocument docTele;
+    if (!FILESYSTEM_loadTiXml2Document("saves/tsave.vvv", docTele))
     {
         telesummary = "";
     }
     else
     {
-        TiXmlHandle hDoc(&docTele);
-        TiXmlElement* pElem;
-        TiXmlHandle hRoot(0);
+        tinyxml2::XMLHandle hDoc(&docTele);
+        tinyxml2::XMLElement* pElem;
+        tinyxml2::XMLHandle hRoot(NULL);
 
 
         {
-            pElem=hDoc.FirstChildElement().Element();
+            pElem=hDoc.FirstChildElement().ToElement();
             // should always have a valid root but handle gracefully if it does
             if (!pElem)
             {
@@ -5433,13 +5597,13 @@ void Game::loadsummary()
             }
 
             // save this for later
-            hRoot=TiXmlHandle(pElem);
+            hRoot=tinyxml2::XMLHandle(pElem);
         }
         int l_minute, l_second, l_hours;
         l_minute = l_second= l_hours = 0;
         int l_saveX = 0;
         int l_saveY = 0;
-        for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+        for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
         {
             std::string pKey(pElem->Value());
             const char* pText = pElem->GetText() ;
@@ -5451,70 +5615,58 @@ void Game::loadsummary()
 
             else if (pKey == "seconds")
             {
-                l_second = atoi(pText);
+                l_second = help.Int(pText);
             }
             else if (pKey == "minutes")
             {
-                l_minute = atoi(pText);
+                l_minute = help.Int(pText);
             }
             else if (pKey == "hours")
             {
-                l_hours = atoi(pText);
+                l_hours = help.Int(pText);
             }
             else if (pKey == "savery")
             {
-                l_saveY = atoi(pText);
+                l_saveY = help.Int(pText);
             }
             else if (pKey == "saverx")
             {
-                l_saveX = atoi(pText);
+                l_saveX = help.Int(pText);
             }
             else if (pKey == "trinkets")
             {
-                tele_trinkets = atoi(pText);
+                tele_trinkets = help.Int(pText);
             }
             else if (pKey == "finalmode")
             {
-                map.finalmode = atoi(pText);
+                map.finalmode = help.Int(pText);
             }
             else if (pKey == "finalstretch")
             {
-                map.finalstretch = atoi(pText);
+                map.finalstretch = help.Int(pText);
             }
 
-            if (pKey == "crewstats")
-            {
-                std::string TextString = (pText);
-                if(TextString.length())
-                {
-                    std::vector<std::string> values = split(TextString,',');
-                    tele_crewstats.clear();
-                    for(size_t i = 0; i < values.size(); i++)
-                    {
-                        tele_crewstats.push_back(atoi(values[i].c_str()));
-                    }
-                }
-            }
+            LOAD_ARRAY_RENAME(crewstats, tele_crewstats)
 
         }
         tele_gametime = giventimestring(l_hours,l_minute, l_second);
         tele_currentarea = map.currentarea(map.area(l_saveX, l_saveY));
     }
 
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/qsave.vvv", &doc))
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document("saves/qsave.vvv", doc))
     {
         quicksummary = "";
     }
     else
     {
-        TiXmlHandle hDoc(&doc);
-        TiXmlElement* pElem;
-        TiXmlHandle hRoot(0);
+        tinyxml2::XMLHandle hDoc(&doc);
+        tinyxml2::XMLElement* pElem;
+        tinyxml2::XMLHandle hRoot(NULL);
 
 
         {
-            pElem=hDoc.FirstChildElement().Element();
+            pElem=hDoc.FirstChildElement().ToElement();
             // should always have a valid root but handle gracefully if it does
             if (!pElem)
             {
@@ -5522,13 +5674,13 @@ void Game::loadsummary()
             }
 
             // save this for later
-            hRoot=TiXmlHandle(pElem);
+            hRoot=tinyxml2::XMLHandle(pElem);
         }
         int l_minute, l_second, l_hours;
         l_minute = l_second= l_hours = 0;
         int l_saveX = 0;
         int l_saveY = 0;
-        for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+        for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
         {
             std::string pKey(pElem->Value());
             const char* pText = pElem->GetText() ;
@@ -5540,50 +5692,38 @@ void Game::loadsummary()
 
             else if (pKey == "seconds")
             {
-                l_second = atoi(pText);
+                l_second = help.Int(pText);
             }
             else if (pKey == "minutes")
             {
-                l_minute = atoi(pText);
+                l_minute = help.Int(pText);
             }
             else if (pKey == "hours")
             {
-                l_hours = atoi(pText);
+                l_hours = help.Int(pText);
             }
             else if (pKey == "savery")
             {
-                l_saveY = atoi(pText);
+                l_saveY = help.Int(pText);
             }
             else if (pKey == "saverx")
             {
-                l_saveX = atoi(pText);
+                l_saveX = help.Int(pText);
             }
             else if (pKey == "trinkets")
             {
-                quick_trinkets = atoi(pText);
+                quick_trinkets = help.Int(pText);
             }
             else if (pKey == "finalmode")
             {
-                map.finalmode = atoi(pText);
+                map.finalmode = help.Int(pText);
             }
             else if (pKey == "finalstretch")
             {
-                map.finalstretch = atoi(pText);
+                map.finalstretch = help.Int(pText);
             }
 
-            if (pKey == "crewstats")
-            {
-                std::string TextString = (pText);
-                if(TextString.length())
-                {
-                    std::vector<std::string> values = split(TextString,',');
-                    quick_crewstats.clear();
-                    for(size_t i = 0; i < values.size(); i++)
-                    {
-                        quick_crewstats.push_back(atoi(values[i].c_str()));
-                    }
-                }
-            }
+            LOAD_ARRAY_RENAME(crewstats, quick_crewstats)
 
         }
 
@@ -5611,192 +5751,16 @@ void Game::initteleportermode()
 
 void Game::savetele()
 {
-    //TODO make this code a bit cleaner.
-
-    if (map.custommode)
+    if (map.custommode || inspecial())
     {
         //Don't trash save data!
         return;
     }
 
-    TiXmlDocument doc;
-    TiXmlElement* msg;
-    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
-    doc.LinkEndChild( decl );
+    tinyxml2::XMLDocument doc;
+    telesummary = writemaingamesave(doc);
 
-    TiXmlElement * root = new TiXmlElement( "Save" );
-    doc.LinkEndChild( root );
-
-    TiXmlComment * comment = new TiXmlComment();
-    comment->SetValue(" Save file " );
-    root->LinkEndChild( comment );
-
-    TiXmlElement * msgs = new TiXmlElement( "Data" );
-    root->LinkEndChild( msgs );
-
-
-    //Flags, map and stats
-
-    std::string mapExplored;
-    for(size_t i = 0; i < map.explored.size(); i++ )
-    {
-        mapExplored += help.String(map.explored[i]) + ",";
-    }
-    msg = new TiXmlElement( "worldmap" );
-    msg->LinkEndChild( new TiXmlText( mapExplored.c_str() ));
-    msgs->LinkEndChild( msg );
-
-    std::string flags;
-    for(size_t i = 0; i < obj.flags.size(); i++ )
-    {
-        flags += help.String((int) obj.flags[i]) + ",";
-    }
-    msg = new TiXmlElement( "flags" );
-    msg->LinkEndChild( new TiXmlText( flags.c_str() ));
-    msgs->LinkEndChild( msg );
-
-    std::string crewstatsString;
-    for(size_t i = 0; i < crewstats.size(); i++ )
-    {
-        crewstatsString += help.String(crewstats[i]) + ",";
-    }
-    msg = new TiXmlElement( "crewstats" );
-    msg->LinkEndChild( new TiXmlText( crewstatsString.c_str() ));
-    msgs->LinkEndChild( msg );
-
-    std::string collect;
-    for(size_t i = 0; i < obj.collect.size(); i++ )
-    {
-        collect += help.String((int) obj.collect[i]) + ",";
-    }
-    msg = new TiXmlElement( "collect" );
-    msg->LinkEndChild( new TiXmlText( collect.c_str() ));
-    msgs->LinkEndChild( msg );
-
-    //Position
-
-    msg = new TiXmlElement( "finalx" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.finalx).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "finaly" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.finaly).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "savex" );
-    msg->LinkEndChild( new TiXmlText( help.String(savex).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "savey" );
-    msg->LinkEndChild( new TiXmlText( help.String(savey).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "saverx" );
-    msg->LinkEndChild( new TiXmlText( help.String(saverx).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "savery" );
-    msg->LinkEndChild( new TiXmlText( help.String(savery).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "savegc" );
-    msg->LinkEndChild( new TiXmlText( help.String(savegc).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "savedir" );
-    msg->LinkEndChild( new TiXmlText( help.String(savedir).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "savepoint" );
-    msg->LinkEndChild( new TiXmlText( help.String(savepoint).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "trinkets" );
-    msg->LinkEndChild( new TiXmlText( help.String(trinkets()).c_str() ));
-    msgs->LinkEndChild( msg );
-
-
-    //Special stats
-
-    if(music.nicefade==1)
-    {
-        msg = new TiXmlElement( "currentsong" );
-        msg->LinkEndChild( new TiXmlText( help.String(music.nicechange).c_str() ));
-        msgs->LinkEndChild( msg );
-    }
-    else
-    {
-        msg = new TiXmlElement( "currentsong" );
-        msg->LinkEndChild( new TiXmlText( help.String(music.currentsong).c_str() ));
-        msgs->LinkEndChild( msg );
-    }
-
-    msg = new TiXmlElement( "teleportscript" );
-    msg->LinkEndChild( new TiXmlText( teleportscript.c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "companion" );
-    msg->LinkEndChild( new TiXmlText( help.String(companion).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "lastsaved" );
-    msg->LinkEndChild( new TiXmlText( help.String(lastsaved).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "supercrewmate" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(supercrewmate) ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "scmprogress" );
-    msg->LinkEndChild( new TiXmlText( help.String(scmprogress).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "scmmoveme" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(scmmoveme) ));
-    msgs->LinkEndChild( msg );
-
-
-    msg = new TiXmlElement( "frames" );
-    msg->LinkEndChild( new TiXmlText( help.String(frames).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "seconds" );
-    msg->LinkEndChild( new TiXmlText( help.String(seconds).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "minutes" );
-    msg->LinkEndChild( new TiXmlText( help.String(minutes).c_str()) );
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "hours" );
-    msg->LinkEndChild( new TiXmlText( help.String(hours).c_str()) );
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "deathcounts" );
-    msg->LinkEndChild( new TiXmlText( help.String(deathcounts).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "totalflips" );
-    msg->LinkEndChild( new TiXmlText( help.String(totalflips).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "hardestroom" );
-    msg->LinkEndChild( new TiXmlText( hardestroom.c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "hardestroomdeaths" );
-    msg->LinkEndChild( new TiXmlText( help.String(hardestroomdeaths).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "finalmode" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(map.finalmode)));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "finalstretch" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(map.finalstretch) ));
-    msgs->LinkEndChild( msg );
-
-
-    msg = new TiXmlElement( "summary" );
-    std::string summary = savearea + ", " + timestring();
-    msg->LinkEndChild( new TiXmlText( summary.c_str() ));
-    msgs->LinkEndChild( msg );
-
-    telesummary = summary;
-
-    if(FILESYSTEM_saveTiXmlDocument("saves/tsave.vvv", &doc))
+    if(FILESYSTEM_saveTiXml2Document("saves/tsave.vvv", doc))
     {
         printf("Game saved\n");
     }
@@ -5810,189 +5774,16 @@ void Game::savetele()
 
 void Game::savequick()
 {
-    if (map.custommode)
+    if (map.custommode || inspecial())
     {
         //Don't trash save data!
         return;
     }
 
-    TiXmlDocument doc;
-    TiXmlElement* msg;
-    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
-    doc.LinkEndChild( decl );
+    tinyxml2::XMLDocument doc;
+    quicksummary = writemaingamesave(doc);
 
-    TiXmlElement * root = new TiXmlElement( "Save" );
-    doc.LinkEndChild( root );
-
-    TiXmlComment * comment = new TiXmlComment();
-    comment->SetValue(" Save file " );
-    root->LinkEndChild( comment );
-
-    TiXmlElement * msgs = new TiXmlElement( "Data" );
-    root->LinkEndChild( msgs );
-
-
-    //Flags, map and stats
-
-    std::string mapExplored;
-    for(size_t i = 0; i < map.explored.size(); i++ )
-    {
-        mapExplored += help.String(map.explored[i]) + ",";
-    }
-    msg = new TiXmlElement( "worldmap" );
-    msg->LinkEndChild( new TiXmlText( mapExplored.c_str() ));
-    msgs->LinkEndChild( msg );
-
-    std::string flags;
-    for(size_t i = 0; i < obj.flags.size(); i++ )
-    {
-        flags += help.String((int) obj.flags[i]) + ",";
-    }
-    msg = new TiXmlElement( "flags" );
-    msg->LinkEndChild( new TiXmlText( flags.c_str() ));
-    msgs->LinkEndChild( msg );
-
-    std::string crewstatsString;
-    for(size_t i = 0; i < crewstats.size(); i++ )
-    {
-        crewstatsString += help.String(crewstats[i]) + ",";
-    }
-    msg = new TiXmlElement( "crewstats" );
-    msg->LinkEndChild( new TiXmlText( crewstatsString.c_str() ));
-    msgs->LinkEndChild( msg );
-
-    std::string collect;
-    for(size_t i = 0; i < obj.collect.size(); i++ )
-    {
-        collect += help.String((int) obj.collect[i]) + ",";
-    }
-    msg = new TiXmlElement( "collect" );
-    msg->LinkEndChild( new TiXmlText( collect.c_str() ));
-    msgs->LinkEndChild( msg );
-
-    //Position
-
-    msg = new TiXmlElement( "finalx" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.finalx).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "finaly" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.finaly).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "savex" );
-    msg->LinkEndChild( new TiXmlText( help.String(savex).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "savey" );
-    msg->LinkEndChild( new TiXmlText( help.String(savey).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "saverx" );
-    msg->LinkEndChild( new TiXmlText( help.String(saverx).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "savery" );
-    msg->LinkEndChild( new TiXmlText( help.String(savery).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "savegc" );
-    msg->LinkEndChild( new TiXmlText( help.String(savegc).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "savedir" );
-    msg->LinkEndChild( new TiXmlText( help.String(savedir).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "savepoint" );
-    msg->LinkEndChild( new TiXmlText( help.String(savepoint).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "trinkets" );
-    msg->LinkEndChild( new TiXmlText( help.String(trinkets()).c_str() ));
-    msgs->LinkEndChild( msg );
-
-
-    //Special stats
-
-    if(music.nicefade==1)
-    {
-        msg = new TiXmlElement( "currentsong" );
-        msg->LinkEndChild( new TiXmlText( help.String(music.nicechange).c_str() ));
-        msgs->LinkEndChild( msg );
-    }
-    else
-    {
-        msg = new TiXmlElement( "currentsong" );
-        msg->LinkEndChild( new TiXmlText( help.String(music.currentsong).c_str() ));
-        msgs->LinkEndChild( msg );
-    }
-
-    msg = new TiXmlElement( "teleportscript" );
-    msg->LinkEndChild( new TiXmlText( teleportscript.c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "companion" );
-    msg->LinkEndChild( new TiXmlText( help.String(companion).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "lastsaved" );
-    msg->LinkEndChild( new TiXmlText( help.String(lastsaved).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "supercrewmate" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(supercrewmate) ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "scmprogress" );
-    msg->LinkEndChild( new TiXmlText( help.String(scmprogress).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "scmmoveme" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(scmmoveme) ));
-    msgs->LinkEndChild( msg );
-
-
-    msg = new TiXmlElement( "finalmode" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(map.finalmode) ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "finalstretch" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(map.finalstretch) ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "frames" );
-    msg->LinkEndChild( new TiXmlText( help.String(frames).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "seconds" );
-    msg->LinkEndChild( new TiXmlText( help.String(seconds).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "minutes" );
-    msg->LinkEndChild( new TiXmlText( help.String(minutes).c_str()) );
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "hours" );
-    msg->LinkEndChild( new TiXmlText( help.String(hours).c_str()) );
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "deathcounts" );
-    msg->LinkEndChild( new TiXmlText( help.String(deathcounts).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "totalflips" );
-    msg->LinkEndChild( new TiXmlText( help.String(totalflips).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "hardestroom" );
-    msg->LinkEndChild( new TiXmlText( hardestroom.c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "hardestroomdeaths" );
-    msg->LinkEndChild( new TiXmlText( help.String(hardestroomdeaths).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "summary" );
-    std::string summary = savearea + ", " + timestring();
-    msg->LinkEndChild( new TiXmlText( summary.c_str() ));
-    msgs->LinkEndChild( msg );
-
-    quicksummary = summary;
-
-    if(FILESYSTEM_saveTiXmlDocument("saves/qsave.vvv", &doc))
+    if(FILESYSTEM_saveTiXml2Document("saves/qsave.vvv", doc))
     {
         printf("Game saved\n");
     }
@@ -6004,124 +5795,109 @@ void Game::savequick()
 
 }
 
-void Game::customsavequick(std::string savfile)
+// Returns summary of save
+std::string Game::writemaingamesave(tinyxml2::XMLDocument& doc)
 {
-    TiXmlDocument doc;
-    TiXmlElement* msg;
-    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
+    //TODO make this code a bit cleaner.
+
+    if (map.custommode || inspecial())
+    {
+        //Don't trash save data!
+        return "";
+    }
+
+    tinyxml2::XMLElement* msg;
+    tinyxml2::XMLDeclaration* decl = doc.NewDeclaration();
     doc.LinkEndChild( decl );
 
-    TiXmlElement * root = new TiXmlElement( "Save" );
+    tinyxml2::XMLElement * root = doc.NewElement( "Save" );
     doc.LinkEndChild( root );
 
-    TiXmlComment * comment = new TiXmlComment();
-    comment->SetValue(" Save file " );
+    tinyxml2::XMLComment * comment = doc.NewComment(" Save file " );
     root->LinkEndChild( comment );
 
-    TiXmlElement * msgs = new TiXmlElement( "Data" );
+    tinyxml2::XMLElement * msgs = doc.NewElement( "Data" );
     root->LinkEndChild( msgs );
 
 
     //Flags, map and stats
 
     std::string mapExplored;
-    for(size_t i = 0; i < map.explored.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(map.explored); i++ )
     {
         mapExplored += help.String(map.explored[i]) + ",";
     }
-    msg = new TiXmlElement( "worldmap" );
-    msg->LinkEndChild( new TiXmlText( mapExplored.c_str() ));
+    msg = doc.NewElement( "worldmap" );
+    msg->LinkEndChild( doc.NewText( mapExplored.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string flags;
-    for(size_t i = 0; i < obj.flags.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(obj.flags); i++ )
     {
         flags += help.String((int) obj.flags[i]) + ",";
     }
-    msg = new TiXmlElement( "flags" );
-    msg->LinkEndChild( new TiXmlText( flags.c_str() ));
-    msgs->LinkEndChild( msg );
-
-    std::string moods;
-    for(int i = 0; i < 6; i++ )
-    {
-        moods += help.String(obj.customcrewmoods[i]) + ",";
-    }
-    msg = new TiXmlElement( "moods" );
-    msg->LinkEndChild( new TiXmlText( moods.c_str() ));
+    msg = doc.NewElement( "flags" );
+    msg->LinkEndChild( doc.NewText( flags.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string crewstatsString;
-    for(size_t i = 0; i < crewstats.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(crewstats); i++ )
     {
         crewstatsString += help.String(crewstats[i]) + ",";
     }
-    msg = new TiXmlElement( "crewstats" );
-    msg->LinkEndChild( new TiXmlText( crewstatsString.c_str() ));
+    msg = doc.NewElement( "crewstats" );
+    msg->LinkEndChild( doc.NewText( crewstatsString.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string collect;
-    for(size_t i = 0; i < obj.collect.size(); i++ )
+    for(size_t i = 0; i < SDL_arraysize(obj.collect); i++ )
     {
         collect += help.String((int) obj.collect[i]) + ",";
     }
-    msg = new TiXmlElement( "collect" );
-    msg->LinkEndChild( new TiXmlText( collect.c_str() ));
-    msgs->LinkEndChild( msg );
-
-    std::string customcollect;
-    for(size_t i = 0; i < obj.customcollect.size(); i++ )
-    {
-        customcollect += help.String((int) obj.customcollect[i]) + ",";
-    }
-    msg = new TiXmlElement( "customcollect" );
-    msg->LinkEndChild( new TiXmlText( customcollect.c_str() ));
+    msg = doc.NewElement( "collect" );
+    msg->LinkEndChild( doc.NewText( collect.c_str() ));
     msgs->LinkEndChild( msg );
 
     //Position
 
-    msg = new TiXmlElement( "finalx" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.finalx).c_str() ));
+    msg = doc.NewElement( "finalx" );
+    msg->LinkEndChild( doc.NewText( help.String(map.finalx).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "finaly" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.finaly).c_str() ));
+    msg = doc.NewElement( "finaly" );
+    msg->LinkEndChild( doc.NewText( help.String(map.finaly).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savex" );
-    msg->LinkEndChild( new TiXmlText( help.String(savex).c_str() ));
+    msg = doc.NewElement( "savex" );
+    msg->LinkEndChild( doc.NewText( help.String(savex).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savey" );
-    msg->LinkEndChild( new TiXmlText( help.String(savey).c_str() ));
+    msg = doc.NewElement( "savey" );
+    msg->LinkEndChild( doc.NewText( help.String(savey).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "saverx" );
-    msg->LinkEndChild( new TiXmlText( help.String(saverx).c_str() ));
+    msg = doc.NewElement( "saverx" );
+    msg->LinkEndChild( doc.NewText( help.String(saverx).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savery" );
-    msg->LinkEndChild( new TiXmlText( help.String(savery).c_str() ));
+    msg = doc.NewElement( "savery" );
+    msg->LinkEndChild( doc.NewText( help.String(savery).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savegc" );
-    msg->LinkEndChild( new TiXmlText( help.String(savegc).c_str() ));
+    msg = doc.NewElement( "savegc" );
+    msg->LinkEndChild( doc.NewText( help.String(savegc).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savedir" );
-    msg->LinkEndChild( new TiXmlText( help.String(savedir).c_str() ));
+    msg = doc.NewElement( "savedir" );
+    msg->LinkEndChild( doc.NewText( help.String(savedir).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savepoint" );
-    msg->LinkEndChild( new TiXmlText( help.String(savepoint).c_str() ));
+    msg = doc.NewElement( "savepoint" );
+    msg->LinkEndChild( doc.NewText( help.String(savepoint).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "trinkets" );
-    msg->LinkEndChild( new TiXmlText( help.String(trinkets()).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "crewmates" );
-    msg->LinkEndChild( new TiXmlText( help.String(crewmates()).c_str() ));
+    msg = doc.NewElement( "trinkets" );
+    msg->LinkEndChild( doc.NewText( help.String(trinkets()).c_str() ));
     msgs->LinkEndChild( msg );
 
 
@@ -6129,306 +5905,299 @@ void Game::customsavequick(std::string savfile)
 
     if(music.nicefade==1)
     {
-        msg = new TiXmlElement( "currentsong" );
-        msg->LinkEndChild( new TiXmlText( help.String(music.nicechange).c_str() ));
+        msg = doc.NewElement( "currentsong" );
+        msg->LinkEndChild( doc.NewText( help.String(music.nicechange).c_str() ));
         msgs->LinkEndChild( msg );
     }
     else
     {
-        msg = new TiXmlElement( "currentsong" );
-        msg->LinkEndChild( new TiXmlText( help.String(music.currentsong).c_str() ));
+        msg = doc.NewElement( "currentsong" );
+        msg->LinkEndChild( doc.NewText( help.String(music.currentsong).c_str() ));
         msgs->LinkEndChild( msg );
     }
 
-    msg = new TiXmlElement( "teleportscript" );
-    msg->LinkEndChild( new TiXmlText( teleportscript.c_str() ));
+    msg = doc.NewElement( "teleportscript" );
+    msg->LinkEndChild( doc.NewText( teleportscript.c_str() ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "companion" );
-    msg->LinkEndChild( new TiXmlText( help.String(companion).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "lastsaved" );
-    msg->LinkEndChild( new TiXmlText( help.String(lastsaved).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "supercrewmate" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(supercrewmate) ));
+    msg = doc.NewElement( "companion" );
+    msg->LinkEndChild( doc.NewText( help.String(companion).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "scmprogress" );
-    msg->LinkEndChild( new TiXmlText( help.String(scmprogress).c_str() ));
+    msg = doc.NewElement( "lastsaved" );
+    msg->LinkEndChild( doc.NewText( help.String(lastsaved).c_str() ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "scmmoveme" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(scmmoveme) ));
+    msg = doc.NewElement( "supercrewmate" );
+    msg->LinkEndChild( doc.NewText( BoolToString(supercrewmate) ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "scmprogress" );
+    msg->LinkEndChild( doc.NewText( help.String(scmprogress).c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "scmmoveme" );
+    msg->LinkEndChild( doc.NewText( BoolToString(scmmoveme) ));
     msgs->LinkEndChild( msg );
 
 
-    msg = new TiXmlElement( "frames" );
-    msg->LinkEndChild( new TiXmlText( help.String(frames).c_str() ));
+    msg = doc.NewElement( "frames" );
+    msg->LinkEndChild( doc.NewText( help.String(frames).c_str() ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "seconds" );
-    msg->LinkEndChild( new TiXmlText( help.String(seconds).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "minutes" );
-    msg->LinkEndChild( new TiXmlText( help.String(minutes).c_str()) );
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "hours" );
-    msg->LinkEndChild( new TiXmlText( help.String(hours).c_str()) );
+    msg = doc.NewElement( "seconds" );
+    msg->LinkEndChild( doc.NewText( help.String(seconds).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "deathcounts" );
-    msg->LinkEndChild( new TiXmlText( help.String(deathcounts).c_str() ));
+    msg = doc.NewElement( "minutes" );
+    msg->LinkEndChild( doc.NewText( help.String(minutes).c_str()) );
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "totalflips" );
-    msg->LinkEndChild( new TiXmlText( help.String(totalflips).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "hardestroom" );
-    msg->LinkEndChild( new TiXmlText( hardestroom.c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "hardestroomdeaths" );
-    msg->LinkEndChild( new TiXmlText( help.String(hardestroomdeaths).c_str() ));
+    msg = doc.NewElement( "hours" );
+    msg->LinkEndChild( doc.NewText( help.String(hours).c_str()) );
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "showminimap" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(map.customshowmm) ));
+    msg = doc.NewElement( "deathcounts" );
+    msg->LinkEndChild( doc.NewText( help.String(deathcounts).c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "totalflips" );
+    msg->LinkEndChild( doc.NewText( help.String(totalflips).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "summary" );
+    msg = doc.NewElement( "hardestroom" );
+    msg->LinkEndChild( doc.NewText( hardestroom.c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "hardestroomdeaths" );
+    msg->LinkEndChild( doc.NewText( help.String(hardestroomdeaths).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "finalmode" );
+    msg->LinkEndChild( doc.NewText( BoolToString(map.finalmode)));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "finalstretch" );
+    msg->LinkEndChild( doc.NewText( BoolToString(map.finalstretch) ));
+    msgs->LinkEndChild( msg );
+
+
+    msg = doc.NewElement( "summary" );
     std::string summary = savearea + ", " + timestring();
-    msg->LinkEndChild( new TiXmlText( summary.c_str() ));
+    msg->LinkEndChild( doc.NewText( summary.c_str() ));
+    msgs->LinkEndChild( msg );
+
+    return summary;
+}
+
+
+void Game::customsavequick(std::string savfile)
+{
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* msg;
+    tinyxml2::XMLDeclaration* decl = doc.NewDeclaration();
+    doc.LinkEndChild( decl );
+
+    tinyxml2::XMLElement * root = doc.NewElement( "Save" );
+    doc.LinkEndChild( root );
+
+    tinyxml2::XMLComment * comment = doc.NewComment(" Save file " );
+    root->LinkEndChild( comment );
+
+    tinyxml2::XMLElement * msgs = doc.NewElement( "Data" );
+    root->LinkEndChild( msgs );
+
+
+    //Flags, map and stats
+
+    std::string mapExplored;
+    for(size_t i = 0; i < SDL_arraysize(map.explored); i++ )
+    {
+        mapExplored += help.String(map.explored[i]) + ",";
+    }
+    msg = doc.NewElement( "worldmap" );
+    msg->LinkEndChild( doc.NewText( mapExplored.c_str() ));
+    msgs->LinkEndChild( msg );
+
+    std::string flags;
+    for(size_t i = 0; i < SDL_arraysize(obj.flags); i++ )
+    {
+        flags += help.String((int) obj.flags[i]) + ",";
+    }
+    msg = doc.NewElement( "flags" );
+    msg->LinkEndChild( doc.NewText( flags.c_str() ));
+    msgs->LinkEndChild( msg );
+
+    std::string moods;
+    for(size_t i = 0; i < SDL_arraysize(obj.customcrewmoods); i++ )
+    {
+        moods += help.String(obj.customcrewmoods[i]) + ",";
+    }
+    msg = doc.NewElement( "moods" );
+    msg->LinkEndChild( doc.NewText( moods.c_str() ));
+    msgs->LinkEndChild( msg );
+
+    std::string crewstatsString;
+    for(size_t i = 0; i < SDL_arraysize(crewstats); i++ )
+    {
+        crewstatsString += help.String(crewstats[i]) + ",";
+    }
+    msg = doc.NewElement( "crewstats" );
+    msg->LinkEndChild( doc.NewText( crewstatsString.c_str() ));
+    msgs->LinkEndChild( msg );
+
+    std::string collect;
+    for(size_t i = 0; i < SDL_arraysize(obj.collect); i++ )
+    {
+        collect += help.String((int) obj.collect[i]) + ",";
+    }
+    msg = doc.NewElement( "collect" );
+    msg->LinkEndChild( doc.NewText( collect.c_str() ));
+    msgs->LinkEndChild( msg );
+
+    std::string customcollect;
+    for(size_t i = 0; i < SDL_arraysize(obj.customcollect); i++ )
+    {
+        customcollect += help.String((int) obj.customcollect[i]) + ",";
+    }
+    msg = doc.NewElement( "customcollect" );
+    msg->LinkEndChild( doc.NewText( customcollect.c_str() ));
+    msgs->LinkEndChild( msg );
+
+    //Position
+
+    msg = doc.NewElement( "finalx" );
+    msg->LinkEndChild( doc.NewText( help.String(map.finalx).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "finaly" );
+    msg->LinkEndChild( doc.NewText( help.String(map.finaly).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "savex" );
+    msg->LinkEndChild( doc.NewText( help.String(savex).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "savey" );
+    msg->LinkEndChild( doc.NewText( help.String(savey).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "saverx" );
+    msg->LinkEndChild( doc.NewText( help.String(saverx).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "savery" );
+    msg->LinkEndChild( doc.NewText( help.String(savery).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "savegc" );
+    msg->LinkEndChild( doc.NewText( help.String(savegc).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "savedir" );
+    msg->LinkEndChild( doc.NewText( help.String(savedir).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "savepoint" );
+    msg->LinkEndChild( doc.NewText( help.String(savepoint).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "trinkets" );
+    msg->LinkEndChild( doc.NewText( help.String(trinkets()).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "crewmates" );
+    msg->LinkEndChild( doc.NewText( help.String(crewmates()).c_str() ));
+    msgs->LinkEndChild( msg );
+
+
+    //Special stats
+
+    if(music.nicefade==1)
+    {
+        msg = doc.NewElement( "currentsong" );
+        msg->LinkEndChild( doc.NewText( help.String(music.nicechange).c_str() ));
+        msgs->LinkEndChild( msg );
+    }
+    else
+    {
+        msg = doc.NewElement( "currentsong" );
+        msg->LinkEndChild( doc.NewText( help.String(music.currentsong).c_str() ));
+        msgs->LinkEndChild( msg );
+    }
+
+    msg = doc.NewElement( "teleportscript" );
+    msg->LinkEndChild( doc.NewText( teleportscript.c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "companion" );
+    msg->LinkEndChild( doc.NewText( help.String(companion).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "lastsaved" );
+    msg->LinkEndChild( doc.NewText( help.String(lastsaved).c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "supercrewmate" );
+    msg->LinkEndChild( doc.NewText( BoolToString(supercrewmate) ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "scmprogress" );
+    msg->LinkEndChild( doc.NewText( help.String(scmprogress).c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "scmmoveme" );
+    msg->LinkEndChild( doc.NewText( BoolToString(scmmoveme) ));
+    msgs->LinkEndChild( msg );
+
+
+    msg = doc.NewElement( "frames" );
+    msg->LinkEndChild( doc.NewText( help.String(frames).c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "seconds" );
+    msg->LinkEndChild( doc.NewText( help.String(seconds).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "minutes" );
+    msg->LinkEndChild( doc.NewText( help.String(minutes).c_str()) );
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "hours" );
+    msg->LinkEndChild( doc.NewText( help.String(hours).c_str()) );
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "deathcounts" );
+    msg->LinkEndChild( doc.NewText( help.String(deathcounts).c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "totalflips" );
+    msg->LinkEndChild( doc.NewText( help.String(totalflips).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "hardestroom" );
+    msg->LinkEndChild( doc.NewText( hardestroom.c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "hardestroomdeaths" );
+    msg->LinkEndChild( doc.NewText( help.String(hardestroomdeaths).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "showminimap" );
+    msg->LinkEndChild( doc.NewText( BoolToString(map.customshowmm) ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "summary" );
+    std::string summary = savearea + ", " + timestring();
+    msg->LinkEndChild( doc.NewText( summary.c_str() ));
     msgs->LinkEndChild( msg );
 
     customquicksummary = summary;
 
     std::string levelfile = savfile.substr(7);
-    if(FILESYSTEM_saveTiXmlDocument(("saves/"+levelfile+".vvv").c_str(), &doc))
+    if(FILESYSTEM_saveTiXml2Document(("saves/"+levelfile+".vvv").c_str(), doc))
     {
         printf("Game saved\n");
     }
     else
     {
         printf("Could Not Save game!\n");
-        printf("Failed: %s%s%s", saveFilePath.c_str(), levelfile.c_str(), ".vvv");
+        printf("Failed: %s%s%s\n", saveFilePath.c_str(), levelfile.c_str(), ".vvv");
     }
 }
 
 
 void Game::loadtele()
 {
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/tsave.vvv", &doc)) return;
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document("saves/tsave.vvv", doc)) return;
 
-    TiXmlHandle hDoc(&doc);
-    TiXmlElement* pElem;
-    TiXmlHandle hRoot(0);
-
-
-    {
-        pElem=hDoc.FirstChildElement().Element();
-        // should always have a valid root but handle gracefully if it does
-        if (!pElem)
-        {
-            printf("Save Not Found\n");
-        }
-
-        // save this for later
-        hRoot=TiXmlHandle(pElem);
-    }
-
-
-    for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
-    {
-        std::string pKey(pElem->Value());
-        const char* pText = pElem->GetText() ;
-        if(pText == NULL)
-        {
-            pText = "";
-        }
-
-        if (pKey == "worldmap")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                map.explored.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    map.explored.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
-
-        if (pKey == "flags")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.flags.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.flags.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
-
-        if (pKey == "crewstats")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                crewstats.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    crewstats.push_back(atoi(values[i].c_str()));
-                }
-            }
-        }
-
-        if (pKey == "collect")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                obj.collect.clear();
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    obj.collect.push_back((bool) atoi(values[i].c_str()));
-                }
-            }
-        }
-
-        if (pKey == "finalmode")
-        {
-            map.finalmode = atoi(pText);
-        }
-        if (pKey == "finalstretch")
-        {
-            map.finalstretch = atoi(pText);
-        }
-
-        if (map.finalmode)
-        {
-            map.final_colormode = false;
-            map.final_mapcol = 0;
-            map.final_colorframe = 0;
-        }
-        if (map.finalstretch)
-        {
-            map.finalstretch = true;
-            map.final_colormode = true;
-            map.final_mapcol = 0;
-            map.final_colorframe = 1;
-        }
-
-
-        if (pKey == "finalx")
-        {
-            map.finalx = atoi(pText);
-        }
-        else if (pKey == "finaly")
-        {
-            map.finaly = atoi(pText);
-        }
-        else if (pKey == "savex")
-        {
-            savex = atoi(pText);
-        }
-        else if (pKey == "savey")
-        {
-            savey = atoi(pText);
-        }
-        else if (pKey == "saverx")
-        {
-            saverx = atoi(pText);
-        }
-        else if (pKey == "savery")
-        {
-            savery = atoi(pText);
-        }
-        else if (pKey == "savegc")
-        {
-            savegc = atoi(pText);
-        }
-        else if (pKey == "savedir")
-        {
-            savedir= atoi(pText);
-        }
-        else if (pKey == "savepoint")
-        {
-            savepoint = atoi(pText);
-        }
-        else if (pKey == "companion")
-        {
-            companion = atoi(pText);
-        }
-        else if (pKey == "lastsaved")
-        {
-            lastsaved = atoi(pText);
-        }
-        else if (pKey == "teleportscript")
-        {
-            teleportscript = pText;
-        }
-        else if (pKey == "supercrewmate")
-        {
-            supercrewmate = atoi(pText);
-        }
-        else if (pKey == "scmprogress")
-        {
-            scmprogress = atoi(pText);
-        }
-        else if (pKey == "scmmoveme")
-        {
-            scmmoveme = atoi(pText);
-        }
-        else if (pKey == "frames")
-        {
-            frames = atoi(pText);
-            frames = 0;
-        }
-        else if (pKey == "seconds")
-        {
-            seconds = atoi(pText);
-        }
-        else if (pKey == "minutes")
-        {
-            minutes = atoi(pText);
-        }
-        else if (pKey == "hours")
-        {
-            hours = atoi(pText);
-        }
-        else if (pKey == "deathcounts")
-        {
-            deathcounts = atoi(pText);
-        }
-        else if (pKey == "totalflips")
-        {
-            totalflips = atoi(pText);
-        }
-        else if (pKey == "hardestroom")
-        {
-            hardestroom = pText;
-        }
-        else if (pKey == "hardestroomdeaths")
-        {
-            hardestroomdeaths = atoi(pText);
-        }
-        else if (pKey == "currentsong")
-        {
-            music.play(atoi(pText));
-        }
-
-    }
-
-    map.showteleporters = true;
-    if(obj.flags[12]) map.showtargets = true;
-    if (obj.flags[42]) map.showtrinkets = true;
+    readmaingamesave(doc);
 }
 
 std::string Game::unrescued()
@@ -6528,7 +6297,7 @@ std::string Game::resulttimestring()
 {
     //given result time in seconds:
     std::string tempstring = "";
-    if (timetrialresulttime > 60)
+    if (timetrialresulttime >= 60)
     {
         tempstring = help.twodigits(int((timetrialresulttime - (timetrialresulttime % 60)) / 60)) + ":"
                      + help.twodigits(timetrialresulttime % 60);
@@ -6537,6 +6306,7 @@ std::string Game::resulttimestring()
     {
         tempstring = "00:" + help.twodigits(timetrialresulttime);
     }
+    tempstring += "." + help.twodigits(timetrialresultframes*100 / 30);
     return tempstring;
 }
 
@@ -6583,7 +6353,13 @@ void Game::returntomenu(enum Menu::MenuName t)
 {
     if (currentmenuname == t)
     {
-        //Why are you calling this function then?
+        //Re-create the menu
+        int keep_menu_option = currentmenuoption;
+        createmenu(t, true);
+        if (keep_menu_option < (int) menuoptions.size())
+        {
+            currentmenuoption = keep_menu_option;
+        }
         return;
     }
 
@@ -6624,8 +6400,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
 
     currentmenuoption = 0;
     currentmenuname = t;
-    menuxoff = 0;
     menuyoff = 0;
+    int maxspacing = 30; // maximum value for menuspacing, can only become lower.
     menucountdown = 0;
     menuoptions.clear();
 
@@ -6644,8 +6420,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("view credits");
 #endif
         option("quit game");
-        menuxoff = -16;
         menuyoff = -10;
+        maxspacing = 15;
         break;
 #if !defined(NO_CUSTOM_LEVELS)
     case Menu::playerworlds:
@@ -6655,14 +6431,13 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
  #endif
         option("open level folder", FILESYSTEM_openDirectoryEnabled());
         option("back to menu");
-        menuxoff = -30;
         menuyoff = -40;
+        maxspacing = 15;
         break;
     case Menu::levellist:
         if(ed.ListOfMetaData.size()==0)
         {
             option("ok");
-            menuxoff = 0;
             menuyoff = -20;
         }
         else
@@ -6673,35 +6448,54 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 {
                     //This is, er, suboptimal. Whatever, life optimisation and all that
                     int tvar=-1;
-                    for(int j=0; j<numcustomlevelstats; j++)
+                    for(size_t j=0; j<customlevelstats.size(); j++)
                     {
-                        if(ed.ListOfMetaData[i].filename.substr(7) == customlevelstats[j])
+                        if(ed.ListOfMetaData[i].filename.substr(7) == customlevelstats[j].name)
                         {
                             tvar=j;
-                            j=numcustomlevelstats+1;
+                            break;
                         }
                     }
-                    std::string text;
+                    const char* prefix;
                     if(tvar>=0)
                     {
-                        if(customlevelscore[tvar]==0)
+                        switch (customlevelstats[tvar].score)
                         {
-                            text = "   " + ed.ListOfMetaData[i].title;
+                        case 0:
+                        {
+                            static const char tmp[] = "   ";
+                            prefix = tmp;
+                            break;
                         }
-                        else if(customlevelscore[tvar]==1)
+                        case 1:
                         {
-                            text = " * " + ed.ListOfMetaData[i].title;
+                            static const char tmp[] = " * ";
+                            prefix = tmp;
+                            break;
                         }
-                        else if(customlevelscore[tvar]==3)
+                        case 3:
                         {
-                            text = "** " + ed.ListOfMetaData[i].title;
+                            static const char tmp[] = "** ";
+                            prefix = tmp;
+                            break;
+                        }
+                        default:
+                            SDL_assert(0 && "Unhandled menu text prefix!");
+                            prefix = "";
+                            break;
                         }
                     }
                     else
                     {
-                        text = "   " + ed.ListOfMetaData[i].title;
+                        static const char tmp[] = "   ";
+                        prefix = tmp;
                     }
-                    std::transform(text.begin(), text.end(), text.begin(), ::tolower);
+                    char text[menutextbytes];
+                    SDL_snprintf(text, sizeof(text), "%s%s", prefix, ed.ListOfMetaData[i].title.c_str());
+                    for (size_t ii = 0; ii < SDL_arraysize(text); ii++)
+                    {
+                        text[ii] = SDL_tolower(text[ii]);
+                    }
                     option(text);
                 }
             }
@@ -6723,8 +6517,10 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
             }
             option("return to menu");
 
-            menuxoff = -90;
+            menuxoff = 20;
             menuyoff = 70-(menuoptions.size()*10);
+            menuspacing = 5;
+            return; // skip automatic centering, will turn out bad with levels list
         }
         break;
 #endif
@@ -6732,40 +6528,39 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("continue from save");
         option("start from beginning");
         option("back to levels");
-        menuxoff = -40;
         menuyoff = -30;
         break;
     case Menu::youwannaquit:
         option("yes, quit");
         option("no, return");
-        menuxoff = 0;
         menuyoff = -20;
         break;
     case Menu::errornostart:
         option("ok");
-        menuxoff = 0;
         menuyoff = -20;
         break;
     case Menu::graphicoptions:
         option("toggle fullscreen");
-        option("toggle letterbox");
+        option("scaling mode");
+        option("resize to nearest", graphics.screenbuffer->isWindowed);
         option("toggle filter");
         option("toggle analogue");
-        option("toggle mouse");
+        option("toggle fps");
+        option("toggle vsync");
         option("return");
-        menuxoff = -50;
-        menuyoff = 8;
+        menuyoff = -10;
         break;
     case Menu::ed_settings:
         option("change description");
         option("edit scripts");
         option("change music");
+        option("editor ghosts");
         option("load level");
         option("save level");
         option("quit to main menu");
 
-        menuxoff = -50;
         menuyoff = -20;
+        maxspacing = 15;
         break;
     case Menu::ed_desc:
         option("change name");
@@ -6774,24 +6569,31 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("change website");
         option("back to settings");
 
-        menuxoff = -40;
         menuyoff = 6;
+        maxspacing = 15;
         break;
     case Menu::ed_music:
         option("next song");
         option("back");
-        menuxoff = -10;
         menuyoff = 16;
+        maxspacing = 15;
         break;
     case Menu::ed_quit:
         option("yes, save and quit");
         option("no, quit without saving");
         option("return to editor");
-        menuxoff = -50;
         menuyoff = 8;
+        maxspacing = 15;
         break;
     case Menu::options:
         option("accessibility options");
+        option("advanced options");
+#if !defined(MAKEANDPLAY)
+        if (ingame_titlemode && unlock[18])
+#endif
+        {
+            option("flip mode");
+        }
 #if !defined(MAKEANDPLAY)
         option("unlock play modes");
 #endif
@@ -6803,40 +6605,43 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         }
 
         option("return");
-        menuxoff = -40;
+        menuyoff = 0;
+        break;
+    case Menu::advancedoptions:
+        option("toggle mouse");
+        option("unfocus pause");
+        option("fake load screen");
+        option("room name background");
+        option("glitchrunner mode");
+        option("return");
         menuyoff = 0;
         break;
     case Menu::accessibility:
         option("animated backgrounds");
         option("screen effects");
         option("text outline");
-        option("invincibility");
-        option("slowdown");
-        option("load screen");
-        option("room name bg");
+        option("invincibility", !ingame_titlemode || (!insecretlab && !intimetrial && !nodeathmode));
+        option("slowdown", !ingame_titlemode || (!insecretlab && !intimetrial && !nodeathmode));
         option("return");
-        menuxoff = -85;
-        menuyoff = -10;
+        menuyoff = 0;
         break;
     case Menu::controller:
         option("analog stick sensitivity");
         option("bind flip");
         option("bind enter");
         option("bind menu");
+        option("bind restart");
         option("return");
-        menuxoff = -40;
         menuyoff = 10;
         break;
     case Menu::cleardatamenu:
         option("no! don't delete");
         option("yes, delete everything");
-        menuxoff = -30;
         menuyoff = 64;
         break;
     case Menu::setinvincibility:
         option("no, return to options");
         option("yes, enable");
-        menuxoff = -30;
         menuyoff = 64;
         break;
     case Menu::setslowdown:
@@ -6844,7 +6649,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("80% speed");
         option("60% speed");
         option("40% speed");
-        menuxoff = -40;
         menuyoff = 16;
         break;
     case Menu::unlockmenu:
@@ -6855,56 +6659,48 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("unlock ship jukebox", (stat_trinkets<20));
         option("unlock secret lab", !unlock[8]);
         option("return");
-        menuxoff = -70;
         menuyoff = -20;
         break;
     case Menu::credits:
         option("next page");
         option("last page");
         option("return");
-        menuxoff = 20;
         menuyoff = 64;
         break;
     case Menu::credits2:
         option("next page");
         option("previous page");
         option("return");
-        menuxoff = 20;
         menuyoff = 64;
         break;
     case Menu::credits25:
         option("next page");
         option("previous page");
         option("return");
-        menuxoff = 20;
         menuyoff = 64;
         break;
     case Menu::credits3:
         option("next page");
         option("previous page");
         option("return");
-        menuxoff = 20;
         menuyoff = 64;
         break;
     case Menu::credits4:
         option("next page");
         option("previous page");
         option("return");
-        menuxoff = 20;
         menuyoff = 64;
         break;
     case Menu::credits5:
         option("next page");
         option("previous page");
         option("return");
-        menuxoff = 20;
         menuyoff = 64;
         break;
     case Menu::credits6:
         option("first page");
         option("previous page");
         option("return");
-        menuxoff = 20;
         menuyoff = 64;
         break;
     case Menu::play:
@@ -6954,12 +6750,12 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
 
             if (temp == 1)
             {
-                createmenu(Menu::unlocktimetrial);
+                createmenu(Menu::unlocktimetrial, true);
                 savemystats = true;
             }
             else if (temp > 1)
             {
-                createmenu(Menu::unlocktimetrials);
+                createmenu(Menu::unlocktimetrials, true);
                 savemystats = true;
             }
         }
@@ -6978,7 +6774,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 //Unlock No Death Mode
                 unlocknotify[17] = true;
                 unlock[17] = true;
-                createmenu(Menu::unlocknodeathmode);
+                createmenu(Menu::unlocknodeathmode, true);
                 savemystats = true;
             }
             //Alright then! Flip mode?
@@ -6986,7 +6782,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
             {
                 unlock[18] = true;
                 unlocknotify[18] = true;
-                createmenu(Menu::unlockflipmode);
+                createmenu(Menu::unlockflipmode, true);
                 savemystats = true;
             }
             //What about the intermission levels?
@@ -6994,7 +6790,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
             {
                 unlock[16] = true;
                 unlocknotify[16] = true;
-                createmenu(Menu::unlockintermission);
+                createmenu(Menu::unlockintermission, true);
                 savemystats = true;
             }
             else
@@ -7020,12 +6816,10 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 option("return");
                 if (unlock[8])
                 {
-                    menuxoff = -40;
                     menuyoff = -30;
                 }
                 else
                 {
-                    menuxoff = -20;
                     menuyoff = -40;
                 }
             }
@@ -7038,13 +6832,11 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
     case Menu::unlockintermission:
     case Menu::unlockflipmode:
         option("continue");
-        menuxoff = 20;
         menuyoff = 70;
         break;
     case Menu::newgamewarning:
         option("start new game");
         option("return to menu");
-        menuxoff = -30;
         menuyoff = 64;
         break;
     case Menu::playmodes:
@@ -7053,14 +6845,13 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("no death mode", unlock[17] && !map.invincibility && slowdown == 30);
         option("flip mode", unlock[18]);
         option("return to play menu");
-        menuxoff = -70;
         menuyoff = 8;
+        maxspacing = 20;
         break;
     case Menu::intermissionmenu:
         option("play intermission 1");
         option("play intermission 2");
         option("return to play menu");
-        menuxoff = -50;
         menuyoff = -35;
         break;
     case Menu::playint1:
@@ -7069,7 +6860,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("Verdigris");
         option("Victoria");
         option("return");
-        menuxoff = -60;
         menuyoff = 10;
         break;
     case Menu::playint2:
@@ -7078,7 +6868,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("Verdigris");
         option("Victoria");
         option("return");
-        menuxoff = -60;
         menuyoff = 10;
         break;
     case Menu::continuemenu:
@@ -7086,14 +6875,12 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("continue from teleporter");
         option("continue from quicksave");
         option("return to play menu");
-        menuxoff = -60;
         menuyoff = 20;
         break;
     case Menu::startnodeathmode:
         option("disable cutscenes");
         option("enable cutscenes");
         option("return to play menu");
-        menuxoff = -60;
         menuyoff = 40;
         break;
     case Menu::gameover:
@@ -7102,7 +6889,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         break;
     case Menu::gameover2:
         option("return to play menu");
-        menuxoff = -25;
         menuyoff = 80;
         break;
     case Menu::unlockmenutrials:
@@ -7114,7 +6900,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("the final level", !unlock[14]);
 
         option("return to unlock menu");
-        menuxoff = -80;
         menuyoff = 0;
         break;
     case Menu::timetrials:
@@ -7126,8 +6911,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(unlock[14] ? "the final level" : "???", unlock[14]);
 
         option("return to play menu");
-        menuxoff = -80;
         menuyoff = 0;
+        maxspacing = 15;
         break;
     case Menu::nodeathmodecomplete:
         menucountdown = 90;
@@ -7135,7 +6920,6 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         break;
     case Menu::nodeathmodecomplete2:
         option("return to play menu");
-        menuxoff = -25;
         menuyoff = 70;
         break;
     case Menu::timetrialcomplete:
@@ -7149,15 +6933,33 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
     case Menu::timetrialcomplete3:
         option("return to play menu");
         option("try again");
-        menuxoff = -25;
         menuyoff = 70;
         break;
     case Menu::gamecompletecontinue:
         option("return to play menu");
-        menuxoff = -25;
         menuyoff = 70;
         break;
     }
+
+    // Automatically center the menu. We must check the width of the menu with the initial horizontal spacing.
+    // If it's too wide, reduce the horizontal spacing by 5 and retry.
+    // Try to limit the menu width to 272 pixels: 320 minus 16*2 for square brackets, minus 8*2 padding.
+    // The square brackets fall outside the menu width (i.e. selected menu options are printed 16 pixels to the left)
+    bool done_once = false;
+    int menuwidth = 0;
+    for (; !done_once || (menuwidth > 272 && menuspacing > 0); maxspacing -= 5)
+    {
+        done_once = true;
+        menuspacing = maxspacing;
+        menuwidth = 0;
+        for (size_t i = 0; i < menuoptions.size(); i++)
+        {
+            int width = i*menuspacing + graphics.len(menuoptions[i].text);
+            if (width > menuwidth)
+                menuwidth = width;
+        }
+    }
+    menuxoff = (320-menuwidth)/2;
 }
 
 void Game::deletequick()
@@ -7254,7 +7056,7 @@ void Game::swnpenalty()
 int Game::crewrescued()
 {
     int temp = 0;
-    for (size_t i = 0; i < crewstats.size(); i++)
+    for (size_t i = 0; i < SDL_arraysize(crewstats); i++)
     {
         if (crewstats[i])
         {
@@ -7275,7 +7077,7 @@ void Game::resetgameclock()
 int Game::trinkets()
 {
     int temp = 0;
-    for (size_t i = 0; i < obj.collect.size(); i++)
+    for (size_t i = 0; i < SDL_arraysize(obj.collect); i++)
     {
         if (obj.collect[i])
         {
@@ -7288,7 +7090,7 @@ int Game::trinkets()
 int Game::crewmates()
 {
     int temp = 0;
-    for (size_t i = 0; i < obj.customcollect.size(); i++)
+    for (size_t i = 0; i < SDL_arraysize(obj.customcollect); i++)
     {
         if (obj.customcollect[i])
         {
@@ -7300,11 +7102,11 @@ int Game::crewmates()
 
 bool Game::anything_unlocked()
 {
-    for (size_t i = 0; i < unlock.size(); i++)
+    for (size_t i = 0; i < SDL_arraysize(unlock); i++)
     {
         if (unlock[i] &&
         (i == 8 // Secret Lab
-        || i >= 9 || i <= 14 // any Time Trial
+        || (i >= 9 && i <= 14) // any Time Trial
         || i == 16 // Intermission replays
         || i == 17 // No Death Mode
         || i == 18)) // Flip Mode
@@ -7324,6 +7126,7 @@ void Game::quittomenu()
 {
     gamestate = TITLEMODE;
     graphics.fademode = 4;
+    FILESYSTEM_unmountassets(); // should be before music.play(6)
     music.play(6);
     graphics.backgrounddrawn = false;
     map.tdrawback = true;
@@ -7351,6 +7154,11 @@ void Game::quittomenu()
     else if (save_exists() || anything_unlocked())
     {
         returntomenu(Menu::play);
+        if (!insecretlab)
+        {
+            //Select "continue"
+            currentmenuoption = 0;
+        }
     }
     else
     {
@@ -7365,7 +7173,7 @@ void Game::returntolab()
     graphics.fademode = 4;
     map.gotoroom(119, 107);
     int player = obj.getplayer();
-    if (player > -1)
+    if (INBOUNDS_VEC(player, obj.entities))
     {
         obj.entities[player].xp = 132;
         obj.entities[player].yp = 137;
@@ -7378,7 +7186,7 @@ void Game::returntolab()
     savex = 132;
     savey = 137;
     savegc = 0;
-    if (player > -1)
+    if (INBOUNDS_VEC(player, obj.entities))
     {
         savedir = obj.entities[player].dir;
     }
@@ -7389,15 +7197,21 @@ void Game::returntolab()
 #if !defined(NO_CUSTOM_LEVELS)
 void Game::returntoeditor()
 {
-    game.gamestate = EDITORMODE;
+    gamestate = EDITORMODE;
 
-    graphics.textboxremove();
-    game.hascontrol = true;
-    game.advancetext = false;
-    game.completestop = false;
-    game.state = 0;
+    graphics.textbox.clear();
+    hascontrol = true;
+    advancetext = false;
+    completestop = false;
+    state = 0;
     graphics.showcutscenebars = false;
     graphics.fademode = 0;
+
+    ed.keydelay = 6;
+    ed.settingskey = true;
+    ed.oldnotedelay = 0;
+    ed.notedelay = 0;
+    ed.roomnamehide = 0;
 
     graphics.backgrounddrawn=false;
     music.fadeout();
@@ -7412,3 +7226,26 @@ void Game::returntoeditor()
     map.scrolldir = 0;
 }
 #endif
+
+void Game::returntopausemenu()
+{
+    ingame_titlemode = false;
+    returntomenu(kludge_ingametemp);
+    gamestate = MAPMODE;
+    map.kludge_to_bg();
+    map.tdrawback = true;
+    graphics.backgrounddrawn = false;
+    mapheld = true;
+    graphics.flipmode = graphics.setflipmode;
+    if (!map.custommode && !graphics.flipmode)
+    {
+        obj.flags[73] = true;
+    }
+    shouldreturntopausemenu = true;
+}
+
+void Game::unlockAchievement(const char *name) {
+#if !defined(MAKEANDPLAY)
+    if (!map.custommode) NETWORK_unlockAchievement(name);
+#endif
+}

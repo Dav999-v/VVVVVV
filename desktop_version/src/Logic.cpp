@@ -1,8 +1,28 @@
-#include "Logic.h"
-#include "Script.h"
+#include "Credits.h"
+#include "editor.h"
+#include "Entity.h"
+#include "Enums.h"
+#include "FileSystemUtils.h"
+#include "Game.h"
+#include "Graphics.h"
+#include "Map.h"
+#include "Music.h"
 #include "Network.h"
+#include "Script.h"
+#include "UtilityClass.h"
 
-extern scriptclass script;
+void titleupdatetextcol()
+{
+    graphics.col_tr = map.r - (help.glow / 4) - int(fRandom() * 4);
+    graphics.col_tg = map.g - (help.glow / 4) - int(fRandom() * 4);
+    graphics.col_tb = map.b - (help.glow / 4) - int(fRandom() * 4);
+    if (graphics.col_tr < 0) graphics.col_tr = 0;
+    if(graphics.col_tr>255) graphics.col_tr=255;
+    if (graphics.col_tg < 0) graphics.col_tg = 0;
+    if(graphics.col_tg>255) graphics.col_tg=255;
+    if (graphics.col_tb < 0) graphics.col_tb = 0;
+    if(graphics.col_tb>255) graphics.col_tb=255;
+}
 
 void titlelogic()
 {
@@ -12,6 +32,31 @@ void titlelogic()
 
     map.bypos -= 2;
     map.bscroll = -2;
+
+    if (!game.colourblindmode)
+    {
+        graphics.updatetowerbackground();
+    }
+
+    if (!game.menustart)
+    {
+        graphics.col_tr = (int)(164 - (help.glow / 2) - int(fRandom() * 4));
+        graphics.col_tg = 164 - (help.glow / 2) - int(fRandom() * 4);
+        graphics.col_tb = 164 - (help.glow / 2) - int(fRandom() * 4);
+    }
+    else
+    {
+        titleupdatetextcol();
+
+        graphics.updatetitlecolours();
+    }
+
+    graphics.crewframedelay--;
+    if (graphics.crewframedelay <= 0)
+    {
+        graphics.crewframedelay = 8;
+        graphics.crewframe = (graphics.crewframe + 1) % 2;
+    }
 
     if (game.menucountdown > 0)
     {
@@ -39,6 +84,65 @@ void maplogic()
 {
     //Misc
     help.updateglow();
+    graphics.updatetextboxes();
+    graphics.updatetitlecolours();
+
+    if (game.shouldreturntopausemenu)
+    {
+        game.shouldreturntopausemenu = false;
+        graphics.backgrounddrawn = false;
+        if (map.background == 3 || map.background == 4)
+        {
+            graphics.updatebackground(map.background);
+        }
+    }
+
+    graphics.crewframedelay--;
+    if (graphics.crewframedelay <= 0)
+    {
+        graphics.crewframedelay = 8;
+        graphics.crewframe = (graphics.crewframe + 1) % 2;
+    }
+
+    graphics.oldmenuoffset = graphics.menuoffset;
+    if (graphics.resumegamemode)
+    {
+        graphics.menuoffset += 25;
+        int threshold = map.extrarow ? 230 : 240;
+        if (graphics.menuoffset >= threshold)
+        {
+            graphics.menuoffset = threshold;
+            //go back to gamemode!
+            game.mapheld = true;
+            game.gamestate = GAMEMODE;
+        }
+    }
+    else if (graphics.menuoffset > 0)
+    {
+        graphics.menuoffset -= 25;
+        if (graphics.menuoffset < 0)
+        {
+            graphics.menuoffset = 0;
+        }
+    }
+
+    if (map.cursorstate == 0){
+        map.cursordelay++;
+        if (map.cursordelay > 10){
+            map.cursorstate = 1;
+            map.cursordelay = 0;
+        }
+    }else if (map.cursorstate == 1){
+        map.cursordelay++;
+        if (map.cursordelay > 30) map.cursorstate = 2;
+    }else if (map.cursorstate == 2){
+        map.cursordelay++;
+    }
+
+    if (map.finalmode)
+    {
+        map.glitchname = map.getglitchname(game.roomx, game.roomy);
+    }
 }
 
 
@@ -49,11 +153,22 @@ void gamecompletelogic()
     help.updateglow();
     graphics.crewframe = 0;
     map.scrolldir = 1;
+    graphics.updatetitlecolours();
+
+    graphics.col_tr = map.r - (help.glow / 4) - fRandom() * 4;
+    graphics.col_tg = map.g - (help.glow / 4) - fRandom() * 4;
+    graphics.col_tb = map.b - (help.glow / 4) - fRandom() * 4;
+    if (graphics.col_tr < 0) graphics.col_tr = 0;
+    if(graphics.col_tr>255) graphics.col_tr=255;
+    if (graphics.col_tg < 0) graphics.col_tg = 0;
+    if(graphics.col_tg>255) graphics.col_tg=255;
+    if (graphics.col_tb < 0) graphics.col_tb = 0;
+    if(graphics.col_tb>255) graphics.col_tb=255;
 
     game.creditposition--;
-    if (game.creditposition <= -game.creditmaxposition)
+    if (game.creditposition <= -Credits::creditmaxposition)
     {
-        game.creditposition = -game.creditmaxposition;
+        game.creditposition = -Credits::creditmaxposition;
         map.bscroll = 0;
     }
     else if (!game.press_action)
@@ -66,6 +181,7 @@ void gamecompletelogic()
         //Fix some graphical things
         graphics.showcutscenebars = false;
         graphics.cutscenebarspos = 0;
+        graphics.oldcutscenebarspos = 0;
         map.scrolldir = 0;
         map.bypos = 0;
         //Return to game
@@ -109,6 +225,7 @@ void gamecompletelogic2()
         map.colstate = 10;
         game.gamestate = TITLEMODE;
         graphics.fademode = 4;
+        FILESYSTEM_unmountassets(); // should be before music.playef(18)
         music.playef(18);
         game.returntomenu(Menu::play);
         game.createmenu(Menu::gamecompletecontinue);
@@ -119,6 +236,34 @@ void gamecompletelogic2()
 
 void gamelogic()
 {
+    if (!game.blackout && !game.completestop)
+    {
+        for (size_t i = 0; i < obj.entities.size(); i++)
+        {
+            //Is this entity on the ground? (needed for jumping)
+            if (obj.entitycollidefloor(i))
+            {
+                obj.entities[i].onground = 2;
+            }
+            else
+            {
+                obj.entities[i].onground--;
+            }
+
+            if (obj.entitycollideroof(i))
+            {
+                obj.entities[i].onroof = 2;
+            }
+            else
+            {
+                obj.entities[i].onroof--;
+            }
+
+            //Animate the entities
+            obj.animateentities(i);
+        }
+    }
+
     //Misc
     if (map.towermode)
     {
@@ -144,7 +289,10 @@ void gamelogic()
             obj.upsetmode = true;
             //change player to sad
             int i = obj.getplayer();
-            obj.entities[i].tile = 144;
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].tile = 144;
+            }
             music.playef(2);
         }
         if (obj.upset > 301) obj.upset = 301;
@@ -158,7 +306,10 @@ void gamelogic()
             obj.upsetmode = false;
             //change player to happy
             int i = obj.getplayer();
-            obj.entities[i].tile = 0;
+            if (INBOUNDS_VEC(i, obj.entities))
+            {
+                obj.entities[i].tile = 0;
+            }
         }
     }
     else
@@ -166,8 +317,13 @@ void gamelogic()
         obj.upset = 0;
     }
 
+    obj.oldtrophytext = obj.trophytext;
+
     if (map.towermode)
     {
+        map.oldypos = map.ypos;
+        map.oldspikeleveltop = map.spikeleveltop;
+        map.oldspikelevelbottom = map.spikelevelbottom;
         if(!game.completestop)
         {
             if (map.cameramode == 0)
@@ -201,7 +357,10 @@ void gamelogic()
             else if (map.cameramode == 4)
             {
                 int i = obj.getplayer();
-                map.cameraseek = map.ypos - (obj.entities[i].yp - 120);
+                if (INBOUNDS_VEC(i, obj.entities))
+                {
+                    map.cameraseek = map.ypos - (obj.entities[i].yp - 120);
+                }
 
                 map.cameraseek = map.cameraseek / 10;
                 map.cameraseekframe = 10;
@@ -219,14 +378,14 @@ void gamelogic()
                 {
                     int i = obj.getplayer();
                     map.ypos -= map.cameraseek;
-                    if (map.cameraseek > 0)
+                    if (map.cameraseek > 0 && INBOUNDS_VEC(i, obj.entities))
                     {
                         if (map.ypos < obj.entities[i].yp - 120)
                         {
                             map.ypos = obj.entities[i].yp - 120;
                         }
                     }
-                    else
+                    else if (INBOUNDS_VEC(i, obj.entities))
                     {
                         if (map.ypos > obj.entities[i].yp - 120)
                         {
@@ -239,7 +398,10 @@ void gamelogic()
                 else
                 {
                     int i = obj.getplayer();
-                    map.ypos = obj.entities[i].yp - 120;
+                    if (INBOUNDS_VEC(i, obj.entities))
+                    {
+                        map.ypos = obj.entities[i].yp - 120;
+                    }
                     map.bypos = map.ypos / 2;
                     map.cameramode = 0;
                     map.colsuperstate = 0;
@@ -303,6 +465,7 @@ void gamelogic()
         game.lifesequence();
     }
 
+    graphics.kludgeswnlinewidth = false;
 
     if (game.deathseq != -1)
     {
@@ -393,10 +556,13 @@ void gamelogic()
                 game.swndelay = 0;
                 if (game.swntimer >= game.swnrecord)
                 {
-                    if (game.swnmessage == 0) music.playef(25);
-                    game.swnmessage = 1;
                     game.swnrecord = game.swntimer;
-                    game.savestats();
+                    if (game.swnmessage == 0)
+                    {
+                        music.playef(25);
+                        game.savestats();
+                    }
+                    game.swnmessage = 1;
                 }
             }
         }
@@ -483,7 +649,7 @@ void gamelogic()
             if (game.roomx == 41 + game.scmprogress)   //he's in the same room
             {
                 int i = obj.getplayer();
-                if (obj.entities[i].ax > 0 && obj.entities[i].xp > 280)
+                if (INBOUNDS_VEC(i, obj.entities) && obj.entities[i].ax > 0 && obj.entities[i].xp > 280)
                 {
                     obj.entities[i].ax = 0;
                     obj.entities[i].dir = 0;
@@ -517,7 +683,7 @@ void gamelogic()
                     game.swnrank = 1;
                     if (game.swnbestrank < 1)
                     {
-                        NETWORK_unlockAchievement("vvvvvvsupgrav5");
+                        game.unlockAchievement("vvvvvvsupgrav5");
                         game.swnbestrank = 1;
                         game.swnmessage = 2+30;
                         music.playef(26);
@@ -528,7 +694,7 @@ void gamelogic()
                     game.swnrank = 2;
                     if (game.swnbestrank < 2)
                     {
-                        NETWORK_unlockAchievement("vvvvvvsupgrav10");
+                        game.unlockAchievement("vvvvvvsupgrav10");
                         game.swnbestrank = 2;
                         game.swnmessage = 2+30;
                         music.playef(26);
@@ -539,7 +705,7 @@ void gamelogic()
                     game.swnrank = 3;
                     if (game.swnbestrank < 3)
                     {
-                        NETWORK_unlockAchievement("vvvvvvsupgrav15");
+                        game.unlockAchievement("vvvvvvsupgrav15");
                         game.swnbestrank = 3;
                         game.swnmessage = 2+30;
                         music.playef(26);
@@ -550,7 +716,7 @@ void gamelogic()
                     game.swnrank = 4;
                     if (game.swnbestrank < 4)
                     {
-                        NETWORK_unlockAchievement("vvvvvvsupgrav20");
+                        game.unlockAchievement("vvvvvvsupgrav20");
                         game.swnbestrank = 4;
                         game.swnmessage = 2+30;
                         music.playef(26);
@@ -561,7 +727,7 @@ void gamelogic()
                     game.swnrank = 5;
                     if (game.swnbestrank < 5)
                     {
-                        NETWORK_unlockAchievement("vvvvvvsupgrav30");
+                        game.unlockAchievement("vvvvvvsupgrav30");
                         game.swnbestrank = 5;
                         game.swnmessage = 2+30;
                         music.playef(26);
@@ -572,7 +738,7 @@ void gamelogic()
                     game.swnrank = 6;
                     if (game.swnbestrank < 6)
                     {
-                        NETWORK_unlockAchievement("vvvvvvsupgrav60");
+                        game.unlockAchievement("vvvvvvsupgrav60");
                         game.swnbestrank = 6;
                         game.swnmessage = 2+30;
                         music.playef(26);
@@ -603,11 +769,16 @@ void gamelogic()
             }
             else if (game.swngame == 3)    //extend line
             {
-                obj.entities[obj.getlineat(84 - 32)].w += 24;
-                if (obj.entities[obj.getlineat(84 - 32)].w > 332)
+                int line = obj.getlineat(84 - 32);
+                if (INBOUNDS_VEC(line, obj.entities))
                 {
-                    obj.entities[obj.getlineat(84 - 32)].w = 332;
-                    game.swngame = 2;
+                    obj.entities[line].w += 24;
+                    if (obj.entities[line].w > 332)
+                    {
+                        obj.entities[line].w = 332;
+                        game.swngame = 2;
+                        graphics.kludgeswnlinewidth = true;
+                    }
                 }
             }
             else if (game.swngame == 4)    //create top line
@@ -619,12 +790,16 @@ void gamelogic()
             }
             else if (game.swngame == 5)    //remove line
             {
-                obj.entities[obj.getlineat(148 + 32)].xp += 24;
-                if (obj.entities[obj.getlineat(148 + 32)].xp > 320)
+                int line = obj.getlineat(148 + 32);
+                if (INBOUNDS_VEC(line, obj.entities))
                 {
-                    obj.removeentity(obj.getlineat(148 + 32));
-                    game.swnmode = false;
-                    game.swngame = 6;
+                    obj.entities[line].xp += 24;
+                    if (obj.entities[line].xp > 320)
+                    {
+                        obj.removeentity(line);
+                        game.swnmode = false;
+                        game.swngame = 6;
+                    }
                 }
             }
             else if (game.swngame == 6)    //Init the super gravitron
@@ -696,7 +871,7 @@ void gamelogic()
                 {
                     game.timetrialparlost = true;
                     int i = obj.getplayer();
-                    if (i > -1)
+                    if (INBOUNDS_VEC(i, obj.entities))
                     {
                         obj.entities[i].tile = 144;
                     }
@@ -713,28 +888,26 @@ void gamelogic()
             {
                 for (int i = obj.entities.size() - 1; i >= 0;  i--)
                 {
-                    if (obj.entities[i].isplatform)
+                    if (!obj.entities[i].isplatform
+                    || SDL_abs(obj.entities[i].vx) >= 0.000001f)
                     {
-                        if(abs(obj.entities[i].vx) < 0.000001f)
-                        {
-                            obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
+                        continue;
+                    }
 
-                            bool entitygone = obj.updateentities(i);                // Behavioral logic
-                            if (entitygone) continue;
-                            obj.updateentitylogic(i);             // Basic Physics
-                            obj.entitymapcollision(i);            // Collisions with walls
+                    int prevx = obj.entities[i].xp;
+                    int prevy = obj.entities[i].yp;
+                    obj.nocollisionat(prevx, prevy);
 
-                            obj.createblock(0, obj.entities[i].xp, obj.entities[i].yp, obj.entities[i].w, obj.entities[i].h);
-                            if (game.supercrewmate)
-                            {
-                                obj.movingplatformfix(i);
-                                obj.scmmovingplatformfix(i);
-                            }
-                            else
-                            {
-                                obj.movingplatformfix(i);
-                            }
-                        }
+                    bool entitygone = obj.updateentities(i);                // Behavioral logic
+                    if (entitygone) continue;
+                    obj.updateentitylogic(i);             // Basic Physics
+                    obj.entitymapcollision(i);            // Collisions with walls
+
+                    obj.moveblockto(prevx, prevy, obj.entities[i].xp, obj.entities[i].yp, obj.entities[i].w, obj.entities[i].h);
+                    obj.movingplatformfix(i, obj.getplayer());
+                    if (game.supercrewmate)
+                    {
+                        obj.movingplatformfix(i, obj.getscm());
                     }
                 }
             }
@@ -743,25 +916,27 @@ void gamelogic()
             {
                 for (int ie = obj.entities.size() - 1; ie >= 0;  ie--)
                 {
-                    if (obj.entities[ie].isplatform)
+                    if (!obj.entities[ie].isplatform
+                    || SDL_abs(obj.entities[ie].vy) >= 0.000001f)
                     {
-                        if(abs(obj.entities[ie].vy) < 0.000001f)
-                        {
-                            obj.removeblockat(obj.entities[ie].xp, obj.entities[ie].yp);
-
-                            bool entitygone = obj.updateentities(ie);                // Behavioral logic
-                            if (entitygone) continue;
-                            obj.updateentitylogic(ie);             // Basic Physics
-                            obj.entitymapcollision(ie);            // Collisions with walls
-
-                            obj.hormovingplatformfix(ie);
-                        }
+                        continue;
                     }
+
+                    int prevx = obj.entities[ie].xp;
+                    int prevy = obj.entities[ie].yp;
+                    obj.nocollisionat(prevx, prevy);
+
+                    bool entitygone = obj.updateentities(ie);                // Behavioral logic
+                    if (entitygone) continue;
+                    obj.updateentitylogic(ie);             // Basic Physics
+                    obj.entitymapcollision(ie);            // Collisions with walls
+
+                    obj.moveblockto(prevx, prevy, obj.entities[ie].xp, obj.entities[ie].yp, obj.entities[ie].w, obj.entities[ie].h);
                 }
                 //is the player standing on a moving platform?
                 int i = obj.getplayer();
                 float j = obj.entitycollideplatformfloor(i);
-                if (j > -1000)
+                if (INBOUNDS_VEC(i, obj.entities) && j > -1000)
                 {
                     obj.entities[i].newxp = obj.entities[i].xp + j;
                     obj.entitymapcollision(i);
@@ -769,7 +944,7 @@ void gamelogic()
                 else
                 {
                     j = obj.entitycollideplatformroof(i);
-                    if (j > -1000)
+                    if (INBOUNDS_VEC(i, obj.entities) && j > -1000)
                     {
                         obj.entities[i].newxp = obj.entities[i].xp + j;
                         obj.entitymapcollision(i);
@@ -779,13 +954,15 @@ void gamelogic()
 
             for (int ie = obj.entities.size() - 1; ie >= 0;  ie--)
             {
-                if (!obj.entities[ie].isplatform)
+                if (obj.entities[ie].isplatform)
                 {
-                    bool entitygone = obj.updateentities(ie);          // Behavioral logic
-                    if (entitygone) continue;
-                    obj.updateentitylogic(ie);       // Basic Physics
-                    obj.entitymapcollision(ie);      // Collisions with walls
+                    continue;
                 }
+
+                bool entitygone = obj.updateentities(ie);          // Behavioral logic
+                if (entitygone) continue;
+                obj.updateentitylogic(ie);       // Basic Physics
+                obj.entitymapcollision(ie);      // Collisions with walls
             }
 
             obj.entitycollisioncheck();         // Check ent v ent collisions, update states
@@ -794,7 +971,7 @@ void gamelogic()
             {
                 //special for tower: is the player touching any spike blocks?
                 int player = obj.getplayer();
-                if(obj.checktowerspikes(player) && graphics.fademode==0)
+                if(INBOUNDS_VEC(player, obj.entities) && obj.checktowerspikes(player) && graphics.fademode==0)
                 {
                     game.deathseq = 30;
                 }
@@ -803,7 +980,7 @@ void gamelogic()
             if(map.towermode && game.lifeseq==0)
             {
                 int player = obj.getplayer();
-                if(!map.invincibility)
+                if(!map.invincibility && INBOUNDS_VEC(player, obj.entities))
                 {
                     if (obj.entities[player].yp-map.ypos <= 0)
                     {
@@ -814,7 +991,7 @@ void gamelogic()
                         game.deathseq = 30;
                     }
                 }
-                else
+                else if (INBOUNDS_VEC(player, obj.entities))
                 {
                     if (obj.entities[player].yp-map.ypos <= 0)
                     {
@@ -830,7 +1007,7 @@ void gamelogic()
                     }
                 }
 
-                if (obj.entities[player].yp - map.ypos <= 40)
+                if (INBOUNDS_VEC(player, obj.entities) && obj.entities[player].yp - map.ypos <= 40)
                 {
                     map.spikeleveltop++;
                     if (map.spikeleveltop >= 8) map.spikeleveltop = 8;
@@ -840,7 +1017,7 @@ void gamelogic()
                     if (map.spikeleveltop > 0) map.spikeleveltop--;
                 }
 
-                if (obj.entities[player].yp - map.ypos >= 164)
+                if (INBOUNDS_VEC(player, obj.entities) && obj.entities[player].yp - map.ypos >= 164)
                 {
                     map.spikelevelbottom++;
                     if (map.spikelevelbottom >= 8) map.spikelevelbottom = 8;
@@ -855,22 +1032,24 @@ void gamelogic()
 
         //Using warplines?
         if (obj.customwarpmode) {
-            //Rewritten system for mobile update: basically, the new logic is to
-            //check if the player is leaving the map, and if so do a special check against
-            //warp lines for collision
-            obj.customwarpmodehon = false;
-            obj.customwarpmodevon = false;
+            if (!game.glitchrunnermode) {
+                //Rewritten system for mobile update: basically, the new logic is to
+                //check if the player is leaving the map, and if so do a special check against
+                //warp lines for collision
+                obj.customwarpmodehon = false;
+                obj.customwarpmodevon = false;
 
-            int i = obj.getplayer();
-            if ((game.door_down > -2 && obj.entities[i].yp >= 226-16) || (game.door_up > -2 && obj.entities[i].yp < -2+16) ||	(game.door_left > -2 && obj.entities[i].xp < -14+16) ||	(game.door_right > -2 && obj.entities[i].xp >= 308-16)){
-            //Player is leaving room
-            obj.customwarplinecheck(i);
-        }
+                int i = obj.getplayer();
+                if (INBOUNDS_VEC(i, obj.entities) && ((game.door_down > -2 && obj.entities[i].yp >= 226-16) || (game.door_up > -2 && obj.entities[i].yp < -2+16) ||	(game.door_left > -2 && obj.entities[i].xp < -14+16) ||	(game.door_right > -2 && obj.entities[i].xp >= 308-16))){
+                    //Player is leaving room
+                    obj.customwarplinecheck(i);
+                }
+            }
 
-        if(obj.customwarpmodehon){ map.warpy=true;
-        }else{ map.warpy=false; }
-        if(obj.customwarpmodevon){ map.warpx=true;
-        }else{ map.warpx=false; }
+            if(obj.customwarpmodehon){ map.warpy=true;
+            }else{ map.warpy=false; }
+            if(obj.customwarpmodevon){ map.warpx=true;
+            }else{ map.warpx=false; }
         }
 
         //Finally: Are we changing room?
@@ -886,26 +1065,42 @@ void gamelogic()
                         //ascii snakes
                         if (obj.entities[i].xp <= -80)
                         {
-                            if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
+                            if (obj.entities[i].isplatform)
+                            {
+                                obj.moveblockto(obj.entities[i].xp, obj.entities[i].yp, obj.entities[i].xp + 400, obj.entities[i].yp, obj.entities[i].w, obj.entities[i].h);
+                            }
                             obj.entities[i].xp += 400;
+                            obj.entities[i].lerpoldxp += 400;
                         }
                         else if (obj.entities[i].xp > 320)
                         {
-                            if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
+                            if (obj.entities[i].isplatform)
+                            {
+                                obj.moveblockto(obj.entities[i].xp, obj.entities[i].yp, obj.entities[i].xp - 400, obj.entities[i].yp, obj.entities[i].w, obj.entities[i].h);
+                            }
                             obj.entities[i].xp -= 400;
+                            obj.entities[i].lerpoldxp -= 400;
                         }
                     }
                     else
                     {
                         if (obj.entities[i].xp <= -10)
                         {
-                            if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
+                            if (obj.entities[i].isplatform)
+                            {
+                                obj.moveblockto(obj.entities[i].xp, obj.entities[i].yp, obj.entities[i].xp + 320, obj.entities[i].yp, obj.entities[i].w, obj.entities[i].h);
+                            }
                             obj.entities[i].xp += 320;
+                            obj.entities[i].lerpoldxp += 320;
                         }
                         else if (obj.entities[i].xp > 310)
                         {
-                            if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
+                            if (obj.entities[i].isplatform)
+                            {
+                                obj.moveblockto(obj.entities[i].xp, obj.entities[i].yp, obj.entities[i].xp - 320, obj.entities[i].yp, obj.entities[i].w, obj.entities[i].h);
+                            }
                             obj.entities[i].xp -= 320;
+                            obj.entities[i].lerpoldxp -= 320;
                         }
                     }
                 }
@@ -919,13 +1114,21 @@ void gamelogic()
                 if(obj.entities[i].type<50){ //Don't warp warp lines
                     if (obj.entities[i].yp <= -12)
                     {
-                        if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
+                        if (obj.entities[i].isplatform)
+                        {
+                            obj.moveblockto(obj.entities[i].xp, obj.entities[i].yp, obj.entities[i].xp, obj.entities[i].yp + 232, obj.entities[i].w, obj.entities[i].h);
+                        }
                         obj.entities[i].yp += 232;
+                        obj.entities[i].lerpoldyp += 232;
                     }
                     else if (obj.entities[i].yp > 226)
                     {
-                        if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
+                        if (obj.entities[i].isplatform)
+                        {
+                            obj.moveblockto(obj.entities[i].xp, obj.entities[i].yp, obj.entities[i].xp, obj.entities[i].yp - 232, obj.entities[i].w, obj.entities[i].h);
+                        }
                         obj.entities[i].yp -= 232;
+                        obj.entities[i].lerpoldyp -= 232;
                     }
                 }
             }
@@ -941,31 +1144,43 @@ void gamelogic()
                 {
                     if (obj.entities[i].xp <= -30)
                     {
-                        if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
+                        if (obj.entities[i].isplatform)
+                        {
+                            obj.moveblockto(obj.entities[i].xp, obj.entities[i].yp, obj.entities[i].xp + 350, obj.entities[i].yp, obj.entities[i].w, obj.entities[i].h);
+                        }
                         obj.entities[i].xp += 350;
+                        obj.entities[i].lerpoldxp += 350;
                     }
                     else if (obj.entities[i].xp > 320)
                     {
-                        if (obj.entities[i].isplatform) obj.removeblockat(obj.entities[i].xp, obj.entities[i].yp);
+                        if (obj.entities[i].isplatform)
+                        {
+                            obj.moveblockto(obj.entities[i].xp, obj.entities[i].yp, obj.entities[i].xp - 350, obj.entities[i].yp, obj.entities[i].w, obj.entities[i].h);
+                        }
                         obj.entities[i].xp -= 350;
+                        obj.entities[i].lerpoldxp -= 350;
                     }
                 }
             }
         }
 
+        bool screen_transition = false;
+
         if (!map.warpy && !map.towermode)
         {
             //Normal! Just change room
             int player = obj.getplayer();
-            if (game.door_down > -2 && obj.entities[player].yp >= 238)
+            if (INBOUNDS_VEC(player, obj.entities) && game.door_down > -2 && obj.entities[player].yp >= 238)
             {
                 obj.entities[player].yp -= 240;
                 map.gotoroom(game.roomx, game.roomy + 1);
+                screen_transition = true;
             }
-            if (game.door_up > -2 && obj.entities[player].yp < -2)
+            if (INBOUNDS_VEC(player, obj.entities) && game.door_up > -2 && obj.entities[player].yp < -2)
             {
                 obj.entities[player].yp += 240;
                 map.gotoroom(game.roomx, game.roomy - 1);
+                screen_transition = true;
             }
         }
 
@@ -973,15 +1188,17 @@ void gamelogic()
         {
             //Normal! Just change room
             int player = obj.getplayer();
-            if (game.door_left > -2 && obj.entities[player].xp < -14)
+            if (INBOUNDS_VEC(player, obj.entities) && game.door_left > -2 && obj.entities[player].xp < -14)
             {
                 obj.entities[player].xp += 320;
                 map.gotoroom(game.roomx - 1, game.roomy);
+                screen_transition = true;
             }
-            if (game.door_right > -2 && obj.entities[player].xp >= 308)
+            if (INBOUNDS_VEC(player, obj.entities) && game.door_right > -2 && obj.entities[player].xp >= 308)
             {
                 obj.entities[player].xp -= 320;
                 map.gotoroom(game.roomx + 1, game.roomy);
+                screen_transition = true;
             }
         }
 
@@ -992,12 +1209,12 @@ void gamelogic()
             {
                 //This is minitower 1!
                 int player = obj.getplayer();
-                if (game.door_left > -2 && obj.entities[player].xp < -14)
+                if (INBOUNDS_VEC(player, obj.entities) && game.door_left > -2 && obj.entities[player].xp < -14)
                 {
                     obj.entities[player].xp += 320;
                     map.gotoroom(48, 52);
                 }
-                if (game.door_right > -2 && obj.entities[player].xp >= 308)
+                if (INBOUNDS_VEC(player, obj.entities) && game.door_right > -2 && obj.entities[player].xp >= 308)
                 {
                     obj.entities[player].xp -= 320;
                     obj.entities[player].yp -= (71*8);
@@ -1008,7 +1225,7 @@ void gamelogic()
             {
                 //This is minitower 2!
                 int player = obj.getplayer();
-                if (game.door_left > -2 && obj.entities[player].xp < -14)
+                if (INBOUNDS_VEC(player, obj.entities) && game.door_left > -2 && obj.entities[player].xp < -14)
                 {
                     if (obj.entities[player].yp > 300)
                     {
@@ -1022,7 +1239,7 @@ void gamelogic()
                         map.gotoroom(50, 53);
                     }
                 }
-                if (game.door_right > -2 && obj.entities[player].xp >= 308)
+                if (INBOUNDS_VEC(player, obj.entities) && game.door_right > -2 && obj.entities[player].xp >= 308)
                 {
                     obj.entities[player].xp -= 320;
                     map.gotoroom(52, 53);
@@ -1039,13 +1256,12 @@ void gamelogic()
                     if (obj.entities[i].xp <= -10)
                     {
                         obj.entities[i].xp += 320;
+                        obj.entities[i].lerpoldxp += 320;
                     }
-                    else
+                    else if (obj.entities[i].xp > 310)
                     {
-                        if (obj.entities[i].xp > 310)
-                        {
-                            obj.entities[i].xp -= 320;
-                        }
+                        obj.entities[i].xp -= 320;
+                        obj.entities[i].lerpoldxp -= 320;
                     }
                 }
             }
@@ -1053,13 +1269,13 @@ void gamelogic()
             {
                 //Do not wrap! Instead, go to the correct room
                 int player = obj.getplayer();
-                if (game.door_left > -2 && obj.entities[player].xp < -14)
+                if (INBOUNDS_VEC(player, obj.entities) && game.door_left > -2 && obj.entities[player].xp < -14)
                 {
                     obj.entities[player].xp += 320;
                     obj.entities[player].yp -= (671 * 8);
                     map.gotoroom(108, 109);
                 }
-                if (game.door_right > -2 && obj.entities[player].xp >= 308)
+                if (INBOUNDS_VEC(player, obj.entities) && game.door_right > -2 && obj.entities[player].xp >= 308)
                 {
                     obj.entities[player].xp -= 320;
                     map.gotoroom(110, 104);
@@ -1092,42 +1308,60 @@ void gamelogic()
                 if (game.roomx == 117 && game.roomy == 102)
                 {
                     int i = obj.getplayer();
-                    obj.entities[i].yp = 225;
+                    if (INBOUNDS_VEC(i, obj.entities))
+                    {
+                        obj.entities[i].yp = 225;
+                    }
                     map.gotoroom(119, 100);
                     game.teleport = false;
                 }
                 else if (game.roomx == 119 && game.roomy == 100)
                 {
                     int i = obj.getplayer();
-                    obj.entities[i].yp = 225;
+                    if (INBOUNDS_VEC(i, obj.entities))
+                    {
+                        obj.entities[i].yp = 225;
+                    }
                     map.gotoroom(119, 103);
                     game.teleport = false;
                 }
                 else if (game.roomx == 119 && game.roomy == 103)
                 {
                     int i = obj.getplayer();
-                    obj.entities[i].xp = 0;
+                    if (INBOUNDS_VEC(i, obj.entities))
+                    {
+                        obj.entities[i].xp = 0;
+                    }
                     map.gotoroom(116, 103);
                     game.teleport = false;
                 }
                 else if (game.roomx == 116 && game.roomy == 103)
                 {
                     int i = obj.getplayer();
-                    obj.entities[i].yp = 225;
+                    if (INBOUNDS_VEC(i, obj.entities))
+                    {
+                        obj.entities[i].yp = 225;
+                    }
                     map.gotoroom(116, 100);
                     game.teleport = false;
                 }
                 else if (game.roomx == 116 && game.roomy == 100)
                 {
                     int i = obj.getplayer();
-                    obj.entities[i].xp = 0;
+                    if (INBOUNDS_VEC(i, obj.entities))
+                    {
+                        obj.entities[i].xp = 0;
+                    }
                     map.gotoroom(114, 102);
                     game.teleport = false;
                 }
                 else if (game.roomx == 114 && game.roomy == 102)
                 {
                     int i = obj.getplayer();
-                    obj.entities[i].yp = 225;
+                    if (INBOUNDS_VEC(i, obj.entities))
+                    {
+                        obj.entities[i].yp = 225;
+                    }
                     map.gotoroom(113, 100);
                     game.teleport = false;
                 }
@@ -1183,24 +1417,50 @@ void gamelogic()
                 }
             }
         }
+
+        if (screen_transition)
+        {
+            map.twoframedelayfix();
+        }
     }
-    int j;
+
+    //Update colour cycling for final level
+    if (map.finalmode && map.final_colormode)
+    {
+        map.final_aniframedelay--;
+        if(map.final_aniframedelay==0)
+        {
+            graphics.foregrounddrawn=false;
+        }
+        if (map.final_aniframedelay <= 0) {
+            map.final_aniframedelay = 2;
+            map.final_aniframe++;
+            if (map.final_aniframe >= 4)
+                map.final_aniframe = 0;
+        }
+    }
+
     if (game.roomchange)
     {
         //We've changed room? Let's bring our companion along!
         game.roomchange = false;
-        if (game.companion > 0)
+        int i = obj.getplayer();
+        if (game.companion > 0 && INBOUNDS_VEC(i, obj.entities))
         {
-            int i = obj.getplayer();
             //ok, we'll presume our companion has been destroyed in the room change. So:
             switch(game.companion)
             {
             case 6:
+            {
                 obj.createentity(obj.entities[i].xp, 121.0f, 15.0f,1);  //Y=121, the floor in that particular place!
-                j = obj.getcompanion();
-                obj.entities[j].vx = obj.entities[i].vx;
-                obj.entities[j].dir = obj.entities[i].dir;
+                int j = obj.getcompanion();
+                if (INBOUNDS_VEC(j, obj.entities))
+                {
+                    obj.entities[j].vx = obj.entities[i].vx;
+                    obj.entities[j].dir = obj.entities[i].dir;
+                }
                 break;
+            }
             case 7:
                 if (game.roomy <= 105)   //don't jump after him!
                 {
@@ -1212,9 +1472,12 @@ void gamelogic()
                     {
                         obj.createentity(obj.entities[i].xp, 86.0f, 16.0f, 1);  //Y=86, the ROOF in that particular place!
                     }
-                    j = obj.getcompanion();
-                    obj.entities[j].vx = obj.entities[i].vx;
-                    obj.entities[j].dir = obj.entities[i].dir;
+                    int j = obj.getcompanion();
+                    if (INBOUNDS_VEC(j, obj.entities))
+                    {
+                        obj.entities[j].vx = obj.entities[i].vx;
+                        obj.entities[j].dir = obj.entities[i].dir;
+                    }
                 }
                 break;
             case 8:
@@ -1223,16 +1486,22 @@ void gamelogic()
                     if (game.roomx == 102)
                     {
                         obj.createentity(310, 177, 17, 1);
-                        j = obj.getcompanion();
-                        obj.entities[j].vx = obj.entities[i].vx;
-                        obj.entities[j].dir = obj.entities[i].dir;
+                        int j = obj.getcompanion();
+                        if (INBOUNDS_VEC(j, obj.entities))
+                        {
+                            obj.entities[j].vx = obj.entities[i].vx;
+                            obj.entities[j].dir = obj.entities[i].dir;
+                        }
                     }
                     else
                     {
                         obj.createentity(obj.entities[i].xp, 177.0f, 17.0f, 1);
-                        j = obj.getcompanion();
-                        obj.entities[j].vx = obj.entities[i].vx;
-                        obj.entities[j].dir = obj.entities[i].dir;
+                        int j = obj.getcompanion();
+                        if (INBOUNDS_VEC(j, obj.entities))
+                        {
+                            obj.entities[j].vx = obj.entities[i].vx;
+                            obj.entities[j].dir = obj.entities[i].dir;
+                        }
                     }
                 }
                 break;
@@ -1247,9 +1516,12 @@ void gamelogic()
                     {
                         obj.createentity(obj.entities[i].xp, 185.0f, 18.0f, 15, 0, 1);
                     }
-                    j = obj.getcompanion();
-                    obj.entities[j].vx = obj.entities[i].vx;
-                    obj.entities[j].dir = obj.entities[i].dir;
+                    int j = obj.getcompanion();
+                    if (INBOUNDS_VEC(j, obj.entities))
+                    {
+                        obj.entities[j].vx = obj.entities[i].vx;
+                        obj.entities[j].dir = obj.entities[i].dir;
+                    }
                 }
                 break;
             case 10:
@@ -1259,9 +1531,12 @@ void gamelogic()
                     if (!obj.flags[59])
                     {
                         obj.createentity(225.0f, 169.0f, 18, graphics.crewcolour(game.lastsaved), 0, 10);
-                        j = obj.getcompanion();
-                        obj.entities[j].vx = obj.entities[i].vx;
-                        obj.entities[j].dir = obj.entities[i].dir;
+                        int j = obj.getcompanion();
+                        if (INBOUNDS_VEC(j, obj.entities))
+                        {
+                            obj.entities[j].vx = obj.entities[i].vx;
+                            obj.entities[j].dir = obj.entities[i].dir;
+                        }
                     }
                 }
                 else	if (game.roomy >= 52)
@@ -1269,17 +1544,23 @@ void gamelogic()
                     if (obj.flags[59])
                     {
                         obj.createentity(160.0f, 177.0f, 18, graphics.crewcolour(game.lastsaved), 0, 18, 1);
-                        j = obj.getcompanion();
-                        obj.entities[j].vx = obj.entities[i].vx;
-                        obj.entities[j].dir = obj.entities[i].dir;
+                        int j = obj.getcompanion();
+                        if (INBOUNDS_VEC(j, obj.entities))
+                        {
+                            obj.entities[j].vx = obj.entities[i].vx;
+                            obj.entities[j].dir = obj.entities[i].dir;
+                        }
                     }
                     else
                     {
                         obj.flags[59] = true;
                         obj.createentity(obj.entities[i].xp, -20.0f, 18.0f, graphics.crewcolour(game.lastsaved), 0, 10, 0);
-                        j = obj.getcompanion();
-                        obj.entities[j].vx = obj.entities[i].vx;
-                        obj.entities[j].dir = obj.entities[i].dir;
+                        int j = obj.getcompanion();
+                        if (INBOUNDS_VEC(j, obj.entities))
+                        {
+                            obj.entities[j].vx = obj.entities[i].vx;
+                            obj.entities[j].dir = obj.entities[i].dir;
+                        }
                     }
                 }
                 break;
@@ -1344,7 +1625,12 @@ void gamelogic()
 
                 if (game.scmmoveme)
                 {
-                    obj.entities[obj.getscm()].xp = obj.entities[obj.getplayer()].xp;
+                    int scm = obj.getscm();
+                    int player = obj.getplayer();
+                    if (INBOUNDS_VEC(scm, obj.entities) && INBOUNDS_VEC(player, obj.entities))
+                    {
+                        obj.entities[scm].xp = obj.entities[player].xp;
+                    }
                     game.scmmoveme = false;
                 }
                 break;
@@ -1354,11 +1640,19 @@ void gamelogic()
 
     game.activeactivity = obj.checkactivity();
 
-    if (game.activetele)
+    game.oldreadytotele = game.readytotele;
+    if (game.activetele && !game.advancetext && game.hascontrol && !script.running && !game.intimetrial)
     {
         int i = obj.getplayer();
-        obj.settemprect(i);
-        if (help.intersects(game.teleblock, obj.temprect))
+        SDL_Rect temprect = SDL_Rect();
+        if (INBOUNDS_VEC(i, obj.entities))
+        {
+            temprect.x = obj.entities[i].xp + obj.entities[i].cx;
+            temprect.y = obj.entities[i].yp + obj.entities[i].cy;
+            temprect.w = obj.entities[i].w;
+            temprect.h = obj.entities[i].h;
+        }
+        if (help.intersects(game.teleblock, temprect))
         {
             game.readytotele += 25;
             if (game.readytotele >= 255) game.readytotele = 255;
@@ -1384,8 +1678,110 @@ void gamelogic()
 #if !defined(NO_CUSTOM_LEVELS)
     if (game.shouldreturntoeditor)
     {
-        game.shouldreturntoeditor = false;
         game.returntoeditor();
+    }
+#endif
+
+    game.prev_act_fade = game.act_fade;
+    if (INBOUNDS_VEC(game.activeactivity, obj.blocks) && game.hascontrol && !script.running)
+    {
+        if (game.act_fade < 5)
+        {
+            game.act_fade = 5;
+        }
+        if (game.act_fade < 10)
+        {
+            game.act_fade++;
+        }
+    }
+    else if (game.act_fade > 5)
+    {
+        game.act_fade--;
+    }
+
+    if (obj.trophytext > 0)
+    {
+        obj.trophytext--;
+    }
+
+    graphics.updatetextboxes();
+
+    if (!game.colourblindmode)
+    {
+        if (map.towermode)
+        {
+            graphics.updatetowerbackground();
+        }
+        else
+        {
+            graphics.updatebackground(map.background);
+        }
+    }
+
+    if (!game.blackout)
+    {
+        //Update line colours!
+        if (graphics.linedelay <= 0)
+        {
+            graphics.linestate++;
+            if (graphics.linestate >= 10) graphics.linestate = 0;
+            graphics.linedelay = 2;
+        }
+        else
+        {
+            graphics.linedelay--;
+        }
+    }
+
+    graphics.trinketcolset = false;
+    for (int i = obj.entities.size() - 1; i >= 0; i--)
+    {
+        if (obj.entities[i].invis)
+        {
+            continue;
+        }
+
+        obj.entities[i].updatecolour();
+    }
+
+    if (map.finalmode)
+    {
+        map.glitchname = map.getglitchname(game.roomx, game.roomy);
+    }
+
+#if !defined(NO_CUSTOM_LEVELS)
+    ed.oldreturneditoralpha = ed.returneditoralpha;
+    if (map.custommode && !map.custommodeforreal && ed.returneditoralpha > 0)
+    {
+        ed.returneditoralpha -= 15;
+    }
+
+    // Editor ghosts!
+    if (game.ghostsenabled)
+    {
+        if (map.custommode && !map.custommodeforreal)
+        {
+            if (game.gametimer % 3 == 0)
+            {
+                int i = obj.getplayer();
+                GhostInfo ghost;
+                ghost.rx = game.roomx-100;
+                ghost.ry = game.roomy-100;
+                if (INBOUNDS_VEC(i, obj.entities))
+                {
+                    ghost.x = obj.entities[i].xp;
+                    ghost.y = obj.entities[i].yp;
+                    ghost.col = obj.entities[i].colour;
+                    ghost.realcol = obj.entities[i].realcol;
+                    ghost.frame = obj.entities[i].drawframe;
+                }
+                ed.ghosts.push_back(ghost);
+            }
+            if (ed.ghosts.size() > 100)
+            {
+                ed.ghosts.erase(ed.ghosts.begin());
+            }
+        }
     }
 #endif
 }

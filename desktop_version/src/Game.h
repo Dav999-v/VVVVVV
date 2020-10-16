@@ -1,16 +1,17 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <vector>
+#include <SDL.h>
 #include <string>
-#include "SDL.h"
-#include "Maths.h"
-#include "UtilityClass.h"
-#include "GraphicsUtil.h"
+#include <vector>
+
+// Forward decl without including all of <tinyxml2.h>
+namespace tinyxml2 { class XMLDocument; }
 
 struct MenuOption
 {
-    std::string text;
+    char text[161]; // 40 chars (160 bytes) covers the entire screen, + 1 more for null terminator
+    // WARNING: should match Game::menutextbytes below
     bool active;
 };
 
@@ -31,6 +32,7 @@ namespace Menu
         ed_music,
         ed_quit,
         options,
+        advancedoptions,
         accessibility,
         controller,
         cleardatamenu,
@@ -76,12 +78,17 @@ struct MenuStackFrame
     enum Menu::MenuName name;
 };
 
+struct CustomLevelStat
+{
+    std::string name;
+    int score; //0 - not played, 1 - finished, 2 - all trinkets, 3 - finished, all trinkets
+};
+
 
 class Game
 {
 public:
     void init(void);
-    ~Game(void);
 
 
     int crewrescued();
@@ -117,7 +124,7 @@ public:
 
     void unlocknum(int t);
 
-    void loadstats();
+    void loadstats(int *width, int *height, bool *vsync);
 
     void  savestats();
 
@@ -148,6 +155,9 @@ public:
 
     void loadsummary();
 
+    void readmaingamesave(tinyxml2::XMLDocument& doc);
+    std::string writemaingamesave(tinyxml2::XMLDocument& doc);
+
     void initteleportermode();
 
     std::string saveFilePath;
@@ -159,7 +169,6 @@ public:
     int door_down;
     int roomx, roomy, roomchangedir;
     int prevroomx, prevroomy;
-    int j, k;
 
     int savex, savey, saverx, savery;
     int savegc, savedir;
@@ -180,7 +189,6 @@ public:
     int jumppressed;
     int gravitycontrol;
 
-    bool infocus;
     bool muted;
     int mutebutton;
     bool musicmuted;
@@ -191,7 +199,6 @@ public:
     //Menu interaction stuff
     bool mapheld;
     int menupage;
-    //public var crewstats:Array = new Array();
     int lastsaved;
     int deathcounts;
 
@@ -217,14 +224,17 @@ public:
     std::vector<MenuOption> menuoptions;
     int currentmenuoption ;
     enum Menu::MenuName currentmenuname;
+    enum Menu::MenuName kludge_ingametemp;
     int current_credits_list_index;
     int menuxoff, menuyoff;
+    int menuspacing;
+    static const int menutextbytes = 161; // this is just sizeof(MenuOption::text), but doing that is non-standard
     std::vector<MenuStackFrame> menustack;
 
-    void inline option(std::string text, bool active = true)
+    void inline option(const char* text, bool active = true)
     {
         MenuOption menuoption;
-        menuoption.text = text;
+        SDL_strlcpy(menuoption.text, text, sizeof(menuoption.text));
         menuoption.active = active;
         menuoptions.push_back(menuoption);
     }
@@ -233,6 +243,7 @@ public:
     enum Menu::MenuName menudest;
 
     int creditposx, creditposy, creditposdelay;
+    int oldcreditposx;
 
 
     //Sine Wave Ninja Minigame
@@ -258,39 +269,40 @@ public:
     //Time Trials
     bool intimetrial, timetrialparlost;
     int timetrialcountdown, timetrialshinytarget, timetriallevel;
-    int timetrialpar, timetrialresulttime, timetrialrank;
+    int timetrialpar, timetrialresulttime, timetrialresultframes, timetrialrank;
 
     int creditposition;
-    int creditmaxposition;
-    std::vector<const char*> superpatrons;
-    std::vector<const char*> patrons;
-    std::vector<const char*> githubfriends;
+    int oldcreditposition;
     bool insecretlab;
 
     bool inintermission;
 
-    std::vector<bool> crewstats;
+    static const int numcrew = 6;
+    bool crewstats[numcrew];
 
     bool alarmon;
     int alarmdelay;
     bool blackout;
 
-    std::vector<bool> tele_crewstats;
+    bool tele_crewstats[numcrew];
 
-    std::vector<bool> quick_crewstats;
+    bool quick_crewstats[numcrew];
 
-    std::vector<int> unlock;
-    std::vector<int> unlocknotify;
+    static const int numunlock = 25;
+    bool unlock[numunlock];
+    bool unlocknotify[numunlock];
     bool anything_unlocked();
     int stat_trinkets;
     bool fullscreen;
     int bestgamedeaths;
 
 
-    std::vector<int>besttimes;
-    std::vector<int>besttrinkets;
-    std::vector<int>bestlives;
-    std::vector<int> bestrank;
+    static const int numtrials = 6;
+    int besttimes[numtrials];
+    int bestframes[numtrials];
+    int besttrinkets[numtrials];
+    int bestlives[numtrials];
+    int bestrank[numtrials];
 
     std::string tele_gametime;
     int tele_trinkets;
@@ -319,6 +331,7 @@ public:
     SDL_Rect teleblock;
     bool activetele;
     int readytotele;
+    int oldreadytotele;
     int activity_r, activity_g, activity_b;
     std::string activity_lastprompt;
 
@@ -328,6 +341,7 @@ public:
     bool backgroundtext;
 
     int activeactivity, act_fade;
+    int prev_act_fade;
 
     bool press_left, press_right, press_action, press_map;
 
@@ -339,7 +353,6 @@ public:
     bool savemystats;
 
 
-    bool advanced_mode;
     bool fullScreenEffect_badSignal;
     bool useLinearFilter;
     int stretchMode;
@@ -360,17 +373,17 @@ public:
     void savecustomlevelstats();
     void updatecustomlevelstats(std::string clevel, int cscore);
 
-    std::string customlevelstats[200]; //string array containing level filenames
-    int customlevelscore[200];//0 - not played, 1 - finished, 2 - all trinkets, 3 - finished, all trinkets
-    int numcustomlevelstats;
+    std::vector<CustomLevelStat> customlevelstats;
     bool customlevelstatsloaded;
 
 
     std::vector<SDL_GameControllerButton> controllerButton_map;
     std::vector<SDL_GameControllerButton> controllerButton_flip;
     std::vector<SDL_GameControllerButton> controllerButton_esc;
+    std::vector<SDL_GameControllerButton> controllerButton_restart;
 
     bool skipfakeload;
+    bool ghostsenabled;
 
     bool cliplaytest;
     int playx;
@@ -378,6 +391,8 @@ public:
     int playrx;
     int playry;
     int playgc;
+    int playmusic;
+    std::string playassets;
 
     void quittomenu();
     void returntolab();
@@ -390,8 +405,28 @@ public:
     void returntoeditor();
     bool shouldreturntoeditor;
 #endif
+
+    int gametimer;
+
+    bool inline inspecial()
+    {
+        return inintermission || insecretlab || intimetrial || nodeathmode;
+    }
+
+    bool over30mode;
+    bool glitchrunnermode; // Have fun speedrunners! <3 Misa
+
+    bool ingame_titlemode;
+
+    bool shouldreturntopausemenu;
+    void returntopausemenu();
+    void unlockAchievement(const char *name);
+
+    bool disablepause;
 };
 
+#ifndef GAME_DEFINITION
 extern Game game;
+#endif
 
 #endif /* GAME_H */

@@ -1,6 +1,8 @@
 #ifndef ENT_H
 #define ENT_H
 
+#include <SDL.h>
+
 #define		rn( rx,  ry) ((rx) + ((ry) * 100))
 
 class entclass
@@ -15,6 +17,8 @@ public:
     void setenemyroom(int rx, int ry);
 
     void settreadmillcolour(int rx, int ry);
+
+    void updatecolour();
 
 public:
     //Fundamentals
@@ -38,13 +42,14 @@ public:
     int onwall, onxwall, onywall;
 
     //Platforming specific
-    bool jumping;
     bool gravity;
     int onground, onroof;
-    int jumpframe;
     //Animation
     int framedelay, drawframe, walkingframe, dir, actionframe;
     int yp;int xp;
+
+    Uint32 realcol;
+    int lerpoldxp, lerpoldyp;
 };
 
 #endif /* ENT_H */

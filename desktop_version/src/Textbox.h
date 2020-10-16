@@ -1,7 +1,7 @@
 #ifndef TEXTBOX_H
 #define TEXTBOX_H
 
-#include "SDL.h"
+#include <SDL.h>
 #include <string>
 #include <vector>
 
@@ -40,6 +40,7 @@ public:
     int timer;
 
     float tl;
+    float prev_tl;
     int tm;
 
     int max;

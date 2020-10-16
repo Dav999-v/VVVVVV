@@ -1,9 +1,10 @@
 #ifndef MUSIC_H
 #define MUSIC_H
 
-#include "SoundSystem.h"
-
 #include <vector>
+
+#include "BinaryBlob.h"
+#include "SoundSystem.h"
 
 #define musicroom(rx, ry) ((rx) + ((ry) * 20))
 
@@ -12,18 +13,20 @@ class musicclass
 public:
 	void init();
 
-	void play(int t);
+	void play(int t, const double position_sec = 0.0, const int fadein_ms = 3000);
+	void resume(const int fadein_ms = 0);
 	void haltdasmusik();
 	void silencedasmusik();
 	void fadeMusicVolumeIn(int ms);
 	void fadeout();
+	void fadein();
 	void processmusicfadein();
 	void processmusic();
 	void niceplay(int t);
 
 	void changemusicarea(int x, int y);
 
-	int currentsong, musicfade, musicfadein;
+	int currentsong;
 	int resumesong;
 
 	void playef(int t);
@@ -40,18 +43,23 @@ public:
 	int FadeVolAmountPerFrame;
 	int musicVolume;
 
-	float volume;
-
-	bool custompd;
-
 	int fadeoutqueuesong; // -1 if no song queued
 	bool dontquickfade;
 
 	// MMMMMM mod settings
 	bool mmmmmm;
 	bool usingmmmmmm;
+
+	binaryBlob musicReadBlob;
+	int num_pppppp_tracks;
+	int num_mmmmmm_tracks;
+
+	Uint64 songStart;
+	Uint64 songEnd;
 };
 
+#ifndef MUSIC_DEFINITION
 extern musicclass music;
+#endif
 
 #endif /* MUSIC_H */

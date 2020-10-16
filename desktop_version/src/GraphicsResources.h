@@ -1,13 +1,13 @@
 #ifndef GRAPHICSRESOURCES_H
 #define GRAPHICSRESOURCES_H
 
-#include "SDL.h"
+#include <SDL.h>
 
 class GraphicsResources
 {
 public:
     void init(void);
-    ~GraphicsResources(void);
+    void destroy(void);
 
     SDL_Surface* im_tiles;
     SDL_Surface* im_tiles2;
@@ -16,7 +16,6 @@ public:
     SDL_Surface* im_sprites;
     SDL_Surface* im_flipsprites;
     SDL_Surface* im_bfont;
-    SDL_Surface* im_bfontmask;
     SDL_Surface* im_teleporter;
     SDL_Surface* im_image0;
     SDL_Surface* im_image1;

@@ -1,33 +1,41 @@
+#define OBJ_DEFINITION
 #include "Entity.h"
+
+#include <SDL.h>
+
+#include "editor.h"
 #include "Game.h"
+#include "Graphics.h"
 #include "Map.h"
+#include "Music.h"
+#include "Script.h"
 #include "UtilityClass.h"
 
 bool entityclass::checktowerspikes(int t)
 {
-    if (t < 0 || t >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("checktowerspikes() out-of-bounds!");
         return false;
     }
 
-    tempx = entities[t].xp + entities[t].cx;
-    tempy = entities[t].yp + entities[t].cy;
-    tempw = entities[t].w;
-    temph = entities[t].h;
-    rectset(tempx, tempy, tempw, temph);
+    SDL_Rect temprect;
+    temprect.x = entities[t].xp + entities[t].cx;
+    temprect.y = entities[t].yp + entities[t].cy;
+    temprect.w = entities[t].w;
+    temprect.h = entities[t].h;
 
-    tempx = getgridpoint(temprect.x);
-    tempy = getgridpoint(temprect.y);
-    tempw = getgridpoint(temprect.x + temprect.w - 1);
-    temph = getgridpoint(temprect.y + temprect.h - 1);
+    int tempx = getgridpoint(temprect.x);
+    int tempy = getgridpoint(temprect.y);
+    int tempw = getgridpoint(temprect.x + temprect.w - 1);
+    int temph = getgridpoint(temprect.y + temprect.h - 1);
     if (map.spikecollide(tempx, tempy)) return true;
     if (map.spikecollide(tempw, tempy)) return true;
     if (map.spikecollide(tempx, temph)) return true;
     if (map.spikecollide(tempw, temph)) return true;
     if (temprect.h >= 12)
     {
-        tpy1 = getgridpoint(temprect.y + 6);
+        int tpy1 = getgridpoint(temprect.y + 6);
         if (map.spikecollide(tempx, tpy1)) return true;
         if (map.spikecollide(tempw, tpy1)) return true;
         if (temprect.h >= 18)
@@ -48,8 +56,6 @@ bool entityclass::checktowerspikes(int t)
 
 void entityclass::init()
 {
-    skipblocks = false;
-    skipdirblocks = false;
     platformtile = 0;
     customplatformtile=0;
     vertplatforms = false;
@@ -62,26 +68,23 @@ void entityclass::init()
     customenemy=0;
     customwarpmode=false; customwarpmodevon=false; customwarpmodehon=false;
     trophytext = 0 ;
+    oldtrophytext = 0;
     trophytype = 0;
     altstates = 0;
 
 
-    for (int i = 0; i < 6; i++)
-    {
-      customcrewmoods[i]=1;
-    }
+    SDL_memset(customcrewmoods, true, sizeof(customcrewmoods));
 
-    flags.resize(100);
-    collect.resize(100);
-    customcollect.resize(100);
+    resetallflags();
+    SDL_memset(collect, false, sizeof(collect));
+    SDL_memset(customcollect, false, sizeof(customcollect));
+
+    k = 0;
 }
 
 void entityclass::resetallflags()
 {
-    for (int i = 0; i < 100; i++)
-    {
-        flags[i] = false;
-    }
+    SDL_memset(flags, false, sizeof(flags));
 }
 
 int entityclass::swncolour( int t )
@@ -753,7 +756,7 @@ void entityclass::generateswnwave( int t )
     }
 }
 
-void entityclass::createblock( int t, int xp, int yp, int w, int h, int trig /*= 0*/ )
+void entityclass::createblock( int t, int xp, int yp, int w, int h, int trig /*= 0*/, const std::string& script /*= ""*/ )
 {
     k = blocks.size();
 
@@ -776,6 +779,7 @@ void entityclass::createblock( int t, int xp, int yp, int w, int h, int trig /*=
         block.hp = h;
         block.rectset(xp, yp, w, h);
         block.trigger = trig;
+        block.script = script;
         break;
     case DAMAGE: //Damage
         block.type = DAMAGE;
@@ -1037,14 +1041,21 @@ void entityclass::createblock( int t, int xp, int yp, int w, int h, int trig /*=
     blocks.push_back(block);
 }
 
-void entityclass::removeentity(int t)
+// Remove entity, and return true if entity was successfully removed
+bool entityclass::removeentity(int t)
 {
-    if (t < 0 || t > (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("removeentity() out-of-bounds!");
-        return;
+        return true;
+    }
+    if (entities[t].rule == 0 && t == getplayer())
+    {
+        // Don't remove the player entity!
+        return false;
     }
     entities.erase(entities.begin() + t);
+    return true;
 }
 
 void entityclass::removeallblocks()
@@ -1054,7 +1065,7 @@ void entityclass::removeallblocks()
 
 void entityclass::removeblock( int t )
 {
-    if (t < 0 || t > (int) blocks.size())
+    if (!INBOUNDS_VEC(t, blocks))
     {
         puts("removeblock() out-of-bounds!");
         return;
@@ -1067,6 +1078,39 @@ void entityclass::removeblockat( int x, int y )
     for (size_t i = 0; i < blocks.size(); i++)
     {
         if(blocks[i].xp == int(x) && blocks[i].yp == int(y)) removeblock_iter(i);
+    }
+}
+
+void entityclass::moveblockto(int x1, int y1, int x2, int y2, int w, int h)
+{
+    for (size_t i = 0; i < blocks.size(); i++)
+    {
+        if (blocks[i].xp == x1 && blocks[i].yp == y1)
+        {
+            blocks[i].xp = x2;
+            blocks[i].yp = y2;
+
+            blocks[i].wp = w;
+            blocks[i].hp = h;
+
+            blocks[i].rectset(blocks[i].xp, blocks[i].yp, blocks[i].wp, blocks[i].hp);
+            break;
+        }
+    }
+}
+
+void entityclass::nocollisionat(int x, int y)
+{
+    for (size_t i = 0; i < blocks.size(); i++)
+    {
+        if (blocks[i].xp == x && blocks[i].yp == y)
+        {
+            blocks[i].wp = 0;
+            blocks[i].hp = 0;
+
+            blocks[i].rect.w = blocks[i].wp;
+            blocks[i].rect.h = blocks[i].hp;
+        }
     }
 }
 
@@ -1083,7 +1127,7 @@ void entityclass::removetrigger( int t )
 
 void entityclass::copylinecross( int t )
 {
-    if (t < 0 || t > (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("copylinecross() out-of-bounds!");
         return;
@@ -1094,7 +1138,7 @@ void entityclass::copylinecross( int t )
 
 void entityclass::revertlinecross( int t, int s )
 {
-    if (t < 0 || t > (int) entities.size() || s < 0 || s > (int) linecrosskludge.size())
+    if (!INBOUNDS_VEC(t, entities) || !INBOUNDS_VEC(s, linecrosskludge))
     {
         puts("revertlinecross() out-of-bounds!");
         return;
@@ -1157,7 +1201,20 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
     //Rule 4 is a horizontal line, 5 is vertical
     //Rule 6 is a crew member
 
+#if !defined(NO_CUSTOM_LEVELS)
+    // Special case for gray Warp Zone tileset!
+    int room = game.roomx-100 + (game.roomy-100) * ed.maxwidth;
+    bool custom_gray = INBOUNDS_ARR(room, ed.level)
+    && ed.level[room].tileset == 3 && ed.level[room].tilecol == 6;
+#else
+    bool custom_gray = false;
+#endif
+
     entclass entity;
+    entity.xp = xp;
+    entity.yp = yp;
+    entity.lerpoldxp = xp;
+    entity.lerpoldyp = yp;
     entity.type = t;
     switch(t)
     {
@@ -1165,8 +1222,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.rule = 0; //Playable character
         entity.tile = 0;
         entity.colour = 0;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.cx = 6;
         entity.cy = 2;
         entity.w = 12;
@@ -1179,8 +1234,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         break;
     case 1: //Simple enemy, bouncing off the walls
         entity.rule = 1;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.behave = vx;
         entity.para = vy;
         entity.w = 16;
@@ -1243,8 +1296,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
           if (gridmatch(p1, p2, p3, p4, -32, -40, 352, 264)) entity.tile = 27;
         }
 
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 32;
         entity.h = 8;
 
@@ -1313,8 +1364,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
             if (game.roomx == 50 && game.roomy == 52) entity.tile = 22;
         }
 
-        entity.xp = xp;
-        entity.yp = yp;
         entity.cy = -1;
         entity.w = 32;
         entity.h = 10;
@@ -1330,8 +1379,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 3;
         entity.size = 1;
         entity.tile = 10;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.cy = -1;
         entity.w = 8;
         entity.h = 10;
@@ -1347,8 +1394,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 4;
         entity.size = 0;
         entity.tile = 11;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 16;
         entity.h = 16;
         entity.behave = vx;
@@ -1361,8 +1406,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 5;  //Particles
         entity.colour = 1;
         entity.size = 3;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.vx = vx;
         entity.vy = vy;
 
@@ -1373,8 +1416,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 5;  //Particles
         entity.colour = 2;
         entity.size = 3;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.vx = vx;
         entity.vy = vy;
 
@@ -1385,8 +1426,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 6;
         entity.size = 4;
         entity.tile = 48;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 8;
         entity.h = 8;
         entity.onentity = 1;
@@ -1394,15 +1433,13 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
 
         //Check if it's already been collected
         entity.para = vx;
-        if (collect[vx]) return;
+        if (!INBOUNDS_ARR(vx, collect) || collect[(int) vx]) return;
         break;
     case 9: //Something Shiny
         entity.rule = 3;
         entity.type = 7;
         entity.size = 0;
         entity.tile = 22;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 16;
         entity.h = 16;
         entity.colour = 3;
@@ -1411,15 +1448,13 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
 
         //Check if it's already been collected
         entity.para = vx;
-        if (collect[vx]) return;
+        if (!INBOUNDS_ARR(vx, collect) || collect[(int) vx]) return;
         break;
     case 10: //Savepoint
         entity.rule = 3;
         entity.type = 8;
         entity.size = 0;
         entity.tile = 20 + vx;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 16;
         entity.h = 16;
         entity.colour = 4;
@@ -1443,8 +1478,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 9;
         entity.size = 5;
         entity.life = 0;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = vx;
         entity.h = 1;
         entity.onentity = 1;
@@ -1454,8 +1487,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 10;
         entity.size = 6;
         entity.life = 0;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 1;
         entity.h = vx;
         //entity.colour = 0;
@@ -1466,8 +1497,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 11;
         entity.size = 0;
         entity.tile = 18;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 16;
         entity.h = 16;
         entity.colour = 10;
@@ -1482,8 +1511,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 100;
         entity.size = 7;
         entity.tile = 1; //inactive
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 96;
         entity.h = 96;
         entity.colour = 100;
@@ -1496,8 +1523,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 12; //A special case!
         entity.tile = 144;
         entity.colour = 13; //144 for sad :(
-        entity.xp = xp;
-        entity.yp = yp;
         entity.cx = 6;
         entity.cy = 2;
         entity.w = 12;
@@ -1513,8 +1538,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 12; //A special case!
         entity.tile = 144+6;
         entity.colour = 14; //144 for sad (upside down+12):(
-        entity.xp = xp;
-        entity.yp = yp;
         entity.cx = 6;
         entity.cy = 2;
         entity.w = 12;
@@ -1530,8 +1553,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 12; //A special case!
         entity.tile = 144;
         entity.colour = 16; //144 for sad :(
-        entity.xp = xp;
-        entity.yp = yp;
         entity.cx = 6;
         entity.cy = 2;
         entity.w = 12;
@@ -1555,8 +1576,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         {
             entity.tile = 144;
         }
-        entity.xp = xp;
-        entity.yp = yp;
         entity.cx = 6;
         entity.cy = 2;
         entity.w = 12;
@@ -1578,8 +1597,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 12; //A special case!
         entity.tile = 0;
         entity.colour = 6; //54 for sad :(
-        entity.xp = xp;
-        entity.yp = yp;
         entity.cx = 6;
         entity.cy = 2;
         entity.w = 12;
@@ -1595,8 +1612,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 13;
         entity.size = 0;
         entity.tile = 16 + vx;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 16;
         entity.h = 16;
         entity.colour = 4;
@@ -1609,8 +1624,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 13;
         entity.size = 0;
         entity.tile = 16 + vx;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 16;
         entity.h = 16;
         entity.colour = 4;
@@ -1623,8 +1636,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 7;
         entity.size = 0;
         entity.tile = 22;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 16;
         entity.h = 16;
         entity.colour = 3;
@@ -1633,14 +1644,12 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
 
         //Check if it's already been collected
         entity.para = vx;
-        if (!collect[ (vx)]) return;
+        if (INBOUNDS_ARR(vx, collect) && !collect[(int) vx]) return;
         break;
     case 23: //SWN Enemies
         //Given a different behavior, these enemies are especially for SWN mode and disappear outside the screen.
         entity.rule = 1;
         entity.type = 23;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.behave = vx;
         entity.para = vy;
         entity.w = 16;
@@ -1688,8 +1697,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         {
             entity.tile = 144;
         }
-        entity.xp = xp;
-        entity.yp = yp;
         entity.cx = 6;
         entity.cy = 2;
         entity.w = 12;
@@ -1715,8 +1722,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.rule = 3;
         entity.type = 15;
         entity.size = 0;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 16;
         entity.h = 16;
         entity.colour = 4;
@@ -1778,6 +1783,8 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
                 entity.tile = 188 + vx;
                 entity.colour = 37;
                 entity.h += 3;
+                entity.lerpoldyp -= 3;
+                entity.yp -= 3;
             }
             break;
         case 8:
@@ -1892,8 +1899,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 11;
         entity.size = 0;
         entity.tile = 18;
-        entity.xp =  (xp);
-        entity.yp =  (yp);
         entity.w = 16;
         entity.h = 16;
         entity.colour = 3;
@@ -1908,8 +1913,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 51;
         entity.size = 6;
         entity.life = 0;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 1;
         entity.h = vx;
         //entity.colour = 0;
@@ -1922,8 +1925,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 52;
         entity.size = 6;
         entity.life = 0;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = 1;
         entity.h = vx;
         //entity.colour = 0;
@@ -1936,8 +1937,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 53;
         entity.size = 5;
         entity.life = 0;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = vx;
         entity.h = 1;
         entity.onentity = 1;
@@ -1949,8 +1948,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
         entity.type = 54;
         entity.size = 5;
         entity.life = 0;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.w = vx;
         entity.h = 1;
         entity.onentity = 1;
@@ -1968,8 +1965,6 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
           entity.tile = 0;
         }
         entity.colour = crewcolour(int(vy));
-        entity.xp = xp;
-        entity.yp = yp;
         entity.cx = 6;
         entity.cy = 2;
         entity.w = 12;
@@ -1984,13 +1979,11 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
 
         //Check if it's already been collected
         entity.para = vx;
-        if (customcollect[vx]) return;
+        if (!INBOUNDS_ARR(vx, customcollect) || customcollect[(int) vx]) return;
         break;
       case 56: //Custom enemy
         entity.rule = 1;
         entity.type = 1;
-        entity.xp = xp;
-        entity.yp = yp;
         entity.behave = vx;
         entity.para = vy;
         entity.w = 16;
@@ -2060,7 +2053,79 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
           }
         }
 
+        if(custom_gray){
+          entity.colour = 18;
+        }
+
         break;
+    }
+
+    entity.drawframe = entity.tile;
+    if (!entity.invis)
+    {
+        entity.updatecolour();
+    }
+    if (entity.type == 1)
+    {
+        switch (entity.animate)
+        {
+        case 0: // Simple Loop
+        case 1: // Simple Loop
+        case 2: // Simpler Loop (just two frames)
+        case 5: // Simpler Loop (just two frames) (slower)
+        case 7: // Simpler Loop (just two frames) (slower) (with directions!)
+        case 11: // Conveyor right
+            entity.drawframe++;
+            break;
+        case 3: // Simpler Loop (just two frames, but double sized)
+        case 4: // Simpler Loop (just two frames, but double sized) (as above, but slower)
+        case 6: // Normal Loop (four frames, double sized)
+            entity.drawframe += 2;
+            break;
+        case 10: // Conveyor left
+            entity.drawframe += 3;
+            break;
+        default:
+            break;
+        }
+    }
+    else if (entity.type == 2 && entity.animate == 2)
+    {
+        entity.drawframe++;
+    }
+    // Make sure our crewmates are facing the player if applicable
+    // Also make sure they're flipped if they're flipped
+    // FIXME: Duplicated from updateentities!
+    if (entity.rule == 6 || entity.rule == 7)
+    {
+        if (entity.tile == 144 || entity.tile == 144+6)
+        {
+            entity.drawframe = 144;
+        }
+        if (entity.state == 18)
+        {
+            // Face the player
+            // FIXME: Duplicated from updateentities!
+            int j = getplayer();
+            if (INBOUNDS_VEC(j, entities) && entities[j].xp > entity.xp + 5)
+            {
+                entity.dir = 1;
+            }
+            else if (INBOUNDS_VEC(j, entities) && entities[j].xp < entity.xp - 5)
+            {
+                entity.dir = 0;
+            }
+        }
+        // Fix drawframe
+        // FIXME: Duplicated from animateentities!
+        if (entity.rule == 7)
+        {
+            entity.drawframe += 6;
+        }
+        if (entity.dir == 0)
+        {
+            entity.drawframe += 3;
+        }
     }
 
     entities.push_back(entity);
@@ -2069,7 +2134,7 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
 //Returns true if entity is removed
 bool entityclass::updateentities( int i )
 {
-    if (i < 0 || i >= (int) entities.size())
+    if (!INBOUNDS_VEC(i, entities))
     {
         puts("updateentities() out-of-bounds!");
         return true;
@@ -2259,15 +2324,13 @@ bool entityclass::updateentities( int i )
                 {
                     if (entities[i].xp >= 335)
                     {
-                        removeentity(i);
-                        return true;
+                        return removeentity(i);
                     }
                     if (game.roomx == 117)
                     {
                         if (entities[i].xp >= (33*8)-32)
                         {
-                            removeentity(i);
-                            return true;
+                            return removeentity(i);
                         }
                         //collector for LIES
                     }
@@ -2296,15 +2359,13 @@ bool entityclass::updateentities( int i )
                 {
                     if (entities[i].yp <= -60)
                     {
-                        removeentity(i);
-                        return true;
+                        return removeentity(i);
                     }
                     if (game.roomy == 108)
                     {
                         if (entities[i].yp <= 60)
                         {
-                            removeentity(i);
-                            return true;
+                            return removeentity(i);
                         }
                         //collector for factory
                     }
@@ -2373,22 +2434,26 @@ bool entityclass::updateentities( int i )
             case 16: //MAVERICK BUS FOLLOWS HIS OWN RULES
                 if (entities[i].state == 0)   //Init
                 {
+                    int player = getplayer();
                     //first, y position
-                    if (entities[getplayer()].yp > 14 * 8)
+                    if (INBOUNDS_VEC(player, entities) && entities[player].yp > 14 * 8)
                     {
                         entities[i].tile = 120;
                         entities[i].yp = (28*8)-62;
+                        entities[i].lerpoldyp = (28*8)-62;
                     }
                     else
                     {
                         entities[i].tile = 96;
                         entities[i].yp = 24;
+                        entities[i].lerpoldyp = 24;
                     }
                     //now, x position
-                    if (entities[getplayer()].xp > 20 * 8)
+                    if (INBOUNDS_VEC(player, entities) && entities[player].xp > 20 * 8)
                     {
                         //approach from the left
                         entities[i].xp = -64;
+                        entities[i].lerpoldxp = -64;
                         entities[i].state = 2;
                         bool entitygone = updateentities(i); //right
                         if (entitygone) return true;
@@ -2397,6 +2462,7 @@ bool entityclass::updateentities( int i )
                     {
                         //approach from the left
                         entities[i].xp = 320;
+                        entities[i].lerpoldxp = 320;
                         entities[i].state = 3;
                         bool entitygone = updateentities(i); //left
                         if (entitygone) return true;
@@ -2425,6 +2491,7 @@ bool entityclass::updateentities( int i )
                 {
                     entities[i].statedelay = 6;
                     entities[i].xp -=  int(entities[i].para);
+                    entities[i].lerpoldxp -=  int(entities[i].para);
                 }
                 break;
             case 18: //Special for ASCII Snake (right)
@@ -2432,6 +2499,7 @@ bool entityclass::updateentities( int i )
                 {
                     entities[i].statedelay = 6;
                     entities[i].xp += int(entities[i].para);
+                    entities[i].lerpoldxp += int(entities[i].para);
                 }
                 break;
             }
@@ -2499,8 +2567,7 @@ bool entityclass::updateentities( int i )
                 if (entities[i].life <= 0)
                 {
                     removeblockat(entities[i].xp, entities[i].yp);
-                    removeentity(i);
-                    return true;
+                    return removeentity(i);
                 }
             }
             break;
@@ -2508,9 +2575,8 @@ bool entityclass::updateentities( int i )
             //wait for collision
             if (entities[i].state == 1)
             {
-                removeentity(i);
                 game.gravitycontrol = (game.gravitycontrol + 1) % 2;
-                return true;
+                return removeentity(i);
 
             }
             break;
@@ -2520,8 +2586,7 @@ bool entityclass::updateentities( int i )
                 entities[i].life--;
                 if (entities[i].life < 0)
                 {
-                    removeentity(i);
-                    return true;
+                    return removeentity(i);
                 }
             }
             break;
@@ -2530,19 +2595,25 @@ bool entityclass::updateentities( int i )
             if (entities[i].state == 1)
             {
                 music.playef(4);
-                collect[entities[i].para] = true;
+                if (INBOUNDS_ARR(entities[i].para, customcollect))
+                {
+                    collect[(int) entities[i].para] = true;
+                }
 
-                removeentity(i);
-                return true;
+                return removeentity(i);
             }
             break;
         case 7: //Found a trinket
             //wait for collision
             if (entities[i].state == 1)
             {
+                if (INBOUNDS_ARR(entities[i].para, collect))
+                {
+                    collect[(int) entities[i].para] = true;
+                }
+
                 if (game.intimetrial)
                 {
-                    collect[entities[i].para] = true;
                     music.playef(25);
                 }
                 else
@@ -2550,15 +2621,13 @@ bool entityclass::updateentities( int i )
                     game.state = 1000;
                     if(music.currentsong!=-1) music.silencedasmusik();
                     music.playef(3);
-                    collect[entities[i].para] = true;
                     if (game.trinkets() > game.stat_trinkets && !map.custommode)
                     {
                         game.stat_trinkets = game.trinkets();
                     }
                 }
 
-                removeentity(i);
-                return true;
+                return removeentity(i);
             }
             break;
         case 8: //Savepoints
@@ -2583,18 +2652,22 @@ bool entityclass::updateentities( int i )
 
                 if (entities[i].tile == 20)
                 {
-                    game.savey = entities[i].yp - 1;
+                    game.savey = entities[i].yp - 2;
                     game.savegc = 1;
                 }
                 else if (entities[i].tile == 21)
                 {
-                    game.savey = entities[i].yp-8;
+                    game.savey = entities[i].yp - 7;
                     game.savegc = 0;
                 }
 
                 game.saverx = game.roomx;
                 game.savery = game.roomy;
-                game.savedir = entities[getplayer()].dir;
+                int player = getplayer();
+                if (INBOUNDS_VEC(player, entities))
+                {
+                    game.savedir = entities[player].dir;
+                }
                 entities[i].state = 0;
             }
             break;
@@ -2621,14 +2694,14 @@ bool entityclass::updateentities( int i )
                 music.playef(8);
                 game.gravitycontrol = (game.gravitycontrol + 1) % 2;
                 game.totalflips++;
-                temp = getplayer();
+                int temp = getplayer();
                 if (game.gravitycontrol == 0)
                 {
-                    if (entities[temp].vy < 3) entities[temp].vy = 3;
+                    if (INBOUNDS_VEC(temp, entities) && entities[temp].vy < 3) entities[temp].vy = 3;
                 }
                 else
                 {
-                    if (entities[temp].vy > -3) entities[temp].vy = -3;
+                    if (INBOUNDS_VEC(temp, entities) && entities[temp].vy > -3) entities[temp].vy = -3;
                 }
             }
             else if (entities[i].state == 2)
@@ -2677,24 +2750,24 @@ bool entityclass::updateentities( int i )
             if (entities[i].state == 1)
             {
                 //happy!
-                if (entities[k].rule == 6)	entities[k].tile = 0;
-                if (entities[k].rule == 7)	entities[k].tile = 6;
+                if (INBOUNDS_VEC(k, entities) && entities[k].rule == 6)	entities[k].tile = 0;
+                if (INBOUNDS_VEC(k, entities) && entities[k].rule == 7)	entities[k].tile = 6;
                 //Stay close to the hero!
                 int j = getplayer();
-                if (entities[j].xp > entities[i].xp + 5)
+                if (INBOUNDS_VEC(j, entities) && entities[j].xp > entities[i].xp + 5)
                 {
                     entities[i].dir = 1;
                 }
-                else if (entities[j].xp < entities[i].xp - 5)
+                else if (INBOUNDS_VEC(j, entities) && entities[j].xp < entities[i].xp - 5)
                 {
                     entities[i].dir = 0;
                 }
 
-                if (entities[j].xp > entities[i].xp + 45)
+                if (INBOUNDS_VEC(j, entities) && entities[j].xp > entities[i].xp + 45)
                 {
                     entities[i].ax = 3;
                 }
-                else if (entities[j].xp < entities[i].xp - 45)
+                else if (INBOUNDS_VEC(j, entities) && entities[j].xp < entities[i].xp - 45)
                 {
                     entities[i].ax = -3;
                 }
@@ -2712,20 +2785,20 @@ bool entityclass::updateentities( int i )
             {
                 //Basic rules, don't change expression
                 int j = getplayer();
-                if (entities[j].xp > entities[i].xp + 5)
+                if (INBOUNDS_VEC(j, entities) && entities[j].xp > entities[i].xp + 5)
                 {
                     entities[i].dir = 1;
                 }
-                else if (entities[j].xp < entities[i].xp - 5)
+                else if (INBOUNDS_VEC(j, entities) && entities[j].xp < entities[i].xp - 5)
                 {
                     entities[i].dir = 0;
                 }
 
-                if (entities[j].xp > entities[i].xp + 45)
+                if (INBOUNDS_VEC(j, entities) && entities[j].xp > entities[i].xp + 45)
                 {
                     entities[i].ax = 3;
                 }
-                else if (entities[j].xp < entities[i].xp - 45)
+                else if (INBOUNDS_VEC(j, entities) && entities[j].xp < entities[i].xp - 45)
                 {
                     entities[i].ax = -3;
                 }
@@ -2735,20 +2808,20 @@ bool entityclass::updateentities( int i )
                 //Everything from 10 on is for cutscenes
                 //Basic rules, don't change expression
                 int j = getplayer();
-                if (entities[j].xp > entities[i].xp + 5)
+                if (INBOUNDS_VEC(j, entities) && entities[j].xp > entities[i].xp + 5)
                 {
                     entities[i].dir = 1;
                 }
-                else if (entities[j].xp < entities[i].xp - 5)
+                else if (INBOUNDS_VEC(j, entities) && entities[j].xp < entities[i].xp - 5)
                 {
                     entities[i].dir = 0;
                 }
 
-                if (entities[j].xp > entities[i].xp + 45)
+                if (INBOUNDS_VEC(j, entities) && entities[j].xp > entities[i].xp + 45)
                 {
                     entities[i].ax = 3;
                 }
-                else if (entities[j].xp < entities[i].xp - 45)
+                else if (INBOUNDS_VEC(j, entities) && entities[j].xp < entities[i].xp - 45)
                 {
                     entities[i].ax = -3;
                 }
@@ -2757,110 +2830,125 @@ bool entityclass::updateentities( int i )
             {
                 //11-15 means to follow a specific character, in crew order (cyan, purple, yellow, red, green, blue)
                 int j=getcrewman(1); //purple
-                if (entities[j].xp > entities[i].xp + 5)
+                if (INBOUNDS_VEC(j, entities))
                 {
-                    entities[i].dir = 1;
-                }
-                else if (entities[j].xp < entities[i].xp - 5)
-                {
-                    entities[i].dir = 0;
-                }
+                    if (entities[j].xp > entities[i].xp + 5)
+                    {
+                        entities[i].dir = 1;
+                    }
+                    else if (entities[j].xp < entities[i].xp - 5)
+                    {
+                        entities[i].dir = 0;
+                    }
 
-                if (entities[j].xp > entities[i].xp + 45)
-                {
-                    entities[i].ax = 3;
-                }
-                else if (entities[j].xp < entities[i].xp - 45)
-                {
-                    entities[i].ax = -3;
+                    if (entities[j].xp > entities[i].xp + 45)
+                    {
+                        entities[i].ax = 3;
+                    }
+                    else if (entities[j].xp < entities[i].xp - 45)
+                    {
+                        entities[i].ax = -3;
+                    }
                 }
             }
             else if (entities[i].state == 12)
             {
                 //11-15 means to follow a specific character, in crew order (cyan, purple, yellow, red, green, blue)
                 int j=getcrewman(2); //yellow
-                if (entities[j].xp > entities[i].xp + 5)
+                if (INBOUNDS_VEC(j, entities))
                 {
-                    entities[i].dir = 1;
-                }
-                else if (entities[j].xp < entities[i].xp - 5)
-                {
-                    entities[i].dir = 0;
-                }
+                    if (entities[j].xp > entities[i].xp + 5)
+                    {
+                        entities[i].dir = 1;
+                    }
+                    else if (entities[j].xp < entities[i].xp - 5)
+                    {
+                        entities[i].dir = 0;
+                    }
 
-                if (entities[j].xp > entities[i].xp + 45)
-                {
-                    entities[i].ax = 3;
-                }
-                else if (entities[j].xp < entities[i].xp - 45)
-                {
-                    entities[i].ax = -3;
+                    if (entities[j].xp > entities[i].xp + 45)
+                    {
+                        entities[i].ax = 3;
+                    }
+                    else if (entities[j].xp < entities[i].xp - 45)
+                    {
+                        entities[i].ax = -3;
+                    }
                 }
             }
             else if (entities[i].state == 13)
             {
                 //11-15 means to follow a specific character, in crew order (cyan, purple, yellow, red, green, blue)
                 int j=getcrewman(3); //red
-                if (entities[j].xp > entities[i].xp + 5)
+                if (INBOUNDS_VEC(j, entities))
                 {
-                    entities[i].dir = 1;
-                }
-                else if (entities[j].xp < entities[i].xp - 5)
-                {
-                    entities[i].dir = 0;
-                }
+                    if (entities[j].xp > entities[i].xp + 5)
+                    {
+                        entities[i].dir = 1;
+                    }
+                    else if (entities[j].xp < entities[i].xp - 5)
+                    {
+                        entities[i].dir = 0;
+                    }
 
-                if (entities[j].xp > entities[i].xp + 45)
-                {
-                    entities[i].ax = 3;
-                }
-                else if (entities[j].xp < entities[i].xp - 45)
-                {
-                    entities[i].ax = -3;
+                    if (entities[j].xp > entities[i].xp + 45)
+                    {
+                        entities[i].ax = 3;
+                    }
+                    else if (entities[j].xp < entities[i].xp - 45)
+                    {
+                        entities[i].ax = -3;
+                    }
                 }
             }
             else if (entities[i].state == 14)
             {
                 //11-15 means to follow a specific character, in crew order (cyan, purple, yellow, red, green, blue)
                 int j=getcrewman(4); //green
-                if (entities[j].xp > entities[i].xp + 5)
+                if (INBOUNDS_VEC(j, entities))
                 {
-                    entities[i].dir = 1;
-                }
-                else if (entities[j].xp < entities[i].xp - 5)
-                {
-                    entities[i].dir = 0;
-                }
+                    if (entities[j].xp > entities[i].xp + 5)
+                    {
+                        entities[i].dir = 1;
+                    }
+                    else if (entities[j].xp < entities[i].xp - 5)
+                    {
+                        entities[i].dir = 0;
+                    }
 
-                if (entities[j].xp > entities[i].xp + 45)
-                {
-                    entities[i].ax = 3;
-                }
-                else if (entities[j].xp < entities[i].xp - 45)
-                {
-                    entities[i].ax = -3;
+                    if (entities[j].xp > entities[i].xp + 45)
+                    {
+                        entities[i].ax = 3;
+                    }
+                    else if (entities[j].xp < entities[i].xp - 45)
+                    {
+                        entities[i].ax = -3;
+                    }
                 }
             }
             else if (entities[i].state == 15)
             {
                 //11-15 means to follow a specific character, in crew order (cyan, purple, yellow, red, green, blue)
                 int j=getcrewman(5); //blue
-                if (entities[j].xp > entities[i].xp + 5)
+                if (INBOUNDS_VEC(j, entities))
                 {
-                    entities[i].dir = 1;
-                }
-                else if (entities[j].xp < entities[i].xp - 5)
-                {
-                    entities[i].dir = 0;
-                }
+                    if (entities[j].xp > entities[i].xp + 5)
+                    {
+                        entities[i].dir = 1;
+                    }
+                    else if (entities[j].xp < entities[i].xp - 5)
+                    {
+                        entities[i].dir = 0;
+                    }
 
-                if (entities[j].xp > entities[i].xp + 45)
-                {
-                    entities[i].ax = 3;
-                }
-                else if (entities[j].xp < entities[i].xp - 45)
-                {
-                    entities[i].ax = -3;
+                    if (entities[j].xp > entities[i].xp + 45)
+                    {
+                        entities[i].ax = 3;
+                    }
+                    else if (entities[j].xp < entities[i].xp - 45)
+                    {
+                        entities[i].ax = -3;
+                    }
                 }
             }
             else if (entities[i].state == 16)
@@ -2891,12 +2979,13 @@ bool entityclass::updateentities( int i )
             else if (entities[i].state == 18)
             {
                 //Stand still and face the player
+                //FIXME: Duplicated in createentity!
                 int j = getplayer();
-                if (entities[j].xp > entities[i].xp + 5)
+                if (INBOUNDS_VEC(j, entities) && entities[j].xp > entities[i].xp + 5)
                 {
                     entities[i].dir = 1;
                 }
-                else if (entities[j].xp < entities[i].xp - 5)
+                else if (INBOUNDS_VEC(j, entities) && entities[j].xp < entities[i].xp - 5)
                 {
                     entities[i].dir = 0;
                 }
@@ -3008,7 +3097,7 @@ bool entityclass::updateentities( int i )
             {
                 //follow player, but only if he's on the floor!
                 int j = getplayer();
-                if(entities[j].onground>0)
+                if(INBOUNDS_VEC(j, entities) && entities[j].onground>0)
                 {
                     if (entities[j].xp > entities[i].xp + 5)
                     {
@@ -3034,11 +3123,11 @@ bool entityclass::updateentities( int i )
                 }
                 else
                 {
-                    if (entities[j].xp > entities[i].xp + 5)
+                    if (INBOUNDS_VEC(j, entities) && entities[j].xp > entities[i].xp + 5)
                     {
                         entities[i].dir = 1;
                     }
-                    else if (entities[j].xp < entities[i].xp - 5)
+                    else if (INBOUNDS_VEC(j, entities) && entities[j].xp < entities[i].xp - 5)
                     {
                         entities[i].dir = 0;
                     }
@@ -3054,8 +3143,7 @@ bool entityclass::updateentities( int i )
                 if (entities[i].xp >= 310)
                 {
                     game.scmprogress++;
-                    removeentity(i);
-                    return true;
+                    return removeentity(i);
                 }
             }
             break;
@@ -3063,7 +3151,7 @@ bool entityclass::updateentities( int i )
             //wait for collision
             if (entities[i].state == 1)
             {
-                trophytext+=2;
+                if (!script.running) trophytext+=2;
                 if (trophytext > 30) trophytext = 30;
                 trophytype = entities[i].para;
 
@@ -3080,8 +3168,7 @@ bool entityclass::updateentities( int i )
                     entities[i].vx = 7;
                     if (entities[i].xp > 320)
                     {
-                        removeentity(i);
-                        return true;
+                        return removeentity(i);
                     }
                 }
                 break;
@@ -3091,8 +3178,7 @@ bool entityclass::updateentities( int i )
                     entities[i].vx = -7;
                     if (entities[i].xp <-20)
                     {
-                        removeentity(i);
-                        return true;
+                        return removeentity(i);
                     }
                 }
                 break;
@@ -3102,7 +3188,7 @@ bool entityclass::updateentities( int i )
         case 51: //Vertical warp line
             if (entities[i].state == 2){
               int j=getplayer();
-              if(entities[j].xp<=307){
+              if(INBOUNDS_VEC(j, entities) && entities[j].xp<=307){
                 customwarpmodevon=false;
                 entities[i].state = 0;
               }
@@ -3117,7 +3203,7 @@ bool entityclass::updateentities( int i )
         case 52: //Vertical warp line
             if (entities[i].state == 2){
               int j=getplayer();
-              if(entities[j].xp<=307){
+              if(INBOUNDS_VEC(j, entities) && entities[j].xp<=307){
                 customwarpmodevon=false;
                 entities[i].state = 0;
               }
@@ -3159,20 +3245,24 @@ bool entityclass::updateentities( int i )
             {
                 //Basic rules, don't change expression
                 int j = getplayer();
-                if (entities[j].xp > entities[i].xp + 5)
+                if (INBOUNDS_VEC(j, entities) && entities[j].xp > entities[i].xp + 5)
                 {
                     entities[i].dir = 1;
                 }
-                else if (entities[j].xp < entities[i].xp - 5)
+                else if (INBOUNDS_VEC(j, entities) && entities[j].xp < entities[i].xp - 5)
                 {
                     entities[i].dir = 0;
                 }
             }
             else if (entities[i].state == 1)
             {
+                if (INBOUNDS_ARR(entities[i].para, customcollect))
+                {
+                    customcollect[(int) entities[i].para] = true;
+                }
+
                 if (game.intimetrial)
                 {
-                    customcollect[entities[i].para] = true;
                     music.playef(27);
                 }
                 else
@@ -3181,11 +3271,9 @@ bool entityclass::updateentities( int i )
                     //music.haltdasmusik();
                     if(music.currentsong!=-1) music.silencedasmusik();
                     music.playef(27);
-                    customcollect[entities[i].para] = true;
                 }
 
-                removeentity(i);
-                return true;
+                return removeentity(i);
             }
             break;
         case 100: //The teleporter
@@ -3195,7 +3283,6 @@ bool entityclass::updateentities( int i )
                 if (entities[i].tile == 1)
                 {
                     music.playef(18);
-                    entities[i].onentity = 0;
                     entities[i].tile = 2;
                     entities[i].colour = 101;
                     if(!game.intimetrial && !game.nodeathmode)
@@ -3228,10 +3315,14 @@ bool entityclass::updateentities( int i )
 
                     game.saverx = game.roomx;
                     game.savery = game.roomy;
-                    game.savedir = entities[getplayer()].dir;
-                    entities[i].state = 0;
+                    int player = getplayer();
+                    if (INBOUNDS_VEC(player, entities))
+                    {
+                        game.savedir = entities[player].dir;
+                    }
                 }
 
+                entities[i].onentity = 0;
                 entities[i].state = 0;
             }
             else if (entities[i].state == 2)
@@ -3266,7 +3357,7 @@ bool entityclass::updateentities( int i )
 
 void entityclass::animateentities( int _i )
 {
-    if (_i < 0 || _i >= (int) entities.size())
+    if (!INBOUNDS_VEC(_i, entities))
     {
         puts("animateentities() out-of-bounds!");
         return;
@@ -3302,6 +3393,12 @@ void entityclass::animateentities( int _i )
                 }
 
                 if (entities[_i].onroof > 0) entities[_i].drawframe += 6;
+                // Stuck in a wall? Then default to gravitycontrol
+                if (entities[_i].onground > 0 && entities[_i].onroof > 0
+                && game.gravitycontrol == 0)
+                {
+                    entities[_i].drawframe -= 6;
+                }
             }
             else
             {
@@ -3531,6 +3628,7 @@ void entityclass::animateentities( int _i )
         case 12:
         case 55:
         case 14: //Crew member! Very similar to hero
+            //FIXME: Duplicated in createentity!
             entities[_i].framedelay--;
             if(entities[_i].dir==1)
             {
@@ -3752,59 +3850,43 @@ int entityclass::getteleporter()
     return -1;
 }
 
-void entityclass::rectset( int xi, int yi, int wi, int hi )
-{
-    temprect.x = xi;
-    temprect.y = yi;
-    temprect.w = wi;
-    temprect.h = hi;
-}
-
-void entityclass::rect2set( int xi, int yi, int wi, int hi )
-{
-    temprect2.x = xi;
-    temprect2.y = yi;
-    temprect2.w = wi;
-    temprect2.h = hi;
-}
-
 bool entityclass::entitycollide( int a, int b )
 {
-    if (a < 0 || a > (int) entities.size() || b < 0 || b > (int) entities.size())
+    if (!INBOUNDS_VEC(a, entities) || !INBOUNDS_VEC(b, entities))
     {
         puts("entitycollide() out-of-bounds!");
         return false;
     }
 
     //Do entities a and b collide?
-    tempx = entities[a].xp + entities[a].cx;
-    tempy = entities[a].yp + entities[a].cy;
-    tempw = entities[a].w;
-    temph = entities[a].h;
-    rectset(tempx, tempy, tempw, temph);
+    SDL_Rect temprect;
+    temprect.x = entities[a].xp + entities[a].cx;
+    temprect.y = entities[a].yp + entities[a].cy;
+    temprect.w = entities[a].w;
+    temprect.h = entities[a].h;
 
-    tempx = entities[b].xp + entities[b].cx;
-    tempy = entities[b].yp + entities[b].cy;
-    tempw = entities[b].w;
-    temph = entities[b].h;
-    rect2set(tempx, tempy, tempw, temph);
+    SDL_Rect temprect2;
+    temprect2.x = entities[b].xp + entities[b].cx;
+    temprect2.y = entities[b].yp + entities[b].cy;
+    temprect2.w = entities[b].w;
+    temprect2.h = entities[b].h;
 
     if (help.intersects(temprect, temprect2)) return true;
     return false;
 }
 
-bool entityclass::checkdamage()
+bool entityclass::checkdamage(bool scm /*= false*/)
 {
-    //Returns true if player entity (rule 0) collides with a damagepoint
+    //Returns true if player (or supercrewmate) collides with a damagepoint
     for(size_t i=0; i < entities.size(); i++)
     {
-        if(entities[i].rule==0)
+        if((scm && entities[i].type == 14) || (!scm && entities[i].rule == 0))
         {
-            tempx = entities[i].xp + entities[i].cx;
-            tempy = entities[i].yp + entities[i].cy;
-            tempw = entities[i].w;
-            temph = entities[i].h;
-            rectset(tempx, tempy, tempw, temph);
+            SDL_Rect temprect;
+            temprect.x = entities[i].xp + entities[i].cx;
+            temprect.y = entities[i].yp + entities[i].cy;
+            temprect.w = entities[i].w;
+            temprect.h = entities[i].h;
 
             for (size_t j=0; j<blocks.size(); j++)
             {
@@ -3818,64 +3900,26 @@ bool entityclass::checkdamage()
     return false;
 }
 
-bool entityclass::scmcheckdamage()
-{
-    //Returns true if supercrewmate collides with a damagepoint
-    for(size_t i=0; i < entities.size(); i++)
-    {
-        if(entities[i].type==14)
-        {
-            tempx = entities[i].xp + entities[i].cx;
-            tempy = entities[i].yp + entities[i].cy;
-            tempw = entities[i].w;
-            temph = entities[i].h;
-            rectset(tempx, tempy, tempw, temph);
-
-            for (size_t j=0; j<blocks.size(); j++)
-            {
-                if (blocks[j].type == DAMAGE && help.intersects(blocks[j].rect, temprect))
-                {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
-void entityclass::settemprect( int t )
-{
-    if (t < 0 || t >= (int) entities.size())
-    {
-        return;
-    }
-
-    //setup entity t in temprect
-    tempx = entities[t].xp + entities[t].cx;
-    tempy = entities[t].yp + entities[t].cy;
-    tempw = entities[t].w;
-    temph = entities[t].h;
-    rectset(tempx, tempy, tempw, temph);
-}
-
-int entityclass::checktrigger()
+int entityclass::checktrigger(int* block_idx)
 {
     //Returns an int player entity (rule 0) collides with a trigger
+    //Also returns the index of the block
+    *block_idx = -1;
     for(size_t i=0; i < entities.size(); i++)
     {
         if(entities[i].rule==0)
         {
-            tempx = entities[i].xp + entities[i].cx;
-            tempy = entities[i].yp + entities[i].cy;
-            tempw = entities[i].w;
-            temph = entities[i].h;
-            rectset(tempx, tempy, tempw, temph);
+            SDL_Rect temprect;
+            temprect.x = entities[i].xp + entities[i].cx;
+            temprect.y = entities[i].yp + entities[i].cy;
+            temprect.w = entities[i].w;
+            temprect.h = entities[i].h;
 
             for (size_t j=0; j<blocks.size(); j++)
             {
                 if (blocks[j].type == TRIGGER && help.intersects(blocks[j].rect, temprect))
                 {
-                    activetrigger = blocks[j].trigger;
+                    *block_idx = j;
                     return blocks[j].trigger;
                 }
             }
@@ -3891,11 +3935,11 @@ int entityclass::checkactivity()
     {
         if(entities[i].rule==0)
         {
-            tempx = entities[i].xp + entities[i].cx;
-            tempy = entities[i].yp + entities[i].cy;
-            tempw = entities[i].w;
-            temph = entities[i].h;
-            rectset(tempx, tempy, tempw, temph);
+            SDL_Rect temprect;
+            temprect.x = entities[i].xp + entities[i].cx;
+            temprect.y = entities[i].yp + entities[i].cy;
+            temprect.w = entities[i].w;
+            temprect.h = entities[i].h;
 
             for (size_t j=0; j<blocks.size(); j++)
             {
@@ -3915,22 +3959,22 @@ int entityclass::getgridpoint( int t )
     return t;
 }
 
-bool entityclass::checkplatform()
+bool entityclass::checkplatform(const SDL_Rect& temprect, int* px, int* py)
 {
     //Return true if rectset intersects a moving platform, setups px & py to the platform x & y
     for (size_t i = 0; i < blocks.size(); i++)
     {
         if (blocks[i].type == BLOCK && help.intersects(blocks[i].rect, temprect))
         {
-            px = blocks[i].xp;
-            py = blocks[i].yp;
+            *px = blocks[i].xp;
+            *py = blocks[i].yp;
             return true;
         }
     }
     return false;
 }
 
-bool entityclass::checkblocks()
+bool entityclass::checkblocks(const SDL_Rect& temprect, const float dx, const float dy, const float dr, const bool skipdirblocks)
 {
     for (size_t i = 0; i < blocks.size(); i++)
     {
@@ -3953,29 +3997,25 @@ bool entityclass::checkblocks()
     return false;
 }
 
-bool entityclass::checkwall()
+bool entityclass::checkwall(const SDL_Rect& temprect, const float dx, const float dy, const float dr, const bool skipblocks, const bool skipdirblocks)
 {
     //Returns true if entity setup in temprect collides with a wall
-    //used for proper collision functions; you can't just, like, call it
-    //whenever you feel like it and expect a response
-    //
-    //that won't work at all
     if(skipblocks)
     {
-        if (checkblocks()) return true;
+        if (checkblocks(temprect, dx, dy, dr, skipdirblocks)) return true;
     }
 
-    tempx = getgridpoint(temprect.x);
-    tempy = getgridpoint(temprect.y);
-    tempw = getgridpoint(temprect.x + temprect.w - 1);
-    temph = getgridpoint(temprect.y + temprect.h - 1);
+    int tempx = getgridpoint(temprect.x);
+    int tempy = getgridpoint(temprect.y);
+    int tempw = getgridpoint(temprect.x + temprect.w - 1);
+    int temph = getgridpoint(temprect.y + temprect.h - 1);
     if (map.collide(tempx, tempy)) return true;
     if (map.collide(tempw, tempy)) return true;
     if (map.collide(tempx, temph)) return true;
     if (map.collide(tempw, temph)) return true;
     if (temprect.h >= 12)
     {
-        tpy1 = getgridpoint(temprect.y + 6);
+        int tpy1 = getgridpoint(temprect.y + 6);
         if (map.collide(tempx, tpy1)) return true;
         if (map.collide(tempw, tpy1)) return true;
         if (temprect.h >= 18)
@@ -3993,14 +4033,20 @@ bool entityclass::checkwall()
     }
     if (temprect.w >= 12)
     {
-        tpx1 = getgridpoint(temprect.x + 6);
+        int tpx1 = getgridpoint(temprect.x + 6);
         if (map.collide(tpx1, tempy)) return true;
         if (map.collide(tpx1, temph)) return true;
     }
     return false;
 }
 
-float entityclass::hplatformat()
+bool entityclass::checkwall(const SDL_Rect& temprect)
+{
+    // Same as above but use default arguments for blocks
+    return checkwall(temprect, 0, 0, 0, true, false);
+}
+
+float entityclass::hplatformat(const int px, const int py)
 {
     //Returns first entity of horizontal platform at (px, py), -1000 otherwise.
     for (size_t i = 0; i < entities.size(); i++)
@@ -4033,7 +4079,7 @@ int entityclass::yline( int a, int b )
 
 bool entityclass::entityhlinecollide( int t, int l )
 {
-    if (t < 0 || t >= (int) entities.size() || l < 0 || l >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities) || !INBOUNDS_VEC(l, entities))
     {
         puts("entityhlinecollide() out-of-bounds!");
         return false;
@@ -4044,7 +4090,7 @@ bool entityclass::entityhlinecollide( int t, int l )
     {
         if(entities[t].xp + entities[t].cx<=entities[l].xp+entities[l].w)
         {
-            linetemp = 0;
+            int linetemp = 0;
 
             linetemp += yline(entities[t].yp, entities[l].yp);
             linetemp += yline(entities[t].yp + entities[t].h, entities[l].yp);
@@ -4060,7 +4106,7 @@ bool entityclass::entityhlinecollide( int t, int l )
 
 bool entityclass::entityvlinecollide( int t, int l )
 {
-    if (t < 0 || t >= (int) entities.size() || l < 0 || l >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities) || !INBOUNDS_VEC(l, entities))
     {
         puts("entityvlinecollide() out-of-bounds!");
         return false;
@@ -4070,7 +4116,7 @@ bool entityclass::entityvlinecollide( int t, int l )
     if(entities[t].yp + entities[t].cy+entities[t].h>=entities[l].yp
     && entities[t].yp + entities[t].cy<=entities[l].yp+entities[l].h)
     {
-        linetemp = 0;
+        int linetemp = 0;
 
         linetemp += yline(entities[t].xp + entities[t].cx+1, entities[l].xp);
         linetemp += yline(entities[t].xp + entities[t].cx+1 + entities[t].w, entities[l].xp);
@@ -4084,7 +4130,7 @@ bool entityclass::entityvlinecollide( int t, int l )
 }
 
 bool entityclass::entitywarphlinecollide(int t, int l) {
-    if (t < 0 || t >= (int) entities.size() || l < 0 || l >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities) || !INBOUNDS_VEC(l, entities))
     {
         puts("entitywarphlinecollide() out-of-bounds!");
         return false;
@@ -4093,7 +4139,7 @@ bool entityclass::entitywarphlinecollide(int t, int l) {
     //Returns true is entity t collided with the horizontal line l.
     if(entities[t].xp + entities[t].cx+entities[t].w>=entities[l].xp
     &&entities[t].xp + entities[t].cx<=entities[l].xp+entities[l].w){
-        linetemp = 0;
+        int linetemp = 0;
         if (entities[l].yp < 120) {
             //Top line
             if (entities[t].vy < 0) {
@@ -4122,7 +4168,7 @@ bool entityclass::entitywarphlinecollide(int t, int l) {
 }
 
 bool entityclass::entitywarpvlinecollide(int t, int l) {
-    if (t < 0 || t >= (int) entities.size() || l < 0 || l >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities) || !INBOUNDS_VEC(l, entities))
     {
         puts("entitywarpvlinecollide() out-of-bounds!");
         return false;
@@ -4131,7 +4177,7 @@ bool entityclass::entitywarpvlinecollide(int t, int l) {
     //Returns true is entity t collided with the vertical warp line l.
     if(entities[t].yp + entities[t].cy+entities[t].h>=entities[l].yp
     && entities[t].yp + entities[t].cy <= entities[l].yp + entities[l].h) {
-        linetemp = 0;
+        int linetemp = 0;
         if (entities[l].xp < 160) {
             //Left hand line
             if (entities[t].xp + entities[t].cx + 1 < entities[l].xp + 10) linetemp++;
@@ -4157,128 +4203,120 @@ bool entityclass::entitywarpvlinecollide(int t, int l) {
 
 float entityclass::entitycollideplatformroof( int t )
 {
-    if (t < 0 || t >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("entitycollideplatformroof() out-of-bounds!");
         return -1000;
     }
 
-    tempx = entities[t].xp + entities[t].cx;
-    tempy = entities[t].yp + entities[t].cy -1;
-    tempw = entities[t].w;
-    temph = entities[t].h;
-    rectset(tempx, tempy, tempw, temph);
+    SDL_Rect temprect;
+    temprect.x = entities[t].xp + entities[t].cx;
+    temprect.y = entities[t].yp + entities[t].cy -1;
+    temprect.w = entities[t].w;
+    temprect.h = entities[t].h;
 
-    if (checkplatform())
+    int px = 0, py = 0;
+    if (checkplatform(temprect, &px, &py))
     {
         //px and py now contain an x y coordinate for a platform, find it
-        return hplatformat();
+        return hplatformat(px, py);
     }
     return -1000;
 }
 
 float entityclass::entitycollideplatformfloor( int t )
 {
-    if (t < 0 || t >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("entitycollideplatformfloor() out-of-bounds!");
         return -1000;
     }
 
-    tempx = entities[t].xp + entities[t].cx;
-    tempy = entities[t].yp + entities[t].cy + 1;
-    tempw = entities[t].w;
-    temph = entities[t].h;
-    rectset(tempx, tempy, tempw, temph);
+    SDL_Rect temprect;
+    temprect.x = entities[t].xp + entities[t].cx;
+    temprect.y = entities[t].yp + entities[t].cy + 1;
+    temprect.w = entities[t].w;
+    temprect.h = entities[t].h;
 
-    if (checkplatform())
+    int px = 0, py = 0;
+    if (checkplatform(temprect, &px, &py))
     {
         //px and py now contain an x y coordinate for a platform, find it
-        return hplatformat();
+        return hplatformat(px, py);
     }
     return -1000;
 }
 
 bool entityclass::entitycollidefloor( int t )
 {
-    if (t < 0 || t >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("entitycollidefloor() out-of-bounds!");
         return false;
     }
 
-    //see? like here, for example!
-    tempx = entities[t].xp + entities[t].cx;
-    tempy = entities[t].yp + entities[t].cy + 1;
-    tempw = entities[t].w;
-    temph = entities[t].h;
-    rectset(tempx, tempy, tempw, temph);
+    SDL_Rect temprect;
+    temprect.x = entities[t].xp + entities[t].cx;
+    temprect.y = entities[t].yp + entities[t].cy + 1;
+    temprect.w = entities[t].w;
+    temprect.h = entities[t].h;
 
-    if (checkwall()) return true;
+    if (checkwall(temprect)) return true;
     return false;
 }
 
 bool entityclass::entitycollideroof( int t )
 {
-    if (t < 0 || t >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("entitycollideroof() out-of-bounds!");
         return false;
     }
 
-    //and here!
-    tempx = entities[t].xp + entities[t].cx;
-    tempy = entities[t].yp + entities[t].cy - 1;
-    tempw = entities[t].w;
-    temph = entities[t].h;
-    rectset(tempx, tempy, tempw, temph);
+    SDL_Rect temprect;
+    temprect.x = entities[t].xp + entities[t].cx;
+    temprect.y = entities[t].yp + entities[t].cy - 1;
+    temprect.w = entities[t].w;
+    temprect.h = entities[t].h;
 
-    if (checkwall()) return true;
+    if (checkwall(temprect)) return true;
     return false;
 }
 
-bool entityclass::testwallsx( int t, int tx, int ty )
+bool entityclass::testwallsx( int t, int tx, int ty, const bool skipdirblocks )
 {
-    if (t < 0 || t >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("testwallsx() out-of-bounds!");
         return false;
     }
 
-    tempx = tx + entities[t].cx;
-    tempy = ty + entities[t].cy;
-    tempw = entities[t].w;
-    temph = entities[t].h;
-    rectset(tempx, tempy, tempw, temph);
+    SDL_Rect temprect;
+    temprect.x = tx + entities[t].cx;
+    temprect.y = ty + entities[t].cy;
+    temprect.w = entities[t].w;
+    temprect.h = entities[t].h;
 
-    if (entities[t].rule < 2)
-    {
-        skipblocks = true;
-    }
-    else
-    {
-        skipblocks = false;
-    }
-    if (entities[t].type == 14) skipblocks = true;
-    dx = 0;
-    dy = 0;
+    bool skipblocks = entities[t].rule < 2 || entities[t].type == 14;
+    float dx = 0;
+    float dy = 0;
     if (entities[t].rule == 0) dx = entities[t].vx;
-    dr = entities[t].rule;
+    float dr = entities[t].rule;
 
     //Ok, now we check walls
-    if (checkwall())
+    if (checkwall(temprect, dx, dy, dr, skipblocks, skipdirblocks))
     {
         if (entities[t].vx > 1.0f)
         {
             entities[t].vx--;
             entities[t].newxp = entities[t].xp + entities[t].vx;
-            return testwallsx(t, entities[t].newxp, entities[t].yp);
+            return testwallsx(t, entities[t].newxp, entities[t].yp, skipdirblocks);
         }
         else if (entities[t].vx < -1.0f)
         {
             entities[t].vx++;
             entities[t].newxp = entities[t].xp + entities[t].vx;
-            return testwallsx(t, entities[t].newxp, entities[t].yp);
+            return testwallsx(t, entities[t].newxp, entities[t].yp, skipdirblocks);
         }
         else
         {
@@ -4291,35 +4329,27 @@ bool entityclass::testwallsx( int t, int tx, int ty )
 
 bool entityclass::testwallsy( int t, float tx, float ty )
 {
-    if (t < 0 || t >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("testwallsy() out-of-bounds!");
         return false;
     }
 
-    tempx = static_cast<int>(tx) + entities[t].cx;
-    tempy = static_cast<int>(ty) + entities[t].cy;
-    tempw = entities[t].w;
-    temph = entities[t].h;
-    rectset(tempx, tempy, tempw, temph);
+    SDL_Rect temprect;
+    temprect.x = static_cast<int>(tx) + entities[t].cx;
+    temprect.y = static_cast<int>(ty) + entities[t].cy;
+    temprect.w = entities[t].w;
+    temprect.h = entities[t].h;
 
-    if (entities[t].rule < 2)
-    {
-        skipblocks = true;
-    }
-    else
-    {
-        skipblocks = false;
-    }
-    if (entities[t].type == 14) skipblocks = true;
+    bool skipblocks = entities[t].rule < 2 || entities[t].type == 14;
 
-    dx = 0;
-    dy = 0;
+    float dx = 0;
+    float dy = 0;
     if (entities[t].rule == 0) dy = entities[t].vy;
-    dr = entities[t].rule;
+    float dr = entities[t].rule;
 
     //Ok, now we check walls
-    if (checkwall())
+    if (checkwall(temprect, dx, dy, dr, skipblocks, false))
     {
         if (entities[t].vy > 1)
         {
@@ -4344,7 +4374,7 @@ bool entityclass::testwallsy( int t, float tx, float ty )
 
 void entityclass::fixfriction( int t, float xfix, float xrate, float yrate )
 {
-    if (t < 0 || t >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("fixfriction() out-of-bounds!");
         return;
@@ -4365,7 +4395,7 @@ void entityclass::fixfriction( int t, float xfix, float xrate, float yrate )
 
 void entityclass::applyfriction( int t, float xrate, float yrate )
 {
-    if (t < 0 || t >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("applyfriction() out-of-bounds!");
         return;
@@ -4386,7 +4416,7 @@ void entityclass::applyfriction( int t, float xrate, float yrate )
 
 void entityclass::updateentitylogic( int t )
 {
-    if (t < 0 || t >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("updateentitylogic() out-of-bounds!");
         return;
@@ -4429,13 +4459,13 @@ void entityclass::updateentitylogic( int t )
 
 void entityclass::entitymapcollision( int t )
 {
-    if (t < 0 || t >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities))
     {
         puts("entitymapcollision() out-of-bounds!");
         return;
     }
 
-    if (testwallsx(t, entities[t].newxp, entities[t].yp))
+    if (testwallsx(t, entities[t].newxp, entities[t].yp, false))
     {
         entities[t].xp = entities[t].newxp;
     }
@@ -4452,20 +4482,18 @@ void entityclass::entitymapcollision( int t )
     {
         if (entities[t].onwall > 0) entities[t].state = entities[t].onwall;
         if (entities[t].onywall > 0) entities[t].state = entities[t].onywall;
-        entities[t].jumpframe = 0;
     }
 }
 
-void entityclass::movingplatformfix( int t )
+void entityclass::movingplatformfix( int t, int j )
 {
-    if (t < 0 || t >= (int) entities.size())
+    if (!INBOUNDS_VEC(t, entities) || !INBOUNDS_VEC(j, entities))
     {
         puts("movingplatformfix() out-of-bounds!");
         return;
     }
 
-    //If this intersects the player, then we move the player along it
-    int j = getplayer();
+    //If this intersects the entity, then we move them along it
     if (entitycollide(t, j))
     {
         //ok, bollox, let's make sure
@@ -4477,57 +4505,17 @@ void entityclass::movingplatformfix( int t )
             entities[j].newyp = entities[j].yp + int(entities[j].vy);
             if (testwallsy(j, entities[j].xp, entities[j].newyp))
             {
-                 if (entities[t].vy > 0)
-                {
-                    entities[j].yp = entities[t].yp + entities[t].h;
-                    entities[j].vy = 0;
-                    entities[j].onroof = true;
-                }
-                else
-                {
-                    entities[j].yp = entities[t].yp - entities[j].h-entities[j].cy;
-                    entities[j].vy = 0;
-                    entities[j].onground = true;
-                }
-            }
-            else
-            {
-                entities[t].state = entities[t].onwall;
-            }
-        }
-    }
-}
-
-void entityclass::scmmovingplatformfix( int t )
-{
-    if (t < 0 || t >= (int) entities.size())
-    {
-        puts("scmmovingplatformfix() out-of-bounds!");
-        return;
-    }
-
-    //If this intersects the SuperCrewMate, then we move them along it
-    int j = getscm();
-    if (entitycollide(t, j))
-    {
-        //ok, bollox, let's make sure
-        entities[j].yp = entities[j].yp +  (entities[j].vy);
-        if (entitycollide(t, j))
-        {
-            entities[j].yp = entities[j].yp -  (entities[j].vy);
-            entities[j].vy = entities[t].vy;
-            entities[j].newyp = static_cast<float>(entities[j].yp) + entities[j].vy;
-            if (testwallsy(j, entities[j].xp, entities[j].newyp))
-            {
                 if (entities[t].vy > 0)
                 {
                     entities[j].yp = entities[t].yp + entities[t].h;
                     entities[j].vy = 0;
+                    entities[j].onroof = 2;
                 }
                 else
                 {
                     entities[j].yp = entities[t].yp - entities[j].h-entities[j].cy;
                     entities[j].vy = 0;
+                    entities[j].onground = 2;
                 }
             }
             else
@@ -4538,21 +4526,8 @@ void entityclass::scmmovingplatformfix( int t )
     }
 }
 
-void entityclass::hormovingplatformfix( int t )
-{
-    if (t < 0 || t >= (int) entities.size())
-    {
-        puts("hormovingplatformfix() out-of-bounds!");
-        return;
-    }
-
-    //If this intersects the player, then we move the player along it
-    //for horizontal platforms, this is simplier
-    createblock(0, entities[t].xp, entities[t].yp, entities[t].w, entities[t].h);
-}
-
 void entityclass::customwarplinecheck(int i) {
-    if (i < 0 || i >= (int) entities.size())
+    if (!INBOUNDS_VEC(i, entities))
     {
         puts("customwarplinecheck() out-of-bounds!");
         return;
@@ -4583,219 +4558,32 @@ void entityclass::entitycollisioncheck()
 {
     for (size_t i = 0; i < entities.size(); i++)
     {
+        bool player = entities[i].rule == 0;
+        bool scm = game.supercrewmate && entities[i].type == 14;
+        if (!player && !scm)
+        {
+            continue;
+        }
+
         //We test entity to entity
         for (size_t j = 0; j < entities.size(); j++)
         {
-            if (i!=j)
+            if (i == j)
             {
-                if (entities[i].rule == 0 && entities[j].rule == 1 && entities[j].harmful)
-                {
-                    //player i hits enemy or enemy bullet j
-                    if (entitycollide(i, j) && !map.invincibility)
-                    {
-                        if (entities[i].size == 0 && (entities[j].size == 0 || entities[j].size == 12))
-                        {
-                            //They're both sprites, so do a per pixel collision
-                            colpoint1.x = entities[i].xp;
-                            colpoint1.y = entities[i].yp;
-                            colpoint2.x = entities[j].xp;
-                            colpoint2.y = entities[j].yp;
-                            if (graphics.flipmode)
-                            {
-                                if (graphics.Hitest(graphics.flipsprites[entities[i].drawframe],
-                                                 colpoint1, graphics.flipsprites[entities[j].drawframe], colpoint2))
-                                {
-                                    //Do the collision stuff
-                                    game.deathseq = 30;
-                                }
-                            }
-                            else
-                            {
-                                if (graphics.Hitest(graphics.sprites[entities[i].drawframe],
-                                                 colpoint1, graphics.sprites[entities[j].drawframe], colpoint2) )
-                                {
-                                    //Do the collision stuff
-                                    game.deathseq = 30;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            //Ok, then we just assume a normal bounding box collision
-                            game.deathseq = 30;
-                        }
-                    }
-                }
-                if (entities[i].rule == 0 && entities[j].rule == 2)   //Moving platforms
-                {
-                    if (entitycollide(i, j)) removeblockat(entities[j].xp, entities[j].yp);
-                }
-                if (entities[i].rule == 0 && entities[j].rule == 3)   //Entity to entity
-                {
-                    if(entities[j].onentity>0)
-                    {
-                        if (entitycollide(i, j)) entities[j].state = entities[j].onentity;
-                    }
-                }
-                if (entities[i].rule == 0 && entities[j].rule == 4)   //Player vs horizontal line!
-                {
-                    if(game.deathseq==-1)
-                    {
-                        //Here we compare the player's old position versus his new one versus the line.
-                        //All points either be above or below it. Otherwise, there was a collision this frame.
-                        if (entities[j].onentity > 0)
-                        {
-                            if (entityhlinecollide(i, j))
-                            {
-                                music.playef(8);
-                                game.gravitycontrol = (game.gravitycontrol + 1) % 2;
-                                game.totalflips++;
-                                if (game.gravitycontrol == 0)
-                                {
-                                    if (entities[i].vy < 1) entities[i].vy = 1;
-                                }
-                                else
-                                {
-                                    if (entities[i].vy > -1) entities[i].vy = -1;
-                                }
-
-                                entities[j].state = entities[j].onentity;
-                                entities[j].life = 6;
-                            }
-                        }
-                    }
-                }
-                if (entities[i].rule == 0 && entities[j].rule == 5)   //Player vs vertical line!
-                {
-                    if(game.deathseq==-1)
-                    {
-                        if(entities[j].onentity>0)
-                        {
-                            if (entityvlinecollide(i, j))
-                            {
-                                entities[j].state = entities[j].onentity;
-                                entities[j].life = 4;
-                            }
-                        }
-                    }
-                }
-                if (entities[i].rule == 0 && entities[j].rule == 6)   //Player versus crumbly blocks! Special case
-                {
-                    if (entities[j].onentity > 0)
-                    {
-                        //ok; only check the actual collision if they're in a close proximity
-                        temp = entities[i].yp - entities[j].yp;
-                        if (temp < 30 || temp > -30)
-                        {
-                            temp = entities[i].xp - entities[j].xp;
-                            if (temp < 30 || temp > -30)
-                            {
-                                if (entitycollide(i, j)) entities[j].state = entities[j].onentity;
-                            }
-                        }
-                    }
-                }
-                if (game.supercrewmate)
-                {
-                    //some extra collisions
-                    if (entities[i].type == 14)   //i is the supercrewmate
-                    {
-                        if (entities[j].rule == 1 && entities[j].harmful)  //j is a harmful enemy
-                        {
-                            //player i hits enemy or enemy bullet j
-                            if (entitycollide(i, j) && !map.invincibility)
-                            {
-                                if (entities[i].size == 0 && entities[j].size == 0)
-                                {
-                                    //They're both sprites, so do a per pixel collision
-                                    colpoint1.x = entities[i].xp;
-                                    colpoint1.y = entities[i].yp;
-                                    colpoint2.x = entities[j].xp;
-                                    colpoint2.y = entities[j].yp;
-                                    if (graphics.flipmode)
-                                    {
-                                        if (graphics.Hitest(graphics.flipsprites[entities[i].drawframe],
-                                                         colpoint1, graphics.flipsprites[entities[j].drawframe], colpoint2))
-                                        {
-                                            //Do the collision stuff
-                                            game.deathseq = 30;
-                                            game.scmhurt = true;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (graphics.Hitest(graphics.sprites[entities[i].drawframe],
-                                                         colpoint1, graphics.sprites[entities[j].drawframe], colpoint2))
-                                        {
-                                            //Do the collision stuff
-                                            game.deathseq = 30;
-                                            game.scmhurt = true;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    //Ok, then we just assume a normal bounding box collision
-                                    game.deathseq = 30;
-                                    game.scmhurt = true;
-                                }
-                            }
-                        }
-                        if (entities[j].rule == 2)   //Moving platforms
-                        {
-                            if (entitycollide(i, j)) removeblockat(entities[j].xp, entities[j].yp);
-                        }
-                        if (entities[j].type == 8 && entities[j].rule == 3)   //Entity to entity (well, checkpoints anyway!)
-                        {
-                            if(entities[j].onentity>0)
-                            {
-                                if (entitycollide(i, j)) entities[j].state = entities[j].onentity;
-                            }
-                        }
-                    }
-                }
+                continue;
             }
+
+            collisioncheck(i, j, scm);
         }
     }
 
     //can't have the player being stuck...
-    int j = getplayer();
-    skipdirblocks = true;
-    if (!testwallsx(j, entities[j].xp, entities[j].yp))
-    {
-        //Let's try to get out...
-        if (entities[j].rule == 0)
-        {
-            if(game.gravitycontrol==0)
-            {
-                entities[j].yp -= 3;
-            }
-            else
-            {
-                entities[j].yp += 3;
-            }
-        }
-    }
-    skipdirblocks = false;
+    stuckprevention(getplayer());
 
     //Can't have the supercrewmate getting stuck either!
     if (game.supercrewmate)
     {
-        j = getscm();
-        skipdirblocks = true;
-        if (!testwallsx(j, entities[j].xp, entities[j].yp))
-        {
-            //Let's try to get out...
-            if(game.gravitycontrol==0)
-            {
-                entities[j].yp -= 3;
-            }
-            else
-            {
-                entities[j].yp += 3;
-            }
-        }
-        skipdirblocks = false;
+        stuckprevention(getscm());
     }
 
     //Is the player colliding with any damageblocks?
@@ -4808,7 +4596,7 @@ void entityclass::entitycollisioncheck()
     //how about the supercrewmate?
     if (game.supercrewmate)
     {
-        if (scmcheckdamage() && !map.invincibility)
+        if (checkdamage(true) && !map.invincibility)
         {
             //usual player dead stuff
             game.scmhurt = true;
@@ -4816,10 +4604,175 @@ void entityclass::entitycollisioncheck()
         }
     }
 
-    activetrigger = -1;
-    if (checktrigger() > -1)
+    // WARNING: If updating this code, don't forget to update Map.cpp mapclass::twoframedelayfix()
+    int block_idx = -1;
+    int activetrigger = checktrigger(&block_idx);
+    if (activetrigger > -1 && INBOUNDS_VEC(block_idx, blocks))
     {
-        game.state = activetrigger;
+        // Load the block's script if its gamestate is out of range
+        if (blocks[block_idx].script != "" && (activetrigger < 300 || activetrigger > 336))
+        {
+            game.startscript = true;
+            game.newscript = blocks[block_idx].script;
+            removetrigger(activetrigger);
+            game.state = 0;
+        }
+        else
+        {
+            game.state = activetrigger;
+        }
         game.statedelay = 0;
+    }
+}
+
+void entityclass::collisioncheck(int i, int j, bool scm /*= false*/)
+{
+    if (!INBOUNDS_VEC(i, entities) || !INBOUNDS_VEC(j, entities))
+    {
+        puts("collisioncheck() out-of-bounds!");
+        return;
+    }
+
+    switch (entities[j].rule)
+    {
+    case 1:
+        if (!entities[j].harmful)
+        {
+            break;
+        }
+
+        //person i hits enemy or enemy bullet j
+        if (entitycollide(i, j) && !map.invincibility)
+        {
+            if (entities[i].size == 0 && (entities[j].size == 0 || entities[j].size == 12))
+            {
+                //They're both sprites, so do a per pixel collision
+                point colpoint1;
+                colpoint1.x = entities[i].xp;
+                colpoint1.y = entities[i].yp;
+                point colpoint2;
+                colpoint2.x = entities[j].xp;
+                colpoint2.y = entities[j].yp;
+                int drawframe1 = entities[i].drawframe;
+                int drawframe2 = entities[j].drawframe;
+                std::vector<SDL_Surface*>& spritesvec = graphics.flipmode ? graphics.flipsprites : graphics.sprites;
+                if (INBOUNDS_VEC(drawframe1, spritesvec) && INBOUNDS_VEC(drawframe2, spritesvec)
+                && graphics.Hitest(spritesvec[drawframe1],
+                                 colpoint1, spritesvec[drawframe2], colpoint2))
+                {
+                    //Do the collision stuff
+                    game.deathseq = 30;
+                    game.scmhurt = scm;
+                }
+            }
+            else
+            {
+                //Ok, then we just assume a normal bounding box collision
+                game.deathseq = 30;
+                game.scmhurt = scm;
+            }
+        }
+        break;
+    case 2:   //Moving platforms
+        if (entitycollide(i, j))
+        {
+            //Disable collision temporarily so we don't push the person out!
+            //Collision will be restored at end of platform update loop in gamelogic
+            nocollisionat(entities[j].xp, entities[j].yp);
+        }
+        break;
+    case 3:   //Entity to entity
+        if(entities[j].onentity>0)
+        {
+            if (entitycollide(i, j)) entities[j].state = entities[j].onentity;
+        }
+        break;
+    case 4:   //Person vs horizontal line!
+        if(game.deathseq==-1)
+        {
+            //Here we compare the person's old position versus his new one versus the line.
+            //All points either be above or below it. Otherwise, there was a collision this frame.
+            if (entities[j].onentity > 0)
+            {
+                if (entityhlinecollide(i, j))
+                {
+                    music.playef(8);
+                    game.gravitycontrol = (game.gravitycontrol + 1) % 2;
+                    game.totalflips++;
+                    if (game.gravitycontrol == 0)
+                    {
+                        if (entities[i].vy < 1) entities[i].vy = 1;
+                    }
+                    else
+                    {
+                        if (entities[i].vy > -1) entities[i].vy = -1;
+                    }
+
+                    entities[j].state = entities[j].onentity;
+                    entities[j].life = 6;
+                }
+            }
+        }
+        break;
+    case 5:   //Person vs vertical gravity/warp line!
+        if(game.deathseq==-1)
+        {
+            if(entities[j].onentity>0)
+            {
+                if (entityvlinecollide(i, j))
+                {
+                    entities[j].state = entities[j].onentity;
+                    entities[j].life = 4;
+                }
+            }
+        }
+        break;
+    case 6:   //Person versus crumbly blocks! Special case
+        if (entities[j].onentity > 0)
+        {
+            //ok; only check the actual collision if they're in a close proximity
+            int temp = entities[i].yp - entities[j].yp;
+            if (temp > -30 && temp < 30)
+            {
+                temp = entities[i].xp - entities[j].xp;
+                if (temp > -30 && temp < 30)
+                {
+                    if (entitycollide(i, j)) entities[j].state = entities[j].onentity;
+                }
+            }
+        }
+        break;
+    case 7: // Person versus horizontal warp line, pre-2.1
+        if (game.glitchrunnermode
+        && game.deathseq == -1
+        && entities[j].onentity > 0
+        && entityhlinecollide(i, j))
+        {
+            entities[j].state = entities[j].onentity;
+        }
+        break;
+    }
+}
+
+void entityclass::stuckprevention(int t)
+{
+    if (!INBOUNDS_VEC(t, entities))
+    {
+        puts("stuckprevention() out-of-bounds!");
+        return;
+    }
+
+    // Can't have this entity (player or supercrewmate) being stuck...
+    if (!testwallsx(t, entities[t].xp, entities[t].yp, true))
+    {
+        // Let's try to get out...
+        if (game.gravitycontrol == 0)
+        {
+            entities[t].yp -= 3;
+        }
+        else
+        {
+            entities[t].yp += 3;
+        }
     }
 }

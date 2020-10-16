@@ -1,21 +1,21 @@
 #ifndef MAPGAME_H
 #define MAPGAME_H
 
-#include "Tower.h"
-#include "WarpClass.h"
+#include <vector>
+
 #include "Finalclass.h"
 #include "Labclass.h"
-#include "Spacestation2.h"
+#include "Maths.h"
 #include "Otherlevel.h"
-#include "Entity.h"
-#include "Graphics.h"
-#include <vector>
-#include "Music.h"
-#include "editor.h"
+#include "Spacestation2.h"
+#include "Tower.h"
+#include "WarpClass.h"
 
-#if !defined(NO_CUSTOM_LEVELS)
-extern editorclass ed;
-#endif
+struct Roomtext
+{
+    int x, y;
+    std::string text;
+};
 
 class mapclass
 {
@@ -39,6 +39,7 @@ public:
     std::string getglitchname(int x, int y);
 
     void initmapdata();
+    void initcustommapdata();
 
     int finalat(int x, int y);
 
@@ -58,11 +59,7 @@ public:
 
     bool collide(int x, int y);
 
-    void fillareamap(std::vector<std::string>& tmap);
-
     void settile(int xp, int yp, int t);
-
-    void fillcontent(std::vector<std::string>& tmap);
 
 
     int area(int _rx, int _ry);
@@ -83,18 +80,16 @@ public:
 
     void loadlevel(int rx, int ry);
 
+    void twoframedelayfix();
 
-    std::vector <int> roomdeaths;
-    std::vector <int> roomdeathsfinal;
-    std::vector <int> areamap;
-    std::vector <int> contents;
-    std::vector <int> explored;
-    std::vector <int> vmult;
-    std::vector <std::string> tmap;
 
-    int temp;
-    int temp2;
-    int j;
+    int roomdeaths[20 * 20];
+    int roomdeathsfinal[20 * 20];
+    static const int areamap[20 * 20];
+    short contents[40 * 30];
+    bool explored[20 * 20];
+    int vmult[30];
+
     int background;
     int rcol;
     int tileset;
@@ -103,10 +98,12 @@ public:
 
 
     std::string roomname;
+    std::string hiddenname;
 
     //Special tower stuff
     bool towermode;
     float ypos;
+    float oldypos;
     int bypos;
     int cameramode;
     int cameraseek, cameraseekframe;
@@ -121,6 +118,7 @@ public:
     int colstate, colstatedelay;
     int colsuperstate;
     int spikeleveltop, spikelevelbottom;
+    int oldspikeleveltop, oldspikelevelbottom;
     bool tdrawback;
     int bscroll;
     //final level navigation
@@ -138,7 +136,7 @@ public:
     int customzoom;
     bool customshowmm;
 
-    std::vector<std::string> specialnames;
+    std::string specialnames[8];
     int glitchmode;
     int glitchdelay;
     std::string glitchname;
@@ -174,8 +172,26 @@ public:
 
     //Map cursor
     int cursorstate, cursordelay;
+
+    int kludge_bypos;
+    int kludge_colstate;
+    int kludge_scrolldir;
+    void inline bg_to_kludge()
+    {
+        kludge_bypos = bypos;
+        kludge_colstate = colstate;
+        kludge_scrolldir = scrolldir;
+    }
+    void inline kludge_to_bg()
+    {
+        bypos = kludge_bypos;
+        colstate = kludge_colstate;
+        scrolldir = kludge_scrolldir;
+    }
 };
 
+#ifndef MAP_DEFINITION
 extern mapclass map;
+#endif
 
 #endif /* MAPGAME_H */
