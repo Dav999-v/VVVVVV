@@ -27,6 +27,14 @@
 #endif
 #include <inttypes.h>
 
+// Windows NixOS CI doesn't work without this?
+#ifndef SCNx32
+#define SCNx32 "x"
+#endif
+#ifndef SCNu32
+#define SCNu32 "u"
+#endif
+
 edlevelclass::edlevelclass()
 {
     tileset=0;
