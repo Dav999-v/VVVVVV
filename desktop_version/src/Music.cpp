@@ -5,11 +5,31 @@
 #include <stdio.h>
 
 #include "BinaryBlob.h"
-#include "Game.h"
 #include "Map.h"
 #include "UtilityClass.h"
 
 void songend();
+
+musicclass::musicclass()
+{
+	safeToProcessMusic= false;
+	m_doFadeInVol = false;
+	musicVolume = MIX_MAX_VOLUME;
+	FadeVolAmountPerFrame = 0;
+
+	currentsong = 0;
+	nicechange = -1;
+	nicefade = false;
+	resumesong = 0;
+	quick_fade = true;
+
+	songStart = 0;
+	songEnd = 0;
+
+	Mix_HookMusicFinished(&songend);
+
+	usingmmmmmm = false;
+}
 
 void musicclass::init()
 {
@@ -75,7 +95,6 @@ void musicclass::init()
 	else
 	{
 		mmmmmm = true;
-		usingmmmmmm = true;
 		int index;
 		SDL_RWops *rw;
 
@@ -101,8 +120,8 @@ void musicclass::init()
 		const std::vector<int> extra = musicReadBlob.getExtra();
 		for (size_t i = 0; i < extra.size(); i++)
 		{
-			const int& index = extra[i];
-			rw = SDL_RWFromMem(musicReadBlob.getAddress(index), musicReadBlob.getSize(index));
+			const int& index_ = extra[i];
+			rw = SDL_RWFromMem(musicReadBlob.getAddress(index_), musicReadBlob.getSize(index_));
 			musicTracks.push_back(MusicTrack( rw ));
 
 			num_mmmmmm_tracks++;
@@ -124,31 +143,12 @@ void musicclass::init()
 	const std::vector<int> extra = musicReadBlob.getExtra();
 	for (size_t i = 0; i < extra.size(); i++)
 	{
-		const int& index = extra[i];
-		rw = SDL_RWFromMem(musicReadBlob.getAddress(index), musicReadBlob.getSize(index));
+		const int& index_ = extra[i];
+		rw = SDL_RWFromMem(musicReadBlob.getAddress(index_), musicReadBlob.getSize(index_));
 		musicTracks.push_back(MusicTrack( rw ));
 
 		num_pppppp_tracks++;
 	}
-
-	safeToProcessMusic= false;
-	m_doFadeInVol = false;
-	musicVolume = 128;
-	FadeVolAmountPerFrame = 0;
-
-	currentsong = 0;
-	nicechange = 0;
-	nicefade = 0;
-	resumesong = 0;
-	fadeoutqueuesong = -1;
-	dontquickfade = false;
-
-	songStart = 0;
-	songEnd = 0;
-
-	Mix_HookMusicFinished(&songend);
-
-	usingmmmmmm = false;
 }
 
 void songend()
@@ -178,7 +178,7 @@ void musicclass::play(int t, const double position_sec /*= 0.0*/, const int fade
 		t += num_mmmmmm_tracks;
 	}
 	safeToProcessMusic = true;
-	Mix_VolumeMusic(128);
+	musicVolume = MIX_MAX_VOLUME;
 	if (currentsong !=t)
 	{
 		if (t != -1)
@@ -190,7 +190,7 @@ void musicclass::play(int t, const double position_sec /*= 0.0*/, const int fade
 				currentsong = -1;
 				return;
 			}
-			if (currentsong == 0 || currentsong == 7 || (!map.custommode && (currentsong == 0+num_pppppp_tracks || currentsong == 7+num_pppppp_tracks)))
+			if (currentsong == 0 || currentsong == 7 || (!map.custommode && (currentsong == 0+num_mmmmmm_tracks || currentsong == 7+num_mmmmmm_tracks)))
 			{
 				// Level Complete theme, no fade in or repeat
 				if(Mix_FadeInMusicPos(musicTracks[t].m_music, 0, 0, position_sec)==-1)
@@ -200,14 +200,20 @@ void musicclass::play(int t, const double position_sec /*= 0.0*/, const int fade
 			}
 			else
 			{
-				if (Mix_FadingMusic() == MIX_FADING_OUT) {
+				if (Mix_FadingMusic() == MIX_FADING_OUT)
+				{
 					// We're already fading out
-					fadeoutqueuesong = t;
+					nicechange = t;
+					nicefade = true;
 					currentsong = -1;
-					if (!dontquickfade)
+					if (quick_fade)
+					{
 						Mix_FadeOutMusic(500); // fade out quicker
+					}
 					else
-						dontquickfade = false;
+					{
+						quick_fade = true;
+					}
 				}
 				else if(Mix_FadeInMusicPos(musicTracks[t].m_music, -1, fadein_ms, position_sec)==-1)
 				{
@@ -247,7 +253,6 @@ void musicclass::haltdasmusik()
 
 void musicclass::silencedasmusik()
 {
-	Mix_VolumeMusic(0) ;
 	musicVolume = 0;
 }
 
@@ -257,19 +262,16 @@ void musicclass::fadeMusicVolumeIn(int ms)
 	FadeVolAmountPerFrame =  MIX_MAX_VOLUME / (ms / 33);
 }
 
-void musicclass::fadeout()
+void musicclass::fadeout(const bool quick_fade_ /*= true*/)
 {
 	Mix_FadeOutMusic(2000);
 	resumesong = currentsong;
+	quick_fade = quick_fade_;
 }
 
 void musicclass::processmusicfadein()
 {
-	// Instead of returning early if music is muted, this should still increase `musicVolume`
-	// so that anything that relies on this won't break. We'll simply just not set the volume
-	// if the music is muted
 	musicVolume += FadeVolAmountPerFrame;
-	if (!game.musicmuted) Mix_VolumeMusic(musicVolume);
 	if (musicVolume >= MIX_MAX_VOLUME)
 	{
 		m_doFadeInVol = false;
@@ -283,15 +285,11 @@ void musicclass::processmusic()
 		return;
 	}
 
-	if (fadeoutqueuesong != -1 && Mix_PlayingMusic() == 0) {
-		play(fadeoutqueuesong);
-		fadeoutqueuesong = -1;
-	}
-
-	if (nicefade == 1 && Mix_PlayingMusic() == 0)
+	if (nicefade && Mix_PlayingMusic() == 0)
 	{
 		play(nicechange);
-		nicechange = -1; nicefade = 0;
+		nicechange = -1;
+		nicefade = false;
 	}
 
 	if(m_doFadeInVol)
@@ -304,14 +302,13 @@ void musicclass::processmusic()
 void musicclass::niceplay(int t)
 {
 	// important: do nothing if the correct song is playing!
-	if((!mmmmmm && currentsong!=t) || (mmmmmm && usingmmmmmm && currentsong!=t) || (mmmmmm && !usingmmmmmm && currentsong!=t+16))
+	if((!mmmmmm && currentsong!=t) || (mmmmmm && usingmmmmmm && currentsong!=t) || (mmmmmm && !usingmmmmmm && currentsong!=t+num_mmmmmm_tracks))
 	{
 		if(currentsong!=-1)
 		{
-			dontquickfade = true;
-			fadeout();
+			fadeout(false);
 		}
-		nicefade = 1;
+		nicefade = true;
 		nicechange = t;
 	}
 }

@@ -1081,6 +1081,39 @@ void entityclass::removeblockat( int x, int y )
     }
 }
 
+void entityclass::moveblockto(int x1, int y1, int x2, int y2, int w, int h)
+{
+    for (size_t i = 0; i < blocks.size(); i++)
+    {
+        if (blocks[i].xp == x1 && blocks[i].yp == y1)
+        {
+            blocks[i].xp = x2;
+            blocks[i].yp = y2;
+
+            blocks[i].wp = w;
+            blocks[i].hp = h;
+
+            blocks[i].rectset(blocks[i].xp, blocks[i].yp, blocks[i].wp, blocks[i].hp);
+            break;
+        }
+    }
+}
+
+void entityclass::nocollisionat(int x, int y)
+{
+    for (size_t i = 0; i < blocks.size(); i++)
+    {
+        if (blocks[i].xp == x && blocks[i].yp == y)
+        {
+            blocks[i].wp = 0;
+            blocks[i].hp = 0;
+
+            blocks[i].rect.w = blocks[i].wp;
+            blocks[i].rect.h = blocks[i].hp;
+        }
+    }
+}
+
 void entityclass::removetrigger( int t )
 {
     for(size_t i=0; i<blocks.size(); i++)
@@ -1180,8 +1213,8 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
     entclass entity;
     entity.xp = xp;
     entity.yp = yp;
-    entity.oldxp = xp;
-    entity.oldyp = yp;
+    entity.lerpoldxp = xp;
+    entity.lerpoldyp = yp;
     entity.type = t;
     switch(t)
     {
@@ -1750,7 +1783,7 @@ void entityclass::createentity( float xp, float yp, int t, float vx /*= 0*/, flo
                 entity.tile = 188 + vx;
                 entity.colour = 37;
                 entity.h += 3;
-                entity.oldyp -= 3;
+                entity.lerpoldyp -= 3;
                 entity.yp -= 3;
             }
             break;
@@ -2328,7 +2361,7 @@ bool entityclass::updateentities( int i )
                     {
                         return removeentity(i);
                     }
-                    if (game.roomy == 108)
+                    if (game.roomx == 113 && game.roomy == 108)
                     {
                         if (entities[i].yp <= 60)
                         {
@@ -2407,20 +2440,20 @@ bool entityclass::updateentities( int i )
                     {
                         entities[i].tile = 120;
                         entities[i].yp = (28*8)-62;
-                        entities[i].oldyp = (28*8)-62;
+                        entities[i].lerpoldyp = (28*8)-62;
                     }
                     else
                     {
                         entities[i].tile = 96;
                         entities[i].yp = 24;
-                        entities[i].oldyp = 24;
+                        entities[i].lerpoldyp = 24;
                     }
                     //now, x position
                     if (INBOUNDS_VEC(player, entities) && entities[player].xp > 20 * 8)
                     {
                         //approach from the left
                         entities[i].xp = -64;
-                        entities[i].oldxp = -64;
+                        entities[i].lerpoldxp = -64;
                         entities[i].state = 2;
                         bool entitygone = updateentities(i); //right
                         if (entitygone) return true;
@@ -2429,7 +2462,7 @@ bool entityclass::updateentities( int i )
                     {
                         //approach from the left
                         entities[i].xp = 320;
-                        entities[i].oldxp = 320;
+                        entities[i].lerpoldxp = 320;
                         entities[i].state = 3;
                         bool entitygone = updateentities(i); //left
                         if (entitygone) return true;
@@ -2458,7 +2491,7 @@ bool entityclass::updateentities( int i )
                 {
                     entities[i].statedelay = 6;
                     entities[i].xp -=  int(entities[i].para);
-                    entities[i].oldxp -=  int(entities[i].para);
+                    entities[i].lerpoldxp -=  int(entities[i].para);
                 }
                 break;
             case 18: //Special for ASCII Snake (right)
@@ -2466,7 +2499,7 @@ bool entityclass::updateentities( int i )
                 {
                     entities[i].statedelay = 6;
                     entities[i].xp += int(entities[i].para);
-                    entities[i].oldxp += int(entities[i].para);
+                    entities[i].lerpoldxp += int(entities[i].para);
                 }
                 break;
             }
@@ -2740,7 +2773,7 @@ bool entityclass::updateentities( int i )
                 }
 
                 //Special rules:
-                if (game.roomx == 110 && game.roomy == 105)
+                if (game.roomx == 110 && game.roomy == 105 && !map.custommode)
                 {
                     if (entities[i].xp < 155)
                     {
@@ -4389,6 +4422,9 @@ void entityclass::updateentitylogic( int t )
         return;
     }
 
+    entities[t].oldxp = entities[t].xp;
+    entities[t].oldyp = entities[t].yp;
+
     entities[t].vx = entities[t].vx + entities[t].ax;
     entities[t].vy = entities[t].vy + entities[t].ay;
     entities[t].ax = 0;
@@ -4488,19 +4524,6 @@ void entityclass::movingplatformfix( int t, int j )
             }
         }
     }
-}
-
-void entityclass::hormovingplatformfix( int t )
-{
-    if (!INBOUNDS_VEC(t, entities))
-    {
-        puts("hormovingplatformfix() out-of-bounds!");
-        return;
-    }
-
-    //If this intersects the player, then we move the player along it
-    //for horizontal platforms, this is simplier
-    createblock(0, entities[t].xp, entities[t].yp, entities[t].w, entities[t].h);
 }
 
 void entityclass::customwarplinecheck(int i) {
@@ -4651,7 +4674,17 @@ void entityclass::collisioncheck(int i, int j, bool scm /*= false*/)
         }
         break;
     case 2:   //Moving platforms
-        if (entitycollide(i, j)) removeblockat(entities[j].xp, entities[j].yp);
+        if (entities[j].behave >= 8 && entities[j].behave < 10)
+        {
+            //We don't want conveyors, moving platforms only
+            break;
+        }
+        if (entitycollide(i, j))
+        {
+            //Disable collision temporarily so we don't push the person out!
+            //Collision will be restored at end of platform update loop in gamelogic
+            nocollisionat(entities[j].xp, entities[j].yp);
+        }
         break;
     case 3:   //Entity to entity
         if(entities[j].onentity>0)

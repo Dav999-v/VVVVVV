@@ -580,7 +580,8 @@ void menuactionpress()
             //disable animated backgrounds
             game.colourblindmode = !game.colourblindmode;
             game.savestats();
-            map.tdrawback = true;
+            graphics.towerbg.tdrawback = true;
+            graphics.titlebg.tdrawback = true;
             music.playef(11);
             break;
         case 1:
@@ -1349,6 +1350,7 @@ void menuactionpress()
             game.deletequick();
             game.deletetele();
             game.deletestats();
+            game.deletesettings();
             game.flashlight = 5;
             game.screenshake = 15;
             game.createmenu(Menu::mainmenu);
@@ -1753,7 +1755,7 @@ void titleinput()
                 music.playef(18);
                 game.screenshake = 10;
                 game.flashlight = 5;
-                map.colstate = 10;
+                graphics.titlebg.colstate = 10;
                 map.nexttowercolour();
             }
             else
@@ -2079,6 +2081,7 @@ void gameinput()
         //Quit menu, same conditions as in game menu
         game.gamestate = MAPMODE;
         game.gamesaved = false;
+        game.gamesavefailed = false;
         graphics.resumegamemode = false;
         game.menupage = 20; // The Map Page
         BlitSurfaceStandard(graphics.menubuffer,NULL,graphics.backBuffer, NULL);
@@ -2109,6 +2112,7 @@ void gameinput()
         map.cursordelay = 0;
         map.cursorstate = 0;
         game.gamesaved = false;
+        game.gamesavefailed = false;
         graphics.resumegamemode = false;
         game.menupage = 0; // The Map Page
         BlitSurfaceStandard(graphics.menubuffer,NULL,graphics.backBuffer, NULL);
@@ -2127,6 +2131,7 @@ void gameinput()
         //Quit menu, same conditions as in game menu
         game.gamestate = MAPMODE;
         game.gamesaved = false;
+        game.gamesavefailed = false;
         graphics.resumegamemode = false;
         game.menupage = 30; // Pause screen
 
@@ -2222,7 +2227,7 @@ void mapinput()
     }
 
     if(graphics.menuoffset==0
-    && ((!game.glitchrunnermode && game.fadetomenudelay <= 0 && game.fadetolabdelay <= 0)
+    && ((!game.glitchrunnermode && !game.fadetomenu && game.fadetomenudelay <= 0 && !game.fadetolab && game.fadetolabdelay <= 0)
     || graphics.fademode == 0))
     {
         if (graphics.flipmode)
@@ -2360,12 +2365,11 @@ void mapmenuactionpress()
     }
         break;
     case 3:
-    if (!game.gamesaved && !game.inspecial())
+    if (!game.gamesaved && !game.gamesavefailed && !game.inspecial())
     {
         game.flashlight = 5;
         game.screenshake = 10;
         music.playef(18);
-        game.gamesaved = true;
 
         game.savetime = game.timestring();
         game.savearea = map.currentarea(map.area(game.roomx, game.roomy));
@@ -2373,16 +2377,19 @@ void mapmenuactionpress()
 
         if (game.roomx >= 102 && game.roomx <= 104 && game.roomy >= 110 && game.roomy <= 111) game.savearea = "The Ship";
 
+        bool success;
 #if !defined(NO_CUSTOM_LEVELS)
         if(map.custommodeforreal)
         {
-            game.customsavequick(ed.ListOfMetaData[game.playcustomlevel].filename);
+            success = game.customsavequick(ed.ListOfMetaData[game.playcustomlevel].filename);
         }
         else
 #endif
         {
-            game.savequick();
+            success = game.savequick();
         }
+        game.gamesaved = success;
+        game.gamesavefailed = !success;
     }
         break;
 
@@ -2448,16 +2455,12 @@ void mapmenuactionpress()
         {
             game.createmenu(Menu::options);
         }
-        map.bg_to_kludge();
         game.kludge_ingametemp = game.currentmenuname;
 
-        map.scrolldir = 0;
-        map.colstate = ((int) (map.colstate / 5)) * 5;
-        map.bypos = 0;
         map.nexttowercolour();
 
         // Fix delta rendering glitch
-        graphics.updatetowerbackground();
+        graphics.updatetowerbackground(graphics.titlebg);
         titleupdatetextcol();
         break;
     }
@@ -2606,11 +2609,11 @@ void gamecompleteinput()
     //Do this before we update map.bypos
     if (!game.colourblindmode)
     {
-        graphics.updatetowerbackground();
+        graphics.updatetowerbackground(graphics.titlebg);
     }
 
     //Do these here because input comes first
-    map.bypos += map.bscroll;
+    graphics.titlebg.bypos += graphics.titlebg.bscroll;
     game.oldcreditposition = game.creditposition;
 
     if (key.isDown(KEYBOARD_z) || key.isDown(KEYBOARD_SPACE) || key.isDown(KEYBOARD_v) || key.isDown(game.controllerButton_flip))
@@ -2626,7 +2629,7 @@ void gamecompleteinput()
         }
         else
         {
-            map.bscroll = +7;
+            graphics.titlebg.bscroll = +7;
         }
         game.press_action = true;
     }

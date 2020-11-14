@@ -211,13 +211,19 @@ int main(int argc, char *argv[])
     game.mainmenu = 0;
 
     map.ypos = (700-29) * 8;
-    map.bypos = map.ypos / 2;
+    graphics.towerbg.bypos = map.ypos / 2;
+    graphics.titlebg.bypos = map.ypos / 2;
 
     //Moved screensetting init here from main menu V2.1
     int width = 320;
     int height = 240;
     bool vsync = false;
+
+    // Prioritize unlock.vvv first (2.2 and below),
+    // but settings have been migrated to settings.vvv (2.3 and up)
     game.loadstats(&width, &height, &vsync);
+    game.loadsettings(&width, &height, &vsync);
+
     gameScreen.init(
         width,
         height,
@@ -260,11 +266,23 @@ int main(int argc, char *argv[])
     graphics.menubuffer = CREATE_SURFACE(320, 240);
     SDL_SetSurfaceBlendMode(graphics.menubuffer, SDL_BLENDMODE_NONE);
 
-    graphics.towerbuffer =  CREATE_SURFACE(320 + 16, 240 + 16);
-    SDL_SetSurfaceBlendMode(graphics.towerbuffer, SDL_BLENDMODE_NONE);
+    graphics.warpbuffer = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(graphics.warpbuffer, SDL_BLENDMODE_NONE);
 
-    graphics.towerbuffer_lerp = CREATE_SURFACE(320 + 16, 240 + 16);
-    SDL_SetSurfaceBlendMode(graphics.towerbuffer, SDL_BLENDMODE_NONE);
+    graphics.warpbuffer_lerp = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(graphics.warpbuffer_lerp, SDL_BLENDMODE_NONE);
+
+    graphics.towerbg.buffer =  CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(graphics.towerbg.buffer, SDL_BLENDMODE_NONE);
+
+    graphics.towerbg.buffer_lerp = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(graphics.towerbg.buffer_lerp, SDL_BLENDMODE_NONE);
+
+    graphics.titlebg.buffer = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(graphics.titlebg.buffer, SDL_BLENDMODE_NONE);
+
+    graphics.titlebg.buffer_lerp = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(graphics.titlebg.buffer_lerp, SDL_BLENDMODE_NONE);
 
     graphics.tempBuffer = CREATE_SURFACE(320, 240);
     SDL_SetSurfaceBlendMode(graphics.tempBuffer, SDL_BLENDMODE_NONE);
@@ -421,7 +439,7 @@ void inline deltaloop()
 
     while (accumulator >= timesteplimit)
     {
-        accumulator = fmodf(accumulator, timesteplimit);
+        accumulator = SDL_fmodf(accumulator, timesteplimit);
 
         fixedloop();
     }
@@ -546,11 +564,11 @@ void inline fixedloop()
                 script.run();
             }
 
-            //Update old positions of entities - has to be done BEFORE gameinput!
+            //Update old lerp positions of entities - has to be done BEFORE gameinput!
             for (size_t i = 0; i < obj.entities.size(); i++)
             {
-                obj.entities[i].oldxp = obj.entities[i].xp;
-                obj.entities[i].oldyp = obj.entities[i].yp;
+                obj.entities[i].lerpoldxp = obj.entities[i].xp;
+                obj.entities[i].lerpoldyp = obj.entities[i].yp;
             }
 
             gameinput();
@@ -661,13 +679,13 @@ void inline fixedloop()
     {
         Mix_Volume(-1,MIX_MAX_VOLUME);
 
-        if (game.musicmuted || game.completestop)
+        if (game.musicmuted)
         {
             Mix_VolumeMusic(0);
         }
         else
         {
-            Mix_VolumeMusic(MIX_MAX_VOLUME);
+            Mix_VolumeMusic(music.musicVolume);
         }
     }
 

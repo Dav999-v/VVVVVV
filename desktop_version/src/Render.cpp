@@ -1193,7 +1193,7 @@ void titlerender()
     }
     else
     {
-        if(!game.colourblindmode) graphics.drawtowerbackground();
+        if(!game.colourblindmode) graphics.drawtowerbackground(graphics.titlebg);
 
         tr = graphics.col_tr;
         tg = graphics.col_tg;
@@ -1222,7 +1222,7 @@ void gamecompleterender()
 {
     FillRect(graphics.backBuffer, 0x000000);
 
-    if(!game.colourblindmode) graphics.drawtowerbackground();
+    if(!game.colourblindmode) graphics.drawtowerbackground(graphics.titlebg);
 
     tr = graphics.col_tr;
     tg = graphics.col_tg;
@@ -1409,7 +1409,7 @@ void gamerender()
         {
             if (!game.colourblindmode)
             {
-                graphics.drawtowerbackground();
+                graphics.drawtowerbackground(graphics.towerbg);
             }
             else
             {
@@ -2253,6 +2253,10 @@ void maprender()
         {
             graphics.PrintWrap(0, 115, loc::gettext("Cannot Save in Secret Lab"), 146, 146, 180, true);
         }
+        else if (game.gamesavefailed)
+        {
+            graphics.Print(0, 115, "ERROR: Could not save game!", 146, 146, 180, true);
+        }
         else if (map.custommode)
         {
             if (game.gamesaved)
@@ -2527,10 +2531,10 @@ void teleporterrender()
         //Draw the chosen destination coordinate!
         //TODO
         //draw the coordinates //destination
-        int tempx = map.teleporters[game.teleport_to_teleporter].x;
-        int tempy = map.teleporters[game.teleport_to_teleporter].y;
-        graphics.drawrect(40 + (tempx * 12) + 1, 21 + (tempy * 9) + 1, 12 - 2, 9 - 2, 245 - (help.glow * 2), 16, 16);
-        graphics.drawrect(40 + (tempx * 12) + 3, 21 + (tempy * 9) + 3, 12 - 6, 9 - 6, 245 - (help.glow * 2), 16, 16);
+        int tempx_ = map.teleporters[game.teleport_to_teleporter].x;
+        int tempy_ = map.teleporters[game.teleport_to_teleporter].y;
+        graphics.drawrect(40 + (tempx_ * 12) + 1, 21 + (tempy_ * 9) + 1, 12 - 2, 9 - 2, 245 - (help.glow * 2), 16, 16);
+        graphics.drawrect(40 + (tempx_ * 12) + 3, 21 + (tempy_ * 9) + 3, 12 - 6, 9 - 6, 245 - (help.glow * 2), 16, 16);
     }
 
     //draw legend details

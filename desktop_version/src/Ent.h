@@ -20,6 +20,8 @@ public:
 
     void updatecolour();
 
+    bool ishumanoid();
+
 public:
     //Fundamentals
     bool invis;
@@ -49,6 +51,7 @@ public:
     int yp;int xp;
 
     Uint32 realcol;
+    int lerpoldxp, lerpoldyp;
 };
 
 #endif /* ENT_H */

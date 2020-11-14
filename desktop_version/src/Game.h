@@ -6,7 +6,11 @@
 #include <vector>
 
 // Forward decl without including all of <tinyxml2.h>
-namespace tinyxml2 { class XMLDocument; }
+namespace tinyxml2
+{
+    class XMLDocument;
+    class XMLElement;
+}
 
 struct MenuOption
 {
@@ -100,8 +104,8 @@ public:
 
     void resetgameclock();
 
-    void customsavequick(std::string savfile);
-    void savequick();
+    bool customsavequick(std::string savfile);
+    bool savequick();
 
     void gameclock();
 
@@ -129,13 +133,23 @@ public:
 
     void loadstats(int *width, int *height, bool *vsync);
 
-    void  savestats();
+    void  savestats(const bool stats_only = false);
 
     void deletestats();
 
+    void deserializesettings(tinyxml2::XMLElement* dataNode, int* width, int* height, bool* vsync);
+
+    void serializesettings(tinyxml2::XMLElement* dataNode);
+
+    void loadsettings(int* width, int* height, bool* vsync);
+
+    void savesettings();
+
+    void deletesettings();
+
     void deletequick();
 
-    void savetele();
+    bool savetele();
 
     void loadtele();
 
@@ -207,6 +221,7 @@ public:
 
     int frames, seconds, minutes, hours;
     bool gamesaved;
+    bool gamesavefailed;
     std::string savetime;
     std::string savearea;
     int savetrinkets;
@@ -426,7 +441,6 @@ public:
 
     bool ingame_titlemode;
 
-    bool shouldreturntopausemenu;
     void returntopausemenu();
     void unlockAchievement(const char *name);
 
