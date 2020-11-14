@@ -318,6 +318,7 @@
     <string english="Cannot Save in No Death Mode" explanation="" max="38*7" comment=""></string>
     <string english="Cannot Save in Time Trial" explanation="" max="38*7" comment=""></string>
     <string english="Cannot Save in Secret Lab" explanation="" max="38*7" comment=""></string>
+    <string english="ERROR: Could not save game!" explanation="" max="38*7" comment=""></string>
     <string english="Game saved ok!" explanation="" max="38*2" comment=""></string>
     <string english="[Press ACTION to save your game]" explanation="" max="38*7" comment=""></string>
     <string english="(Note: The game is autosaved at every teleporter.)" explanation="" max="38*3" comment=""></string>

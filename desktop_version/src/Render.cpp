@@ -2255,7 +2255,7 @@ void maprender()
         }
         else if (game.gamesavefailed)
         {
-            graphics.Print(0, 115, "ERROR: Could not save game!", 146, 146, 180, true);
+            graphics.Print(0, 115, loc::gettext("ERROR: Could not save game!"), 146, 146, 180, true);
         }
         else if (map.custommode)
         {

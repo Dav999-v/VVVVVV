@@ -318,6 +318,7 @@
     <string english="Cannot Save in No Death Mode" explanation="" max="38*7" comment="">Kan niet opslaan in éénlevenmodus</string>
     <string english="Cannot Save in Time Trial" explanation="" max="38*7" comment="">Kan niet opslaan in race tegen de klok</string>
     <string english="Cannot Save in Secret Lab" explanation="" max="38*7" comment="">Kan niet opslaan in geheim lab</string>
+    <string english="ERROR: Could not save game!" explanation="" max="38*7" comment="">FOUT: Kon spel niet opslaan!</string>
     <string english="Game saved ok!" explanation="" max="38*2" comment="">Spel opgeslagen!</string>
     <string english="[Press ACTION to save your game]" explanation="" max="38*7" comment="">[Druk op ACTIE om je spel op te slaan]</string>
     <string english="(Note: The game is autosaved at every teleporter.)" explanation="" max="38*3" comment="">(Opmerking: het spel wordt automatisch opgeslagen bij elke teleporter.)</string>
