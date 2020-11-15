@@ -126,6 +126,7 @@ public:
 	int len(std::string t);
 	std::string wordwrap(const std::string& _s, int maxwidth, short *lines = NULL);
 	std::string wordwrap_balanced(const std::string& _s, int minwidth, int maxwidth);
+	std::string unwordwrap(const std::string& _s);
 
 	void bigprint( int _x, int _y, std::string _s, int r, int g, int b, bool cen = false, int sc = 2 );
 	void drawspritesetcol(int x, int y, int t, int c);

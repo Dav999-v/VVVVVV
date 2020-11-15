@@ -563,16 +563,17 @@ std::string Graphics::wordwrap_balanced(const std::string& _s, int minwidth, int
     {
         std::string curstring = wordwrap(_s, curlimit);
 
-        // We need to know much all the lines are filled, on average
+        // We need to know how much all the lines are filled, on average
         int total_lines = 1;
         double total_linefill = 0;
 
         int line_len = 0;
         bool dq = false;
         std::string::iterator iter = curstring.begin();
+        uint32_t ch;
         while (iter != curstring.end())
         {
-            uint32_t ch = utf8::unchecked::next(iter);
+            ch = utf8::unchecked::next(iter);
             if (ch == '\n')
             {
                 // If this line somehow overshoots our limit, the entire textbox is disqualified.
@@ -605,6 +606,43 @@ std::string Graphics::wordwrap_balanced(const std::string& _s, int minwidth, int
     }
 
     return wordwrap(_s, bestwidth);
+}
+
+std::string Graphics::unwordwrap(const std::string& _s)
+{
+    // Takes a string wordwrapped by newlines, and turns it into a single line, undoing the wrapping.
+    // Also trims any leading/trailing whitespace and collapses multiple spaces into one (to undo manual centering)
+    // Only applied to English, so langmeta.autowordwrap isn't used here (it'd break looking up strings)
+
+    std::string s = std::string();
+    std::back_insert_iterator<std::string> inserter = std::back_inserter(s);
+    std::string::const_iterator iter = _s.begin();
+    uint32_t ch;
+    bool lastspace = true; // last character was a space (or the beginning, don't want leading whitespace)
+    while (iter != _s.end())
+    {
+        ch = utf8::unchecked::next(iter);
+
+        if (ch == '\n')
+        {
+            ch = ' ';
+        }
+
+        if (ch != ' ' || !lastspace)
+        {
+            utf8::unchecked::append(ch, inserter);
+        }
+
+        lastspace = (ch == ' ');
+    }
+
+    // We could have one trailing space
+    if (!s.empty() && s[s.size()-1] == ' ')
+    {
+        s.erase(s.end()-1);
+    }
+
+    return s;
 }
 
 void Graphics::PrintOff( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/ ) {

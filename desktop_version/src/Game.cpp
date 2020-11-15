@@ -4978,7 +4978,7 @@ void Game::serializesettings(tinyxml2::XMLElement* dataNode)
 
     xml::update_tag(dataNode, "controllerSensitivity", controllerSensitivity);
 
-	xml::update_tag(dataNode, "lang", loc::lang.c_str());
+    xml::update_tag(dataNode, "lang", loc::lang.c_str());
 }
 
 void Game::loadsettings(int* width, int* height, bool* vsync)
