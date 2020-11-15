@@ -545,6 +545,68 @@ std::string Graphics::wordwrap(const std::string& _s, int maxwidth, short *lines
     return s;
 }
 
+std::string Graphics::wordwrap_balanced(const std::string& _s, int minwidth, int maxwidth)
+{
+    // Return a string wordwrapped to a limit between minwidth and maxwidth by adding newlines.
+    // Within these bounds, try to fill the lines as far as possible, and return result where lines are most filled.
+    // Goal is to have all lines in textboxes be about as long and to avoid wrapping just one word to a new line.
+    // Assumes a language that uses spaces, so won't work well with CJK.
+
+    if (!loc::langmeta.autowordwrap)
+    {
+        return _s;
+    }
+
+    int bestwidth = maxwidth; // "Best" value for wordwrap maxwidth
+    double bestwidth_linefill = 0; // What fraction of the area of the "best" textbox is filled with text (0-1)
+    for (int curlimit = minwidth; curlimit <= maxwidth; curlimit += 8)
+    {
+        std::string curstring = wordwrap(_s, curlimit);
+
+        // We need to know much all the lines are filled, on average
+        int total_lines = 1;
+        double total_linefill = 0;
+
+        int line_len = 0;
+        bool dq = false;
+        std::string::iterator iter = curstring.begin();
+        while (iter != curstring.end())
+        {
+            uint32_t ch = utf8::unchecked::next(iter);
+            if (ch == '\n')
+            {
+                // If this line somehow overshoots our limit, the entire textbox is disqualified.
+                if (line_len > curlimit)
+                {
+                    dq = true;
+                    break;
+                }
+                total_lines++;
+                total_linefill += (double)line_len / curlimit;
+                line_len = 0;
+            }
+            else
+            {
+                line_len += bfontlen(ch);
+            }
+        }
+        if (dq)
+        {
+            continue;
+        }
+        total_linefill += (double)line_len / curlimit;
+
+        double linefill = total_linefill / total_lines;
+        if (linefill >= bestwidth_linefill)
+        {
+            bestwidth = curlimit;
+            bestwidth_linefill = linefill;
+        }
+    }
+
+    return wordwrap(_s, bestwidth);
+}
+
 void Graphics::PrintOff( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/ ) {
     PrintOffAlpha(_x,_y,_s,r,g,b,255,cen);
 }
