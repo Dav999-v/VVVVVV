@@ -17,23 +17,27 @@ extern "C"
 	);
 }
 
-void Screen::init(
-	int windowWidth,
-	int windowHeight,
-	bool fullscreen,
-	bool useVsync,
-	int stretch,
-	bool linearFilter,
-	bool badSignal
-) {
+ScreenSettings::ScreenSettings()
+{
+	windowWidth = 320;
+	windowHeight = 240;
+	fullscreen = false;
+	useVsync = false;
+	stretch = 0;
+	linearFilter = false;
+	badSignal = false;
+}
+
+void Screen::init(const ScreenSettings& settings)
+{
 	m_window = NULL;
 	m_renderer = NULL;
 	m_screenTexture = NULL;
 	m_screen = NULL;
-	isWindowed = !fullscreen;
-	stretchMode = stretch;
-	isFiltered = linearFilter;
-	vsync = useVsync;
+	isWindowed = !settings.fullscreen;
+	stretchMode = settings.stretch;
+	isFiltered = settings.linearFilter;
+	vsync = settings.useVsync;
 	filterSubrect.x = 1;
 	filterSubrect.y = 1;
 	filterSubrect.w = 318;
@@ -62,27 +66,7 @@ void Screen::init(
 	);
 	SDL_SetWindowTitle(m_window, "VVVVVV");
 
-	unsigned char *fileIn = NULL;
-	size_t length = 0;
-	unsigned char *data;
-	unsigned int width, height;
-	FILESYSTEM_loadFileToMemory("VVVVVV.png", &fileIn, &length);
-	lodepng_decode24(&data, &width, &height, fileIn, length);
-	FILESYSTEM_freeMemory(&fileIn);
-	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(
-		data,
-		width,
-		height,
-		24,
-		width * 3,
-		0x000000FF,
-		0x0000FF00,
-		0x00FF0000,
-		0x00000000
-	);
-	SDL_SetWindowIcon(m_window, icon);
-	SDL_FreeSurface(icon);
-	free(data);
+	LoadIcon();
 
 	// FIXME: This surface should be the actual backbuffer! -flibit
 	m_screen = SDL_CreateRGBSurface(
@@ -104,9 +88,49 @@ void Screen::init(
 		240
 	);
 
-	badSignalEffect = badSignal;
+	badSignalEffect = settings.badSignal;
 
-	ResizeScreen(windowWidth, windowHeight);
+	ResizeScreen(settings.windowWidth, settings.windowHeight);
+}
+
+void Screen::GetSettings(ScreenSettings* settings)
+{
+	int width, height;
+	GetWindowSize(&width, &height);
+
+	settings->windowWidth = width;
+	settings->windowHeight = height;
+
+	settings->fullscreen = !isWindowed;
+	settings->useVsync = vsync;
+	settings->stretch = stretchMode;
+	settings->linearFilter = isFiltered;
+	settings->badSignal = badSignalEffect;
+}
+
+void Screen::LoadIcon()
+{
+	unsigned char *fileIn = NULL;
+	size_t length = 0;
+	unsigned char *data;
+	unsigned int width, height;
+	FILESYSTEM_loadFileToMemory("VVVVVV.png", &fileIn, &length);
+	lodepng_decode24(&data, &width, &height, fileIn, length);
+	FILESYSTEM_freeMemory(&fileIn);
+	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(
+		data,
+		width,
+		height,
+		24,
+		width * 3,
+		0x000000FF,
+		0x0000FF00,
+		0x00FF0000,
+		0x00000000
+	);
+	SDL_SetWindowIcon(m_window, icon);
+	SDL_FreeSurface(icon);
+	free(data);
 }
 
 void Screen::ResizeScreen(int x, int y)

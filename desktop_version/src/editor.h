@@ -191,6 +191,7 @@ class editorclass{
   std::string note;
   std::string keybuffer;
   std::string filename;
+  std::string loaded_filepath;
 
   int drawmode;
   int tilex, tiley;
@@ -240,10 +241,6 @@ class editorclass{
   int sbx, sby;
   int pagey;
 
-  std::string author;
-  std::string description;
-  std::string title;
-
   //Functions for interfacing with the script:
   void addhook(std::string t);
   void removehook(std::string t);
@@ -287,6 +284,8 @@ void fillboxabs(int x, int y, int x2, int y2, int c);
 
 #if !defined(NO_EDITOR)
 void editorrender();
+
+void editorrenderfixed();
 
 void editorlogic();
 

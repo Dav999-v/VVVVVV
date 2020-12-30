@@ -5,8 +5,14 @@
 #include <string>
 #include <vector>
 
+#include "ScreenSettings.h"
+
 // Forward decl without including all of <tinyxml2.h>
-namespace tinyxml2 { class XMLDocument; }
+namespace tinyxml2
+{
+    class XMLDocument;
+    class XMLElement;
+}
 
 struct MenuOption
 {
@@ -26,6 +32,7 @@ namespace Menu
         quickloadlevel,
         youwannaquit,
         errornostart,
+        errorsavingsettings,
         graphicoptions,
         ed_settings,
         ed_desc,
@@ -97,8 +104,8 @@ public:
 
     void resetgameclock();
 
-    void customsavequick(std::string savfile);
-    void savequick();
+    bool customsavequick(std::string savfile);
+    bool savequick();
 
     void gameclock();
 
@@ -124,15 +131,31 @@ public:
 
     void unlocknum(int t);
 
-    void loadstats(int *width, int *height, bool *vsync);
+    void loadstats(ScreenSettings* screen_settings);
 
-    void  savestats();
+    bool savestats(const ScreenSettings* screen_settings);
+    bool savestats();
 
     void deletestats();
 
+    void deserializesettings(tinyxml2::XMLElement* dataNode, ScreenSettings* screen_settings);
+
+    void serializesettings(tinyxml2::XMLElement* dataNode, const ScreenSettings* screen_settings);
+
+    void loadsettings(ScreenSettings* screen_settings);
+
+    bool savesettings(const ScreenSettings* screen_settings);
+    bool savesettings();
+
+    bool savestatsandsettings();
+
+    void savestatsandsettings_menu();
+
+    void deletesettings();
+
     void deletequick();
 
-    void savetele();
+    bool savetele();
 
     void loadtele();
 
@@ -182,9 +205,8 @@ public:
 
     bool glitchrunkludge;
 
-    int usingmmmmmm;
-
     int gamestate;
+    int prevgamestate; //only used sometimes
     bool hascontrol, jumpheld;
     int jumppressed;
     int gravitycontrol;
@@ -197,6 +219,7 @@ public:
     int tapleft, tapright;
 
     //Menu interaction stuff
+    void mapmenuchange(const int newgamestate);
     bool mapheld;
     int menupage;
     int lastsaved;
@@ -204,6 +227,7 @@ public:
 
     int frames, seconds, minutes, hours;
     bool gamesaved;
+    bool gamesavefailed;
     std::string savetime;
     std::string savearea;
     int savetrinkets;
@@ -245,6 +269,8 @@ public:
     int creditposx, creditposy, creditposdelay;
     int oldcreditposx;
 
+    bool silence_settings_error;
+
 
     //Sine Wave Ninja Minigame
     bool swnmode;
@@ -260,7 +286,6 @@ public:
     bool  colourblindmode;
     bool noflashingmode;
     int slowdown;
-    Uint32 gameframerate;
 
     bool nodeathmode;
     int gameoverdelay;
@@ -293,7 +318,6 @@ public:
     bool unlocknotify[numunlock];
     bool anything_unlocked();
     int stat_trinkets;
-    bool fullscreen;
     int bestgamedeaths;
 
 
@@ -352,11 +376,6 @@ public:
 
     bool savemystats;
 
-
-    bool fullScreenEffect_badSignal;
-    bool useLinearFilter;
-    int stretchMode;
-    int controllerSensitivity;
 
     bool quickrestartkludge;
 
@@ -418,7 +437,6 @@ public:
 
     bool ingame_titlemode;
 
-    bool shouldreturntopausemenu;
     void returntopausemenu();
     void unlockAchievement(const char *name);
 

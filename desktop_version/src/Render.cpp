@@ -3,12 +3,14 @@
 #include "Entity.h"
 #include "FileSystemUtils.h"
 #include "Graphics.h"
+#include "KeyPoll.h"
 #include "MakeAndPlay.h"
 #include "Map.h"
 #include "Maths.h"
 #include "Music.h"
 #include "Script.h"
 #include "UtilityClass.h"
+#include "Version.h"
 
 int tr;
 int tg;
@@ -23,6 +25,25 @@ int inline FLIP(int ypos)
         return 220 - ypos;
     }
     return ypos;
+}
+
+static inline void drawslowdowntext()
+{
+    switch (game.slowdown)
+    {
+    case 30:
+        graphics.Print( -1, 105, "Game speed is normal.", tr/2, tg/2, tb/2, true);
+        break;
+    case 24:
+        graphics.Print( -1, 105, "Game speed is at 80%", tr, tg, tb, true);
+        break;
+    case 18:
+        graphics.Print( -1, 105, "Game speed is at 60%", tr, tg, tb, true);
+        break;
+    case 12:
+        graphics.Print( -1, 105, "Game speed is at 40%", tr, tg, tb, true);
+        break;
+    }
 }
 
 void menurender()
@@ -40,6 +61,12 @@ void menurender()
         graphics.drawsprite((160 - 96) + 5 * 32, temp, 23, tr, tg, tb);
 #if defined(MAKEANDPLAY)
         graphics.Print(-1,temp+35,"     MAKE AND PLAY EDITION",tr, tg, tb, true);
+#endif
+#ifdef COMMIT_DATE
+        graphics.Print( 310 - (10*8), 210, COMMIT_DATE, tr/2, tg/2, tb/2);
+#endif
+#ifdef INTERIM_COMMIT
+        graphics.Print( 310 - (SDL_arraysize(INTERIM_COMMIT) - 1) * 8, 220, INTERIM_COMMIT, tr/2, tg/2, tb/2);
 #endif
         graphics.Print( 310 - (4*8), 230, "v2.3", tr/2, tg/2, tb/2);
 
@@ -167,10 +194,13 @@ void menurender()
             graphics.bigprint( -1, 30, "Toggle Fullscreen", tr, tg, tb, true);
             graphics.Print( -1, 65, "Change to fullscreen/windowed mode.", tr, tg, tb, true);
 
-            if(game.fullscreen){
-              graphics.Print( -1, 85, "Current mode: FULLSCREEN", tr, tg, tb, true);
-            }else{
-              graphics.Print( -1, 85, "Current mode: WINDOWED", tr, tg, tb, true);
+            if (graphics.screenbuffer->isWindowed)
+            {
+                graphics.Print( -1, 85, "Current mode: WINDOWED", tr, tg, tb, true);
+            }
+            else
+            {
+                graphics.Print( -1, 85, "Current mode: FULLSCREEN", tr, tg, tb, true);
             }
             break;
 
@@ -178,12 +208,17 @@ void menurender()
             graphics.bigprint( -1, 30, "Scaling Mode", tr, tg, tb, true);
             graphics.Print( -1, 65, "Choose letterbox/stretch/integer mode.", tr, tg, tb, true);
 
-            if(game.stretchMode == 2){
-              graphics.Print( -1, 85, "Current mode: INTEGER", tr, tg, tb, true);
-            }else if (game.stretchMode == 1){
-              graphics.Print( -1, 85, "Current mode: STRETCH", tr, tg, tb, true);
-            }else{
-              graphics.Print( -1, 85, "Current mode: LETTERBOX", tr, tg, tb, true);
+            switch (graphics.screenbuffer->stretchMode)
+            {
+            case 2:
+                graphics.Print( -1, 85, "Current mode: INTEGER", tr, tg, tb, true);
+                break;
+            case 1:
+                graphics.Print( -1, 85, "Current mode: STRETCH", tr, tg, tb, true);
+                break;
+            default:
+                graphics.Print( -1, 85, "Current mode: LETTERBOX", tr, tg, tb, true);
+                break;
             }
             break;
         case 2:
@@ -200,10 +235,13 @@ void menurender()
             graphics.bigprint( -1, 30, "Toggle Filter", tr, tg, tb, true);
             graphics.Print( -1, 65, "Change to nearest/linear filter.", tr, tg, tb, true);
 
-            if(game.useLinearFilter){
-              graphics.Print( -1, 85, "Current mode: LINEAR", tr, tg, tb, true);
-            }else{
-              graphics.Print( -1, 85, "Current mode: NEAREST", tr, tg, tb, true);
+            if (graphics.screenbuffer->isFiltered)
+            {
+                graphics.Print( -1, 85, "Current mode: LINEAR", tr, tg, tb, true);
+            }
+            else
+            {
+                graphics.Print( -1, 85, "Current mode: NEAREST", tr, tg, tb, true);
             }
             break;
 
@@ -352,21 +390,7 @@ void menurender()
     case Menu::setslowdown:
         graphics.bigprint( -1, 40, "Game Speed", tr, tg, tb, true);
         graphics.Print( -1, 75, "Select a new game speed below.", tr, tg, tb, true);
-        switch (game.gameframerate)
-        {
-        case 34:
-            graphics.Print( -1, 105, "Game speed is normal.", tr/2, tg/2, tb/2, true);
-            break;
-        case 41:
-            graphics.Print( -1, 105, "Game speed is at 80%", tr, tg, tb, true);
-            break;
-        case 55:
-            graphics.Print( -1, 105, "Game speed is at 60%", tr, tg, tb, true);
-            break;
-        case 83:
-            graphics.Print( -1, 105, "Game speed is at 40%", tr, tg, tb, true);
-            break;
-        }
+        drawslowdowntext();
         break;
     case Menu::newgamewarning:
         graphics.Print( -1, 100, "Are you sure? This will", tr, tg, tb, true);
@@ -388,7 +412,7 @@ void menurender()
         switch (game.currentmenuoption)
         {
         case 0:
-            switch(game.controllerSensitivity)
+            switch(key.sensitivity)
             {
             case 0:
                 graphics.Print( -1, 85, " Low     Medium     High", tr, tg, tb, true);
@@ -539,23 +563,7 @@ void menurender()
             graphics.bigprint( -1, 40, "Game Speed", tr, tg, tb, true);
             graphics.Print( -1, 75, "May be useful for disabled gamers", tr, tg, tb, true);
             graphics.Print( -1, 85, "using one switch devices.", tr, tg, tb, true);
-            if (game.gameframerate==34)
-            {
-                graphics.Print( -1, 105, "Game speed is normal.", tr/2, tg/2, tb/2, true);
-            }
-            else if (game.gameframerate==41)
-            {
-                graphics.Print( -1, 105, "Game speed is at 80%", tr, tg, tb, true);
-            }
-            else if (game.gameframerate==55)
-            {
-                graphics.Print( -1, 105, "Game speed is at 60%", tr, tg, tb, true);
-            }
-            else if (game.gameframerate==83)
-            {
-                graphics.Print( -1, 105, "Game speed is at 40%", tr, tg, tb, true);
-            }
-            break;
+            drawslowdowntext();
         }
         break;
     case Menu::playint1:
@@ -571,7 +579,7 @@ void menurender()
             graphics.Print( -1, 65, "Replay any level in the game in", tr, tg, tb, true);
             graphics.Print( -1, 75, "a competitive time trial mode.", tr, tg, tb, true);
 
-            if (game.gameframerate > 34 || map.invincibility)
+            if (game.slowdown < 30 || map.invincibility)
             {
                 graphics.Print( -1, 105, "Time Trials are not available", tr, tg, tb, true);
                 graphics.Print( -1, 115, "with slowdown or invincibility.", tr, tg, tb, true);
@@ -592,7 +600,7 @@ void menurender()
             graphics.Print( -1, 65, "Play the entire game", tr, tg, tb, true);
             graphics.Print( -1, 75, "without dying once.", tr, tg, tb, true);
 
-            if (game.gameframerate > 34 || map.invincibility)
+            if (game.slowdown < 30 || map.invincibility)
             {
                 graphics.Print( -1, 105, "No Death Mode is not available", tr, tg, tb, true);
                 graphics.Print( -1, 115, "with slowdown or invincibility.", tr, tg, tb, true);
@@ -1150,6 +1158,9 @@ void menurender()
         }
         break;
     }
+    case Menu::errorsavingsettings:
+        graphics.Print( -1, 95, "ERROR: Could not save settings file!", tr, tg, tb, true);
+        break;
     default:
         break;
     }
@@ -1182,7 +1193,7 @@ void titlerender()
     }
     else
     {
-        if(!game.colourblindmode) graphics.drawtowerbackground();
+        if(!game.colourblindmode) graphics.drawtowerbackground(graphics.titlebg);
 
         tr = graphics.col_tr;
         tg = graphics.col_tg;
@@ -1211,7 +1222,7 @@ void gamecompleterender()
 {
     FillRect(graphics.backBuffer, 0x000000);
 
-    if(!game.colourblindmode) graphics.drawtowerbackground();
+    if(!game.colourblindmode) graphics.drawtowerbackground(graphics.titlebg);
 
     tr = graphics.col_tr;
     tg = graphics.col_tg;
@@ -1397,7 +1408,7 @@ void gamerender()
         {
             if (!game.colourblindmode)
             {
-                graphics.drawtowerbackground();
+                graphics.drawtowerbackground(graphics.towerbg);
             }
             else
             {
@@ -1728,7 +1739,12 @@ void maprender()
 
     // Draw the selected page name at the bottom
     // menupage 0 - 3 is the pause screen
-    if (game.menupage <= 3)
+    if (script.running && game.menupage == 3)
+    {
+        // While in a cutscene, you can only save
+        graphics.Print(-1, 220, "[SAVE]", 196, 196, 255 - help.glow, true);
+    }
+    else if (game.menupage <= 3)
     {
         std::string tab1;
         if (game.insecretlab)
@@ -2215,6 +2231,10 @@ void maprender()
         {
             graphics.Print(0, 115, "Cannot Save in Secret Lab", 146, 146, 180, true);
         }
+        else if (game.gamesavefailed)
+        {
+            graphics.Print(0, 115, "ERROR: Could not save game!", 146, 146, 180, true);
+        }
         else if (map.custommode)
         {
             if (game.gamesaved)
@@ -2499,10 +2519,10 @@ void teleporterrender()
         //Draw the chosen destination coordinate!
         //TODO
         //draw the coordinates //destination
-        int tempx = map.teleporters[game.teleport_to_teleporter].x;
-        int tempy = map.teleporters[game.teleport_to_teleporter].y;
-        graphics.drawrect(40 + (tempx * 12) + 1, 21 + (tempy * 9) + 1, 12 - 2, 9 - 2, 245 - (help.glow * 2), 16, 16);
-        graphics.drawrect(40 + (tempx * 12) + 3, 21 + (tempy * 9) + 3, 12 - 6, 9 - 6, 245 - (help.glow * 2), 16, 16);
+        int tempx_ = map.teleporters[game.teleport_to_teleporter].x;
+        int tempy_ = map.teleporters[game.teleport_to_teleporter].y;
+        graphics.drawrect(40 + (tempx_ * 12) + 1, 21 + (tempy_ * 9) + 1, 12 - 2, 9 - 2, 245 - (help.glow * 2), 16, 16);
+        graphics.drawrect(40 + (tempx_ * 12) + 3, 21 + (tempy_ * 9) + 3, 12 - 6, 9 - 6, 245 - (help.glow * 2), 16, 16);
     }
 
     //draw legend details

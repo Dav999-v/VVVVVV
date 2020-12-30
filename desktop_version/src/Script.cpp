@@ -79,6 +79,11 @@ void scriptclass::tokenize( const std::string& t )
 
 void scriptclass::run()
 {
+	if (!running)
+	{
+		return;
+	}
+
 	// This counter here will stop the function when it gets too high
 	short execution_counter = 0;
 	while(running && scriptdelay<=0 && !game.pausescript)
@@ -194,8 +199,8 @@ void scriptclass::run()
 			}
 			else if (words[0] == "customifflag")
 			{
-				size_t flag = ss_toi(words[1]);
-				if (flag < SDL_arraysize(obj.flags) && obj.flags[flag])
+				int flag = ss_toi(words[1]);
+				if (INBOUNDS_ARR(flag, obj.flags) && obj.flags[flag])
 				{
 					load("custom_"+words[2]);
 					position--;
@@ -216,11 +221,16 @@ void scriptclass::run()
 			}
 			if (words[0] == "flag")
 			{
-				if(ss_toi(words[1])>=0 && ss_toi(words[1])<100){
-					if(words[2]=="on"){
-						obj.flags[ss_toi(words[1])] = true;
-					}else if(words[2]=="off"){
-						obj.flags[ss_toi(words[1])] = false;
+				int flag = ss_toi(words[1]);
+				if (INBOUNDS_ARR(flag, obj.flags))
+				{
+					if (words[2] == "on")
+					{
+						obj.flags[flag] = true;
+					}
+					else if (words[2] == "off")
+					{
+						obj.flags[flag] = false;
 					}
 				}
 			}
@@ -279,8 +289,7 @@ void scriptclass::run()
 			}
 			if (words[0] == "musicfadeout")
 			{
-				music.fadeout();
-				music.dontquickfade = true;
+				music.fadeout(false);
 			}
 			if (words[0] == "musicfadein")
 			{
@@ -1313,23 +1322,14 @@ void scriptclass::run()
 			{
 				if (words[1] == "teleporter")
 				{
-					//TODO this draw the teleporter screen. This is a problem. :(
-					game.gamestate = TELEPORTERMODE;
-					graphics.menuoffset = 240; //actually this should count the roomname
-					graphics.oldmenuoffset = 240;
-					if (map.extrarow)
-					{
-						graphics.menuoffset -= 10;
-						graphics.oldmenuoffset -= 10;
-					}
-
-					graphics.resumegamemode = false;
+					game.mapmenuchange(TELEPORTERMODE);
 
 					game.useteleporter = false; //good heavens don't actually use it
 				}
 				else if (words[1] == "game")
 				{
 					graphics.resumegamemode = true;
+					game.prevgamestate = GAMEMODE;
 				}
 			}
 			else if (words[0] == "ifexplored")
@@ -1359,8 +1359,8 @@ void scriptclass::run()
 			}
 			else if (words[0] == "ifflag")
 			{
-				size_t flag = ss_toi(words[1]);
-				if (flag < SDL_arraysize(obj.flags) && obj.flags[flag])
+				int flag = ss_toi(words[1]);
+				if (INBOUNDS_ARR(flag, obj.flags) && obj.flags[flag])
 				{
 					load(words[2]);
 					position--;
@@ -1368,8 +1368,8 @@ void scriptclass::run()
 			}
 			else if (words[0] == "ifcrewlost")
 			{
-				size_t crewmate = ss_toi(words[1]);
-				if (crewmate < SDL_arraysize(game.crewstats) && game.crewstats[crewmate]==false)
+				int crewmate = ss_toi(words[1]);
+				if (INBOUNDS_ARR(crewmate, game.crewstats) && !game.crewstats[crewmate])
 				{
 					load(words[2]);
 					position--;
@@ -1532,7 +1532,7 @@ void scriptclass::run()
 				map.resetnames();
 				map.resetmap();
 				map.resetplayer();
-				map.tdrawback = true;
+				graphics.towerbg.tdrawback = true;
 
 				obj.resetallflags();
 				i = obj.getplayer();
@@ -2637,7 +2637,7 @@ void scriptclass::resetgametomenu()
 	graphics.flipmode = false;
 	obj.entities.clear();
 	graphics.fademode = 4;
-	map.tdrawback = true;
+	graphics.titlebg.tdrawback = true;
 	game.createmenu(Menu::gameover);
 }
 
@@ -2727,7 +2727,7 @@ void scriptclass::startgamemode( int t )
 			{
 				map.ypos = obj.entities[i].yp - 120;
 			}
-			map.bypos = map.ypos / 2;
+			graphics.towerbg.bypos = map.ypos / 2;
 			map.cameramode = 0;
 			map.colsuperstate = 0;
 		}
@@ -3427,7 +3427,7 @@ void scriptclass::startgamemode( int t )
 	}
 #endif
 	case 100:
-		game.savestats();
+		game.savestatsandsettings();
 
 		SDL_Quit();
 		exit(0);
@@ -3547,17 +3547,16 @@ void scriptclass::teleport()
 		}
 		if (!game.intimetrial && !game.nodeathmode && !game.inintermission)
 		{
-			if (graphics.flipmode)
+			if (game.savetele())
 			{
-				graphics.createtextbox("    Game Saved    ", -1, 202, 174, 174, 174);
+				graphics.createtextbox("    Game Saved    ", -1, graphics.flipmode ? 202 : 12, 174, 174, 174);
 				graphics.textboxtimer(25);
 			}
 			else
 			{
-				graphics.createtextbox("    Game Saved    ", -1, 12, 174, 174, 174);
-				graphics.textboxtimer(25);
+				graphics.createtextbox("  ERROR: Could not save game!  ", -1, graphics.flipmode ? 202 : 12, 255, 60, 60);
+				graphics.textboxtimer(50);
 			}
-			game.savetele();
 		}
 	}
 }
@@ -3610,6 +3609,7 @@ void scriptclass::hardreset()
 	game.minutes = 0;
 	game.hours = 0;
 	game.gamesaved = false;
+	game.gamesavefailed = false;
 	game.savetime = "00:00";
 	game.savearea = "nowhere";
 	game.savetrinkets = 0;
@@ -3709,7 +3709,7 @@ void scriptclass::hardreset()
 	}
 	map.cameraseekframe = 0;
 	map.resumedelay = 0;
-	map.scrolldir = 0;
+	graphics.towerbg.scrolldir = 0;
 	map.customshowmm=true;
 
 	SDL_memset(map.roomdeaths, 0, sizeof(map.roomdeaths));
