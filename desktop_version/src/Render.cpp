@@ -1168,7 +1168,7 @@ void menurender()
         break;
     }
     case Menu::errorsavingsettings:
-        graphics.Print( -1, 95, "ERROR: Could not save settings file!", tr, tg, tb, true);
+        graphics.PrintWrap( -1, 95, loc::gettext("ERROR: Could not save settings file!"), tr, tg, tb, true);
         break;
     default:
         break;
@@ -1774,7 +1774,7 @@ void maprender()
     if (script.running && game.menupage == 3)
     {
         // While in a cutscene, you can only save
-        graphics.Print(-1, 220, "[SAVE]", 196, 196, 255 - help.glow, true);
+        graphics.Print(-1, 220, "[" + loc::gettext("SAVE") + "]", 196, 196, 255 - help.glow, true);
     }
     else if (game.menupage <= 3)
     {

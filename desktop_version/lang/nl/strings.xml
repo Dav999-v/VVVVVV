@@ -32,11 +32,11 @@
     <string english="From here, you may unlock parts of the game that are normally unlocked as you play." explanation="" max="38*5" comment="">Hier kun je delen van het spel ontgrendelen die normaal tijdens het spelen worden ontgrendeld.</string>
     <string english="unlock ship jukebox" explanation="menu option" comment="">schipjukebox ontgrendelen</string>
     <string english="unlock secret lab" explanation="menu option" comment="">geheim lab ontgrendelen</string>
-    <string english="game pad options" explanation="menu option" comment="">gamepad-opties</string>
-    <string english="Game Pad Options" explanation="title" max="20" comment="">Gamepad-opties</string>
+    <string english="game pad options" explanation="menu option" comment="">gamepadopties</string>
+    <string english="Game Pad Options" explanation="title" max="20" comment="">Gamepadopties</string>
     <string english="Game Pad" explanation="title" max="20" comment="">Gamepad</string>
     <string english="Rebind your controller&apos;s buttons and adjust sensitivity" explanation="" max="38*5" comment="">Wijzig de knoppen van je controller en pas de gevoeligheid aan</string>
-    <string english="Change controller options." explanation="" max="38*2" comment="">Wijzig controller-opties.</string>
+    <string english="Change controller options." explanation="" max="38*2" comment="">Wijzig controlleropties.</string>
     <string english="language" explanation="menu option" comment="">taal</string>
     <string english="Language" explanation="title" max="20" comment="">Taal</string>
     <string english="Change the language" explanation="" max="38*5" comment="">Wijzig de taal</string>
@@ -117,11 +117,11 @@
     <string english="bind flip" explanation="menu option" comment="">omkeren binden</string>
     <string english="bind enter" explanation="menu option" comment="">enter binden</string>
     <string english="bind menu" explanation="menu option" comment="">menu binden</string>
-    <string english="bind restart" explanation="menu option. In-game death key to restart at checkpoint" comment=""></string>
+    <string english="bind restart" explanation="menu option. In-game death key to restart at checkpoint" comment="">herstarten binden</string>
     <string english="Flip is bound to: " explanation="controller binds, bound to A, B, X, Y, etc" max="32" comment="">Omkeren is gebonden aan: </string>
     <string english="Enter is bound to: " explanation="controller binds, bound to A, B, X, Y, etc" max="32" comment="">Enter is gebonden aan: </string>
     <string english="Menu is bound to: " explanation="controller binds, bound to A, B, X, Y, etc" max="32" comment="">Menu is gebonden aan: </string>
-    <string english="Restart is bound to: " explanation="in-game death key to restart at checkpoint. Controller binds, bound to A, B, X, Y, etc" max="32" comment=""></string>
+    <string english="Restart is bound to: " explanation="in-game death key to restart at checkpoint. Controller binds, bound to A, B, X, Y, etc" max="32" comment="">Herstarten is gebonden aan: </string>
     <string english="ERROR: No language files found." explanation="" max="38*3" comment="">FOUT: Geen taalbestanden gevonden.</string>
     <string english="This menu is only shown when having a lang folder in your VVVVVV folder." explanation="the folder is called lang. Translation maintenance menu" max="38*3" comment="">Dit menu wordt alleen weergegeven als er een lang-map in je VVVVVV-map staat.</string>
     <string english="translation maintenance" explanation="menu option, menu that allows you to apply maintenance to translations" comment="">vertalingsonderhoud</string>
@@ -135,7 +135,7 @@
     <string english="toggle test mode" explanation="menu option" comment="">testmodus</string>
     <string english="Test mode" explanation="title, translation maintenance menu" max="20" comment="">Testmodus</string>
     <string english="Show all translatable strings as a V or X, revealing untranslatable or forgotten strings. X means missing from file." explanation="translation maintenance menu" max="38*6" comment="">Toon alle vertaalbare strings als een V of X, om onvertaalbare of vergeten strings te onthullen. X betekent: ontbreekt uit het bestand.</string>
-    <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." explanation="translation maintenance menu" max="38*12" comment="">Als nieuwe strings zijn toegevoegd aan de Engelse sjabloon-taalbestanden zal deze functie ze invoegen in de taalbestanden van alle talen. Alleen talen die in de VVVVVV-map staan kunnen worden bijgewerkt. Maak een backup, voor het geval dat.</string>
+    <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." explanation="translation maintenance menu" max="38*12" comment="">Als nieuwe strings zijn toegevoegd aan de Engelse sjabloontaalbestanden zal deze functie ze invoegen in de taalbestanden van alle talen. Alleen talen die in de VVVVVV-map staan kunnen worden bijgewerkt. Maak een backup, voor het geval dat.</string>
     <string english="advanced options" explanation="menu option" comment="">geavanceerde opties</string>
     <string english="Advanced Options" explanation="title" max="20" comment="">Geavanceerde opties</string>
     <string english="Hide the mouse cursor, remove the loading screen, turn on glitchrunner mode and more" explanation="description for advanced options" max="38*5" comment="">Verberg de muisaanwijzer, schakel het laadscherm uit, schakel glitchrunnermodus in en meer</string>
@@ -153,11 +153,11 @@
     <string english="Fake Load Screen" explanation="title, allows the loading screen which counts to 100% to be turned off" max="20" comment="">Nep-laadscherm</string>
     <string english="Fake loading screen is OFF" explanation="allows the loading screen which counts to 100% to be turned off" max="38*5" comment="">Nep-laadscherm staat UIT</string>
     <string english="Fake loading screen is ON" explanation="allows the loading screen which counts to 100% to be turned off" max="38*5" comment="">Nep-laadscherm staat AAN</string>
-    <string english="room name background" explanation="menu option, background behind room names" comment="">kamernaam-achtergrond</string>
-    <string english="Room Name BG" explanation="title, background behind room names" max="20" comment="">Naam-achtergrond</string>
+    <string english="room name background" explanation="menu option, background behind room names" comment="">kamernaamachtergrond</string>
+    <string english="Room Name BG" explanation="title, background behind room names" max="20" comment="">Kamernaamachtergrond</string>
     <string english="Lets you see through what is behind the name at the bottom of the screen." explanation="" max="38*3" comment="">Laat zien wat er achter de naam van een kamer zit onder in beeld.</string>
-    <string english="Room name background is TRANSLUCENT" explanation="" max="38*2" comment="">Kamernaam-achtergrond is DOORZICHTIG</string>
-    <string english="Room name background is OPAQUE" explanation="" max="38*2" comment="">Kamernaam-achtergrond is ONDOORZICHTIG</string>
+    <string english="Room name background is TRANSLUCENT" explanation="" max="38*2" comment="">Kamernaamachtergrond is DOORZICHTIG</string>
+    <string english="Room name background is OPAQUE" explanation="" max="38*2" comment="">Kamernaamachtergrond is ONDOORZICHTIG</string>
     <string english="glitchrunner mode" explanation="menu option, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" comment="">glitchrunnermodus</string>
     <string english="Glitchrunner Mode" explanation="title, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" max="20" comment="">Glitchrunnermodus</string>
     <string english="Re-enable glitches that existed in previous versions of the game" explanation="glitchrunner mode" max="38*3" comment="">Herstel glitches die bestonden in vorige versies van het spel</string>
@@ -273,6 +273,7 @@
     <string english="previous page" explanation="menu option" comment="">vorige pagina</string>
     <string english="first page" explanation="menu option" comment="">eerste pagina</string>
     <string english="last page" explanation="menu option" comment="">laatste pagina</string>
+    <string english="silence" explanation="menu option, silence error message - do not show this message again" comment="">niet meer tonen</string>
     <string english="continue from save" explanation="menu option" comment="">opgeslagen spel laden</string>
     <string english="start from beginning" explanation="menu option" comment="">vanaf het begin starten</string>
     <string english="back to levels" explanation="menu option" comment="">terug naar levels</string>
@@ -319,6 +320,7 @@
     <string english="Cannot Save in Time Trial" explanation="" max="38*7" comment="">Kan niet opslaan in race tegen de klok</string>
     <string english="Cannot Save in Secret Lab" explanation="" max="38*7" comment="">Kan niet opslaan in geheim lab</string>
     <string english="ERROR: Could not save game!" explanation="" max="38*7" comment="">FOUT: Kon spel niet opslaan!</string>
+    <string english="ERROR: Could not save settings file!" explanation="" max="38*4" comment="">FOUT: Kon instellingenbestand niet opslaan!</string>
     <string english="Game saved ok!" explanation="" max="38*2" comment="">Spel opgeslagen!</string>
     <string english="[Press ACTION to save your game]" explanation="" max="38*7" comment="">[Druk op ACTIE om je spel op te slaan]</string>
     <string english="(Note: The game is autosaved at every teleporter.)" explanation="" max="38*3" comment="">(Opmerking: het spel wordt automatisch opgeslagen bij elke teleporter.)</string>
@@ -341,7 +343,7 @@
     <string english="Map Settings" explanation="title, editor, Level Settings, map is kinda inconsistent with everything else" max="20" comment="">Levelinstellingen</string>
     <string english="edit scripts" explanation="level editor menu option" comment="">scripts bewerken</string>
     <string english="change music" explanation="level editor menu option" comment="">muziek wijzigen</string>
-    <string english="editor ghosts" explanation="level editor menu option. Toggles option to show a repetition of the player&apos;s path after playtesting" comment="">editor-spoken</string>
+    <string english="editor ghosts" explanation="level editor menu option. Toggles option to show a repetition of the player&apos;s path after playtesting" comment="">editorspoken</string>
     <string english="Editor ghost trail is OFF" explanation="level editor. Repetition of the player&apos;s path after playtesting is disabled" max="40" comment="">Spokenspoor in editor staat UIT</string>
     <string english="Editor ghost trail is ON" explanation="level editor. Repetition of the player&apos;s path after playtesting is enabled" max="40" comment="">Spokenspoor in editor staat AAN</string>
     <string english="load level" explanation="level editor menu option" comment="">level laden</string>

@@ -273,6 +273,7 @@
     <string english="previous page" explanation="menu option" comment=""></string>
     <string english="first page" explanation="menu option" comment=""></string>
     <string english="last page" explanation="menu option" comment=""></string>
+    <string english="silence" explanation="menu option, silence error message - do not show this message again" comment=""></string>
     <string english="continue from save" explanation="menu option" comment=""></string>
     <string english="start from beginning" explanation="menu option" comment=""></string>
     <string english="back to levels" explanation="menu option" comment=""></string>
@@ -319,6 +320,7 @@
     <string english="Cannot Save in Time Trial" explanation="" max="38*7" comment=""></string>
     <string english="Cannot Save in Secret Lab" explanation="" max="38*7" comment=""></string>
     <string english="ERROR: Could not save game!" explanation="" max="38*7" comment=""></string>
+    <string english="ERROR: Could not save settings file!" explanation="" max="38*4" comment=""></string>
     <string english="Game saved ok!" explanation="" max="38*2" comment=""></string>
     <string english="[Press ACTION to save your game]" explanation="" max="38*7" comment=""></string>
     <string english="(Note: The game is autosaved at every teleporter.)" explanation="" max="38*3" comment=""></string>

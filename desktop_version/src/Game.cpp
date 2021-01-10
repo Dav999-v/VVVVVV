@@ -6860,8 +6860,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         menuyoff = 70;
         break;
     case Menu::errorsavingsettings:
-        option("ok");
-        option("silence");
+        option(loc::gettext("ok"));
+        option(loc::gettext("silence"));
         menuyoff = 10;
         break;
     }
