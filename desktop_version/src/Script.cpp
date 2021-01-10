@@ -79,6 +79,11 @@ void scriptclass::tokenize( const std::string& t )
 
 void scriptclass::run()
 {
+	if (!running)
+	{
+		return;
+	}
+
 	// This counter here will stop the function when it gets too high
 	short execution_counter = 0;
 	while(running && scriptdelay<=0 && !game.pausescript)
@@ -1317,23 +1322,14 @@ void scriptclass::run()
 			{
 				if (words[1] == "teleporter")
 				{
-					//TODO this draw the teleporter screen. This is a problem. :(
-					game.gamestate = TELEPORTERMODE;
-					graphics.menuoffset = 240; //actually this should count the roomname
-					graphics.oldmenuoffset = 240;
-					if (map.extrarow)
-					{
-						graphics.menuoffset -= 10;
-						graphics.oldmenuoffset -= 10;
-					}
-
-					graphics.resumegamemode = false;
+					game.mapmenuchange(TELEPORTERMODE);
 
 					game.useteleporter = false; //good heavens don't actually use it
 				}
 				else if (words[1] == "game")
 				{
 					graphics.resumegamemode = true;
+					game.prevgamestate = GAMEMODE;
 				}
 			}
 			else if (words[0] == "ifexplored")
@@ -3431,7 +3427,7 @@ void scriptclass::startgamemode( int t )
 	}
 #endif
 	case 100:
-		game.savestats();
+		game.savestatsandsettings();
 
 		SDL_Quit();
 		exit(0);

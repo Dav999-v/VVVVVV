@@ -17,6 +17,7 @@
 #include "Network.h"
 #include "preloader.h"
 #include "Render.h"
+#include "RenderFixed.h"
 #include "Screen.h"
 #include "Script.h"
 #include "SoundSystem.h"
@@ -55,6 +56,23 @@ volatile Uint32 timePrev = 0;
 volatile Uint32 accumulator = 0;
 volatile Uint32 f_time = 0;
 volatile Uint32 f_timePrev = 0;
+
+static inline Uint32 get_framerate(const int slowdown)
+{
+    switch (slowdown)
+    {
+    case 30:
+        return 34;
+    case 24:
+        return 41;
+    case 18:
+        return 55;
+    case 12:
+        return 83;
+    }
+
+    return 34;
+}
 
 void inline deltaloop();
 void inline fixedloop();
@@ -210,29 +228,22 @@ int main(int argc, char *argv[])
     game.menustart = false;
     game.mainmenu = 0;
 
+    // Initialize title screen to cyan
+    graphics.titlebg.colstate = 10;
+    map.nexttowercolour();
+
     map.ypos = (700-29) * 8;
     graphics.towerbg.bypos = map.ypos / 2;
     graphics.titlebg.bypos = map.ypos / 2;
 
-    //Moved screensetting init here from main menu V2.1
-    int width = 320;
-    int height = 240;
-    bool vsync = false;
-
-    // Prioritize unlock.vvv first (2.2 and below),
-    // but settings have been migrated to settings.vvv (2.3 and up)
-    game.loadstats(&width, &height, &vsync);
-    game.loadsettings(&width, &height, &vsync);
-
-    gameScreen.init(
-        width,
-        height,
-        game.fullscreen,
-        vsync,
-        game.stretchMode,
-        game.useLinearFilter,
-        game.fullScreenEffect_badSignal
-    );
+    {
+        // Prioritize unlock.vvv first (2.2 and below),
+        // but settings have been migrated to settings.vvv (2.3 and up)
+        ScreenSettings screen_settings;
+        game.loadstats(&screen_settings);
+        game.loadsettings(&screen_settings);
+        gameScreen.init(screen_settings);
+    }
     graphics.screenbuffer = &gameScreen;
 
     loc::loadtext();
@@ -291,17 +302,7 @@ int main(int argc, char *argv[])
 
     if (game.skipfakeload)
         game.gamestate = TITLEMODE;
-    if(game.usingmmmmmm==0) music.usingmmmmmm=false;
-    if(game.usingmmmmmm==1) music.usingmmmmmm=true;
     if (game.slowdown == 0) game.slowdown = 30;
-
-    switch(game.slowdown){
-        case 30: game.gameframerate=34; break;
-        case 24: game.gameframerate=41; break;
-        case 18: game.gameframerate=55; break;
-        case 12: game.gameframerate=83; break;
-        default: game.gameframerate=34; break;
-    }
 
     //Check to see if you've already unlocked some achievements here from before the update
     if (game.swnbestrank > 0){
@@ -409,7 +410,7 @@ int main(int argc, char *argv[])
         deltaloop();
     }
 
-    game.savestats();
+    game.savestatsandsettings();
     NETWORK_shutdown();
     SDL_Quit();
     FILESYSTEM_deinit();
@@ -430,7 +431,7 @@ void inline deltaloop()
     }
     else if (game.gamestate == GAMEMODE)
     {
-        timesteplimit = game.gameframerate;
+        timesteplimit = get_framerate(game.slowdown);
     }
     else
     {
@@ -494,7 +495,6 @@ void inline fixedloop()
     if(key.toggleFullscreen)
     {
         gameScreen.toggleFullScreen();
-        game.fullscreen = !game.fullscreen;
         key.toggleFullscreen = false;
 
         key.keymap.clear(); //we lost the input due to a new window.
@@ -535,7 +535,8 @@ void inline fixedloop()
         switch(game.gamestate)
         {
         case PRELOADER:
-            preloaderlogic();
+            preloaderinput();
+            preloaderrenderfixed();
             break;
 #if !defined(NO_CUSTOM_LEVELS) && !defined(NO_EDITOR)
         case EDITORMODE:
@@ -543,6 +544,8 @@ void inline fixedloop()
             editorinput();
             ////Logic
             editorlogic();
+
+            editorrenderfixed();
             break;
 #endif
         case TITLEMODE:
@@ -550,6 +553,8 @@ void inline fixedloop()
             titleinput();
             ////Logic
             titlelogic();
+
+            titlerenderfixed();
             break;
         case GAMEMODE:
             // WARNING: If updating this code, don't forget to update Map.cpp mapclass::twoframedelayfix()
@@ -559,7 +564,7 @@ void inline fixedloop()
             {
                 script.dontrunnextframe = false;
             }
-            else if (script.running)
+            else
             {
                 script.run();
             }
@@ -572,6 +577,7 @@ void inline fixedloop()
             }
 
             gameinput();
+            gamerenderfixed();
             gamelogic();
 
 
@@ -579,6 +585,7 @@ void inline fixedloop()
         case MAPMODE:
             mapinput();
             maplogic();
+            maprenderfixed();
             break;
         case TELEPORTERMODE:
             if(game.useteleporter)
@@ -587,19 +594,19 @@ void inline fixedloop()
             }
             else
             {
-                if (script.running)
-                {
-                    script.run();
-                }
+                script.run();
                 gameinput();
             }
             maplogic();
+            maprenderfixed();
             break;
         case GAMECOMPLETE:
             //Input
             gamecompleteinput();
             //Logic
             gamecompletelogic();
+
+            gamecompleterenderfixed();
             break;
         case GAMECOMPLETE2:
             //Input
@@ -639,7 +646,7 @@ void inline fixedloop()
     if (game.savemystats)
     {
         game.savemystats = false;
-        game.savestats();
+        game.savestatsandsettings();
     }
 
     //Mute button

@@ -13,6 +13,7 @@
 #include "FileSystemUtils.h"
 #include "Graphics.h"
 #include "Localization.h"
+#include "KeyPoll.h"
 #include "MakeAndPlay.h"
 #include "Map.h"
 #include "Music.h"
@@ -117,6 +118,8 @@ void Game::init(void)
     musicmutebutton = 0;
 
     glitchrunkludge = false;
+    gamestate = TITLEMODE;
+    prevgamestate = TITLEMODE;
     hascontrol = true;
     jumpheld = false;
     advancetext = false;
@@ -168,19 +171,10 @@ void Game::init(void)
     oldcreditposition = 0;
     bestgamedeaths = -1;
 
-    fullScreenEffect_badSignal = false;
-
     //Accessibility Options
     colourblindmode = false;
     noflashingmode = false;
     slowdown = 30;
-    gameframerate=34;
-
-    fullscreen = false;// true; //Assumed true at first unless overwritten at some point!
-    stretchMode = 0;
-    useLinearFilter = false;
-    // 0..5
-    controllerSensitivity = 2;
 
     nodeathmode = false;
     nocutscenes = false;
@@ -217,6 +211,8 @@ void Game::init(void)
     menucountdown = 0;
     levelpage=0;
     playcustomlevel=0;
+
+    silence_settings_error = false;
 
     deathcounts = 0;
     gameoverdelay = 0;
@@ -1340,7 +1336,7 @@ void Game::updatestate()
                 }
             }
 
-            savestats();
+            savestatsandsettings();
 
             graphics.fademode = 2;
             music.fadeout();
@@ -3139,7 +3135,7 @@ void Game::updatestate()
         }
 
 
-            savestats();
+            savestatsandsettings();
             if (nodeathmode)
             {
                 unlockAchievement("vvvvvvmaster"); //bloody hell
@@ -4453,7 +4449,7 @@ void Game::unlocknum( int t )
     }
 
     unlock[t] = true;
-    savestats();
+    savestatsandsettings();
 #endif
 }
 
@@ -4473,14 +4469,14 @@ void Game::unlocknum( int t )
 
 #define LOAD_ARRAY(ARRAY_NAME) LOAD_ARRAY_RENAME(ARRAY_NAME, ARRAY_NAME)
 
-void Game::loadstats(int *width, int *height, bool *vsync)
+void Game::loadstats(ScreenSettings* screen_settings)
 {
     tinyxml2::XMLDocument doc;
     if (!FILESYSTEM_loadTiXml2Document("saves/unlock.vvv", doc))
     {
         // Save unlock.vvv only. Maybe we have a settings.vvv laying around too,
         // and we don't want to overwrite that!
-        savestats(true);
+        savestats(screen_settings);
 
         printf("No Stats found. Assuming a new player\n");
     }
@@ -4549,10 +4545,10 @@ void Game::loadstats(int *width, int *height, bool *vsync)
         }
     }
 
-    deserializesettings(dataNode, width, height, vsync);
+    deserializesettings(dataNode, screen_settings);
 }
 
-void Game::deserializesettings(tinyxml2::XMLElement* dataNode, int* width, int* height, bool* vsync)
+void Game::deserializesettings(tinyxml2::XMLElement* dataNode, ScreenSettings* screen_settings)
 {
     // Don't duplicate controller buttons!
     controllerButton_flip.clear();
@@ -4569,26 +4565,26 @@ void Game::deserializesettings(tinyxml2::XMLElement* dataNode, int* width, int* 
 
         if (pKey == "fullscreen")
         {
-            fullscreen = help.Int(pText);
+            screen_settings->fullscreen = help.Int(pText);
         }
 
         if (pKey == "stretch")
         {
-            stretchMode = help.Int(pText);
+            screen_settings->stretch = help.Int(pText);
         }
 
         if (pKey == "useLinearFilter")
         {
-            useLinearFilter = help.Int(pText);
+            screen_settings->linearFilter = help.Int(pText);
         }
 
         if (pKey == "window_width")
         {
-            *width = help.Int(pText);
+            screen_settings->windowWidth = help.Int(pText);
         }
         if (pKey == "window_height")
         {
-            *height = help.Int(pText);
+            screen_settings->windowHeight = help.Int(pText);
         }
 
 
@@ -4615,39 +4611,16 @@ void Game::deserializesettings(tinyxml2::XMLElement* dataNode, int* width, int* 
         if (pKey == "slowdown")
         {
             slowdown = help.Int(pText);
-            switch(slowdown)
-            {
-            case 30:
-                gameframerate=34;
-                break;
-            case 24:
-                gameframerate=41;
-                break;
-            case 18:
-                gameframerate=55;
-                break;
-            case 12:
-                gameframerate=83;
-                break;
-            default:
-                gameframerate=34;
-                break;
-            }
-
         }
 
         if (pKey == "advanced_smoothing")
         {
-            fullScreenEffect_badSignal = help.Int(pText);
+            screen_settings->badSignal = help.Int(pText);
         }
 
         if (pKey == "usingmmmmmm")
         {
-            if(help.Int(pText)>0){
-                usingmmmmmm = 1;
-            }else{
-                usingmmmmmm = 0;
-            }
+            music.usingmmmmmm = (bool) help.Int(pText);
         }
 
         if (pKey == "ghostsenabled")
@@ -4677,7 +4650,7 @@ void Game::deserializesettings(tinyxml2::XMLElement* dataNode, int* width, int* 
 
         if (pKey == "vsync")
         {
-            *vsync = help.Int(pText);
+            screen_settings->useVsync = help.Int(pText);
         }
 
         if (pKey == "notextoutline")
@@ -4733,7 +4706,7 @@ void Game::deserializesettings(tinyxml2::XMLElement* dataNode, int* width, int* 
 
         if (pKey == "controllerSensitivity")
         {
-            controllerSensitivity = help.Int(pText);
+            key.sensitivity = help.Int(pText);
         }
 
         if (pKey == "lang")
@@ -4770,7 +4743,15 @@ void Game::deserializesettings(tinyxml2::XMLElement* dataNode, int* width, int* 
     }
 }
 
-void Game::savestats(const bool stats_only /*= true*/)
+bool Game::savestats()
+{
+    ScreenSettings screen_settings;
+    graphics.screenbuffer->GetSettings(&screen_settings);
+
+    return savestats(&screen_settings);
+}
+
+bool Game::savestats(const ScreenSettings* screen_settings)
 {
     tinyxml2::XMLDocument doc;
     bool already_exists = FILESYSTEM_loadTiXml2Document("saves/unlock.vvv", doc);
@@ -4844,39 +4825,43 @@ void Game::savestats(const bool stats_only /*= true*/)
 
     xml::update_tag(dataNode, "swnrecord", swnrecord);
 
-    serializesettings(dataNode);
+    serializesettings(dataNode, screen_settings);
 
-    FILESYSTEM_saveTiXml2Document("saves/unlock.vvv", doc);
+    return FILESYSTEM_saveTiXml2Document("saves/unlock.vvv", doc);
+}
 
-    if (!stats_only)
+bool Game::savestatsandsettings()
+{
+    const bool stats_saved = savestats();
+
+    const bool settings_saved = savesettings();
+
+    return stats_saved && settings_saved; // Not the same as `savestats() && savesettings()`!
+}
+
+void Game::savestatsandsettings_menu()
+{
+    // Call Game::savestatsandsettings(), but upon failure, go to the save error screen
+    if (!savestatsandsettings() && !silence_settings_error)
     {
-        savesettings();
+        createmenu(Menu::errorsavingsettings);
+        map.nexttowercolour();
     }
 }
 
-void Game::serializesettings(tinyxml2::XMLElement* dataNode)
+void Game::serializesettings(tinyxml2::XMLElement* dataNode, const ScreenSettings* screen_settings)
 {
     tinyxml2::XMLDocument& doc = xml::get_document(dataNode);
 
-    xml::update_tag(dataNode, "fullscreen", fullscreen);
+    xml::update_tag(dataNode, "fullscreen", (int) screen_settings->fullscreen);
 
-    xml::update_tag(dataNode, "stretch", stretchMode);
+    xml::update_tag(dataNode, "stretch", screen_settings->stretch);
 
-    xml::update_tag(dataNode, "useLinearFilter", useLinearFilter);
+    xml::update_tag(dataNode, "useLinearFilter", (int) screen_settings->linearFilter);
 
-    int width, height;
-    if (graphics.screenbuffer != NULL)
-    {
-        graphics.screenbuffer->GetWindowSize(&width, &height);
-    }
-    else
-    {
-        width = 320;
-        height = 240;
-    }
-    xml::update_tag(dataNode, "window_width", width);
+    xml::update_tag(dataNode, "window_width", screen_settings->windowWidth);
 
-    xml::update_tag(dataNode, "window_height", height);
+    xml::update_tag(dataNode, "window_height", screen_settings->windowHeight);
 
     xml::update_tag(dataNode, "noflashingmode", noflashingmode);
 
@@ -4889,10 +4874,10 @@ void Game::serializesettings(tinyxml2::XMLElement* dataNode)
     xml::update_tag(dataNode, "slowdown", slowdown);
 
 
-    xml::update_tag(dataNode, "advanced_smoothing", fullScreenEffect_badSignal);
+    xml::update_tag(dataNode, "advanced_smoothing", (int) screen_settings->badSignal);
 
 
-    xml::update_tag(dataNode, "usingmmmmmm", usingmmmmmm);
+    xml::update_tag(dataNode, "usingmmmmmm", music.usingmmmmmm);
 
     xml::update_tag(dataNode, "ghostsenabled", (int) ghostsenabled);
 
@@ -4910,16 +4895,7 @@ void Game::serializesettings(tinyxml2::XMLElement* dataNode)
 
     xml::update_tag(dataNode, "glitchrunnermode", (int) glitchrunnermode);
 
-    int vsyncOption;
-    if (graphics.screenbuffer != NULL)
-    {
-        vsyncOption = (int) graphics.screenbuffer->vsync;
-    }
-    else
-    {
-        vsyncOption = 0;
-    }
-    xml::update_tag(dataNode, "vsync", vsyncOption);
+    xml::update_tag(dataNode, "vsync", (int) screen_settings->useVsync);
 
     // Delete all controller buttons we had previously.
     // dataNode->FirstChildElement() shouldn't be NULL at this point...
@@ -4976,17 +4952,17 @@ void Game::serializesettings(tinyxml2::XMLElement* dataNode)
         dataNode->LinkEndChild(msg);
     }
 
-    xml::update_tag(dataNode, "controllerSensitivity", controllerSensitivity);
+    xml::update_tag(dataNode, "controllerSensitivity", key.sensitivity);
 
     xml::update_tag(dataNode, "lang", loc::lang.c_str());
 }
 
-void Game::loadsettings(int* width, int* height, bool* vsync)
+void Game::loadsettings(ScreenSettings* screen_settings)
 {
     tinyxml2::XMLDocument doc;
     if (!FILESYSTEM_loadTiXml2Document("saves/settings.vvv", doc))
     {
-        savesettings();
+        savesettings(screen_settings);
         puts("No settings.vvv found");
     }
 
@@ -5008,10 +4984,18 @@ void Game::loadsettings(int* width, int* height, bool* vsync)
 
     tinyxml2::XMLElement* dataNode = hRoot.FirstChildElement("Data").FirstChild().ToElement();
 
-    deserializesettings(dataNode, width, height, vsync);
+    deserializesettings(dataNode, screen_settings);
 }
 
-void Game::savesettings()
+bool Game::savesettings()
+{
+    ScreenSettings screen_settings;
+    graphics.screenbuffer->GetSettings(&screen_settings);
+
+    return savesettings(&screen_settings);
+}
+
+bool Game::savesettings(const ScreenSettings* screen_settings)
 {
     tinyxml2::XMLDocument doc;
     bool already_exists = FILESYSTEM_loadTiXml2Document("saves/settings.vvv", doc);
@@ -5028,9 +5012,9 @@ void Game::savesettings()
 
     tinyxml2::XMLElement* dataNode = xml::update_element(root, "Data");
 
-    serializesettings(dataNode);
+    serializesettings(dataNode, screen_settings);
 
-    FILESYSTEM_saveTiXml2Document("saves/settings.vvv", doc);
+    return FILESYSTEM_saveTiXml2Document("saves/settings.vvv", doc);
 }
 
 void Game::customstart()
@@ -6875,6 +6859,11 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("return to play menu"));
         menuyoff = 70;
         break;
+    case Menu::errorsavingsettings:
+        option("ok");
+        option("silence");
+        menuyoff = 10;
+        break;
     }
 
     // Automatically center the menu. We must check the width of the menu with the initial horizontal spacing.
@@ -7180,4 +7169,26 @@ void Game::unlockAchievement(const char *name) {
 #if !defined(MAKEANDPLAY)
     if (!map.custommode) NETWORK_unlockAchievement(name);
 #endif
+}
+
+void Game::mapmenuchange(const int newgamestate)
+{
+    prevgamestate = gamestate;
+    gamestate = newgamestate;
+    graphics.resumegamemode = false;
+    mapheld = true;
+
+    if (prevgamestate == GAMEMODE)
+    {
+        graphics.menuoffset = 240;
+        if (map.extrarow)
+        {
+            graphics.menuoffset -= 10;
+        }
+    }
+    else
+    {
+        graphics.menuoffset = 0;
+    }
+    graphics.oldmenuoffset = graphics.menuoffset;
 }

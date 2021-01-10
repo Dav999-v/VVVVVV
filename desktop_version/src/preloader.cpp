@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "Graphics.h"
 #include "Localization.h"
+#include "KeyPoll.h"
 #include "UtilityClass.h"
 
 int pre_fakepercent=0, pre_transition=30;
@@ -11,7 +12,22 @@ int pre_darkcol=0, pre_lightcol=0, pre_curcol=0, pre_coltimer=0, pre_offset=0;
 int pre_frontrectx=30, pre_frontrecty=20, pre_frontrectw=260, pre_frontrecth=200;
 int pre_temprectx=0, pre_temprecty=0, pre_temprectw=320, pre_temprecth=240;
 
-void preloaderlogic()
+void preloaderinput()
+{
+  game.press_action = false;
+
+  if (key.isDown(KEYBOARD_z) || key.isDown(KEYBOARD_SPACE) || key.isDown(KEYBOARD_v) || key.isDown(game.controllerButton_flip)) {
+    game.press_action = true;
+  }
+
+  if (game.press_action) {
+    //Skip to TITLEMODE immediately
+    game.gamestate = TITLEMODE;
+    game.jumpheld = true;
+  }
+}
+
+void preloaderrenderfixed()
 {
   if (pre_transition < 30) pre_transition--;
   if(pre_transition>=30){
@@ -27,6 +43,10 @@ void preloaderlogic()
       pre_curcol = (pre_curcol + int(fRandom() * 5.0f)) % 6;
       pre_coltimer = 8;
     }
+  }
+
+  if (pre_transition <= -10) {
+    game.gamestate = TITLEMODE;
   }
 }
 
@@ -87,7 +107,7 @@ void preloaderrender()
       pre_transition = 29;
     }
   }else if (pre_transition <= -10) {
-    game.gamestate=TITLEMODE;
+    //Switch to TITLEMODE (handled by preloaderrenderfixed)
   }else if (pre_transition < 5) {
     FillRect(graphics.backBuffer, 0, 0, 320,240, graphics.getBGR(0,0,0));
   }else if (pre_transition < 20) {

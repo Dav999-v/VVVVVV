@@ -645,10 +645,6 @@ std::string Graphics::unwordwrap(const std::string& _s)
     return s;
 }
 
-void Graphics::PrintOff( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/ ) {
-    PrintOffAlpha(_x,_y,_s,r,g,b,255,cen);
-}
-
 void Graphics::PrintOffAlpha( int _x, int _y, std::string _s, int r, int g, int b, int a, bool cen /*= false*/ )
 {
     std::vector<SDL_Surface*>& font = flipmode ? flipbfont : bfont;
@@ -707,40 +703,6 @@ void Graphics::bprintalpha( int x, int y, std::string t, int r, int g, int b, in
     }
 
     PrintAlpha(x, y, t, r, g, b, a, cen);
-}
-
-void Graphics::RPrint( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/ )
-{
-    std::vector<SDL_Surface*>& font = flipmode ? flipbfont : bfont;
-
-    r = clamp(r,0,255);
-    g = clamp(g,0,255);
-    b = clamp(b,0,255);
-    ct.colour = getRGB(r, g, b);
-
-    if (cen)
-        _x = ((308) - (_s.length() / 2));
-    int bfontpos = 0;
-    int curr;
-    int idx;
-    std::string::iterator iter = _s.begin();
-    while (iter != _s.end()) {
-        curr = utf8::unchecked::next(iter);
-        point tpoint;
-        tpoint.x = _x + bfontpos;
-        tpoint.y = _y;
-
-        SDL_Rect fontRect = bfont_rect;
-        fontRect.x = tpoint.x ;
-        fontRect.y = tpoint.y ;
-
-        idx = font_idx(curr);
-        if (INBOUNDS_VEC(idx, font))
-        {
-            BlitSurfaceColoured( font[idx], NULL, backBuffer, &fontRect , ct);
-        }
-        bfontpos+=bfontlen(curr) ;
-    }
 }
 
 void Graphics::printcrewname( int x, int y, int t )
@@ -905,17 +867,6 @@ void Graphics::drawtile3( int x, int y, int t, int off, int height_subtract /*= 
     SDL_Rect src_rect = { 0, 0, tiles_rect.w, tiles_rect.h - height_subtract };
     SDL_Rect rect = { Sint16(x), Sint16(y), tiles_rect.w, tiles_rect.h };
     BlitSurfaceStandard(tiles3[t], &src_rect, backBuffer, &rect);
-}
-
-void Graphics::drawentcolours( int x, int y, int t)
-{
-    if (!INBOUNDS_VEC(t, entcolours))
-    {
-        WHINE_ONCE("drawentcolours() out-of-bounds!")
-        return;
-    }
-    SDL_Rect rect = { Sint16(x), Sint16(y), tiles_rect.w, tiles_rect.h };
-    BlitSurfaceStandard(entcolours[t], NULL, backBuffer, &rect);
 }
 
 void Graphics::drawtowertile( int x, int y, int t )
@@ -2853,7 +2804,7 @@ void Graphics::setcol( int t )
 		break;
 
 		//Trophies
-		//cyan
+		//Yellow
 	case 30:
 		ct.colour = RGBf(160, 200, 220);
 		break;
@@ -2861,11 +2812,11 @@ void Graphics::setcol( int t )
 	case 31:
 		ct.colour = RGBf(220, 120, 210);
 		break;
-		//Yellow
+		//cyan
 	case 32:
 		ct.colour = RGBf(220, 210, 120);
 		break;
-		//red
+		//Blue
 	case 33:
 		ct.colour = RGBf(255, 70, 70);
 		break;
@@ -2873,7 +2824,7 @@ void Graphics::setcol( int t )
 	case 34:
 		ct.colour = RGBf(120, 220, 120);
 		break;
-		//Blue
+		//red
 	case 35:
 		ct.colour = RGBf(75, 75, 255);
 		break;
@@ -3049,18 +3000,6 @@ void Graphics::setwarprect( int a, int b, int c, int d )
 	warprect.h = d;
 }
 
-void Graphics::textboxcenter()
-{
-	if (!INBOUNDS_VEC(m, textbox))
-	{
-		puts("textboxcenter() out-of-bounds!");
-		return;
-	}
-
-	textbox[m].centerx();
-	textbox[m].centery();
-}
-
 void Graphics::textboxcenterx()
 {
 	if (!INBOUNDS_VEC(m, textbox))
@@ -3081,18 +3020,6 @@ int Graphics::textboxwidth()
 	}
 
 	return textbox[m].w;
-}
-
-void Graphics::textboxmove(int xo, int yo)
-{
-	if (!INBOUNDS_VEC(m, textbox))
-	{
-		puts("textboxmove() out-of-bounds!");
-		return;
-	}
-
-	textbox[m].xp += xo;
-	textbox[m].yp += yo;
 }
 
 void Graphics::textboxmoveto(int xo)

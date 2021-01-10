@@ -954,14 +954,6 @@ int editorclass::getenemyframe(int t)
 }
 
 
-void editorclass::placetile( int x, int y, int t )
-{
-    if(x>=0 && y>=0 && x<mapwidth*40 && y<mapheight*30)
-    {
-        contents[x+(levx*40)+vmult[y+(levy*30)]]=t;
-    }
-}
-
 void editorclass::placetilelocal( int x, int y, int t )
 {
     if(x>=0 && y>=0 && x<40 && y<30)
@@ -1271,27 +1263,6 @@ int editorclass::match( int x, int y )
     return 0;
 }
 
-int editorclass::warpzonematch( int x, int y )
-{
-    if(free(x-1,y)==0 && free(x,y-1)==0 && free(x+1,y)==0 && free(x,y+1)==0) return 0;
-
-    if(free(x-1,y)==0 && free(x,y-1)==0) return 10;
-    if(free(x+1,y)==0 && free(x,y-1)==0) return 11;
-    if(free(x-1,y)==0 && free(x,y+1)==0) return 12;
-    if(free(x+1,y)==0 && free(x,y+1)==0) return 13;
-
-    if(free(x,y-1)==0) return 1;
-    if(free(x-1,y)==0) return 2;
-    if(free(x,y+1)==0) return 3;
-    if(free(x+1,y)==0) return 4;
-    if(free(x-1,y-1)==0) return 5;
-    if(free(x+1,y-1)==0) return 6;
-    if(free(x-1,y+1)==0) return 7;
-    if(free(x+1,y+1)==0) return 8;
-
-    return 0;
-}
-
 int editorclass::outsidematch( int x, int y )
 {
 
@@ -1329,57 +1300,6 @@ int editorclass::backmatch( int x, int y )
 int editorclass::edgetile( int x, int y )
 {
     switch(match(x,y))
-    {
-    case 14:
-        return 0;
-        break;
-    case 10:
-        return 80;
-        break;
-    case 11:
-        return 82;
-        break;
-    case 12:
-        return 160;
-        break;
-    case 13:
-        return 162;
-        break;
-    case 1:
-        return 81;
-        break;
-    case 2:
-        return 120;
-        break;
-    case 3:
-        return 161;
-        break;
-    case 4:
-        return 122;
-        break;
-    case 5:
-        return 42;
-        break;
-    case 6:
-        return 41;
-        break;
-    case 7:
-        return 2;
-        break;
-    case 8:
-        return 1;
-        break;
-    case 0:
-    default:
-        return 0;
-        break;
-    }
-    return 0;
-}
-
-int editorclass::warpzoneedgetile( int x, int y )
-{
-    switch(backmatch(x,y))
     {
     case 14:
         return 0;
@@ -1610,7 +1530,7 @@ void editorclass::switch_tileset(const bool reversed /*= false*/)
         tiles++;
     }
 
-    const size_t modulus = SDL_arraysize(tilesets);
+    const int modulus = SDL_arraysize(tilesets);
     tiles = (tiles % modulus + modulus) % modulus;
     room.tileset = tiles;
 
@@ -2220,15 +2140,6 @@ int edentat( int xp, int yp )
         if(edentity[i].x==xp && edentity[i].y==yp) return i;
     }
     return -1;
-}
-
-bool edentclear( int xp, int yp )
-{
-    for(size_t i=0; i<edentity.size(); i++)
-    {
-        if(edentity[i].x==xp && edentity[i].y==yp) return false;
-    }
-    return true;
 }
 
 void fillbox( int x, int y, int x2, int y2, int c )
@@ -3337,9 +3248,9 @@ void editorrender()
             FillRect(graphics.backBuffer, 0, 0, 320, 240, 0x00000000);
         }
 
-        int tr = map.r - (help.glow / 4) - int(fRandom() * 4);
-        int tg = map.g - (help.glow / 4) - int(fRandom() * 4);
-        int tb = map.b - (help.glow / 4) - int(fRandom() * 4);
+        int tr = graphics.titlebg.r - (help.glow / 4) - int(fRandom() * 4);
+        int tg = graphics.titlebg.g - (help.glow / 4) - int(fRandom() * 4);
+        int tb = graphics.titlebg.b - (help.glow / 4) - int(fRandom() * 4);
         if (tr < 0) tr = 0;
         if(tr>255) tr=255;
         if (tg < 0) tg = 0;
@@ -3724,11 +3635,9 @@ void editorrender()
     graphics.render();
 }
 
-void editorlogic()
+void editorrenderfixed()
 {
     extern editorclass ed;
-    //Misc
-    help.updateglow();
     graphics.updatetitlecolours();
 
     game.customcol=ed.getlevelcol(ed.levx+(ed.levy*ed.maxwidth))+1;
@@ -3736,27 +3645,6 @@ void editorlogic()
 
     graphics.setcol(ed.entcol);
     ed.entcolreal = graphics.ct.colour;
-
-    if (game.shouldreturntoeditor)
-    {
-        game.shouldreturntoeditor = false;
-    }
-
-    graphics.titlebg.bypos -= 2;
-    graphics.titlebg.bscroll = -2;
-
-    ed.entframedelay--;
-    if(ed.entframedelay<=0)
-    {
-        ed.entframe=(ed.entframe+1)%4;
-        ed.entframedelay=8;
-    }
-
-    ed.oldnotedelay = ed.notedelay;
-    if(ed.notedelay>0)
-    {
-        ed.notedelay--;
-    }
 
     if (game.ghostsenabled)
     {
@@ -3804,6 +3692,34 @@ void editorlogic()
     else if (!game.colourblindmode)
     {
         graphics.updatetowerbackground(graphics.titlebg);
+    }
+}
+
+void editorlogic()
+{
+    extern editorclass ed;
+    //Misc
+    help.updateglow();
+
+    if (game.shouldreturntoeditor)
+    {
+        game.shouldreturntoeditor = false;
+    }
+
+    graphics.titlebg.bypos -= 2;
+    graphics.titlebg.bscroll = -2;
+
+    ed.entframedelay--;
+    if(ed.entframedelay<=0)
+    {
+        ed.entframe=(ed.entframe+1)%4;
+        ed.entframedelay=8;
+    }
+
+    ed.oldnotedelay = ed.notedelay;
+    if(ed.notedelay>0)
+    {
+        ed.notedelay--;
     }
 
     if (graphics.fademode == 1)
@@ -3985,7 +3901,7 @@ void editorinput()
     game.my = (float) key.my;
     ed.tilex=(game.mx - (game.mx%8))/8;
     ed.tiley=(game.my - (game.my%8))/8;
-    if (game.stretchMode == 1) {
+    if (graphics.screenbuffer->stretchMode == 1) {
         // In this mode specifically, we have to fix the mouse coordinates
         int winwidth, winheight;
         graphics.screenbuffer->GetWindowSize(&winwidth, &winheight);
@@ -4914,7 +4830,7 @@ void editorinput()
                         }
                         else if(ed.boundarymod==2)
                         {
-                            if((ed.tilex*8)+8>=ed.boundx1 || (ed.tiley*8)+8>=ed.boundy1)
+                            if((ed.tilex*8)+8>=ed.boundx1 && (ed.tiley*8)+8>=ed.boundy1)
                             {
                                 ed.boundx2=(ed.tilex*8)+8;
                                 ed.boundy2=(ed.tiley*8)+8;
