@@ -27,7 +27,7 @@
 #define strcasecmp stricmp
 #endif
 
-bool GetButtonFromString(const char *pText, SDL_GameControllerButton *button)
+static bool GetButtonFromString(const char *pText, SDL_GameControllerButton *button)
 {
     if (*pText == '0' ||
         *pText == 'a' ||
@@ -131,7 +131,6 @@ void Game::init(void)
     roomchange = false;
 
 
-    savemystats = false;
     quickrestartkludge = false;
 
     tapleft = 0;
@@ -3229,8 +3228,6 @@ void Game::updatestate()
             map.final_mapcol = 0;
             map.final_colorframe = 0;
             map.finalstretch = false;
-            map.finalx = 100;
-            map.finaly = 100;
 
             graphics.cutscenebarspos = 320;
             graphics.oldcutscenebarspos = 320;
@@ -5296,15 +5293,7 @@ void Game::readmaingamesave(tinyxml2::XMLDocument& doc)
             map.finalstretch = help.Int(pText);
         }
 
-        if (pKey == "finalx")
-        {
-            map.finalx = help.Int(pText);
-        }
-        else if (pKey == "finaly")
-        {
-            map.finaly = help.Int(pText);
-        }
-        else if (pKey == "savex")
+        if (pKey == "savex")
         {
             savex = help.Int(pText);
         }
@@ -5499,15 +5488,7 @@ void Game::customloadquick(std::string savfile)
         }
 
 
-        if (pKey == "finalx")
-        {
-            map.finalx = help.Int(pText);
-        }
-        else if (pKey == "finaly")
-        {
-            map.finaly = help.Int(pText);
-        }
-        else if (pKey == "savex")
+        if (pKey == "savex")
         {
             savex = help.Int(pText);
         }
@@ -5892,10 +5873,6 @@ std::string Game::writemaingamesave(tinyxml2::XMLDocument& doc)
 
     //Position
 
-    xml::update_tag(msgs, "finalx", map.finalx);
-
-    xml::update_tag(msgs, "finaly", map.finaly);
-
     xml::update_tag(msgs, "savex", savex);
 
     xml::update_tag(msgs, "savey", savey);
@@ -6022,10 +5999,6 @@ bool Game::customsavequick(std::string savfile)
     xml::update_tag(msgs, "customcollect", customcollect.c_str());
 
     //Position
-
-    xml::update_tag(msgs, "finalx", map.finalx);
-
-    xml::update_tag(msgs, "finaly", map.finaly);
 
     xml::update_tag(msgs, "savex", savex);
 
@@ -6671,12 +6644,12 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
             if (temp == 1)
             {
                 createmenu(Menu::unlocktimetrial, true);
-                savemystats = true;
+                savestatsandsettings();
             }
             else if (temp > 1)
             {
                 createmenu(Menu::unlocktimetrials, true);
-                savemystats = true;
+                savestatsandsettings();
             }
         }
         else
@@ -6695,7 +6668,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 unlocknotify[17] = true;
                 unlock[17] = true;
                 createmenu(Menu::unlocknodeathmode, true);
-                savemystats = true;
+                savestatsandsettings();
             }
             //Alright then! Flip mode?
             else if (unlock[5] && !unlocknotify[18])
@@ -6703,7 +6676,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 unlock[18] = true;
                 unlocknotify[18] = true;
                 createmenu(Menu::unlockflipmode, true);
-                savemystats = true;
+                savestatsandsettings();
             }
             //What about the intermission levels?
             else if (unlock[7] && !unlocknotify[16])
@@ -6711,7 +6684,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 unlock[16] = true;
                 unlocknotify[16] = true;
                 createmenu(Menu::unlockintermission, true);
-                savemystats = true;
+                savestatsandsettings();
             }
             else
             {

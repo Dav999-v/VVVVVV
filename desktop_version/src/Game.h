@@ -382,8 +382,6 @@ public:
     std::string hardestroom;
     int hardestroomdeaths, currentroomdeaths;
 
-    bool savemystats;
-
 
     bool quickrestartkludge;
 

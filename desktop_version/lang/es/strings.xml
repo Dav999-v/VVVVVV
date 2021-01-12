@@ -422,6 +422,7 @@
     <string english="F3: Change Enemies" explanation="editor shortcut, change enemy appearance" max="25" comment=""></string>
     <string english="F4: Enemy Bounds" explanation="editor shortcut, invisible box which enemies always stay inside of" max="25" comment=""></string>
     <string english="F5: Platform Bounds" explanation="editor shortcut, invisible box which platforms always stay inside of" max="25" comment=""></string>
+    <string english="F9: Reload Resources" explanation="editor shortcut, reload tilesets, sprites, music, etc" max="25" comment=""></string>
     <string english="F10: Direct Mode" explanation="editor shortcut, direct mode is manual tile placing mode, where walls are not automatically made nice" max="25" comment=""></string>
     <string english="W: Change Warp Dir" explanation="editor shortcut, dir=direction, change which edges of the room wrap around. Can be horizontal, vertical or all sides" max="25" comment=""></string>
     <string english="E: Change Roomname" explanation="editor shortcut, the name of the room appears at the bottom" max="25" comment=""></string>

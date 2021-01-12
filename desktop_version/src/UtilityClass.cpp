@@ -8,7 +8,7 @@
 #include "Localization.h"
 
 /* Used by UtilityClass::GCString to generate a button list */
-const char *GCChar(SDL_GameControllerButton button)
+static const char *GCChar(SDL_GameControllerButton button)
 {
 	if (button == SDL_CONTROLLER_BUTTON_A)
 	{

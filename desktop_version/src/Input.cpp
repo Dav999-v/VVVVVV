@@ -16,7 +16,7 @@
 #include "Script.h"
 #include "UtilityClass.h"
 
-void updatebuttonmappings(int bind)
+static void updatebuttonmappings(int bind)
 {
     for (
         SDL_GameControllerButton i = SDL_CONTROLLER_BUTTON_A;
@@ -174,7 +174,7 @@ void updatebuttonmappings(int bind)
     }
 }
 
-void menuactionpress()
+static void menuactionpress()
 {
     switch (game.currentmenuname)
     {
@@ -688,7 +688,7 @@ void menuactionpress()
         {
             // toggle Flip Mode
             graphics.setflipmode = !graphics.setflipmode;
-            game.savemystats = true;
+            game.savestatsandsettings();
             if (graphics.setflipmode)
             {
                 music.playef(18);
@@ -1377,7 +1377,7 @@ void menuactionpress()
         {
             // WARNING: Partially duplicated in Menu::options
             graphics.setflipmode = !graphics.setflipmode;
-            game.savemystats = true;
+            game.savestatsandsettings();
             if (graphics.setflipmode)
             {
                 music.playef(18);
@@ -2129,7 +2129,7 @@ void gameinput()
     }
 }
 
-void mapmenuactionpress();
+static void mapmenuactionpress();
 
 void mapinput()
 {
@@ -2317,7 +2317,7 @@ void mapinput()
     }
 }
 
-void mapmenuactionpress()
+static void mapmenuactionpress()
 {
     switch (game.menupage)
     {

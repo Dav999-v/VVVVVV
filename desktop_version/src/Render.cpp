@@ -13,13 +13,13 @@
 #include "UtilityClass.h"
 #include "Version.h"
 
-int tr;
-int tg;
-int tb;
+static int tr;
+static int tg;
+static int tb;
 
 // Macro-like inline function used in maprender()
 // Used to keep some text positions the same in Flip Mode
-int inline FLIP(int ypos)
+static int inline FLIP(int ypos)
 {
     if (graphics.flipmode)
     {
@@ -47,7 +47,7 @@ static inline void drawslowdowntext()
     }
 }
 
-void menurender()
+static void menurender()
 {
     int temp = 50;
 
