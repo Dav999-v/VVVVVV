@@ -11,7 +11,7 @@
     you can leave all of these empty, in which case numbers will be used (20 out of 20).
     You may want to do it all-lowercase in order to not get English-style title casing.
 
-    0-20 hopefully fit in 11 characters, otherwise we're gonna have to move the trinket counter.
+    0-20 hopefully fit in 17 characters, otherwise we're gonna have to move the trinket counter.
 
     101 (Lots) is used for any number above 100.
 -->
