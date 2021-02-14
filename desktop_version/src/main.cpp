@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 
     for (int i = 1; i < argc; ++i)
     {
-#define ARG(name) (strcmp(argv[i], name) == 0)
+#define ARG(name) (SDL_strcmp(argv[i], name) == 0)
 #define ARG_INNER(code) \
     if (i + 1 < argc) \
     { \
@@ -268,8 +268,6 @@ int main(int argc, char *argv[])
     graphics.ghostbuffer = CREATE_SURFACE(320, 240);
     SDL_SetSurfaceBlendMode(graphics.ghostbuffer, SDL_BLENDMODE_BLEND);
     SDL_SetSurfaceAlphaMod(graphics.ghostbuffer, 127);
-
-    graphics.Makebfont();
 
     graphics.foregroundBuffer =  CREATE_SURFACE(320, 240);
     SDL_SetSurfaceBlendMode(graphics.foregroundBuffer, SDL_BLENDMODE_BLEND);

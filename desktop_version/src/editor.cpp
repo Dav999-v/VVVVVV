@@ -165,8 +165,19 @@ std::string find_tag(const std::string& buf, const std::string& start, const std
     size_t start_pos = 0;
     while ((start_pos = value.find("&#", start_pos)) != std::string::npos)
     {
+        if (start_pos + 2 >= value.length())
+        {
+            return "";
+        }
+
         bool hex = value[start_pos + 2] == 'x';
         size_t end = value.find(';', start_pos);
+
+        if (end == std::string::npos)
+        {
+            return "";
+        }
+
         size_t real_start = start_pos + 2 + ((int) hex);
         std::string number(value.substr(real_start, end - real_start));
 
@@ -178,11 +189,11 @@ std::string find_tag(const std::string& buf, const std::string& start, const std
         uint32_t character = 0;
         if (hex)
         {
-            sscanf(number.c_str(), "%" SCNx32, &character);
+            SDL_sscanf(number.c_str(), "%" SCNx32, &character);
         }
         else
         {
-            sscanf(number.c_str(), "%" SCNu32, &character);
+            SDL_sscanf(number.c_str(), "%" SCNu32, &character);
         }
         uint32_t utf32[] = {character, 0};
         std::string utf8;
@@ -1656,7 +1667,7 @@ bool editorclass::load(std::string& _path)
     reset();
 
     static const char *levelDir = "levels/";
-    if (_path.compare(0, strlen(levelDir), levelDir) != 0)
+    if (_path.compare(0, SDL_strlen(levelDir), levelDir) != 0)
     {
         _path = levelDir + _path;
     }
@@ -1793,23 +1804,6 @@ bool editorclass::load(std::string& _path)
             }
         }
 
-        /*else if(version==1){
-          if (pKey == "contents")
-          {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-              std::vector<std::string> values = split(TextString,',');
-              contents.clear();
-              for(int i = 0; i < values.size(); i++)
-              {
-                contents.push_back(help.Int(values[i].c_str()));
-              }
-            }
-          }
-        //}
-        */
-
 
         if (pKey == "edEntities")
         {
@@ -1921,14 +1915,7 @@ bool editorclass::load(std::string& _path)
                 {
                     std::string& line = values[i];
 
-                    //Comparing line[line.length()-1] directly to a string literal is UB
-                    //Workaround: assign line[line.length()-1] to a string first
-                    std::string temp;
-                    if(line.length())
-                    {
-                        temp = line[line.length()-1];
-                    }
-                    if(temp == ":")
+                    if(line.length() && line[line.length() - 1] == ':')
                     {
                         if(headerfound)
                         {
@@ -2697,14 +2684,7 @@ void editorrender()
                 fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),16,16,graphics.getRGB(164,164,255));
                 break;
             case 10: //Checkpoints
-                if(edentity[i].p1==0)  //From roof
-                {
-                    graphics.drawsprite((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),20,196,196,196);
-                }
-                else if(edentity[i].p1==1)   //From floor
-                {
-                    graphics.drawsprite((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),21,196,196,196);
-                }
+                graphics.drawsprite((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),20 + edentity[i].p1,196,196,196);
                 fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),16,16,graphics.getRGB(164,164,255));
                 break;
             case 11: //Gravity lines
@@ -2806,13 +2786,27 @@ void editorrender()
                 graphics.Print((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8), edentity[i].scriptname, 196, 196, 255 - help.glow);
                 break;
             case 18: //Terminals
-                graphics.drawsprite((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8)+8,17,96,96,96);
+            {
+                int usethistile = edentity[i].p1;
+                int usethisy = (edentity[i].y % 30) * 8;
+                // Not a boolean: just swapping 0 and 1, leaving the rest alone
+                if (usethistile == 0)
+                {
+                    usethistile = 1; // Unflipped
+                }
+                else if (usethistile == 1)
+                {
+                    usethistile = 0; // Flipped;
+                    usethisy -= 8;
+                }
+                graphics.drawsprite((edentity[i].x*8)- (ed.levx*40*8), usethisy + 8, usethistile + 16, 96,96,96);
                 fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),16,24,graphics.getRGB(164,164,164));
                 if(temp2==i)
                 {
                     graphics.bprint((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8)-8,edentity[i].scriptname,210,210,255);
                 }
                 break;
+            }
             case 19: //Script Triggers
                 fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),edentity[i].p1*8,edentity[i].p2*8,graphics.getRGB(255,164,255));
                 fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),8,8,graphics.getRGB(255,255,255));
@@ -3345,22 +3339,15 @@ void editorrender()
                 tx+=tg;
                 FillRect(graphics.backBuffer, tx+2,ty+8,12,1,graphics.getRGB(255,255,255));
 
-                for(int i=0; i<9; i++)
+                for (int i = 0; i < 10; i++)
                 {
                     fillboxabs(4+(i*tg), 209,20,20,graphics.getRGB(96,96,96));
-                    graphics.Print(22+(i*tg)-4, 225-4,help.String(i+1),164,164,164,false);
+                    const int col = i == ed.drawmode ? 255 : 164;
+                    const std::string glyph = i == 9 ? "0" : help.String(i + 1);
+                    graphics.Print(22 + i*tg - 4, 225 - 4, glyph, col, col, col, false);
                 }
-
-                if(ed.drawmode==9)graphics.Print(22+(ed.drawmode*tg)-4, 225-4,"0",255,255,255,false);
-
-                fillboxabs(4+(9*tg), 209,20,20,graphics.getRGB(96,96,96));
-                graphics.Print(22+(9*tg)-4, 225-4, "0",164,164,164,false);
 
                 fillboxabs(4+(ed.drawmode*tg), 209,20,20,graphics.getRGB(200,200,200));
-                if(ed.drawmode<9)
-                {
-                    graphics.Print(22+(ed.drawmode*tg)-4, 225-4,help.String(ed.drawmode+1),255,255,255,false);
-                }
 
                 graphics.Print(4, 232, "1/2", 196, 196, 255 - help.glow, false);
             }
@@ -3395,28 +3382,15 @@ void editorrender()
                 tx+=tg;
                 graphics.drawsprite(tx,ty,184,graphics.col_crewcyan);
 
-                if(ed.drawmode==10)graphics.Print(22+((ed.drawmode-10)*tg)-4, 225-4,"R",255,255,255,false);
-                if(ed.drawmode==11)graphics.Print(22+((ed.drawmode-10)*tg)-4, 225-4,"T",255,255,255,false);
-                if(ed.drawmode==12)graphics.Print(22+((ed.drawmode-10)*tg)-4, 225-4,"Y",255,255,255,false);
-                if(ed.drawmode==13)graphics.Print(22+((ed.drawmode-10)*tg)-4, 225-4,"U",255,255,255,false);
-                if(ed.drawmode==14)graphics.Print(22+((ed.drawmode-10)*tg)-4, 225-4,"I",255,255,255,false);
-                if(ed.drawmode==15)graphics.Print(22+((ed.drawmode-10)*tg)-4, 225-4,"O",255,255,255,false);
-                if(ed.drawmode==16)graphics.Print(22+((ed.drawmode-10)*tg)-4, 225-4,"P",255,255,255,false);
+                for (int i = 0; i < 7; i++)
+                {
+                    fillboxabs(4 +  i*tg, 209, 20, 20, graphics.getRGB(96, 96, 96));
+                    const int col = i + 10 == ed.drawmode ? 255 : 164;
+                    static const char glyphs[] = "RTYUIOP";
+                    graphics.Print(22 + i*tg - 4, 225 - 4, std::string(1, glyphs[i]), col, col, col, false);
+                }
 
-                fillboxabs(4+(0*tg), 209,20,20,graphics.getRGB(96,96,96));
-                graphics.Print(22+(0*tg)-4, 225-4, "R",164,164,164,false);
-                fillboxabs(4+(1*tg), 209,20,20,graphics.getRGB(96,96,96));
-                graphics.Print(22+(1*tg)-4, 225-4, "T",164,164,164,false);
-                fillboxabs(4+(2*tg), 209,20,20,graphics.getRGB(96,96,96));
-                graphics.Print(22+(2*tg)-4, 225-4, "Y",164,164,164,false);
-                fillboxabs(4+(3*tg), 209,20,20,graphics.getRGB(96,96,96));
-                graphics.Print(22+(3*tg)-4, 225-4, "U",164,164,164,false);
-                fillboxabs(4+(4*tg), 209,20,20,graphics.getRGB(96,96,96));
-                graphics.Print(22+(4*tg)-4, 225-4, "I",164,164,164,false);
-                fillboxabs(4+(5*tg), 209,20,20,graphics.getRGB(96,96,96));
-                graphics.Print(22+(5*tg)-4, 225-4, "O",164,164,164,false);
-                fillboxabs(4+(6*tg), 209,20,20,graphics.getRGB(96,96,96));
-                graphics.Print(22+(6*tg)-4, 225-4, "P",164,164,164,false);
+                fillboxabs(4 + (ed.drawmode - 10) * tg, 209, 20, 20, graphics.getRGB(200, 200, 200));
 
                 graphics.Print(4, 232, "2/2", 196, 196, 255 - help.glow, false);
             }
@@ -3726,18 +3700,11 @@ void editorlogic()
     if (graphics.fademode == 1)
     {
         //Return to game
-        map.nexttowercolour();
         graphics.titlebg.colstate = 10;
-        game.gamestate = TITLEMODE;
-        script.hardreset();
-        graphics.fademode = 4;
-        music.haltdasmusik();
-        FILESYSTEM_unmountassets(); // should be before music.play(6)
-        music.play(6);
         map.nexttowercolour();
+        game.quittomenu();
+        music.play(6); //should be before game.quittomenu()
         ed.settingsmod=false;
-        graphics.backgrounddrawn=false;
-        game.returntomenu(Menu::playerworlds);
     }
 }
 
@@ -5275,7 +5242,11 @@ void editorinput()
                         }
                         else if(edentity[tmp].t==10)
                         {
-                            edentity[tmp].p1=(edentity[tmp].p1+1)%2;
+                            // If it's not textured as a checkpoint, leave it alone
+                            if (edentity[tmp].p1 == 0 || edentity[tmp].p1 == 1)
+                            {
+                                edentity[tmp].p1=(edentity[tmp].p1+1)%2;
+                            }
                             ed.lclickdelay=1;
                         }
                         else if(edentity[tmp].t==11)
@@ -5304,6 +5275,12 @@ void editorinput()
                             ed.lclickdelay=1;
                             ed.textent=tmp;
                             ed.getlin(TEXT_SCRIPT, loc::gettext("Enter script name:"), &(edentity[ed.textent].scriptname));
+                            if (edentity[tmp].t == 18
+                            && (edentity[tmp].p1 == 0 || edentity[tmp].p1 == 1))
+                            {
+                                // Flip the terminal, but if it's not textured as a terminal leave it alone
+                                edentity[tmp].p1 = (edentity[tmp].p1 + 1) % 2;
+                            }
                         }
                     }
                 }

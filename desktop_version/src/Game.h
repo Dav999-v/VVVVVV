@@ -298,11 +298,17 @@ public:
     bool nodeathmode;
     int gameoverdelay;
     bool nocutscenes;
+    int ndmresultcrewrescued;
+    int ndmresulttrinkets;
+    std::string ndmresulthardestroom;
+    void copyndmresults();
 
     //Time Trials
     bool intimetrial, timetrialparlost;
     int timetrialcountdown, timetrialshinytarget, timetriallevel;
     int timetrialpar, timetrialresulttime, timetrialresultframes, timetrialrank;
+    int timetrialresultshinytarget, timetrialresulttrinkets, timetrialresultpar;
+    int timetrialresultdeaths;
 
     int creditposition;
     int oldcreditposition;
@@ -312,6 +318,7 @@ public:
 
     static const int numcrew = 6;
     bool crewstats[numcrew];
+    bool ndmresultcrewstats[numcrew];
 
     bool alarmon;
     int alarmdelay;

@@ -113,13 +113,9 @@ void gamecompletelogic2()
         game.savetele();
         music.currentsong=tmp;
         //Return to game
-        graphics.titlebg.colstate = 10;
-        game.gamestate = TITLEMODE;
-        graphics.fademode = 4;
-        FILESYSTEM_unmountassets(); // should be before music.playef(18)
-        music.playef(18);
-        game.returntomenu(Menu::play);
+        game.quittomenu();
         game.createmenu(Menu::gamecompletecontinue);
+        graphics.titlebg.colstate = 10;
         map.nexttowercolour();
     }
 }
@@ -449,7 +445,11 @@ void gamelogic()
                 game.gethardestroom();
                 //start depressing sequence here...
                 if (game.gameoverdelay <= -10 && graphics.fademode==0) graphics.fademode = 2;
-                if (graphics.fademode == 1) script.resetgametomenu();
+                if (graphics.fademode == 1)
+                {
+                    game.copyndmresults();
+                    script.resetgametomenu();
+                }
             }
             else
             {
@@ -826,7 +826,6 @@ void gamelogic()
                 if (INBOUNDS_VEC(i, obj.entities) && j > -1000)
                 {
                     obj.entities[i].newxp = obj.entities[i].xp + j;
-                    obj.entities[i].newyp = obj.entities[i].yp;
                     obj.entitymapcollision(i);
                 }
                 else
@@ -835,7 +834,6 @@ void gamelogic()
                     if (INBOUNDS_VEC(i, obj.entities) && j > -1000)
                     {
                         obj.entities[i].newxp = obj.entities[i].xp + j;
-                        obj.entities[i].newyp = obj.entities[i].yp;
                         obj.entitymapcollision(i);
                     }
                 }

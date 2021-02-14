@@ -60,7 +60,7 @@ void Screen::init(const ScreenSettings& settings)
 	SDL_CreateWindowAndRenderer(
 		640,
 		480,
-		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE,
+		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI,
 		&m_window,
 		&m_renderer
 	);
@@ -130,7 +130,7 @@ void Screen::LoadIcon()
 	);
 	SDL_SetWindowIcon(m_window, icon);
 	SDL_FreeSurface(icon);
-	free(data);
+	SDL_free(data);
 }
 
 void Screen::ResizeScreen(int x, int y)
@@ -170,7 +170,7 @@ void Screen::ResizeScreen(int x, int y)
 	if (stretchMode == 1)
 	{
 		int winX, winY;
-		SDL_GetWindowSize(m_window, &winX, &winY);
+		GetWindowSize(&winX, &winY);
 		int result = SDL_RenderSetLogicalSize(m_renderer, winX, winY);
 		if (result != 0)
 		{
@@ -256,7 +256,7 @@ void Screen::ResizeToNearestMultiple()
 
 void Screen::GetWindowSize(int* x, int* y)
 {
-	SDL_GetWindowSize(m_window, x, y);
+	SDL_GetRendererOutputSize(m_renderer, x, y);
 }
 
 void Screen::UpdateScreen(SDL_Surface* buffer, SDL_Rect* rect )

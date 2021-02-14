@@ -2187,6 +2187,7 @@ void mapinput()
         else
         {
             game.quittomenu();
+            music.play(6); //should be after game.quittomenu()
             game.fadetomenu = false;
         }
     }
