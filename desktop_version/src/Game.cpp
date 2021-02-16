@@ -21,12 +21,7 @@
 #include "UtilityClass.h"
 #include "XMLUtils.h"
 
-// lol, Win32 -flibit
-#ifdef _WIN32
-#define strcasecmp stricmp
-#endif
-
-bool GetButtonFromString(const char *pText, SDL_GameControllerButton *button)
+static bool GetButtonFromString(const char *pText, SDL_GameControllerButton *button)
 {
     if (*pText == '0' ||
         *pText == 'a' ||
@@ -35,7 +30,7 @@ bool GetButtonFromString(const char *pText, SDL_GameControllerButton *button)
         *button = SDL_CONTROLLER_BUTTON_A;
         return true;
     }
-    if (strcmp(pText, "1") == 0 ||
+    if (SDL_strcmp(pText, "1") == 0 ||
         *pText == 'b' ||
         *pText == 'B')
     {
@@ -57,43 +52,43 @@ bool GetButtonFromString(const char *pText, SDL_GameControllerButton *button)
         return true;
     }
     if (*pText == '4' ||
-        strcasecmp(pText, "BACK") == 0)
+        SDL_strcasecmp(pText, "BACK") == 0)
     {
         *button = SDL_CONTROLLER_BUTTON_BACK;
         return true;
     }
     if (*pText == '5' ||
-        strcasecmp(pText, "GUIDE") == 0)
+        SDL_strcasecmp(pText, "GUIDE") == 0)
     {
         *button = SDL_CONTROLLER_BUTTON_GUIDE;
         return true;
     }
     if (*pText == '6' ||
-        strcasecmp(pText, "START") == 0)
+        SDL_strcasecmp(pText, "START") == 0)
     {
         *button = SDL_CONTROLLER_BUTTON_START;
         return true;
     }
     if (*pText == '7' ||
-        strcasecmp(pText, "LS") == 0)
+        SDL_strcasecmp(pText, "LS") == 0)
     {
         *button = SDL_CONTROLLER_BUTTON_LEFTSTICK;
         return true;
     }
     if (*pText == '8' ||
-        strcasecmp(pText, "RS") == 0)
+        SDL_strcasecmp(pText, "RS") == 0)
     {
         *button = SDL_CONTROLLER_BUTTON_RIGHTSTICK;
         return true;
     }
     if (*pText == '9' ||
-        strcasecmp(pText, "LB") == 0)
+        SDL_strcasecmp(pText, "LB") == 0)
     {
         *button = SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
         return true;
     }
-    if (strcmp(pText, "10") == 0 ||
-        strcasecmp(pText, "RB") == 0)
+    if (SDL_strcmp(pText, "10") == 0 ||
+        SDL_strcasecmp(pText, "RB") == 0)
     {
         *button = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
         return true;
@@ -130,7 +125,6 @@ void Game::init(void)
     roomchange = false;
 
 
-    savemystats = false;
     quickrestartkludge = false;
 
     tapleft = 0;
@@ -177,10 +171,13 @@ void Game::init(void)
 
     nodeathmode = false;
     nocutscenes = false;
+    ndmresultcrewrescued = 0;
+    ndmresulttrinkets = 0;
 
     customcol=0;
 
     SDL_memset(crewstats, false, sizeof(crewstats));
+    SDL_memset(ndmresultcrewstats, false, sizeof(ndmresultcrewstats));
     SDL_memset(tele_crewstats, false, sizeof(tele_crewstats));
     SDL_memset(quick_crewstats, false, sizeof(quick_crewstats));
     SDL_memset(besttimes, -1, sizeof(besttimes));
@@ -233,6 +230,10 @@ void Game::init(void)
     timetrialpar = 0;
     timetrialresulttime = 0;
     timetrialresultframes = 0;
+    timetrialresultshinytarget = 0;
+    timetrialresulttrinkets = 0;
+    timetrialresultpar = 0;
+    timetrialresultdeaths = 0;
 
     totalflips = 0;
     hardestroom = "Welcome Aboard";
@@ -441,6 +442,29 @@ void Game::updatecustomlevelstats(std::string clevel, int cscore)
     savecustomlevelstats();
 }
 
+#define LOAD_ARRAY_RENAME(ARRAY_NAME, DEST) \
+    if (pKey == #ARRAY_NAME && pText[0] != '\0') \
+    { \
+        /* We're loading in 32-bit integers. If we need more than 16 chars,
+         * something is seriously wrong */ \
+        char buffer[16]; \
+        size_t start = 0; \
+        size_t i = 0; \
+        \
+        while (next_split_s(buffer, sizeof(buffer), &start, pText, ',')) \
+        { \
+            if (i >= SDL_arraysize(DEST)) \
+            { \
+                break; \
+            } \
+            \
+            DEST[i] = help.Int(buffer); \
+            ++i; \
+        } \
+    }
+
+#define LOAD_ARRAY(ARRAY_NAME) LOAD_ARRAY_RENAME(ARRAY_NAME, ARRAY_NAME)
+
 void Game::loadcustomlevelstats()
 {
     //testing
@@ -523,35 +547,25 @@ void Game::loadcustomlevelstats()
             pText = "";
         }
 
-        if (pKey == "customlevelscore")
-        {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    customlevelscores.push_back(help.Int(values[i].c_str()));
-                }
-            }
-        }
+        LOAD_ARRAY_RENAME(customlevelscore, customlevelscores)
 
-        if (pKey == "customlevelstats")
+        if (pKey == "customlevelstats" && pText[0] != '\0')
         {
-            std::string TextString = (pText);
-            if(TextString.length())
+            size_t start = 0;
+            size_t len = 0;
+            size_t prev_start = 0;
+
+            while (next_split(&start, &len, &pText[start], '|'))
             {
-                std::vector<std::string> values = split(TextString,'|');
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    customlevelnames.push_back(values[i]);
-                }
+                customlevelnames.push_back(std::string(&pText[prev_start], len));
+
+                prev_start = start;
             }
         }
     }
 
     // If the two arrays happen to differ in length, just go with the smallest one
-    for (size_t i = 0; i < std::min(customlevelnames.size(), customlevelscores.size()); i++)
+    for (int i = 0; i < VVV_min(customlevelnames.size(), customlevelscores.size()); i++)
     {
         CustomLevelStat stat = {customlevelnames[i], customlevelscores[i]};
         customlevelstats.push_back(stat);
@@ -1294,6 +1308,7 @@ void Game::updatestate()
             break;
         case 81:
             quittomenu();
+            music.play(6); //should be after quittomenu()
             state = 0;
             break;
 
@@ -1301,8 +1316,14 @@ void Game::updatestate()
             //Time Trial Complete!
             obj.removetrigger(82);
             hascontrol = false;
+
             timetrialresulttime = seconds + (minutes * 60) + (hours * 60 * 60);
             timetrialresultframes = frames;
+            timetrialresulttrinkets = trinkets();
+            timetrialresultshinytarget = timetrialshinytarget;
+            timetrialresultpar = timetrialpar;
+            timetrialresultdeaths = deathcounts;
+
             timetrialrank = 0;
             if (timetrialresulttime <= timetrialpar) timetrialrank++;
             if (trinkets() >= timetrialshinytarget) timetrialrank++;
@@ -1315,7 +1336,7 @@ void Game::updatestate()
                 besttimes[timetriallevel] = timetrialresulttime;
                 bestframes[timetriallevel] = timetrialresultframes;
             }
-            if (trinkets() > besttrinkets[timetriallevel] || besttrinkets[timetriallevel]==-1)
+            if (timetrialresulttrinkets > besttrinkets[timetriallevel] || besttrinkets[timetriallevel]==-1)
             {
                 besttrinkets[timetriallevel] = trinkets();
             }
@@ -1347,11 +1368,7 @@ void Game::updatestate()
             if(graphics.fademode == 1)	state++;
             break;
         case 84:
-            graphics.flipmode = false;
-            gamestate = TITLEMODE;
-            graphics.fademode = 4;
-            graphics.backgrounddrawn = true;
-            graphics.titlebg.tdrawback = true;
+            quittomenu();
             createmenu(Menu::timetrialcomplete);
             state = 0;
             break;
@@ -1877,7 +1894,6 @@ void Game::updatestate()
                 if(!muted && ed.levmusic>0) music.fadeMusicVolumeIn(3000);
             }
             graphics.showcutscenebars = false;
-            returntomenu(Menu::levellist);
             break;
 #endif
         case 1014:
@@ -1902,6 +1918,7 @@ void Game::updatestate()
             }
 #endif
             quittomenu();
+            music.play(6); //should be after quittomenu()
             state = 0;
             break;
 
@@ -2858,7 +2875,6 @@ void Game::updatestate()
             {
                 graphics.fademode = 2;
                 companion = 0;
-                returnmenu();
                 state=3100;
             }
             else
@@ -2889,7 +2905,6 @@ void Game::updatestate()
                 state++;
                 graphics.fademode = 2;
                 music.fadeout();
-                returnmenu();
                 state=3100;
             }
             else
@@ -2915,44 +2930,15 @@ void Game::updatestate()
             if(graphics.fademode == 1)	state++;
             break;
         case 3101:
-            graphics.flipmode = false;
-            gamestate = TITLEMODE;
-            graphics.fademode = 4;
-            graphics.backgrounddrawn = true;
-            graphics.titlebg.tdrawback = true;
-            music.play(6);
+            quittomenu();
+            music.play(6); //should be after quittomenu();
             state = 0;
             break;
-
-            //startscript = true;	newscript="returntohub";
-            //state = 0;
-
-            /*case 3025:
-            if (recording == 1) {
-            //if recording the input, output it to debug here
-            trace(recordstring);
-            help.toclipboard(recordstring);
-            }
-            test = true; teststring = recordstring;
-            graphics.createtextbox("   Congratulations!    ", 50, 80, 164, 164, 255);
-            graphics.addline("");
-            graphics.addline("Your play of this level has");
-            graphics.addline("been copied to the clipboard.");
-            graphics.addline("");
-            graphics.addline("Please consider pasting and");
-            graphics.addline("sending it to me! Even if you");
-            graphics.addline("made a lot of mistakes - knowing");
-            graphics.addline("exactly where people are having");
-            graphics.addline("trouble is extremely useful!");
-            graphics.textboxcenter();
-            state = 0;
-            break;*/
 
         case 3500:
             music.fadeout();
             state++;
             statedelay = 120;
-            //state = 3511; //testing
             break;
         case 3501:
             //Game complete!
@@ -3229,8 +3215,6 @@ void Game::updatestate()
             map.final_mapcol = 0;
             map.final_colorframe = 0;
             map.finalstretch = false;
-            map.finalx = 100;
-            map.finaly = 100;
 
             graphics.cutscenebarspos = 320;
             graphics.oldcutscenebarspos = 320;
@@ -3251,11 +3235,8 @@ void Game::updatestate()
             if(graphics.fademode == 1)	state++;
             break;
         case 3522:
-            graphics.flipmode = false;
-            gamestate = TITLEMODE;
-            graphics.fademode = 4;
-            graphics.backgrounddrawn = true;
-            graphics.titlebg.tdrawback = true;
+            copyndmresults();
+            quittomenu();
             createmenu(Menu::nodeathmodecomplete);
             state = 0;
             break;
@@ -4453,22 +4434,6 @@ void Game::unlocknum( int t )
 #endif
 }
 
-#define LOAD_ARRAY_RENAME(ARRAY_NAME, DEST) \
-    if (pKey == #ARRAY_NAME) \
-    { \
-        std::string TextString = pText; \
-        if (TextString.length()) \
-        { \
-            std::vector<std::string> values = split(TextString, ','); \
-            for (size_t i = 0; i < SDL_min(SDL_arraysize(DEST), values.size()); i++) \
-            { \
-                DEST[i] = help.Int(values[i].c_str()); \
-            } \
-        } \
-    }
-
-#define LOAD_ARRAY(ARRAY_NAME) LOAD_ARRAY_RENAME(ARRAY_NAME, ARRAY_NAME)
-
 void Game::loadstats(ScreenSettings* screen_settings)
 {
     tinyxml2::XMLDocument doc;
@@ -4740,6 +4705,11 @@ void Game::deserializesettings(tinyxml2::XMLElement* dataNode, ScreenSettings* s
 
 bool Game::savestats()
 {
+    if (graphics.screenbuffer == NULL)
+    {
+        return false;
+    }
+
     ScreenSettings screen_settings;
     graphics.screenbuffer->GetSettings(&screen_settings);
 
@@ -4982,6 +4952,11 @@ void Game::loadsettings(ScreenSettings* screen_settings)
 
 bool Game::savesettings()
 {
+    if (graphics.screenbuffer == NULL)
+    {
+        return false;
+    }
+
     ScreenSettings screen_settings;
     graphics.screenbuffer->GetSettings(&screen_settings);
 
@@ -5289,15 +5264,7 @@ void Game::readmaingamesave(tinyxml2::XMLDocument& doc)
             map.finalstretch = help.Int(pText);
         }
 
-        if (pKey == "finalx")
-        {
-            map.finalx = help.Int(pText);
-        }
-        else if (pKey == "finaly")
-        {
-            map.finaly = help.Int(pText);
-        }
-        else if (pKey == "savex")
+        if (pKey == "savex")
         {
             savex = help.Int(pText);
         }
@@ -5492,15 +5459,7 @@ void Game::customloadquick(std::string savfile)
         }
 
 
-        if (pKey == "finalx")
-        {
-            map.finalx = help.Int(pText);
-        }
-        else if (pKey == "finaly")
-        {
-            map.finaly = help.Int(pText);
-        }
-        else if (pKey == "savex")
+        if (pKey == "savex")
         {
             savex = help.Int(pText);
         }
@@ -5885,10 +5844,6 @@ std::string Game::writemaingamesave(tinyxml2::XMLDocument& doc)
 
     //Position
 
-    xml::update_tag(msgs, "finalx", map.finalx);
-
-    xml::update_tag(msgs, "finaly", map.finaly);
-
     xml::update_tag(msgs, "savex", savex);
 
     xml::update_tag(msgs, "savey", savey);
@@ -6016,10 +5971,6 @@ bool Game::customsavequick(std::string savfile)
 
     //Position
 
-    xml::update_tag(msgs, "finalx", map.finalx);
-
-    xml::update_tag(msgs, "finaly", map.finaly);
-
     xml::update_tag(msgs, "savex", savex);
 
     xml::update_tag(msgs, "savey", savey);
@@ -6130,12 +6081,6 @@ std::string Game::unrescued()
 
 void Game::gameclock()
 {
-/*
-test = true;
-std::ostringstream os;
-    os << hours << ":" << minutes << ":" << seconds << ", " << frames;
-teststring = os.str();
-*/
     frames++;
     if (frames >= 30)
     {
@@ -6390,7 +6335,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                     }
                     char text[menutextbytes];
                     SDL_snprintf(text, sizeof(text), "%s%s", prefix, ed.ListOfMetaData[i].title.c_str());
-                    for (size_t ii = 0; ii < SDL_arraysize(text); ii++)
+                    for (size_t ii = 0; text[ii] != '\0'; ++ii)
                     {
                         text[ii] = SDL_tolower(text[ii]);
                     }
@@ -6649,12 +6594,12 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
             if (temp == 1)
             {
                 createmenu(Menu::unlocktimetrial, true);
-                savemystats = true;
+                savestatsandsettings();
             }
             else if (temp > 1)
             {
                 createmenu(Menu::unlocktimetrials, true);
-                savemystats = true;
+                savestatsandsettings();
             }
         }
         else
@@ -6673,7 +6618,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 unlocknotify[17] = true;
                 unlock[17] = true;
                 createmenu(Menu::unlocknodeathmode, true);
-                savemystats = true;
+                savestatsandsettings();
             }
             //Alright then! Flip mode?
             else if (unlock[5] && !unlocknotify[18])
@@ -6681,7 +6626,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 unlock[18] = true;
                 unlocknotify[18] = true;
                 createmenu(Menu::unlockflipmode, true);
-                savemystats = true;
+                savestatsandsettings();
             }
             //What about the intermission levels?
             else if (unlock[7] && !unlocknotify[16])
@@ -6689,7 +6634,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 unlock[16] = true;
                 unlocknotify[16] = true;
                 createmenu(Menu::unlockintermission, true);
-                savemystats = true;
+                savestatsandsettings();
             }
             else
             {
@@ -7029,9 +6974,7 @@ void Game::quittomenu()
 {
     gamestate = TITLEMODE;
     graphics.fademode = 4;
-    FILESYSTEM_unmountassets(); // should be before music.play(6)
-    music.play(6);
-    graphics.backgrounddrawn = false;
+    FILESYSTEM_unmountassets();
     graphics.titlebg.tdrawback = true;
     graphics.flipmode = false;
     //Don't be stuck on the summary screen,
@@ -7052,7 +6995,15 @@ void Game::quittomenu()
     }
     else if (map.custommode)
     {
-        returntomenu(Menu::levellist);
+        if (map.custommodeforreal)
+        {
+            returntomenu(Menu::levellist);
+        }
+        else
+        {
+            //Returning from editor
+            returntomenu(Menu::playerworlds);
+        }
     }
     else if (save_exists() || anything_unlocked())
     {
@@ -7169,4 +7120,12 @@ void Game::mapmenuchange(const int newgamestate)
         graphics.menuoffset = 0;
     }
     graphics.oldmenuoffset = graphics.menuoffset;
+}
+
+void Game::copyndmresults()
+{
+    ndmresultcrewrescued = crewrescued();
+    ndmresulttrinkets = trinkets();
+    ndmresulthardestroom = hardestroom;
+    SDL_memcpy(ndmresultcrewstats, crewstats, sizeof(ndmresultcrewstats));
 }

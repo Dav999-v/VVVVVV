@@ -15,7 +15,7 @@
 #include "Script.h"
 #include "UtilityClass.h"
 
-void updatebuttonmappings(int bind)
+static void updatebuttonmappings(int bind)
 {
     for (
         SDL_GameControllerButton i = SDL_CONTROLLER_BUTTON_A;
@@ -173,7 +173,7 @@ void updatebuttonmappings(int bind)
     }
 }
 
-void menuactionpress()
+static void menuactionpress()
 {
     switch (game.currentmenuname)
     {
@@ -687,7 +687,7 @@ void menuactionpress()
         {
             // toggle Flip Mode
             graphics.setflipmode = !graphics.setflipmode;
-            game.savemystats = true;
+            game.savestatsandsettings();
             if (graphics.setflipmode)
             {
                 music.playef(18);
@@ -1307,7 +1307,7 @@ void menuactionpress()
         {
             // WARNING: Partially duplicated in Menu::options
             graphics.setflipmode = !graphics.setflipmode;
-            game.savemystats = true;
+            game.savestatsandsettings();
             if (graphics.setflipmode)
             {
                 music.playef(18);
@@ -1686,8 +1686,6 @@ void titleinput()
                 music.playef(18);
                 game.screenshake = 10;
                 game.flashlight = 5;
-                graphics.titlebg.colstate = 10;
-                map.nexttowercolour();
             }
             else
             {
@@ -1824,7 +1822,7 @@ void gameinput()
                     if (game.activetele && game.readytotele > 20 && !game.intimetrial)
                     {
                         enter_already_processed = true;
-                        if(int(std::abs(obj.entities[ie].vx))<=1 && int(obj.entities[ie].vy)==0)
+                        if(int(SDL_fabsf(obj.entities[ie].vx))<=1 && int(obj.entities[ie].vy)==0)
                         {
                             //wait! space station 2 debug thingy
                             if (game.teleportscript != "")
@@ -1890,7 +1888,7 @@ void gameinput()
                     else if (INBOUNDS_VEC(game.activeactivity, obj.blocks))
                     {
                         enter_already_processed = true;
-                        if((int(std::abs(obj.entities[ie].vx))<=1) && (int(obj.entities[ie].vy) == 0) )
+                        if((int(SDL_fabsf(obj.entities[ie].vx))<=1) && (int(obj.entities[ie].vy) == 0) )
                         {
                             script.load(obj.blocks[game.activeactivity].script);
                             obj.removeblock(game.activeactivity);
@@ -2061,7 +2059,7 @@ void gameinput()
     }
 }
 
-void mapmenuactionpress();
+static void mapmenuactionpress();
 
 void mapinput()
 {
@@ -2119,6 +2117,7 @@ void mapinput()
         else
         {
             game.quittomenu();
+            music.play(6); //should be after game.quittomenu()
             game.fadetomenu = false;
         }
     }
@@ -2249,7 +2248,7 @@ void mapinput()
     }
 }
 
-void mapmenuactionpress()
+static void mapmenuactionpress()
 {
     switch (game.menupage)
     {
@@ -2319,9 +2318,7 @@ void mapmenuactionpress()
         //This fixes an apparent frame flicker.
         FillRect(graphics.tempBuffer, 0x000000);
         graphics.fademode = 2;
-        if (music.currentsong != 6) {
-            music.fadeout();
-        }
+        music.fadeout();
         map.nexttowercolour();
         if (!game.glitchrunnermode)
         {

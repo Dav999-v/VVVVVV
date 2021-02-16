@@ -7,30 +7,19 @@ env:
   SRC_DIR_PATH: desktop_version
 
 jobs:
-  build:
-    name: Build
+  build-mac:
+    name: Build (macos-latest)
 
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
 
     env:
       CXXFLAGS: -I/usr/local/include/SDL2
       LDFLAGS: -L/usr/local/lib
 
-    strategy:
-      matrix:
-        os: [ubuntu-18.04, macos-latest]
-
     steps:
     - uses: actions/checkout@v1
 
-    - name: Install dependencies (Linux)
-      if: startsWith(matrix.os, 'ubuntu')
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y ninja-build libsdl2-dev libsdl2-mixer-dev
-
-    - name: Install dependencies (macOS)
-      if: startsWith(matrix.os, 'macos')
+    - name: Install dependencies
       run: brew install ninja sdl2 sdl2_mixer
 
     - name: CMake configure (default version)

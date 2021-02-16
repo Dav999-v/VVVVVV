@@ -5,15 +5,26 @@
 #include <string>
 #include <vector>
 
-int ss_toi(std::string _s);
+int ss_toi(const std::string& str);
 
-std::vector<std::string> split(const std::string &s, char delim, std::vector<std::string> &elems);
+bool next_split(
+    size_t* start,
+    size_t* len,
+    const char* str,
+    const char delim
+);
 
-std::vector<std::string> split(const std::string &s, char delim);
+bool next_split_s(
+    char buffer[],
+    const size_t buffer_size,
+    size_t* start,
+    const char* str,
+    const char delim
+);
 
 bool is_number(const char* str);
 
-bool is_positive_num(const std::string& str, bool hex);
+bool is_positive_num(const char* str, const bool hex);
 
 bool endsWith(const std::string& str, const std::string& suffix);
 
@@ -39,7 +50,7 @@ public:
 
     static int Int(const char* str, int fallback = 0);
 
-    static std::string GCString(std::vector<SDL_GameControllerButton> buttons);
+    static std::string GCString(const std::vector<SDL_GameControllerButton>& buttons);
 
     std::string twodigits(int t);
 

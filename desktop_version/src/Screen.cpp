@@ -56,11 +56,11 @@ void Screen::init(const ScreenSettings& settings)
 
 	// Uncomment this next line when you need to debug -flibit
 	// SDL_SetHintWithPriority(SDL_HINT_RENDER_DRIVER, "software", SDL_HINT_OVERRIDE);
-	// FIXME: m_renderer is also created in Graphics::processVsync()!
+	// FIXME: m_renderer is also created in resetRendererWorkaround()!
 	SDL_CreateWindowAndRenderer(
 		640,
 		480,
-		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE,
+		SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI,
 		&m_window,
 		&m_renderer
 	);
@@ -79,7 +79,7 @@ void Screen::init(const ScreenSettings& settings)
 		0x000000FF,
 		0xFF000000
 	);
-	// ALSO FIXME: This SDL_CreateTexture() is duplicated in Graphics::processVsync()!
+	// ALSO FIXME: This SDL_CreateTexture() is duplicated twice in this file!
 	m_screenTexture = SDL_CreateTexture(
 		m_renderer,
 		SDL_PIXELFORMAT_ARGB8888,
@@ -91,6 +91,21 @@ void Screen::init(const ScreenSettings& settings)
 	badSignalEffect = settings.badSignal;
 
 	ResizeScreen(settings.windowWidth, settings.windowHeight);
+}
+
+void Screen::destroy()
+{
+#define X(CLEANUP, POINTER) \
+	CLEANUP(POINTER); \
+	POINTER = NULL;
+
+	/* Order matters! */
+	X(SDL_DestroyTexture, m_screenTexture);
+	X(SDL_FreeSurface, m_screen);
+	X(SDL_DestroyRenderer, m_renderer);
+	X(SDL_DestroyWindow, m_window);
+
+#undef X
 }
 
 void Screen::GetSettings(ScreenSettings* settings)
@@ -130,7 +145,7 @@ void Screen::LoadIcon()
 	);
 	SDL_SetWindowIcon(m_window, icon);
 	SDL_FreeSurface(icon);
-	free(data);
+	SDL_free(data);
 }
 
 void Screen::ResizeScreen(int x, int y)
@@ -170,7 +185,7 @@ void Screen::ResizeScreen(int x, int y)
 	if (stretchMode == 1)
 	{
 		int winX, winY;
-		SDL_GetWindowSize(m_window, &winX, &winY);
+		GetWindowSize(&winX, &winY);
 		int result = SDL_RenderSetLogicalSize(m_renderer, winX, winY);
 		if (result != 0)
 		{
@@ -256,7 +271,7 @@ void Screen::ResizeToNearestMultiple()
 
 void Screen::GetWindowSize(int* x, int* y)
 {
-	SDL_GetWindowSize(m_window, x, y);
+	SDL_GetRendererOutputSize(m_renderer, x, y);
 }
 
 void Screen::UpdateScreen(SDL_Surface* buffer, SDL_Rect* rect )

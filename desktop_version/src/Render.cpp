@@ -12,13 +12,13 @@
 #include "UtilityClass.h"
 #include "Version.h"
 
-int tr;
-int tg;
-int tb;
+static int tr;
+static int tg;
+static int tb;
 
 // Macro-like inline function used in maprender()
 // Used to keep some text positions the same in Flip Mode
-int inline FLIP(int ypos)
+static int inline FLIP(int ypos)
 {
     if (graphics.flipmode)
     {
@@ -46,7 +46,7 @@ static inline void drawslowdowntext()
     }
 }
 
-void menurender()
+static void menurender()
 {
     int temp = 50;
 
@@ -315,7 +315,7 @@ void menurender()
         graphics.Print( 40, 30, "the following patrons", tr, tg, tb, true);
 
         int startidx = game.current_credits_list_index;
-        int endidx = std::min(startidx + 9, (int)SDL_arraysize(Credits::superpatrons));
+        int endidx = VVV_min(startidx + 9, (int)SDL_arraysize(Credits::superpatrons));
 
         int xofs = 80 - 16;
         int yofs = 40 + 20;
@@ -333,7 +333,7 @@ void menurender()
         graphics.Print( -1, 20, "and also by", tr, tg, tb, true);
 
         int startidx = game.current_credits_list_index;
-        int endidx = std::min(startidx + 14, (int)SDL_arraysize(Credits::patrons));
+        int endidx = VVV_min(startidx + 14, (int)SDL_arraysize(Credits::patrons));
 
         int maxheight = 10 * 14;
         int totalheight = (endidx - startidx) * 10;
@@ -354,7 +354,7 @@ void menurender()
         graphics.Print( 40, 30, "GitHub from", tr, tg, tb, true);
 
         int startidx = game.current_credits_list_index;
-        int endidx = std::min(startidx + 9, (int)SDL_arraysize(Credits::githubfriends));
+        int endidx = VVV_min(startidx + 9, (int)SDL_arraysize(Credits::githubfriends));
 
         int maxheight = 14 * 9;
         int totalheight = (endidx - startidx) * 14;
@@ -686,22 +686,22 @@ void menurender()
     {
         graphics.bigprint( -1, 25, "GAME OVER", tr, tg, tb, true, 3);
 
-        for (int i = 0; i < 6; i++)
+        for (size_t i = 0; i < SDL_arraysize(game.ndmresultcrewstats); i++)
         {
-            graphics.drawcrewman(169-(3*42)+(i*42), 68, i, game.crewstats[i], true);
+            graphics.drawcrewman(169-(3*42)+(i*42), 68, i, game.ndmresultcrewstats[i], true);
         }
         std::string tempstring;
-        tempstring = "You rescued " + help.number(game.crewrescued()) + (game.crewrescued() == 1 ? " crewmate" : " crewmates");
+        tempstring = "You rescued " + help.number(game.ndmresultcrewrescued) + (game.ndmresultcrewrescued == 1 ? " crewmate" : " crewmates");
         graphics.Print(0, 100, tempstring, tr, tg, tb, true);
 
-        tempstring = "and found " + help.number(game.trinkets()) + (game.trinkets() == 1 ? " trinket." : " trinkets.");
+        tempstring = "and found " + help.number(game.ndmresulttrinkets) + (game.ndmresulttrinkets == 1 ? " trinket." : " trinkets.");
         graphics.Print(0, 110, tempstring, tr, tg, tb, true);
 
         tempstring = "You managed to reach:";
         graphics.Print(0, 145, tempstring, tr, tg, tb, true);
-        graphics.Print(0, 155, game.hardestroom, tr, tg, tb, true);
+        graphics.Print(0, 155, game.ndmresulthardestroom, tr, tg, tb, true);
 
-        switch (game.crewrescued())
+        switch (game.ndmresultcrewrescued)
         {
         case 1:
             tempstring = "Keep trying! You'll get there!";
@@ -731,14 +731,14 @@ void menurender()
     {
         graphics.bigprint( -1, 8, "WOW", tr, tg, tb, true, 4);
 
-        for (int i = 0; i < 6; i++)
+        for (size_t i = 0; i < SDL_arraysize(game.ndmresultcrewstats); i++)
         {
-            graphics.drawcrewman(169-(3*42)+(i*42), 68, i, game.crewstats[i], true);
+            graphics.drawcrewman(169-(3*42)+(i*42), 68, i, game.ndmresultcrewstats[i], true);
         }
         std::string tempstring = "You rescued all the crewmates!";
         graphics.Print(0, 100, tempstring, tr, tg, tb, true);
 
-        tempstring = "And you found " + help.number(game.trinkets()) + " trinkets.";
+        tempstring = "And you found " + help.number(game.ndmresulttrinkets) + " trinkets.";
         graphics.Print(0, 110, tempstring, tr, tg, tb, true);
 
         graphics.Print(0, 160, "A new trophy has been awarded and", tr, tg, tb, true);
@@ -752,30 +752,30 @@ void menurender()
     {
         graphics.bigprint( -1, 20, "Results", tr, tg, tb, true, 3);
 
-        std::string tempstring = game.resulttimestring() + " / " + game.partimestring() + ".99";
+        std::string tempstring = game.resulttimestring() + " / " + game.timetstring(game.timetrialresultpar) + ".99";
 
         graphics.drawspritesetcol(30, 80-15, 50, 22);
         graphics.Print(65, 80-15, "TIME TAKEN:", 255, 255, 255);
         graphics.Print(65, 90-15, tempstring, tr, tg, tb);
-        if (game.timetrialresulttime <= game.timetrialpar)
+        if (game.timetrialresulttime <= game.timetrialresultpar)
         {
             graphics.Print(220, 85-15, "+1 Rank!", 255, 255, 255);
         }
 
-        tempstring = help.String(game.deathcounts);
+        tempstring = help.String(game.timetrialresultdeaths);
         graphics.drawspritesetcol(30-4, 80+20-4, 12, 22);
         graphics.Print(65, 80+20, "NUMBER OF DEATHS:", 255, 255, 255);
         graphics.Print(65, 90+20, tempstring, tr, tg, tb);
-        if (game.deathcounts == 0)
+        if (game.timetrialresultdeaths == 0)
         {
             graphics.Print(220, 85+20, "+1 Rank!", 255, 255, 255);
         }
 
-        tempstring = help.String(game.trinkets()) + " of " + help.String(game.timetrialshinytarget);
+        tempstring = help.String(game.timetrialresulttrinkets) + " of " + help.String(game.timetrialresultshinytarget);
         graphics.drawspritesetcol(30, 80+55, 22, 22);
         graphics.Print(65, 80+55, "SHINY TRINKETS:", 255, 255, 255);
         graphics.Print(65, 90+55, tempstring, tr, tg, tb);
-        if (game.trinkets() >= game.timetrialshinytarget)
+        if (game.timetrialresulttrinkets >= game.timetrialresultshinytarget)
         {
             graphics.Print(220, 85+55, "+1 Rank!", 255, 255, 255);
         }

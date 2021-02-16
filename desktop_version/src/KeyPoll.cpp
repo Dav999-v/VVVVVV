@@ -45,13 +45,13 @@ KeyPoll::KeyPoll()
 	pressedbackspace=false;
 
 	useFullscreenSpaces = false;
-	if (strcmp(SDL_GetPlatform(), "Mac OS X") == 0)
+	if (SDL_strcmp(SDL_GetPlatform(), "Mac OS X") == 0)
 	{
 		useFullscreenSpaces = true;
 		const char *hint = SDL_GetHint(SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES);
 		if (hint != NULL)
 		{
-			useFullscreenSpaces = (strcmp(hint, "1") == 0);
+			useFullscreenSpaces = (SDL_strcmp(hint, "1") == 0);
 		}
 	}
 
@@ -252,7 +252,12 @@ void KeyPoll::Poll()
 			{
 			/* Window Resize */
 			case SDL_WINDOWEVENT_RESIZED:
-				resetWindow = true;
+				if (SDL_GetWindowFlags(
+					SDL_GetWindowFromID(evt.window.windowID)
+				) & SDL_WINDOW_INPUT_FOCUS)
+				{
+					resetWindow = true;
+				}
 				break;
 
 			/* Window Focus */
@@ -321,11 +326,6 @@ void KeyPoll::Poll()
 bool KeyPoll::isDown(SDL_Keycode key)
 {
 	return keymap[key];
-}
-
-bool KeyPoll::isUp(SDL_Keycode key)
-{
-	return !keymap[key];
 }
 
 bool KeyPoll::isDown(std::vector<SDL_GameControllerButton> buttons)

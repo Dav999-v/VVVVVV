@@ -2,11 +2,11 @@
 #include "Graphics.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <utf8/unchecked.h>
 
 #include "editor.h"
 #include "Entity.h"
+#include "Exit.h"
 #include "FileSystemUtils.h"
 #include "Map.h"
 #include "Music.h"
@@ -15,8 +15,6 @@
 
 void Graphics::init()
 {
-    grphx.init();
-
     flipmode = false;
     setRect(tiles_rect, 0,0,8,8);
     setRect(sprites_rect, 0,0,32,32);
@@ -150,18 +148,119 @@ void Graphics::init()
     kludgeswnlinewidth = false;
 }
 
-int Graphics::font_idx(uint32_t ch) {
-    if (font_positions.size() > 0) {
+void Graphics::destroy()
+{
+    #define CLEAR_ARRAY(name) \
+        for (size_t i = 0; i < name.size(); i += 1) \
+        { \
+            SDL_FreeSurface(name[i]); \
+        } \
+        name.clear();
+
+    CLEAR_ARRAY(tiles)
+    CLEAR_ARRAY(tiles2)
+    CLEAR_ARRAY(tiles3)
+    CLEAR_ARRAY(entcolours)
+    CLEAR_ARRAY(sprites)
+    CLEAR_ARRAY(flipsprites)
+    CLEAR_ARRAY(tele)
+    CLEAR_ARRAY(bfont)
+    CLEAR_ARRAY(flipbfont)
+
+    #undef CLEAR_ARRAY
+}
+
+void Graphics::create_buffers(const SDL_PixelFormat* fmt)
+{
+    #define CREATE_SURFACE(w, h) \
+        SDL_CreateRGBSurface( \
+            SDL_SWSURFACE, \
+            w, h, \
+            fmt->BitsPerPixel, \
+            fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask \
+        )
+    backBuffer = CREATE_SURFACE(320, 240);
+    SDL_SetSurfaceBlendMode(backBuffer, SDL_BLENDMODE_NONE);
+
+    footerbuffer = CREATE_SURFACE(320, 10);
+    SDL_SetSurfaceBlendMode(footerbuffer, SDL_BLENDMODE_BLEND);
+    SDL_SetSurfaceAlphaMod(footerbuffer, 127);
+    FillRect(footerbuffer, SDL_MapRGB(fmt, 0, 0, 0));
+
+    ghostbuffer = CREATE_SURFACE(320, 240);
+    SDL_SetSurfaceBlendMode(ghostbuffer, SDL_BLENDMODE_BLEND);
+    SDL_SetSurfaceAlphaMod(ghostbuffer, 127);
+
+    foregroundBuffer =  CREATE_SURFACE(320, 240);
+    SDL_SetSurfaceBlendMode(foregroundBuffer, SDL_BLENDMODE_BLEND);
+
+    menubuffer = CREATE_SURFACE(320, 240);
+    SDL_SetSurfaceBlendMode(menubuffer, SDL_BLENDMODE_NONE);
+
+    warpbuffer = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(warpbuffer, SDL_BLENDMODE_NONE);
+
+    warpbuffer_lerp = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(warpbuffer_lerp, SDL_BLENDMODE_NONE);
+
+    towerbg.buffer =  CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(towerbg.buffer, SDL_BLENDMODE_NONE);
+
+    towerbg.buffer_lerp = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(towerbg.buffer_lerp, SDL_BLENDMODE_NONE);
+
+    titlebg.buffer = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(titlebg.buffer, SDL_BLENDMODE_NONE);
+
+    titlebg.buffer_lerp = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(titlebg.buffer_lerp, SDL_BLENDMODE_NONE);
+
+    tempBuffer = CREATE_SURFACE(320, 240);
+    SDL_SetSurfaceBlendMode(tempBuffer, SDL_BLENDMODE_NONE);
+
+    #undef CREATE_SURFACE
+}
+
+void Graphics::destroy_buffers()
+{
+#define FREE_SURFACE(SURFACE) \
+    SDL_FreeSurface(SURFACE); \
+    SURFACE = NULL;
+
+    FREE_SURFACE(backBuffer)
+    FREE_SURFACE(footerbuffer)
+    FREE_SURFACE(ghostbuffer)
+    FREE_SURFACE(foregroundBuffer)
+    FREE_SURFACE(menubuffer)
+    FREE_SURFACE(warpbuffer)
+    FREE_SURFACE(warpbuffer_lerp)
+    FREE_SURFACE(towerbg.buffer)
+    FREE_SURFACE(towerbg.buffer_lerp)
+    FREE_SURFACE(titlebg.buffer)
+    FREE_SURFACE(titlebg.buffer_lerp)
+    FREE_SURFACE(tempBuffer)
+
+#undef FREE_SURFACE
+}
+
+int Graphics::font_idx(uint32_t ch)
+{
+    if (font_positions.size() > 0)
+    {
         std::map<int, int>::iterator iter = font_positions.find(ch);
-        if (iter == font_positions.end()) {
+        if (iter == font_positions.end())
+        {
             iter = font_positions.find('?');
-            if (iter == font_positions.end()) {
+            if (iter == font_positions.end())
+            {
                 puts("font.txt missing fallback character!");
-                exit(1);
+                VVV_exit(1);
             }
         }
         return iter->second;
-    } else {
+    }
+    else
+    {
         return ch;
     }
 }
@@ -223,7 +322,7 @@ void Graphics::updatetitlecolours()
             NULL \
         ); \
         \
-        exit(1); \
+        VVV_exit(1); \
     }
 
 #define PROCESS_TILESHEET_RENAME(tilesheet, vector, tile_square, extra_code) \
@@ -242,7 +341,10 @@ void Graphics::updatetitlecolours()
             \
             extra_code \
         } \
-    }
+    } \
+    \
+    SDL_FreeSurface(grphx.im_##tilesheet); \
+    grphx.im_##tilesheet = NULL;
 
 #define PROCESS_TILESHEET(tilesheet, tile_square, extra_code) \
     PROCESS_TILESHEET_RENAME(tilesheet, tilesheet, tile_square, extra_code)
@@ -412,7 +514,7 @@ void Graphics::bigprint(  int _x, int _y, std::string _s, int r, int g, int b, b
 
     if (cen)
     {
-        _x = std::max(160 - (int((len(_s)/ 2.0)*sc)), 0 );
+        _x = VVV_max(160 - (int((len(_s)/ 2.0)*sc)), 0 );
     }
 
     int bfontpos = 0;
@@ -453,10 +555,6 @@ int Graphics::len(std::string t)
         bfontpos += bfontlen(cur);
     }
     return bfontpos;
-}
-
-void Graphics::PrintOff( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/ ) {
-    PrintOffAlpha(_x,_y,_s,r,g,b,255,cen);
 }
 
 void Graphics::PrintOffAlpha( int _x, int _y, std::string _s, int r, int g, int b, int a, bool cen /*= false*/ )
@@ -517,40 +615,6 @@ void Graphics::bprintalpha( int x, int y, std::string t, int r, int g, int b, in
     }
 
     PrintAlpha(x, y, t, r, g, b, a, cen);
-}
-
-void Graphics::RPrint( int _x, int _y, std::string _s, int r, int g, int b, bool cen /*= false*/ )
-{
-    std::vector<SDL_Surface*>& font = flipmode ? flipbfont : bfont;
-
-    r = clamp(r,0,255);
-    g = clamp(g,0,255);
-    b = clamp(b,0,255);
-    ct.colour = getRGB(r, g, b);
-
-    if (cen)
-        _x = ((308) - (_s.length() / 2));
-    int bfontpos = 0;
-    int curr;
-    int idx;
-    std::string::iterator iter = _s.begin();
-    while (iter != _s.end()) {
-        curr = utf8::unchecked::next(iter);
-        point tpoint;
-        tpoint.x = _x + bfontpos;
-        tpoint.y = _y;
-
-        SDL_Rect fontRect = bfont_rect;
-        fontRect.x = tpoint.x ;
-        fontRect.y = tpoint.y ;
-
-        idx = font_idx(curr);
-        if (INBOUNDS_VEC(idx, font))
-        {
-            BlitSurfaceColoured( font[idx], NULL, backBuffer, &fontRect , ct);
-        }
-        bfontpos+=bfontlen(curr) ;
-    }
 }
 
 void Graphics::printcrewname( int x, int y, int t )
@@ -715,17 +779,6 @@ void Graphics::drawtile3( int x, int y, int t, int off, int height_subtract /*= 
     SDL_Rect src_rect = { 0, 0, tiles_rect.w, tiles_rect.h - height_subtract };
     SDL_Rect rect = { Sint16(x), Sint16(y), tiles_rect.w, tiles_rect.h };
     BlitSurfaceStandard(tiles3[t], &src_rect, backBuffer, &rect);
-}
-
-void Graphics::drawentcolours( int x, int y, int t)
-{
-    if (!INBOUNDS_VEC(t, entcolours))
-    {
-        WHINE_ONCE("drawentcolours() out-of-bounds!")
-        return;
-    }
-    SDL_Rect rect = { Sint16(x), Sint16(y), tiles_rect.w, tiles_rect.h };
-    BlitSurfaceStandard(entcolours[t], NULL, backBuffer, &rect);
 }
 
 void Graphics::drawtowertile( int x, int y, int t )
@@ -1027,13 +1080,13 @@ void Graphics::cutscenebarstimer()
     if (showcutscenebars)
     {
         cutscenebarspos += 25;
-        cutscenebarspos = std::min(cutscenebarspos, 361);
+        cutscenebarspos = VVV_min(cutscenebarspos, 361);
     }
     else if (cutscenebarspos > 0)
     {
         //disappearing
         cutscenebarspos -= 25;
-        cutscenebarspos = std::max(cutscenebarspos, 0);
+        cutscenebarspos = VVV_max(cutscenebarspos, 0);
     }
 }
 
@@ -1430,10 +1483,10 @@ bool Graphics::Hitest(SDL_Surface* surface1, point p1, SDL_Surface* surface2, po
 
     if(intersection)
     {
-        int r3_left = SDL_max(r1_left, r2_left);
-        int r3_top = SDL_min(r1_top, r2_top);
-        int r3_right = SDL_min(r1_right, r2_right);
-        int r3_bottom= SDL_max(r1_bottom, r2_bottom);
+        int r3_left = VVV_max(r1_left, r2_left);
+        int r3_top = VVV_min(r1_top, r2_top);
+        int r3_right = VVV_min(r1_right, r2_right);
+        int r3_bottom= VVV_max(r1_bottom, r2_bottom);
 
         //for every pixel inside rectangle
         for(int x = r3_left; x < r3_right; x++)
@@ -1981,7 +2034,7 @@ void Graphics::drawbackground( int t )
         break;
     case 2:
     {
-        int bcol, bcol2;
+        int bcol = 0, bcol2 = 0;
 
             //Lab
             switch(rcol)
@@ -2667,7 +2720,7 @@ void Graphics::setcol( int t )
 		break;
 
 		//Trophies
-		//cyan
+		//Yellow
 	case 30:
 		ct.colour = RGBf(160, 200, 220);
 		break;
@@ -2675,11 +2728,11 @@ void Graphics::setcol( int t )
 	case 31:
 		ct.colour = RGBf(220, 120, 210);
 		break;
-		//Yellow
+		//cyan
 	case 32:
 		ct.colour = RGBf(220, 210, 120);
 		break;
-		//red
+		//Blue
 	case 33:
 		ct.colour = RGBf(255, 70, 70);
 		break;
@@ -2687,7 +2740,7 @@ void Graphics::setcol( int t )
 	case 34:
 		ct.colour = RGBf(120, 220, 120);
 		break;
-		//Blue
+		//red
 	case 35:
 		ct.colour = RGBf(75, 75, 255);
 		break;
@@ -2863,18 +2916,6 @@ void Graphics::setwarprect( int a, int b, int c, int d )
 	warprect.h = d;
 }
 
-void Graphics::textboxcenter()
-{
-	if (!INBOUNDS_VEC(m, textbox))
-	{
-		puts("textboxcenter() out-of-bounds!");
-		return;
-	}
-
-	textbox[m].centerx();
-	textbox[m].centery();
-}
-
 void Graphics::textboxcenterx()
 {
 	if (!INBOUNDS_VEC(m, textbox))
@@ -2895,18 +2936,6 @@ int Graphics::textboxwidth()
 	}
 
 	return textbox[m].w;
-}
-
-void Graphics::textboxmove(int xo, int yo)
-{
-	if (!INBOUNDS_VEC(m, textbox))
-	{
-		puts("textboxmove() out-of-bounds!");
-		return;
-	}
-
-	textbox[m].xp += xo;
-	textbox[m].yp += yo;
 }
 
 void Graphics::textboxmoveto(int xo)
@@ -3044,7 +3073,7 @@ void Graphics::bigrprint(int x, int y, std::string& t, int r, int g, int b, bool
 
 	if (cen)
 	{
-		x = std::max(160 - (int((len(t)/ 2.0)*sc)), 0 );
+		x = VVV_max(160 - (int((len(t)/ 2.0)*sc)), 0 );
 	}
 	else
 	{
@@ -3220,29 +3249,12 @@ bool Graphics::onscreen(int t)
 	return (t >= -40 && t <= 280);
 }
 
-void Graphics::reloadresources() {
+void Graphics::reloadresources()
+{
 	grphx.destroy();
-	grphx = GraphicsResources();
 	grphx.init();
 
-	#define CLEAR_ARRAY(name) \
-		for (size_t i = 0; i < name.size(); i += 1) \
-		{ \
-			SDL_FreeSurface(name[i]); \
-		} \
-		name.clear();
-
-	CLEAR_ARRAY(tiles)
-	CLEAR_ARRAY(tiles2)
-	CLEAR_ARRAY(tiles3)
-	CLEAR_ARRAY(entcolours)
-	CLEAR_ARRAY(sprites)
-	CLEAR_ARRAY(flipsprites)
-	CLEAR_ARRAY(tele)
-	CLEAR_ARRAY(bfont)
-	CLEAR_ARRAY(flipbfont)
-
-	#undef CLEAR_ARRAY
+	destroy();
 
 	MakeTileArray();
 	MakeSpriteArray();
@@ -3271,6 +3283,7 @@ void Graphics::reloadresources() {
 		screenbuffer->LoadIcon();
 	}
 
+	music.destroy();
 	music.init();
 }
 
