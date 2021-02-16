@@ -372,7 +372,13 @@ void editorclass::reset()
         }
     }
 
-    SDL_zeroa(contents);
+    for (int j = 0; j < 30 * maxheight; j++)
+    {
+        for (int i = 0; i < 40 * maxwidth; i++)
+        {
+            contents[i+(j*40*maxwidth)]=0;
+        }
+    }
 
     hooklist.clear();
 
