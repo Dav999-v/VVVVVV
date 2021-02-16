@@ -619,13 +619,27 @@ std::string Graphics::unwordwrap(const std::string& _s)
     std::string::const_iterator iter = _s.begin();
     uint32_t ch;
     bool lastspace = true; // last character was a space (or the beginning, don't want leading whitespace)
+    int consecutive_newlines = 0; // number of newlines currently encountered in a row (multiple newlines should stay!)
     while (iter != _s.end())
     {
         ch = utf8::unchecked::next(iter);
 
         if (ch == '\n')
         {
-            ch = ' ';
+            if (consecutive_newlines == 0)
+            {
+                ch = ' ';
+            }
+            else if (consecutive_newlines == 1)
+            {
+                // The last character was already a newline, so change it back from the space we thought it should have become.
+                s[s.size()-1] = '\n';
+            }
+            consecutive_newlines++;
+        }
+        else
+        {
+            consecutive_newlines = 0;
         }
 
         if (ch != ' ' || !lastspace)
