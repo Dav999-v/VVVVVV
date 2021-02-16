@@ -143,10 +143,12 @@ void binaryBlob::clear()
 {
 	for (size_t i = 0; i < SDL_arraysize(m_headers); i += 1)
 	{
-		SDL_free(m_memblocks[i]);
+		if (m_headers[i].valid)
+		{
+			SDL_free(m_memblocks[i]);
+			m_headers[i].valid = false;
+		}
 	}
-	SDL_zeroa(m_memblocks);
-	SDL_zeroa(m_headers);
 }
 
 int binaryBlob::getIndex(const char* _name)
