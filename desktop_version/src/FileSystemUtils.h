@@ -2,6 +2,8 @@
 #define FILESYSTEMUTILS_H
 
 #include <stddef.h>
+#include <string>
+#include <vector>
 
 // Forward declaration, including the entirety of tinyxml2.h across all files this file is included in is unnecessary
 namespace tinyxml2 { class XMLDocument; }

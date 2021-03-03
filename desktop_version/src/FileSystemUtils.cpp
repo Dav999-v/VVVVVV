@@ -473,7 +473,6 @@ std::vector<std::string> FILESYSTEM_getLanguageCodes()
 
 	PHYSFS_freeList(fileList);
 
-	std::sort(list.begin(), list.end());
 	return list;
 }
 
