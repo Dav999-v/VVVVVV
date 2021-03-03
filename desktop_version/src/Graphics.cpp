@@ -2,11 +2,11 @@
 #include "Graphics.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <utf8/unchecked.h>
 
 #include "editor.h"
 #include "Entity.h"
+#include "Exit.h"
 #include "FileSystemUtils.h"
 #include "Localization.h"
 #include "Map.h"
@@ -14,10 +14,8 @@
 #include "Screen.h"
 #include "UtilityClass.h"
 
-void Graphics::init()
+void Graphics::init(void)
 {
-    grphx.init();
-
     flipmode = false;
     setRect(tiles_rect, 0,0,8,8);
     setRect(sprites_rect, 0,0,32,32);
@@ -151,18 +149,119 @@ void Graphics::init()
     kludgeswnlinewidth = false;
 }
 
-int Graphics::font_idx(uint32_t ch) {
-    if (font_positions.size() > 0) {
+void Graphics::destroy(void)
+{
+    #define CLEAR_ARRAY(name) \
+        for (size_t i = 0; i < name.size(); i += 1) \
+        { \
+            SDL_FreeSurface(name[i]); \
+        } \
+        name.clear();
+
+    CLEAR_ARRAY(tiles)
+    CLEAR_ARRAY(tiles2)
+    CLEAR_ARRAY(tiles3)
+    CLEAR_ARRAY(entcolours)
+    CLEAR_ARRAY(sprites)
+    CLEAR_ARRAY(flipsprites)
+    CLEAR_ARRAY(tele)
+    CLEAR_ARRAY(bfont)
+    CLEAR_ARRAY(flipbfont)
+
+    #undef CLEAR_ARRAY
+}
+
+void Graphics::create_buffers(const SDL_PixelFormat* fmt)
+{
+    #define CREATE_SURFACE(w, h) \
+        SDL_CreateRGBSurface( \
+            SDL_SWSURFACE, \
+            w, h, \
+            fmt->BitsPerPixel, \
+            fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask \
+        )
+    backBuffer = CREATE_SURFACE(320, 240);
+    SDL_SetSurfaceBlendMode(backBuffer, SDL_BLENDMODE_NONE);
+
+    footerbuffer = CREATE_SURFACE(320, 10);
+    SDL_SetSurfaceBlendMode(footerbuffer, SDL_BLENDMODE_BLEND);
+    SDL_SetSurfaceAlphaMod(footerbuffer, 127);
+    FillRect(footerbuffer, SDL_MapRGB(fmt, 0, 0, 0));
+
+    ghostbuffer = CREATE_SURFACE(320, 240);
+    SDL_SetSurfaceBlendMode(ghostbuffer, SDL_BLENDMODE_BLEND);
+    SDL_SetSurfaceAlphaMod(ghostbuffer, 127);
+
+    foregroundBuffer =  CREATE_SURFACE(320, 240);
+    SDL_SetSurfaceBlendMode(foregroundBuffer, SDL_BLENDMODE_BLEND);
+
+    menubuffer = CREATE_SURFACE(320, 240);
+    SDL_SetSurfaceBlendMode(menubuffer, SDL_BLENDMODE_NONE);
+
+    warpbuffer = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(warpbuffer, SDL_BLENDMODE_NONE);
+
+    warpbuffer_lerp = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(warpbuffer_lerp, SDL_BLENDMODE_NONE);
+
+    towerbg.buffer =  CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(towerbg.buffer, SDL_BLENDMODE_NONE);
+
+    towerbg.buffer_lerp = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(towerbg.buffer_lerp, SDL_BLENDMODE_NONE);
+
+    titlebg.buffer = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(titlebg.buffer, SDL_BLENDMODE_NONE);
+
+    titlebg.buffer_lerp = CREATE_SURFACE(320 + 16, 240 + 16);
+    SDL_SetSurfaceBlendMode(titlebg.buffer_lerp, SDL_BLENDMODE_NONE);
+
+    tempBuffer = CREATE_SURFACE(320, 240);
+    SDL_SetSurfaceBlendMode(tempBuffer, SDL_BLENDMODE_NONE);
+
+    #undef CREATE_SURFACE
+}
+
+void Graphics::destroy_buffers(void)
+{
+#define FREE_SURFACE(SURFACE) \
+    SDL_FreeSurface(SURFACE); \
+    SURFACE = NULL;
+
+    FREE_SURFACE(backBuffer)
+    FREE_SURFACE(footerbuffer)
+    FREE_SURFACE(ghostbuffer)
+    FREE_SURFACE(foregroundBuffer)
+    FREE_SURFACE(menubuffer)
+    FREE_SURFACE(warpbuffer)
+    FREE_SURFACE(warpbuffer_lerp)
+    FREE_SURFACE(towerbg.buffer)
+    FREE_SURFACE(towerbg.buffer_lerp)
+    FREE_SURFACE(titlebg.buffer)
+    FREE_SURFACE(titlebg.buffer_lerp)
+    FREE_SURFACE(tempBuffer)
+
+#undef FREE_SURFACE
+}
+
+int Graphics::font_idx(uint32_t ch)
+{
+    if (font_positions.size() > 0)
+    {
         std::map<int, int>::iterator iter = font_positions.find(ch);
-        if (iter == font_positions.end()) {
+        if (iter == font_positions.end())
+        {
             iter = font_positions.find('?');
-            if (iter == font_positions.end()) {
+            if (iter == font_positions.end())
+            {
                 puts("font.txt missing fallback character!");
-                exit(1);
+                VVV_exit(1);
             }
         }
         return iter->second;
-    } else {
+    }
+    else
+    {
         return ch;
     }
 }
@@ -180,7 +279,7 @@ void Graphics::drawspritesetcol(int x, int y, int t, int c)
     BlitSurfaceColoured(sprites[t],NULL,backBuffer, &rect, ct);
 }
 
-void Graphics::updatetitlecolours()
+void Graphics::updatetitlecolours(void)
 {
     setcol(15);
     col_crewred = ct.colour;
@@ -224,7 +323,7 @@ void Graphics::updatetitlecolours()
             NULL \
         ); \
         \
-        exit(1); \
+        VVV_exit(1); \
     }
 
 #define PROCESS_TILESHEET_RENAME(tilesheet, vector, tile_square, extra_code) \
@@ -243,12 +342,15 @@ void Graphics::updatetitlecolours()
             \
             extra_code \
         } \
-    }
+    } \
+    \
+    SDL_FreeSurface(grphx.im_##tilesheet); \
+    grphx.im_##tilesheet = NULL;
 
 #define PROCESS_TILESHEET(tilesheet, tile_square, extra_code) \
     PROCESS_TILESHEET_RENAME(tilesheet, tilesheet, tile_square, extra_code)
 
-void Graphics::Makebfont()
+void Graphics::Makebfont(void)
 {
     PROCESS_TILESHEET(bfont, 8,
     {
@@ -290,7 +392,7 @@ int Graphics::bfontlen(uint32_t ch)
     }
 }
 
-void Graphics::MakeTileArray()
+void Graphics::MakeTileArray(void)
 {
     PROCESS_TILESHEET(tiles, 8, )
     PROCESS_TILESHEET(tiles2, 8, )
@@ -298,12 +400,12 @@ void Graphics::MakeTileArray()
     PROCESS_TILESHEET(entcolours, 8, )
 }
 
-void Graphics::maketelearray()
+void Graphics::maketelearray(void)
 {
     PROCESS_TILESHEET_RENAME(teleporter, tele, 96, )
 }
 
-void Graphics::MakeSpriteArray()
+void Graphics::MakeSpriteArray(void)
 {
     PROCESS_TILESHEET(sprites, 32, )
     PROCESS_TILESHEET(flipsprites, 32, )
@@ -442,16 +544,6 @@ void Graphics::bigprint(  int _x, int _y, std::string _s, int r, int g, int b, b
     std::string::iterator iter = _s.begin();
     while (iter != _s.end()) {
         curr = utf8::unchecked::next(iter);
-
-        /*
-        point tpoint;
-        tpoint.x = _x + bfontpos;
-        tpoint.y = _y;
-
-        SDL_Rect fontRect = bfont_rect;
-        fontRect.x = tpoint.x ;
-        fontRect.y = tpoint.y ;
-        */
 
         idx = font_idx(curr);
         if (INBOUNDS_VEC(idx, font))
@@ -911,7 +1003,7 @@ void Graphics::drawtowertile3( int x, int y, int t, TowerBG& bg_obj )
     BlitSurfaceStandard(tiles3[t], NULL, bg_obj.buffer, &rect);
 }
 
-void Graphics::drawgui()
+void Graphics::drawgui(void)
 {
     //Draw all the textboxes to the screen
     for (size_t i = 0; i<textbox.size(); i++)
@@ -1058,7 +1150,7 @@ void Graphics::drawgui()
     }
 }
 
-void Graphics::updatetextboxes()
+void Graphics::updatetextboxes(void)
 {
     for (size_t i = 0; i < textbox.size(); i++)
     {
@@ -1160,7 +1252,7 @@ void Graphics::drawpartimage( int t, int xp, int yp, int wp, int hp)
   BlitSurfaceStandard(images[t], &trect2, backBuffer, &trect);
 }
 
-void Graphics::cutscenebars()
+void Graphics::cutscenebars(void)
 {
     int usethispos = lerp(oldcutscenebarspos, cutscenebarspos);
     if (showcutscenebars)
@@ -1176,7 +1268,7 @@ void Graphics::cutscenebars()
     }
 }
 
-void Graphics::cutscenebarstimer()
+void Graphics::cutscenebarstimer(void)
 {
     oldcutscenebarspos = cutscenebarspos;
     if (showcutscenebars)
@@ -1332,7 +1424,7 @@ void Graphics::drawtextbox( int x, int y, int w, int h, int r, int g, int b )
     }
 }
 
-void Graphics::textboxactive()
+void Graphics::textboxactive(void)
 {
     //Remove all but the most recent textbox
     for (int i = 0; i < (int) textbox.size(); i++)
@@ -1341,7 +1433,7 @@ void Graphics::textboxactive()
     }
 }
 
-void Graphics::textboxremovefast()
+void Graphics::textboxremovefast(void)
 {
     //Remove all textboxes
     for (size_t i = 0; i < textbox.size(); i++)
@@ -1350,7 +1442,7 @@ void Graphics::textboxremovefast()
     }
 }
 
-void Graphics::textboxremove()
+void Graphics::textboxremove(void)
 {
     //Remove all textboxes
     for (size_t i = 0; i < textbox.size(); i++)
@@ -1381,7 +1473,7 @@ void Graphics::addline( std::string t )
     textbox[m].addline(t);
 }
 
-void Graphics::textboxadjust()
+void Graphics::textboxadjust(void)
 {
     if (!INBOUNDS_VEC(m, textbox))
     {
@@ -1411,12 +1503,12 @@ void Graphics::createtextbox( std::string t, int xp, int yp, int r/*= 255*/, int
     }
 }
 
-void Graphics::drawfade()
+void Graphics::drawfade(void)
 {
     int usethisamount = lerp(oldfadeamount, fadeamount);
     if ((fademode == 1)||(fademode == 4))
     {
-        FillRect(backBuffer, 0, 0, backBuffer->w, backBuffer->h, 0x000000);
+        ClearSurface(backBuffer);
     }
     else if(fademode==3)
     {
@@ -1435,7 +1527,7 @@ void Graphics::drawfade()
 
 }
 
-void Graphics::processfade()
+void Graphics::processfade(void)
 {
     oldfadeamount = fadeamount;
     if (fademode > 1)
@@ -1654,7 +1746,7 @@ void Graphics::drawgravityline( int t )
     }
 }
 
-void Graphics::drawtrophytext()
+void Graphics::drawtrophytext(void)
 {
     int temp, temp2, temp3;
 
@@ -1742,7 +1834,7 @@ void Graphics::drawtrophytext()
     }
 }
 
-void Graphics::drawentities()
+void Graphics::drawentities(void)
 {
     const int yoff = map.towermode ? lerp(map.oldypos, map.ypos) : 0;
 
@@ -2113,7 +2205,7 @@ void Graphics::drawbackground( int t )
     {
     case 1:
         //Starfield
-        FillRect(backBuffer,0x00000);
+        ClearSurface(backBuffer);
         for (int i = 0; i < numstars; i++)
         {
             stars[i].w = 2;
@@ -2282,13 +2374,13 @@ void Graphics::drawbackground( int t )
         break;
     }
     case 3: //Warp zone (horizontal)
-        FillRect(backBuffer, 0x000000);
+        ClearSurface(backBuffer);
         BlitSurfaceStandard(warpbuffer, NULL, warpbuffer_lerp, NULL);
         ScrollSurface(warpbuffer_lerp, lerp(0, -3), 0);
         BlitSurfaceStandard(warpbuffer_lerp, &towerbuffer_rect, backBuffer, NULL);
         break;
     case 4: //Warp zone (vertical)
-        FillRect(backBuffer, 0x000000);
+        ClearSurface(backBuffer);
         SDL_BlitSurface(warpbuffer, NULL, warpbuffer_lerp, NULL);
         ScrollSurface(warpbuffer_lerp, 0, lerp(0, -3));
         SDL_BlitSurface(warpbuffer_lerp, &towerbuffer_rect, backBuffer, NULL);
@@ -2347,7 +2439,7 @@ void Graphics::drawbackground( int t )
         break;
     case 6:
         //Final Starfield
-        FillRect(backBuffer,0x000000);
+        ClearSurface(backBuffer);
         for (int i = 0; i < numstars; i++)
         {
             stars[i].w = 2;
@@ -2395,7 +2487,7 @@ void Graphics::drawbackground( int t )
         }
         break;
     default:
-        FillRect(backBuffer, 0x000000 );
+        ClearSurface(backBuffer);
 
         break;
     }
@@ -2484,7 +2576,7 @@ void Graphics::updatebackground(int t)
         {
             //draw the whole thing for the first time!
             backoffset = 0;
-            FillRect(warpbuffer, 0x000000);
+            ClearSurface(warpbuffer);
             for (int j = 0; j < 15; j++)
             {
                 for (int i = 0; i < 21; i++)
@@ -2523,7 +2615,7 @@ void Graphics::updatebackground(int t)
         {
             //draw the whole thing for the first time!
             backoffset = 0;
-            FillRect(warpbuffer,0x000000 );
+            ClearSurface(warpbuffer);
             for (int j = 0; j < 16; j++)
             {
                 for (int i = 0; i < 21; i++)
@@ -2566,11 +2658,11 @@ void Graphics::updatebackground(int t)
     }
 }
 
-void Graphics::drawmap()
+void Graphics::drawmap(void)
 {
     if (!foregrounddrawn)
     {
-        FillRect(foregroundBuffer, 0x00000000);
+        ClearSurface(foregroundBuffer);
         if(map.tileset==0)
         {
             for (int j = 0; j < 30; j++)
@@ -2607,10 +2699,10 @@ void Graphics::drawmap()
 
 }
 
-void Graphics::drawfinalmap()
+void Graphics::drawfinalmap(void)
 {
     if (!foregrounddrawn) {
-        FillRect(foregroundBuffer, 0x00000000);
+        ClearSurface(foregroundBuffer);
         if(map.tileset==0){
             for (int j = 0; j < 30; j++) {
                 for (int i = 0; i < 40; i++) {
@@ -2632,7 +2724,7 @@ void Graphics::drawfinalmap()
     SDL_BlitSurface(foregroundBuffer, NULL, backBuffer, NULL);
 }
 
-void Graphics::drawtowermap()
+void Graphics::drawtowermap(void)
 {
     int temp;
     int yoff = lerp(map.oldypos, map.ypos);
@@ -2646,7 +2738,7 @@ void Graphics::drawtowermap()
     }
 }
 
-void Graphics::drawtowerspikes()
+void Graphics::drawtowerspikes(void)
 {
     int spikeleveltop = lerp(map.oldspikeleveltop, map.spikeleveltop);
     int spikelevelbottom = lerp(map.oldspikelevelbottom, map.spikelevelbottom);
@@ -2659,7 +2751,7 @@ void Graphics::drawtowerspikes()
 
 void Graphics::drawtowerbackground(const TowerBG& bg_obj)
 {
-    FillRect(backBuffer, 0x000000);
+    ClearSurface(backBuffer);
     SDL_BlitSurface(bg_obj.buffer, NULL, bg_obj.buffer_lerp, NULL);
     ScrollSurface(bg_obj.buffer_lerp, 0, lerp(0, -bg_obj.bscroll));
     SDL_BlitSurface(bg_obj.buffer_lerp, &towerbuffer_rect, backBuffer, NULL);
@@ -2918,7 +3010,7 @@ void Graphics::setcol( int t )
 	}
 }
 
-void Graphics::menuoffrender()
+void Graphics::menuoffrender(void)
 {
 	SDL_Rect offsetRect1;
 	setRect (offsetRect1, 0, 0, backBuffer->w ,backBuffer->h);
@@ -2931,12 +3023,9 @@ void Graphics::menuoffrender()
 	int usethisoffset = lerp(oldmenuoffset, menuoffset);
 	if(flipmode)
 	{
-		//	flipmatrix.translate(0, menuoffset);
-		//	screenbuffer.draw(backbuffer, flipmatrix);
-		//	flipmatrix.translate(0, -menuoffset);
 		SDL_Surface* tempbufferFlipped = FlipSurfaceVerticle(tempBuffer);
 		//put the stored backbuffer in the backbuffer.
-		SDL_FillRect(backBuffer, NULL, 0x00000000);
+		ClearSurface(backBuffer);
 		BlitSurfaceStandard(tempbufferFlipped, NULL, backBuffer, NULL);
 		SDL_FreeSurface(tempbufferFlipped);
 		SDL_Rect offsetRect;
@@ -2958,7 +3047,7 @@ void Graphics::menuoffrender()
 	SDL_Rect rect;
 	setRect(rect, 0, 0, backBuffer->w, backBuffer->h);
 	screenbuffer->UpdateScreen(backBuffer,&rect);
-	FillRect(backBuffer, 0x000000);
+	ClearSurface(backBuffer);
 }
 
 void Graphics::drawhuetile( int x, int y, int t )
@@ -3014,7 +3103,7 @@ void Graphics::setwarprect( int a, int b, int c, int d )
 	warprect.h = d;
 }
 
-void Graphics::textboxcenterx()
+void Graphics::textboxcenterx(void)
 {
 	if (!INBOUNDS_VEC(m, textbox))
 	{
@@ -3025,7 +3114,7 @@ void Graphics::textboxcenterx()
 	textbox[m].centerx();
 }
 
-int Graphics::textboxwidth()
+int Graphics::textboxwidth(void)
 {
 	if (!INBOUNDS_VEC(m, textbox))
 	{
@@ -3047,7 +3136,7 @@ void Graphics::textboxmoveto(int xo)
 	textbox[m].xp = xo;
 }
 
-void Graphics::textboxcentery()
+void Graphics::textboxcentery(void)
 {
 	if (!INBOUNDS_VEC(m, textbox))
 	{
@@ -3070,20 +3159,15 @@ int Graphics::crewcolour(const int t)
 	return 0;
 }
 
-void Graphics::flashlight()
+void Graphics::flashlight(void)
 {
 	FillRect(backBuffer, 0xBBBBBBBB);
 }
 
-void Graphics::screenshake()
+void Graphics::screenshake(void)
 {
 	if(flipmode)
 	{
-		//	tpoint.x = int((Math.random() * 7) - 4); tpoint.y = int((Math.random() * 7) - 4);
-		//	flipmatrix.translate(tpoint.x, tpoint.y);
-		//	screenbuffer.draw(backbuffer, flipmatrix);
-		//	flipmatrix.translate(-tpoint.x, -tpoint.y);
-
 		SDL_Rect shakeRect;
 		setRect(shakeRect,screenshake_x, screenshake_y, backBuffer->w, backBuffer->h);
 		SDL_Surface* flipBackBuffer = FlipSurfaceVerticle(backBuffer);
@@ -3092,25 +3176,21 @@ void Graphics::screenshake()
 	}
 	else
 	{
-		//FillRect(screenbuffer, 0x000);
-		//SDL_Rect rect;
-		//setRect(rect, blackBars/2, 0, screenbuffer->w, screenbuffer->h);
-		//SDL_BlitSurface(backBuffer, NULL, screenbuffer, &rect);
 		SDL_Rect shakeRect;
 		setRect(shakeRect,screenshake_x, screenshake_y, backBuffer->w, backBuffer->h);
 		screenbuffer->UpdateScreen( backBuffer, &shakeRect);
 	}
 
-	FillRect(backBuffer, 0x000000 );
+	ClearSurface(backBuffer);
 }
 
-void Graphics::updatescreenshake()
+void Graphics::updatescreenshake(void)
 {
 	screenshake_x =  static_cast<Sint32>((fRandom() * 7) - 4);
 	screenshake_y =  static_cast<Sint32>((fRandom() * 7) - 4);
 }
 
-void Graphics::render()
+void Graphics::render(void)
 {
 	if(screenbuffer == NULL)
 	{
@@ -3120,8 +3200,6 @@ void Graphics::render()
 	{
 		SDL_Rect rect;
 		setRect(rect, 0, 0, backBuffer->w, backBuffer->h);
-		//setRect(rect, 0, 0, backBuffer->w, backBuffer->h);
-		//SDL_BlitSurface(backBuffer, NULL, screenbuffer, &rect);
 		SDL_Surface* tempsurface = FlipSurfaceVerticle(backBuffer);
 		if(tempsurface != NULL)
 		{
@@ -3133,13 +3211,11 @@ void Graphics::render()
 	{
 		SDL_Rect rect;
 		setRect(rect, 0, 0, backBuffer->w, backBuffer->h);
-		//setRect(rect, 0, 0, backBuffer->w, backBuffer->h);
-		//SDL_BlitSurface(backBuffer, NULL, screenbuffer, &rect);
 		screenbuffer->UpdateScreen( backBuffer, &rect);
 	}
 }
 
-void Graphics::renderwithscreeneffects()
+void Graphics::renderwithscreeneffects(void)
 {
 	if (game.flashlight > 0 && !game.noflashingmode)
 	{
@@ -3347,29 +3423,12 @@ bool Graphics::onscreen(int t)
 	return (t >= -40 && t <= 280);
 }
 
-void Graphics::reloadresources() {
+void Graphics::reloadresources()
+{
 	grphx.destroy();
-	grphx = GraphicsResources();
 	grphx.init();
 
-	#define CLEAR_ARRAY(name) \
-		for (size_t i = 0; i < name.size(); i += 1) \
-		{ \
-			SDL_FreeSurface(name[i]); \
-		} \
-		name.clear();
-
-	CLEAR_ARRAY(tiles)
-	CLEAR_ARRAY(tiles2)
-	CLEAR_ARRAY(tiles3)
-	CLEAR_ARRAY(entcolours)
-	CLEAR_ARRAY(sprites)
-	CLEAR_ARRAY(flipsprites)
-	CLEAR_ARRAY(tele)
-	CLEAR_ARRAY(bfont)
-	CLEAR_ARRAY(flipbfont)
-
-	#undef CLEAR_ARRAY
+	destroy();
 
 	MakeTileArray();
 	MakeSpriteArray();
@@ -3398,6 +3457,7 @@ void Graphics::reloadresources() {
 		screenbuffer->LoadIcon();
 	}
 
+	music.destroy();
 	music.init();
 }
 

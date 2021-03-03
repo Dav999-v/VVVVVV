@@ -174,7 +174,7 @@ static void updatebuttonmappings(int bind)
     }
 }
 
-static void menuactionpress()
+static void menuactionpress(void)
 {
     switch (game.currentmenuname)
     {
@@ -1677,7 +1677,7 @@ static void menuactionpress()
     }
 }
 
-void titleinput()
+void titleinput(void)
 {
     //game.mx = (mouseX / 4);
     //game.my = (mouseY / 4);
@@ -1776,7 +1776,7 @@ void titleinput()
         script.startgamemode(game.mainmenu);
 }
 
-void gameinput()
+void gameinput(void)
 {
     //TODO mouse input
     //game.mx = (mouseX / 2);
@@ -1961,7 +1961,7 @@ void gameinput()
                         if((int(SDL_fabsf(obj.entities[ie].vx))<=1) && (int(obj.entities[ie].vy) == 0) )
                         {
                             script.load(obj.blocks[game.activeactivity].script);
-                            obj.removeblock(game.activeactivity);
+                            obj.disableblock(game.activeactivity);
                             game.activeactivity = -1;
                         }
                     }
@@ -2129,9 +2129,9 @@ void gameinput()
     }
 }
 
-static void mapmenuactionpress();
+static void mapmenuactionpress(void);
 
-void mapinput()
+void mapinput(void)
 {
     //TODO Mouse Input!
     //game.mx = (mouseX / 2);
@@ -2318,7 +2318,7 @@ void mapinput()
     }
 }
 
-static void mapmenuactionpress()
+static void mapmenuactionpress(void)
 {
     switch (game.menupage)
     {
@@ -2386,7 +2386,7 @@ static void mapmenuactionpress()
 
         //Kill contents of offset render buffer, since we do that for some reason.
         //This fixes an apparent frame flicker.
-        FillRect(graphics.tempBuffer, 0x000000);
+        ClearSurface(graphics.tempBuffer);
         graphics.fademode = 2;
         music.fadeout();
         map.nexttowercolour();
@@ -2450,7 +2450,7 @@ static void mapmenuactionpress()
     }
 }
 
-void teleporterinput()
+void teleporterinput(void)
 {
     //Todo Mouseinput!
     //game.mx = (mouseX / 2);
@@ -2583,7 +2583,7 @@ void teleporterinput()
     }
 }
 
-void gamecompleteinput()
+void gamecompleteinput(void)
 {
     game.press_left = false;
     game.press_right = false;
@@ -2632,7 +2632,7 @@ void gamecompleteinput()
     }
 }
 
-void gamecompleteinput2()
+void gamecompleteinput2(void)
 {
     game.press_left = false;
     game.press_right = false;

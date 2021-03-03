@@ -1,6 +1,7 @@
 #include "Screen.h"
 
-#include <stdlib.h>
+#include <SDL.h>
+#include <stdio.h>
 
 #include "FileSystemUtils.h"
 #include "GraphicsUtil.h"
@@ -17,7 +18,7 @@ extern "C"
 	);
 }
 
-ScreenSettings::ScreenSettings()
+ScreenSettings::ScreenSettings(void)
 {
 	windowWidth = 320;
 	windowHeight = 240;
@@ -56,7 +57,7 @@ void Screen::init(const ScreenSettings& settings)
 
 	// Uncomment this next line when you need to debug -flibit
 	// SDL_SetHintWithPriority(SDL_HINT_RENDER_DRIVER, "software", SDL_HINT_OVERRIDE);
-	// FIXME: m_renderer is also created in Graphics::processVsync()!
+	// FIXME: m_renderer is also created in resetRendererWorkaround()!
 	SDL_CreateWindowAndRenderer(
 		640,
 		480,
@@ -79,7 +80,7 @@ void Screen::init(const ScreenSettings& settings)
 		0x000000FF,
 		0xFF000000
 	);
-	// ALSO FIXME: This SDL_CreateTexture() is duplicated in Graphics::processVsync()!
+	// ALSO FIXME: This SDL_CreateTexture() is duplicated twice in this file!
 	m_screenTexture = SDL_CreateTexture(
 		m_renderer,
 		SDL_PIXELFORMAT_ARGB8888,
@@ -91,6 +92,21 @@ void Screen::init(const ScreenSettings& settings)
 	badSignalEffect = settings.badSignal;
 
 	ResizeScreen(settings.windowWidth, settings.windowHeight);
+}
+
+void Screen::destroy(void)
+{
+#define X(CLEANUP, POINTER) \
+	CLEANUP(POINTER); \
+	POINTER = NULL;
+
+	/* Order matters! */
+	X(SDL_DestroyTexture, m_screenTexture);
+	X(SDL_FreeSurface, m_screen);
+	X(SDL_DestroyRenderer, m_renderer);
+	X(SDL_DestroyWindow, m_window);
+
+#undef X
 }
 
 void Screen::GetSettings(ScreenSettings* settings)
@@ -108,7 +124,7 @@ void Screen::GetSettings(ScreenSettings* settings)
 	settings->badSignal = badSignalEffect;
 }
 
-void Screen::LoadIcon()
+void Screen::LoadIcon(void)
 {
 	unsigned char *fileIn = NULL;
 	size_t length = 0;
@@ -197,7 +213,7 @@ void Screen::ResizeScreen(int x, int y)
 	SDL_ShowWindow(m_window);
 }
 
-void Screen::ResizeToNearestMultiple()
+void Screen::ResizeToNearestMultiple(void)
 {
 	int w, h;
 	GetWindowSize(&w, &h);
@@ -272,7 +288,7 @@ void Screen::UpdateScreen(SDL_Surface* buffer, SDL_Rect* rect )
 	}
 
 
-	FillRect(m_screen, 0x000);
+	ClearSurface(m_screen);
 	BlitSurfaceStandard(buffer,NULL,m_screen,rect);
 
 	if(badSignalEffect)
@@ -282,12 +298,12 @@ void Screen::UpdateScreen(SDL_Surface* buffer, SDL_Rect* rect )
 
 }
 
-const SDL_PixelFormat* Screen::GetFormat()
+const SDL_PixelFormat* Screen::GetFormat(void)
 {
 	return m_screen->format;
 }
 
-void Screen::FlipScreen()
+void Screen::FlipScreen(void)
 {
 	SDL_UpdateTexture(
 		m_screenTexture,
@@ -303,22 +319,22 @@ void Screen::FlipScreen()
 	);
 	SDL_RenderPresent(m_renderer);
 	SDL_RenderClear(m_renderer);
-	SDL_FillRect(m_screen, NULL, 0x00000000);
+	ClearSurface(m_screen);
 }
 
-void Screen::toggleFullScreen()
+void Screen::toggleFullScreen(void)
 {
 	isWindowed = !isWindowed;
 	ResizeScreen(-1, -1);
 }
 
-void Screen::toggleStretchMode()
+void Screen::toggleStretchMode(void)
 {
 	stretchMode = (stretchMode + 1) % 3;
 	ResizeScreen(-1, -1);
 }
 
-void Screen::toggleLinearFilter()
+void Screen::toggleLinearFilter(void)
 {
 	isFiltered = !isFiltered;
 	SDL_SetHintWithPriority(
@@ -336,7 +352,7 @@ void Screen::toggleLinearFilter()
 	);
 }
 
-void Screen::resetRendererWorkaround()
+void Screen::resetRendererWorkaround(void)
 {
 	SDL_SetHintWithPriority(
 		SDL_HINT_RENDER_VSYNC,

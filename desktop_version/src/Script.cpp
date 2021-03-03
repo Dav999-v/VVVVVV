@@ -1,22 +1,20 @@
 #define SCRIPT_DEFINITION
 #include "Script.h"
 
+#include <limits.h>
+
 #include "editor.h"
 #include "Entity.h"
 #include "Enums.h"
+#include "Exit.h"
 #include "Graphics.h"
 #include "KeyPoll.h"
 #include "Map.h"
 #include "Music.h"
 #include "UtilityClass.h"
 
-#include <limits.h>
-
-scriptclass::scriptclass()
+scriptclass::scriptclass(void)
 {
-	//Start SDL
-
-	//Init
 	position = 0;
 	scriptdelay = 0;
 	running = false;
@@ -34,7 +32,8 @@ scriptclass::scriptclass()
 	texty = 0;
 }
 
-void scriptclass::clearcustom(){
+void scriptclass::clearcustom(void)
+{
 	customscripts.clear();
 }
 
@@ -77,7 +76,7 @@ void scriptclass::tokenize( const std::string& t )
 	}
 }
 
-void scriptclass::run()
+void scriptclass::run(void)
 {
 	if (!running)
 	{
@@ -168,16 +167,16 @@ void scriptclass::run()
 			{
 				if(words[1]=="gravitylines"){
 					for(size_t edi=0; edi<obj.entities.size(); edi++){
-						if(obj.entities[edi].type==9) removeentity_iter(edi);
-						if(obj.entities[edi].type==10) removeentity_iter(edi);
+						if(obj.entities[edi].type==9) obj.disableentity(edi);
+						if(obj.entities[edi].type==10) obj.disableentity(edi);
 					}
 				}else if(words[1]=="warptokens"){
 					for(size_t edi=0; edi<obj.entities.size(); edi++){
-						if(obj.entities[edi].type==11) removeentity_iter(edi);
+						if(obj.entities[edi].type==11) obj.disableentity(edi);
 					}
 				}else if(words[1]=="platforms"){
 					for(size_t edi=0; edi<obj.entities.size(); edi++){
-						if(obj.entities[edi].rule==2 && obj.entities[edi].animate==100) removeentity_iter(edi);
+						if(obj.entities[edi].rule==2 && obj.entities[edi].animate==100) obj.disableentity(edi);
 					}
 				}
 			}
@@ -2625,7 +2624,7 @@ void scriptclass::run()
 	}
 }
 
-void scriptclass::resetgametomenu()
+void scriptclass::resetgametomenu(void)
 {
 	obj.entities.clear();
 	game.quittomenu();
@@ -3396,15 +3395,12 @@ void scriptclass::startgamemode( int t )
 	}
 #endif
 	case 100:
-		game.savestatsandsettings();
-
-		SDL_Quit();
-		exit(0);
+		VVV_exit(0);
 		break;
 	}
 }
 
-void scriptclass::teleport()
+void scriptclass::teleport(void)
 {
 	//er, ok! Teleport to a new area, so!
 	//A general rule of thumb: if you teleport with a companion, get rid of them!
@@ -3530,7 +3526,7 @@ void scriptclass::teleport()
 	}
 }
 
-void scriptclass::hardreset()
+void scriptclass::hardreset(void)
 {
 	//Game:
 	game.hascontrol = true;
@@ -3705,13 +3701,12 @@ void scriptclass::hardreset()
 		obj.entities[theplayer].tile = 0;
 	}
 
-	// Remove duplicate player entities
+	/* Disable duplicate player entities */
 	for (int i = 0; i < (int) obj.entities.size(); i++)
 	{
 		if (obj.entities[i].rule == 0 && i != theplayer)
 		{
-			removeentity_iter(i);
-			theplayer--; // just in case indice of player is not 0
+			obj.disableentity(i);
 		}
 	}
 

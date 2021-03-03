@@ -12,7 +12,7 @@ static int pre_darkcol=0, pre_lightcol=0, pre_curcol=0, pre_coltimer=0, pre_offs
 static int pre_frontrectx=30, pre_frontrecty=20, pre_frontrectw=260, pre_frontrecth=200;
 static int pre_temprectx=0, pre_temprecty=0, pre_temprectw=320, pre_temprecth=240;
 
-void preloaderinput()
+void preloaderinput(void)
 {
   game.press_action = false;
 
@@ -27,7 +27,7 @@ void preloaderinput()
   }
 }
 
-void preloaderrenderfixed()
+void preloaderrenderfixed(void)
 {
   if (pre_transition < 30) pre_transition--;
   if(pre_transition>=30){
@@ -50,7 +50,7 @@ void preloaderrenderfixed()
   }
 }
 
-void preloaderrender()
+void preloaderrender(void)
 {
   bool print_percentage = false;
 
@@ -109,7 +109,7 @@ void preloaderrender()
   }else if (pre_transition <= -10) {
     //Switch to TITLEMODE (handled by preloaderrenderfixed)
   }else if (pre_transition < 5) {
-    FillRect(graphics.backBuffer, 0, 0, 320,240, graphics.getBGR(0,0,0));
+    ClearSurface(graphics.backBuffer);
   }else if (pre_transition < 20) {
     pre_temprecty = 0;
     pre_temprecth = 240;

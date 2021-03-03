@@ -3,6 +3,7 @@
 #define ED_DEFINITION
 #include "editor.h"
 
+#include <algorithm>
 #include <physfs.h>
 #include <stdio.h>
 #include <string>
@@ -29,7 +30,7 @@
 #endif
 #include <inttypes.h>
 
-edlevelclass::edlevelclass()
+edlevelclass::edlevelclass(void)
 {
     tileset=0;
     tilecol=0;
@@ -47,7 +48,7 @@ edlevelclass::edlevelclass()
     directmode=0;
 }
 
-editorclass::editorclass()
+editorclass::editorclass(void)
 {
     //We create a blank map
     SDL_memset(contents, 0, sizeof(contents));
@@ -96,27 +97,29 @@ std::string translate_creator(std::string& creator)
     return creator;
 }
 
-void editorclass::loadZips()
+static void levelZipCallback(const char* filename)
 {
-    directoryList = FILESYSTEM_getLevelDirFileNames();
-    bool needsReload = false;
-
-    for(size_t i = 0; i < directoryList.size(); i++)
+    if (endsWith(filename, ".zip"))
     {
-        if (endsWith(directoryList[i], ".zip")) {
-            PHYSFS_File* zip = PHYSFS_openRead(directoryList[i].c_str());
-            if (!PHYSFS_mountHandle(zip, directoryList[i].c_str(), "levels", 1)) {
-                printf("%s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-            } else {
-                needsReload = true;
-            }
+        PHYSFS_File* zip = PHYSFS_openRead(filename);
+
+        if (!PHYSFS_mountHandle(zip, filename, "levels", 1))
+        {
+            printf(
+                "Could not mount %s: %s\n",
+                filename,
+                PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())
+            );
         }
     }
-
-    if (needsReload) directoryList = FILESYSTEM_getLevelDirFileNames();
 }
 
-void replace_all(std::string& str, const std::string& from, const std::string& to)
+void editorclass::loadZips(void)
+{
+    FILESYSTEM_enumerateLevelDirFileNames(levelZipCallback);
+}
+
+static void replace_all(std::string& str, const std::string& from, const std::string& to)
 {
     if (from.empty())
     {
@@ -132,7 +135,7 @@ void replace_all(std::string& str, const std::string& from, const std::string& t
     }
 }
 
-std::string find_tag(const std::string& buf, const std::string& start, const std::string& end)
+static std::string find_tag(const std::string& buf, const std::string& start, const std::string& end)
 {
     size_t tag = buf.find(start);
 
@@ -181,7 +184,7 @@ std::string find_tag(const std::string& buf, const std::string& start, const std
         size_t real_start = start_pos + 2 + ((int) hex);
         std::string number(value.substr(real_start, end - real_start));
 
-        if (!is_positive_num(number, hex))
+        if (!is_positive_num(number.c_str(), hex))
         {
             return "";
         }
@@ -205,7 +208,7 @@ std::string find_tag(const std::string& buf, const std::string& start, const std
 }
 
 #define TAG_FINDER(NAME, TAG) \
-std::string NAME(const std::string& buf) \
+static std::string NAME(const std::string& buf) \
 { \
     return find_tag(buf, "<" TAG ">", "</" TAG ">"); \
 }
@@ -221,27 +224,29 @@ TAG_FINDER(find_website, "website");
 
 #undef TAG_FINDER
 
-void editorclass::getDirectoryData()
+static void levelMetaDataCallback(const char* filename)
+{
+    extern editorclass ed;
+    LevelMetaData temp;
+    std::string filename_ = filename;
+
+    if (ed.getLevelMetaData(filename_, temp))
+    {
+        temp.title = translate_title(temp.title);
+        temp.creator = translate_creator(temp.creator);
+
+        ed.ListOfMetaData.push_back(temp);
+    }
+}
+
+void editorclass::getDirectoryData(void)
 {
 
     ListOfMetaData.clear();
-    directoryList.clear();
 
     loadZips();
 
-    directoryList = FILESYSTEM_getLevelDirFileNames();
-
-    for(size_t i = 0; i < directoryList.size(); i++)
-    {
-        LevelMetaData temp;
-        if (getLevelMetaData( directoryList[i], temp))
-        {
-            temp.title = translate_title(temp.title);
-            temp.creator = translate_creator(temp.creator);
-
-            ListOfMetaData.push_back(temp);
-        }
-    }
+    FILESYSTEM_enumerateLevelDirFileNames(levelMetaDataCallback);
 
     for(size_t i = 0; i < ListOfMetaData.size(); i++)
     {
@@ -250,7 +255,6 @@ void editorclass::getDirectoryData()
             if(compare_nocase(ListOfMetaData[i].title, ListOfMetaData[k].title ))
             {
                 std::swap(ListOfMetaData[i] , ListOfMetaData[k]);
-                std::swap(directoryList[i], directoryList[k]);
             }
         }
     }
@@ -269,6 +273,8 @@ bool editorclass::getLevelMetaData(std::string& _path, LevelMetaData& _data )
 
     std::string buf((char*) uMem);
 
+    FILESYSTEM_freeMemory(&uMem);
+
     if (find_metadata(buf) == "")
     {
         printf("Couldn't load metadata for %s\n", _path.c_str());
@@ -286,7 +292,7 @@ bool editorclass::getLevelMetaData(std::string& _path, LevelMetaData& _data )
     return true;
 }
 
-void editorclass::reset()
+void editorclass::reset(void)
 {
     version=2; //New smaller format change is 2
 
@@ -384,13 +390,7 @@ void editorclass::reset()
         }
     }
 
-    for (int j = 0; j < 30 * maxheight; j++)
-    {
-        for (int i = 0; i < 40 * maxwidth; i++)
-        {
-            contents[i+(j*40*maxwidth)]=0;
-        }
-    }
+    SDL_zeroa(contents);
 
     hooklist.clear();
 
@@ -407,7 +407,7 @@ void editorclass::reset()
 
     hookmenupage=0;
     hookmenu=0;
-    script.customscripts.clear();
+    script.clearcustom();
 
     returneditoralpha = 0;
     oldreturneditoralpha = 0;
@@ -420,7 +420,7 @@ void editorclass::reset()
     loaded_filepath = "";
 }
 
-void editorclass::gethooks()
+void editorclass::gethooks(void)
 {
     //Scan through the script and create a hooks list based on it
     hooklist.clear();
@@ -506,7 +506,7 @@ bool editorclass::checkhook(std::string t)
 }
 
 
-void editorclass::clearscriptbuffer()
+void editorclass::clearscriptbuffer(void)
 {
     sb.clear();
 }
@@ -683,7 +683,6 @@ int editorclass::getenemycol(int t)
         return 6;
         break;
     }
-    return 0;
 }
 
 int editorclass::getwarpbackground(int rx, int ry)
@@ -961,7 +960,6 @@ int editorclass::getenemyframe(int t)
         return 78;
         break;
     }
-    return 78;
 }
 
 
@@ -1356,7 +1354,6 @@ int editorclass::edgetile( int x, int y )
         return 0;
         break;
     }
-    return 0;
 }
 
 int editorclass::outsideedgetile( int x, int y )
@@ -1374,7 +1371,6 @@ int editorclass::outsideedgetile( int x, int y )
         return 2;
         break;
     }
-    return 2;
 }
 
 
@@ -1426,7 +1422,6 @@ int editorclass::backedgetile( int x, int y )
         return 0;
         break;
     }
-    return 0;
 }
 
 int editorclass::labspikedir( int x, int y, int t )
@@ -1448,7 +1443,7 @@ int editorclass::spikedir( int x, int y )
     return 8;
 }
 
-void editorclass::findstartpoint()
+void editorclass::findstartpoint(void)
 {
     //Ok! Scan the room for the closest checkpoint
     int testeditor=-1;
@@ -1781,25 +1776,29 @@ bool editorclass::load(std::string& _path)
         }
 
 
-        if (pKey == "contents")
+        if (pKey == "contents" && pText[0] != '\0')
         {
-            std::string TextString = (pText);
-            if(TextString.length())
-            {
-                std::vector<std::string> values = split(TextString,',');
-                SDL_memset(contents, 0, sizeof(contents));
-                int x =0;
-                int y =0;
-                for(size_t i = 0; i < values.size(); i++)
-                {
-                    contents[x + (maxwidth*40*y)] = help.Int(values[i].c_str());
-                    x++;
-                    if(x == mapwidth*40)
-                    {
-                        x=0;
-                        y++;
-                    }
+            int x = 0;
+            int y = 0;
 
+            char buffer[16];
+            size_t start = 0;
+
+            while (next_split_s(buffer, sizeof(buffer), &start, pText, ','))
+            {
+                const int idx = x + maxwidth*40*y;
+
+                if (INBOUNDS_ARR(idx, contents))
+                {
+                    contents[idx] = help.Int(buffer);
+                }
+
+                ++x;
+
+                if (x == mapwidth*40)
+                {
+                    x = 0;
+                    ++y;
                 }
             }
         }
@@ -1810,11 +1809,11 @@ bool editorclass::load(std::string& _path)
             for( tinyxml2::XMLElement* edEntityEl = pElem->FirstChildElement(); edEntityEl; edEntityEl=edEntityEl->NextSiblingElement())
             {
                 edentities entity;
+                const char* text = edEntityEl->GetText();
 
-                std::string pKey(edEntityEl->Value());
-                if (edEntityEl->GetText() != NULL)
+                if (text != NULL)
                 {
-                    std::string text(edEntityEl->GetText());
+                    size_t len = SDL_strlen(text);
 
                     // And now we come to the part where we have to deal with
                     // the terrible decisions of the past.
@@ -1850,10 +1849,10 @@ bool editorclass::load(std::string& _path)
                     if (endsWith(text, "\n            ")) // linefeed + exactly 12 spaces
                     {
                         // 12 spaces + 1 linefeed = 13 chars
-                        text = text.substr(0, text.length()-13);
+                        len -= 13;
                     }
 
-                    entity.scriptname = text;
+                    entity.scriptname = std::string(text, len);
                 }
                 edEntityEl->QueryIntAttribute("x", &entity.x);
                 edEntityEl->QueryIntAttribute("y", &entity.y);
@@ -1875,7 +1874,6 @@ bool editorclass::load(std::string& _path)
             int i = 0;
             for( tinyxml2::XMLElement* edLevelClassElement = pElem->FirstChildElement(); edLevelClassElement; edLevelClassElement=edLevelClassElement->NextSiblingElement())
             {
-                std::string pKey(edLevelClassElement->Value());
                 if(edLevelClassElement->GetText() != NULL)
                 {
                     level[i].roomname = std::string(edLevelClassElement->GetText()) ;
@@ -1902,47 +1900,46 @@ bool editorclass::load(std::string& _path)
             }
         }
 
-        if (pKey == "script")
+        if (pKey == "script" && pText[0] != '\0')
         {
-            std::string TextString = (pText);
-            if(TextString.length())
+            Script script_;
+            bool headerfound = false;
+
+            size_t start = 0;
+            size_t len = 0;
+            size_t prev_start = 0;
+
+            while (next_split(&start, &len, &pText[start], '|'))
             {
-                std::vector<std::string> values = split(TextString,'|');
-                script.clearcustom();
-                Script script_;
-                bool headerfound = false;
-                for(size_t i = 0; i < values.size(); i++)
+                if (len > 0 && pText[prev_start + len - 1] == ':')
                 {
-                    std::string& line = values[i];
-
-                    if(line.length() && line[line.length() - 1] == ':')
+                    if (headerfound)
                     {
-                        if(headerfound)
-                        {
-                            //Add the script if we have a preceding header
-                            script.customscripts.push_back(script_);
-                        }
-                        script_.name = line.substr(0, line.length()-1);
-                        script_.contents.clear();
-                        headerfound = true;
-                        continue;
+                        script.customscripts.push_back(script_);
                     }
 
-                    if(headerfound)
-                    {
-                        script_.contents.push_back(line);
-                    }
-                }
-                //Add the last script
-                if(headerfound)
-                {
-                    //Add the script if we have a preceding header
-                    script.customscripts.push_back(script_);
+                    script_.name = std::string(&pText[prev_start], len - 1);
+                    script_.contents.clear();
+                    headerfound = true;
+
+                    goto next;
                 }
 
+                if (headerfound)
+                {
+                    script_.contents.push_back(std::string(&pText[prev_start], len));
+                }
+
+next:
+                prev_start = start;
+            }
+
+            /* Add the last script */
+            if (headerfound)
+            {
+                script.customscripts.push_back(script_);
             }
         }
-
     }
 
     gethooks();
@@ -2078,7 +2075,7 @@ bool editorclass::save(std::string& _path)
         Script& script_ = script.customscripts[i];
 
         scriptString += script_.name + ":|";
-        for (size_t ii = 0; ii < script_.contents.size(); i++)
+        for (size_t ii = 0; ii < script_.contents.size(); ++ii)
         {
             scriptString += script_.contents[ii];
 
@@ -2146,7 +2143,7 @@ static void fillboxabs( int x, int y, int x2, int y2, int c )
 }
 
 
-void editorclass::generatecustomminimap()
+void editorclass::generatecustomminimap(void)
 {
     map.customwidth=mapwidth;
     map.customheight=mapheight;
@@ -2181,7 +2178,7 @@ void editorclass::generatecustomminimap()
         map.custommmysize=180-(map.custommmyoff*2);
     }
 
-    FillRect(graphics.images[12], graphics.getRGB(0,0,0));
+    FillRect(graphics.images[12], graphics.getRGB(0, 0, 0));
 
     int tm=0;
     int temp=0;
@@ -2456,7 +2453,7 @@ static void editormenurender(int tr, int tg, int tb)
     }
 }
 
-void editorrender()
+void editorrender(void)
 {
     extern editorclass ed;
     if (game.shouldreturntoeditor)
@@ -2466,7 +2463,7 @@ void editorrender()
 
     //Draw grid
 
-    FillRect(graphics.backBuffer, 0, 0, 320,240, graphics.getRGB(0,0,0));
+    ClearSurface(graphics.backBuffer);
     for(int j=0; j<30; j++)
     {
         for(int i=0; i<40; i++)
@@ -2932,7 +2929,7 @@ void editorrender()
 
     //Draw ghosts (spooky!)
     if (game.ghostsenabled) {
-        SDL_FillRect(graphics.ghostbuffer, NULL, SDL_MapRGBA(graphics.ghostbuffer->format, 0, 0, 0, 0));
+        ClearSurface(graphics.ghostbuffer);
         for (int i = 0; i < (int)ed.ghosts.size(); i++) {
             if (i <= ed.currentghosts) { // We don't want all of them to show up at once :)
                 if (ed.ghosts[i].rx != ed.levx || ed.ghosts[i].ry != ed.levy
@@ -3239,7 +3236,7 @@ void editorrender()
         }
         else
         {
-            FillRect(graphics.backBuffer, 0, 0, 320, 240, 0x00000000);
+            ClearSurface(graphics.backBuffer);
         }
 
         int tr = graphics.titlebg.r - (help.glow / 4) - int(fRandom() * 4);
@@ -3610,7 +3607,7 @@ void editorrender()
     graphics.render();
 }
 
-void editorrenderfixed()
+void editorrenderfixed(void)
 {
     extern editorclass ed;
     graphics.updatetitlecolours();
@@ -3670,7 +3667,7 @@ void editorrenderfixed()
     }
 }
 
-void editorlogic()
+void editorlogic(void)
 {
     extern editorclass ed;
     //Misc
@@ -3862,7 +3859,7 @@ static void editormenuactionpress()
     }
 }
 
-void editorinput()
+void editorinput(void)
 {
     extern editorclass ed;
     game.mx = (float) key.mx;
@@ -4196,15 +4193,34 @@ void editorinput()
             {
             case TEXT_GOTOROOM:
             {
-                std::vector<std::string> coords = split(key.keybuffer, ',');
-                if (coords.size() != 2)
+                char coord_x[16];
+                char coord_y[16];
+
+                const char* comma = SDL_strchr(key.keybuffer.c_str(), ',');
+
+                bool valid_input = comma != NULL;
+
+                if (valid_input)
+                {
+                    SDL_strlcpy(
+                        coord_x,
+                        key.keybuffer.c_str(),
+                        VVV_min(comma - key.keybuffer.c_str() + 1, sizeof(coord_x))
+                    );
+                    SDL_strlcpy(coord_y, &comma[1], sizeof(coord_y));
+
+                    valid_input = is_number(coord_x) && is_number(coord_y);
+                }
+
+                if (!valid_input)
                 {
                     ed.note = loc::gettext("ERROR: Invalid format");
                     ed.notedelay = 45;
                     break;
                 }
-                ed.levx = clamp(help.Int(coords[0].c_str()) - 1, 0, ed.mapwidth - 1);
-                ed.levy = clamp(help.Int(coords[1].c_str()) - 1, 0, ed.mapheight - 1);
+
+                ed.levx = clamp(help.Int(coord_x) - 1, 0, ed.mapwidth - 1);
+                ed.levy = clamp(help.Int(coord_y) - 1, 0, ed.mapheight - 1);
                 graphics.backgrounddrawn = false;
                 break;
             }
@@ -5680,7 +5696,7 @@ Uint32 editorclass::getonewaycol(const int rx, const int ry)
 }
 
 // This version detects the room automatically
-Uint32 editorclass::getonewaycol()
+Uint32 editorclass::getonewaycol(void)
 {
     if (game.gamestate == EDITORMODE)
         return getonewaycol(levx, levy);
@@ -5691,7 +5707,7 @@ Uint32 editorclass::getonewaycol()
     return graphics.getRGB(255, 255, 255);
 }
 
-int editorclass::numtrinkets()
+int editorclass::numtrinkets(void)
 {
     int temp = 0;
     for (size_t i = 0; i < edentity.size(); i++)
@@ -5704,7 +5720,7 @@ int editorclass::numtrinkets()
     return temp;
 }
 
-int editorclass::numcrewmates()
+int editorclass::numcrewmates(void)
 {
     int temp = 0;
     for (size_t i = 0; i < edentity.size(); i++)

@@ -28,7 +28,7 @@ static int inline FLIP(int ypos)
     return ypos;
 }
 
-static inline void drawslowdowntext()
+static inline void drawslowdowntext(void)
 {
     switch (game.slowdown)
     {
@@ -47,7 +47,7 @@ static inline void drawslowdowntext()
     }
 }
 
-static void menurender()
+static void menurender(void)
 {
     int temp = 50;
 
@@ -1179,7 +1179,7 @@ static void menurender()
 void titlerender()
 {
 
-    FillRect(graphics.backBuffer, 0,0,graphics.backBuffer->w, graphics.backBuffer->h, 0x00000000 );
+    ClearSurface(graphics.backBuffer);
 
     if (!game.menustart)
     {
@@ -1230,9 +1230,9 @@ void titlerender()
     graphics.renderwithscreeneffects();
 }
 
-void gamecompleterender()
+void gamecompleterender(void)
 {
-    FillRect(graphics.backBuffer, 0x000000);
+    ClearSurface(graphics.backBuffer);
 
     if(!game.colourblindmode) graphics.drawtowerbackground(graphics.titlebg);
 
@@ -1377,9 +1377,9 @@ void gamecompleterender()
     graphics.render();
 }
 
-void gamecompleterender2()
+void gamecompleterender2(void)
 {
-    FillRect(graphics.backBuffer, 0x000000);
+    ClearSurface(graphics.backBuffer);
 
     graphics.drawimage(10, 0, 0);
 
@@ -1409,7 +1409,7 @@ void gamecompleterender2()
     graphics.render();
 }
 
-void gamerender()
+void gamerender(void)
 {
 
 
@@ -1425,7 +1425,7 @@ void gamerender()
             }
             else
             {
-                FillRect(graphics.backBuffer,0x00000);
+                ClearSurface(graphics.backBuffer);
             }
             graphics.drawtowermap();
         }
@@ -1437,7 +1437,7 @@ void gamerender()
             }
             else
             {
-                FillRect(graphics.backBuffer,0x00000);
+                ClearSurface(graphics.backBuffer);
             }
             if (map.final_colormode)
             {
@@ -1743,9 +1743,9 @@ void gamerender()
     graphics.renderwithscreeneffects();
 }
 
-void maprender()
+void maprender(void)
 {
-    FillRect(graphics.backBuffer, 0x000000);
+    ClearSurface(graphics.backBuffer);
 
     //draw screen alliteration
     //Roomname:
@@ -2496,9 +2496,9 @@ void maprender()
     }
 }
 
-void teleporterrender()
+void teleporterrender(void)
 {
-    FillRect(graphics.backBuffer, 0x000000);
+    ClearSurface(graphics.backBuffer);
     int tempx;
     int tempy;
     //draw screen alliteration
