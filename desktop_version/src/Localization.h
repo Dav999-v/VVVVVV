@@ -26,9 +26,9 @@ namespace loc
 	extern int languagelist_curlang;
 	extern bool show_lang_maint_menu;
 
-	void loadtext();
-	void loadlanguagelist();
-	void sync_lang_files();
+	void loadtext(void);
+	void loadlanguagelist(void);
+	void sync_lang_files(void);
 
 	std::string gettext(const std::string& eng);
 	std::string getnumber(int n);

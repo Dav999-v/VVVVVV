@@ -82,7 +82,7 @@ namespace loc
 		}
 	}
 
-	void resettext()
+	void resettext(void)
 	{
 		// Reset/Initialize strings
 		translation.clear();
@@ -93,7 +93,7 @@ namespace loc
 		}
 	}
 
-	void loadtext_strings()
+	void loadtext_strings(void)
 	{
 		tinyxml2::XMLDocument doc;
 		if (!load_doc("strings", doc))
@@ -131,7 +131,7 @@ namespace loc
 		}
 	}
 
-	void loadtext_numbers()
+	void loadtext_numbers(void)
 	{
 		tinyxml2::XMLDocument doc;
 		if (!load_doc("numbers", doc))
@@ -168,7 +168,7 @@ namespace loc
 		}
 	}
 
-	void loadtext()
+	void loadtext(void)
 	{
 		show_lang_maint_menu = FILESYSTEM_langsAreModded();
 
@@ -184,7 +184,7 @@ namespace loc
 		loadtext_numbers();
 	}
 
-	void loadlanguagelist()
+	void loadlanguagelist(void)
 	{
 		// Load the list of languages for the language screen
 		languagelist.clear();
@@ -244,7 +244,7 @@ namespace loc
 		FILESYSTEM_saveTiXml2Document(("lang/" + langcode + "/strings.xml").c_str(), doc);
 	}
 
-	void sync_lang_files()
+	void sync_lang_files(void)
 	{
 		std::string oldlang = lang;
 
