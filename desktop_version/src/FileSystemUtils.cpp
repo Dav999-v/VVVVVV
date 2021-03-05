@@ -164,6 +164,33 @@ char *FILESYSTEM_getUserLevelDirectory(void)
 	return levelDir;
 }
 
+bool FILESYSTEM_isFile(const char* filename)
+{
+	PHYSFS_Stat stat;
+
+	bool success = PHYSFS_stat(filename, &stat);
+
+	if (!success)
+	{
+		printf(
+			"Could not stat file: %s\n",
+			PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())
+		);
+		return false;
+	}
+
+	/* We unfortunately cannot follow symlinks (PhysFS limitation).
+	 * Let the caller deal with them.
+	 */
+	return stat.filetype == PHYSFS_FILETYPE_REGULAR
+	|| stat.filetype == PHYSFS_FILETYPE_SYMLINK;
+}
+
+bool FILESYSTEM_isMounted(const char* filename)
+{
+	return PHYSFS_getMountPoint(filename) != NULL;
+}
+
 static bool FILESYSTEM_exists(const char *fname)
 {
 	return PHYSFS_exists(fname);
@@ -195,6 +222,20 @@ void FILESYSTEM_mount(const char *fname)
 	else
 	{
 		graphics.assetdir = std::string(path);
+	}
+}
+
+void FILESYSTEM_loadZip(const char* filename)
+{
+	PHYSFS_File* zip = PHYSFS_openRead(filename);
+
+	if (!PHYSFS_mountHandle(zip, filename, "levels", 1))
+	{
+		printf(
+			"Could not mount %s: %s\n",
+			filename,
+			PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())
+		);
 	}
 }
 
@@ -360,9 +401,13 @@ void FILESYSTEM_loadFileToMemory(
 	{
 		return;
 	}
-	PHYSFS_uint32 length = PHYSFS_fileLength(handle);
+	PHYSFS_sint64 length = PHYSFS_fileLength(handle);
 	if (len != NULL)
 	{
+		if (length < 0)
+		{
+			length = 0;
+		}
 		*len = length;
 	}
 	if (addnull)
@@ -382,7 +427,7 @@ void FILESYSTEM_loadFileToMemory(
 			VVV_exit(1);
 		}
 	}
-	int success = PHYSFS_readBytes(handle, *mem, length);
+	PHYSFS_sint64 success = PHYSFS_readBytes(handle, *mem, length);
 	if (success == -1)
 	{
 		FILESYSTEM_freeMemory(mem);

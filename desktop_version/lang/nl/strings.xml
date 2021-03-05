@@ -373,6 +373,7 @@
     <string english="N/A: Predestined Fate Remix" explanation="editor, song name should probably not be translated" max="38*2" comment="">n.v.t.: Predestined Fate Remix</string>
     <string english="?: something else" explanation="editor, song was not recognized" max="38*2" comment="">?: iets anders</string>
     <string english="next song" explanation="level editor menu option" comment="">volgend nummer</string>
+    <string english="previous song" explanation="level editor menu option" comment=""></string>
     <string english="back" explanation="level editor menu option" comment="">terug</string>
     <string english="yes, save and quit" explanation="level editor menu option" comment="">ja, opslaan en afsluiten</string>
     <string english="no, quit without saving" explanation="level editor menu option" comment="">nee, afsluiten zonder opslaan</string>

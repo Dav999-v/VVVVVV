@@ -4,7 +4,6 @@
 #include "editor.h"
 
 #include <algorithm>
-#include <physfs.h>
 #include <stdio.h>
 #include <string>
 #include <tinyxml2.h>
@@ -99,18 +98,14 @@ std::string translate_creator(std::string& creator)
 
 static void levelZipCallback(const char* filename)
 {
+    if (!FILESYSTEM_isFile(filename))
+    {
+        return;
+    }
+
     if (endsWith(filename, ".zip"))
     {
-        PHYSFS_File* zip = PHYSFS_openRead(filename);
-
-        if (!PHYSFS_mountHandle(zip, filename, "levels", 1))
-        {
-            printf(
-                "Could not mount %s: %s\n",
-                filename,
-                PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())
-            );
-        }
+        FILESYSTEM_loadZip(filename);
     }
 }
 
@@ -229,6 +224,11 @@ static void levelMetaDataCallback(const char* filename)
     extern editorclass ed;
     LevelMetaData temp;
     std::string filename_ = filename;
+
+    if (!FILESYSTEM_isFile(filename) || FILESYSTEM_isMounted(filename))
+    {
+        return;
+    }
 
     if (ed.getLevelMetaData(filename_, temp))
     {
@@ -3805,8 +3805,17 @@ static void editormenuactionpress()
         switch (game.currentmenuoption)
         {
         case 0:
-            ed.levmusic++;
-            if(ed.levmusic==16) ed.levmusic=0;
+        case 1:
+            switch (game.currentmenuoption)
+            {
+            case 0:
+                ed.levmusic++;
+                break;
+            case 1:
+                ed.levmusic--;
+                break;
+            }
+            ed.levmusic = (ed.levmusic % 16 + 16) % 16;
             if(ed.levmusic>0)
             {
                 music.play(ed.levmusic);
@@ -3817,7 +3826,7 @@ static void editormenuactionpress()
             }
             music.playef(11);
             break;
-        case 1:
+        case 2:
             music.playef(11);
             music.fadeout();
             game.returnmenu();

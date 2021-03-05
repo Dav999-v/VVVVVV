@@ -373,6 +373,7 @@
     <string english="N/A: Predestined Fate Remix" explanation="editor, song name should probably not be translated" max="38*2" comment="">N/A: Predestined Fate (rearanĝo)</string>
     <string english="?: something else" explanation="editor, song was not recognized" max="38*2" comment="">?: io alia</string>
     <string english="next song" explanation="level editor menu option" comment="">sekva melodio</string>
+    <string english="previous song" explanation="level editor menu option" comment=""></string>
     <string english="back" explanation="level editor menu option" comment="">reen</string>
     <string english="yes, save and quit" explanation="level editor menu option" comment="">jes, konservu kaj eliru</string>
     <string english="no, quit without saving" explanation="level editor menu option" comment="">ne, eliru sen konservi</string>
