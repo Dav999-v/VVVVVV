@@ -27,8 +27,8 @@ bool FILESYSTEM_loadTiXml2Document(const char *name, tinyxml2::XMLDocument& doc)
 
 void FILESYSTEM_enumerateLevelDirFileNames(void (*callback)(const char* filename));
 
-std::vector<std::string> FILESYSTEM_getLanguageCodes();
-bool FILESYSTEM_langsAreModded();
+std::vector<std::string> FILESYSTEM_getLanguageCodes(void);
+bool FILESYSTEM_langsAreModded(void);
 
 bool FILESYSTEM_openDirectoryEnabled(void);
 bool FILESYSTEM_openDirectory(const char *dname);

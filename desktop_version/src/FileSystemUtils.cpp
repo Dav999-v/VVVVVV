@@ -460,7 +460,7 @@ void FILESYSTEM_enumerateLevelDirFileNames(
 	}
 }
 
-std::vector<std::string> FILESYSTEM_getLanguageCodes()
+std::vector<std::string> FILESYSTEM_getLanguageCodes(void)
 {
 	std::vector<std::string> list;
 	char **fileList = PHYSFS_enumerateFiles("lang");
@@ -476,7 +476,7 @@ std::vector<std::string> FILESYSTEM_getLanguageCodes()
 	return list;
 }
 
-bool FILESYSTEM_langsAreModded()
+bool FILESYSTEM_langsAreModded(void)
 {
 	const char *langdir_c = PHYSFS_getRealDir("lang");
 	if (langdir_c == NULL)
