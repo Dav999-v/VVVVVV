@@ -182,7 +182,7 @@
     <string english="Text outlines are OFF." explanation="" max="38*3" comment="">Tekstomtrek staat UIT.</string>
     <string english="invincibility" explanation="menu option" comment="">onkwetsbaarheid</string>
     <string english="Invincibility" explanation="title" max="20" comment="">Onkwetsbaarheid</string>
-    <string english="Provided to help disabled gamers explore the game. Can cause glitches." explanation="invincibility mode" max="38*3" comment="">Beschikbaar om gehandicapte spelers te helpen het spel te ontdekken. Kan glitches veroorzaken.</string>
+    <string english="Provided to help disabled gamers explore the game. Can cause glitches." explanation="invincibility mode" max="38*3" comment="">Beschikbaar om gehandicapte spelers te helpen het spel te verkennen. Kan glitches veroorzaken.</string>
     <string english="Invincibility is ON." explanation="" max="38*2" comment="">Onkwetsbaarheid staat AAN.</string>
     <string english="Invincibility is off." explanation="" max="38*2" comment="">Onkwetsbaarheid staat uit.</string>
     <string english="Are you sure you want to enable invincibility?" explanation="" max="38*7" comment="">Weet je zeker dat je onkwetsbaarheid wilt inschakelen?</string>
@@ -373,7 +373,7 @@
     <string english="N/A: Predestined Fate Remix" explanation="editor, song name should probably not be translated" max="38*2" comment="">n.v.t.: Predestined Fate Remix</string>
     <string english="?: something else" explanation="editor, song was not recognized" max="38*2" comment="">?: iets anders</string>
     <string english="next song" explanation="level editor menu option" comment="">volgend nummer</string>
-    <string english="previous song" explanation="level editor menu option" comment=""></string>
+    <string english="previous song" explanation="level editor menu option" comment="">vorig nummer</string>
     <string english="back" explanation="level editor menu option" comment="">terug</string>
     <string english="yes, save and quit" explanation="level editor menu option" comment="">ja, opslaan en afsluiten</string>
     <string english="no, quit without saving" explanation="level editor menu option" comment="">nee, afsluiten zonder opslaan</string>
