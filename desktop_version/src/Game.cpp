@@ -6203,13 +6203,7 @@ void Game::returntomenu(enum Menu::MenuName t)
 {
     if (currentmenuname == t)
     {
-        //Re-create the menu
-        int keep_menu_option = currentmenuoption;
         createmenu(t, true);
-        if (keep_menu_option < (int) menuoptions.size())
-        {
-            currentmenuoption = keep_menu_option;
-        }
         return;
     }
 
@@ -6246,9 +6240,9 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         frame.option = currentmenuoption;
         frame.name = currentmenuname;
         menustack.push_back(frame);
+        currentmenuoption = 0;
     }
 
-    currentmenuoption = 0;
     currentmenuname = t;
     menuyoff = 0;
     int maxspacing = 30; // maximum value for menuspacing, can only become lower.

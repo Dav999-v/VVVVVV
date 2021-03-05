@@ -389,7 +389,6 @@ static void menuactionpress(void)
 
             // Recreate menu to update "resize to nearest"
             game.createmenu(game.currentmenuname, true);
-            game.currentmenuoption = 0;
 
             game.savestatsandsettings_menu();
             break;
@@ -493,7 +492,6 @@ static void menuactionpress(void)
             game.slowdown = 30;
             music.playef(11);
             game.returnmenu();
-            game.currentmenuoption = 4;
             map.nexttowercolour();
             game.savestatsandsettings_menu();
             break;
@@ -501,7 +499,6 @@ static void menuactionpress(void)
             game.slowdown = 24;
             music.playef(11);
             game.returnmenu();
-            game.currentmenuoption = 4;
             map.nexttowercolour();
             game.savestatsandsettings_menu();
             break;
@@ -509,7 +506,6 @@ static void menuactionpress(void)
             game.slowdown = 18;
             music.playef(11);
             game.returnmenu();
-            game.currentmenuoption = 4;
             map.nexttowercolour();
             game.savestatsandsettings_menu();
             break;
@@ -517,7 +513,6 @@ static void menuactionpress(void)
             game.slowdown = 12;
             music.playef(11);
             game.returnmenu();
-            game.currentmenuoption = 4;
             map.nexttowercolour();
             game.savestatsandsettings_menu();
             break;
@@ -853,7 +848,6 @@ static void menuactionpress(void)
             game.unlocknotify[9] = true;
             music.playef(11);
             game.createmenu(Menu::unlockmenutrials, true);
-            game.currentmenuoption = 0;
             game.savestatsandsettings_menu();
             break;
         case 1:   	//unlock 2
@@ -861,7 +855,6 @@ static void menuactionpress(void)
             game.unlocknotify[10] = true;
             music.playef(11);
             game.createmenu(Menu::unlockmenutrials, true);
-            game.currentmenuoption = 1;
             game.savestatsandsettings_menu();
             break;
         case 2:   	//unlock 3
@@ -869,7 +862,6 @@ static void menuactionpress(void)
             game.unlocknotify[11] = true;
             music.playef(11);
             game.createmenu(Menu::unlockmenutrials, true);
-            game.currentmenuoption = 2;
             game.savestatsandsettings_menu();
             break;
         case 3:   	//unlock 4
@@ -877,7 +869,6 @@ static void menuactionpress(void)
             game.unlocknotify[12] = true;
             music.playef(11);
             game.createmenu(Menu::unlockmenutrials, true);
-            game.currentmenuoption = 3;
             game.savestatsandsettings_menu();
             break;
         case 4:   	//unlock 5
@@ -885,7 +876,6 @@ static void menuactionpress(void)
             game.unlocknotify[13] = true;
             music.playef(11);
             game.createmenu(Menu::unlockmenutrials, true);
-            game.currentmenuoption = 4;
             game.savestatsandsettings_menu();
             break;
         case 5:   	//unlock 6
@@ -893,7 +883,6 @@ static void menuactionpress(void)
             game.unlocknotify[14] = true;
             music.playef(11);
             game.createmenu(Menu::unlockmenutrials, true);
-            game.currentmenuoption = 5;
             game.savestatsandsettings_menu();
             break;
         case 6:   	//back
@@ -921,7 +910,6 @@ static void menuactionpress(void)
             game.unlock[6] = true;
             game.unlock[7] = true;
             game.createmenu(Menu::unlockmenu, true);
-            game.currentmenuoption = 1;
             game.savestatsandsettings_menu();
             break;
         case 2:
@@ -930,7 +918,6 @@ static void menuactionpress(void)
             game.unlock[17] = true;
             game.unlocknotify[17] = true;
             game.createmenu(Menu::unlockmenu, true);
-            game.currentmenuoption = 2;
             game.savestatsandsettings_menu();
             break;
         case 3:
@@ -939,7 +926,6 @@ static void menuactionpress(void)
             game.unlock[18] = true;
             game.unlocknotify[18] = true;
             game.createmenu(Menu::unlockmenu, true);
-            game.currentmenuoption = 3;
             game.savestatsandsettings_menu();
             break;
         case 4:
@@ -947,7 +933,6 @@ static void menuactionpress(void)
             music.playef(11);
             game.stat_trinkets = 20;
             game.createmenu(Menu::unlockmenu, true);
-            game.currentmenuoption = 4;
             game.savestatsandsettings_menu();
             break;
         case 5:
@@ -956,7 +941,6 @@ static void menuactionpress(void)
             game.unlock[8] = true;
             game.unlocknotify[8] = true;
             game.createmenu(Menu::unlockmenu, true);
-            game.currentmenuoption = 5;
             game.savestatsandsettings_menu();
             break;
         default:
@@ -980,7 +964,6 @@ static void menuactionpress(void)
             //last page
             music.playef(11);
             game.createmenu(Menu::credits6, true);
-            game.currentmenuoption = 1;
             map.nexttowercolour();
             break;
         default:
@@ -1004,7 +987,6 @@ static void menuactionpress(void)
             //previous page
             music.playef(11);
             game.createmenu(Menu::credits, true);
-            game.currentmenuoption = 1;
             map.nexttowercolour();
             break;
         case 2:
@@ -1028,7 +1010,6 @@ static void menuactionpress(void)
             //previous page
             music.playef(11);
             game.createmenu(Menu::credits2, true);
-            game.currentmenuoption = 1;
             map.nexttowercolour();
             break;
         default:
@@ -1077,7 +1058,6 @@ static void menuactionpress(void)
                 //There are more super patrons. Refresh the menu with the next ones
                 game.createmenu(Menu::credits3, true);
             }
-            game.currentmenuoption = 1;
 
             map.nexttowercolour();
             break;
@@ -1128,7 +1108,6 @@ static void menuactionpress(void)
                 //There are more patrons. Refresh the menu with the next ones
                 game.createmenu(Menu::credits4, true);
             }
-            game.currentmenuoption = 1;
 
             map.nexttowercolour();
             break;
@@ -1179,7 +1158,6 @@ static void menuactionpress(void)
                 //There are more GitHub contributors. Refresh the menu with the next ones
                 game.createmenu(Menu::credits5, true);
             }
-            game.currentmenuoption = 1;
 
             map.nexttowercolour();
             break;
@@ -1206,7 +1184,6 @@ static void menuactionpress(void)
             music.playef(11);
             game.current_credits_list_index = SDL_arraysize(Credits::githubfriends) - 1 - (SDL_arraysize(Credits::githubfriends)-1)%9;
             game.createmenu(Menu::credits5, true);
-            game.currentmenuoption = 1;
             map.nexttowercolour();
             break;
         default:
@@ -1214,7 +1191,6 @@ static void menuactionpress(void)
             music.playef(11);
             game.returnmenu();
             map.nexttowercolour();
-            music.niceplay(6);
             break;
         }
         break;
@@ -1327,6 +1303,7 @@ static void menuactionpress(void)
         case 5:
             music.playef(11);
             game.returnmenu();
+            map.nexttowercolour();
             break;
         }
         break;
