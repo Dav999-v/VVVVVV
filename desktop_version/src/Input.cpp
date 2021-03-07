@@ -174,6 +174,22 @@ static void updatebuttonmappings(int bind)
     }
 }
 
+static void toggleflipmode(void)
+{
+    graphics.setflipmode = !graphics.setflipmode;
+    game.savestatsandsettings_menu();
+    if (graphics.setflipmode)
+    {
+        music.playef(18);
+        game.screenshake = 10;
+        game.flashlight = 5;
+    }
+    else
+    {
+        music.playef(11);
+    }
+}
+
 static void menuactionpress(void)
 {
     switch (game.currentmenuname)
@@ -681,19 +697,7 @@ static void menuactionpress(void)
         if (game.ingame_titlemode && game.unlock[18])
 #endif
         {
-            // toggle Flip Mode
-            graphics.setflipmode = !graphics.setflipmode;
-            game.savestatsandsettings();
-            if (graphics.setflipmode)
-            {
-                music.playef(18);
-                game.screenshake = 10;
-                game.flashlight = 5;
-            }
-            else
-            {
-                music.playef(11);
-            }
+            toggleflipmode();
             // Fix wrong area music in Tower (Positive Force vs. ecroF evitisoP)
             if (map.custommode)
             {
@@ -759,8 +763,11 @@ static void menuactionpress(void)
             //**** TOGGLE MMMMMM
             music.usingmmmmmm = !music.usingmmmmmm;
             music.playef(11);
-            music.play(music.currentsong);
-            game.savestatsandsettings();
+            if (music.currentsong > -1)
+            {
+                music.play(music.currentsong);
+            }
+            game.savestatsandsettings_menu();
         }
 
         offset += mmmmmm_offset;
@@ -1352,19 +1359,7 @@ static void menuactionpress(void)
         }
         else if (game.currentmenuoption == 3 && game.unlock[18])    //enable/disable flip mode
         {
-            // WARNING: Partially duplicated in Menu::options
-            graphics.setflipmode = !graphics.setflipmode;
-            game.savestatsandsettings();
-            if (graphics.setflipmode)
-            {
-                music.playef(18);
-                game.screenshake = 10;
-                game.flashlight = 5;
-            }
-            else
-            {
-                music.playef(11);
-            }
+            toggleflipmode();
         }
         else if (game.currentmenuoption == 4)
         {
@@ -1865,7 +1860,10 @@ void gameinput(void)
                 if (enter_pressed)
                 {
                     game.mapheld = true;
+                }
 
+                if (enter_pressed && !script.running)
+                {
                     if (game.activetele && game.readytotele > 20 && !game.intimetrial)
                     {
                         enter_already_processed = true;
@@ -2186,21 +2184,13 @@ void mapinput(void)
     && ((!game.glitchrunnermode && !game.fadetomenu && game.fadetomenudelay <= 0 && !game.fadetolab && game.fadetolabdelay <= 0)
     || graphics.fademode == 0))
     {
-        if (graphics.flipmode)
+        if (key.isDown(KEYBOARD_LEFT) || key.isDown(KEYBOARD_UP) || key.isDown(KEYBOARD_a) ||  key.isDown(KEYBOARD_w)|| key.controllerWantsLeft(true))
         {
-            if (key.isDown(KEYBOARD_LEFT) || key.isDown(KEYBOARD_DOWN) || key.isDown(KEYBOARD_a) ||  key.isDown(KEYBOARD_s) || key.controllerWantsLeft(true) ) game.press_left = true;
-            if (key.isDown(KEYBOARD_RIGHT) || key.isDown(KEYBOARD_UP) || key.isDown(KEYBOARD_d) ||  key.isDown(KEYBOARD_w) || key.controllerWantsRight(true)) game.press_right = true;
+            game.press_left = true;
         }
-        else
+        if (key.isDown(KEYBOARD_RIGHT) || key.isDown(KEYBOARD_DOWN) || key.isDown(KEYBOARD_d) ||  key.isDown(KEYBOARD_s)|| key.controllerWantsRight(true))
         {
-            if (key.isDown(KEYBOARD_LEFT) || key.isDown(KEYBOARD_UP) || key.isDown(KEYBOARD_a) ||  key.isDown(KEYBOARD_w)|| key.controllerWantsLeft(true))
-            {
-                game.press_left = true;
-            }
-            if (key.isDown(KEYBOARD_RIGHT) || key.isDown(KEYBOARD_DOWN) || key.isDown(KEYBOARD_d) ||  key.isDown(KEYBOARD_s)|| key.controllerWantsRight(true))
-            {
-                game.press_right = true;
-            }
+            game.press_right = true;
         }
         if (key.isDown(KEYBOARD_z) || key.isDown(KEYBOARD_SPACE) || key.isDown(KEYBOARD_v) || key.isDown(game.controllerButton_flip))
         {

@@ -147,6 +147,11 @@ void Graphics::init(void)
     col_tb = 0;
 
     kludgeswnlinewidth = false;
+
+#ifndef NO_CUSTOM_LEVELS
+    tiles1_mounted = false;
+    tiles2_mounted = false;
+#endif
 }
 
 void Graphics::destroy(void)
@@ -913,6 +918,15 @@ void Graphics::drawsprite(int x, int y, int t, Uint32 c)
     BlitSurfaceColoured(sprites[t], NULL, backBuffer, &rect, ct);
 }
 
+#ifndef NO_CUSTOM_LEVELS
+bool Graphics::shouldrecoloroneway(const int tilenum, const bool mounted)
+{
+    return (tilenum >= 14 && tilenum <= 17
+    && (!mounted
+    || ed.onewaycol_override));
+}
+#endif
+
 void Graphics::drawtile( int x, int y, int t )
 {
     if (!INBOUNDS_VEC(t, tiles))
@@ -924,7 +938,7 @@ void Graphics::drawtile( int x, int y, int t )
     SDL_Rect rect = { Sint16(x), Sint16(y), tiles_rect.w, tiles_rect.h };
 
 #if !defined(NO_CUSTOM_LEVELS)
-    if (t >= 14 && t <= 17 && (!FILESYSTEM_assetsmounted || ed.onewaycol_override))
+    if (shouldrecoloroneway(t, tiles1_mounted))
     {
         colourTransform thect = {ed.getonewaycol()};
         BlitSurfaceTinted(tiles[t], NULL, backBuffer, &rect, thect);
@@ -948,7 +962,7 @@ void Graphics::drawtile2( int x, int y, int t )
     SDL_Rect rect = { Sint16(x), Sint16(y), tiles_rect.w, tiles_rect.h };
 
 #if !defined(NO_CUSTOM_LEVELS)
-    if (t >= 14 && t <= 17 && (!FILESYSTEM_assetsmounted || ed.onewaycol_override))
+    if (shouldrecoloroneway(t, tiles2_mounted))
     {
         colourTransform thect = {ed.getonewaycol()};
         BlitSurfaceTinted(tiles2[t], NULL, backBuffer, &rect, thect);
@@ -1610,7 +1624,7 @@ void Graphics::drawmenu( int cr, int cg, int cb, bool levelmenu /*= false*/ )
             }
         }
 
-        char buffer[Game::menutextbytes];
+        char buffer[MENU_TEXT_BYTES];
         if ((int) i == game.currentmenuoption)
         {
             if (opt.active)
@@ -3029,7 +3043,7 @@ void Graphics::menuoffrender(void)
 		BlitSurfaceStandard(tempbufferFlipped, NULL, backBuffer, NULL);
 		SDL_FreeSurface(tempbufferFlipped);
 		SDL_Rect offsetRect;
-		setRect (offsetRect, 0, usethisoffset, backBuffer->w ,backBuffer->h);
+		setRect (offsetRect, 0, -usethisoffset, backBuffer->w ,backBuffer->h);
 		SDL_Surface* temp = FlipSurfaceVerticle(menubuffer);
 		BlitSurfaceStandard(temp,NULL,backBuffer,&offsetRect);
 		SDL_FreeSurface(temp);
@@ -3344,7 +3358,7 @@ void Graphics::drawforetile(int x, int y, int t)
 	setRect(rect, x,y,tiles_rect.w, tiles_rect.h);
 
 #if !defined(NO_CUSTOM_LEVELS)
-	if (t >= 14 && t <= 17 && (!FILESYSTEM_assetsmounted || ed.onewaycol_override))
+	if (shouldrecoloroneway(t, tiles1_mounted))
 	{
 		colourTransform thect = {ed.getonewaycol()};
 		BlitSurfaceTinted(tiles[t], NULL, foregroundBuffer, &rect, thect);
@@ -3368,7 +3382,7 @@ void Graphics::drawforetile2(int x, int y, int t)
 	setRect(rect, x,y,tiles_rect.w, tiles_rect.h);
 
 #if !defined(NO_CUSTOM_LEVELS)
-	if (t >= 14 && t <= 17 && (!FILESYSTEM_assetsmounted || ed.onewaycol_override))
+	if (shouldrecoloroneway(t, tiles2_mounted))
 	{
 		colourTransform thect = {ed.getonewaycol()};
 		BlitSurfaceTinted(tiles2[t], NULL, foregroundBuffer, &rect, thect);
@@ -3459,6 +3473,11 @@ void Graphics::reloadresources()
 
 	music.destroy();
 	music.init();
+
+#ifndef NO_CUSTOM_LEVELS
+	tiles1_mounted = FILESYSTEM_isAssetMounted("graphics/tiles.png");
+	tiles2_mounted = FILESYSTEM_isAssetMounted("graphics/tiles2.png");
+#endif
 }
 
 Uint32 Graphics::crewcolourreal(int t)
