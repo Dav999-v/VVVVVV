@@ -58,26 +58,26 @@ namespace loc
 
 		for (pElem = hRoot.FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
 		{
-			std::string pKey(pElem->Value());
+			const char* pKey = pElem->Value();
 			const char* pText = pElem->GetText();
 			if (pText == NULL)
 			{
 				pText = "";
 			}
 
-			if (pKey == "active")
+			if (SDL_strcmp(pKey, "active") == 0)
 				meta.active = atoi(pText);
-			else if (pKey == "nativename")
+			else if (SDL_strcmp(pKey, "nativename") == 0)
 				meta.nativename = std::string(pText);
-			else if (pKey == "credit")
+			else if (SDL_strcmp(pKey, "credit") == 0)
 				meta.credit = std::string(pText);
-			else if (pKey == "autowordwrap")
+			else if (SDL_strcmp(pKey, "autowordwrap") == 0)
 				meta.autowordwrap = atoi(pText);
-			else if (pKey == "toupper")
+			else if (SDL_strcmp(pKey, "toupper") == 0)
 				meta.toupper = atoi(pText);
-			else if (pKey == "toupper_i_dot")
+			else if (SDL_strcmp(pKey, "toupper_i_dot") == 0)
 				meta.toupper_i_dot = atoi(pText);
-			else if (pKey == "toupper_lower_escape_char")
+			else if (SDL_strcmp(pKey, "toupper_lower_escape_char") == 0)
 				meta.toupper_lower_escape_char = atoi(pText);
 		}
 	}
@@ -112,14 +112,14 @@ namespace loc
 
 		for (pElem = hRoot.FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
 		{
-			std::string pKey(pElem->Value());
+			const char* pKey = pElem->Value();
 			const char* pText = pElem->GetText();
 			if (pText == NULL)
 			{
 				pText = "";
 			}
 
-			if (pKey == "string")
+			if (SDL_strcmp(pKey, "string") == 0)
 			{
 				std::string eng = std::string(pElem->Attribute("english"));
 				if (translation.count(eng) != 0)
@@ -150,14 +150,14 @@ namespace loc
 
 		for (pElem = hRoot.FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
 		{
-			std::string pKey(pElem->Value());
+			const char* pKey = pElem->Value();
 			const char* pText = pElem->GetText();
 			if (pText == NULL)
 			{
 				pText = "";
 			}
 
-			if (pKey == "number")
+			if (SDL_strcmp(pKey, "number") == 0)
 			{
 				int value = atoi(pElem->Attribute("value"));
 				if (value >= 0 && value <= 101)
@@ -232,9 +232,9 @@ namespace loc
 
 		for (pElem = hRoot.FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
 		{
-			std::string pKey(pElem->Value());
+			const char* pKey = pElem->Value();
 
-			if (pKey == "string")
+			if (SDL_strcmp(pKey, "string") == 0)
 			{
 				const char* eng = pElem->Attribute("english");
 				pElem->SetText(translation[std::string(eng)].c_str());
