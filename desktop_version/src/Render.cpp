@@ -559,7 +559,7 @@ static void menurender(void)
             break;
         case 2:
             graphics.bigprint( -1, 40, loc::gettext("Text Outline"), tr, tg, tb, true);
-            graphics.PrintWrap( -1, 75, loc::gettext("Disables outline on game text"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 75, loc::gettext("Disables outline on game text."), tr, tg, tb, true);
             // FIXME: Maybe do an outlined print instead? -flibit
             if (!graphics.notextoutline)
             {
@@ -579,7 +579,7 @@ static void menurender(void)
             }
             else
             {
-                graphics.PrintWrap( -1, 105, loc::gettext("Invincibility is off."), tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap( -1, 105, loc::gettext("Invincibility is OFF."), tr/2, tg/2, tb/2, true);
             }
             break;
         case 4:
@@ -1176,7 +1176,7 @@ static void menurender(void)
     }
 }
 
-void titlerender()
+void titlerender(void)
 {
 
     ClearSurface(graphics.backBuffer);
@@ -1608,16 +1608,21 @@ void gamerender(void)
         {
             if (int(game.swndelay / 15) % 2 == 1 || game.swndelay >= 120)
             {
+                int y1;
+                int y2;
                 if (graphics.flipmode)
-                { // TODO LOC: wrapped bigprint.
-                    graphics.bigprint( -1, 30, "Survive for", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
-                    graphics.bigprint( -1, 10, "60 seconds!", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
+                {
+                    y1 = 30;
+                    y2 = 10;
                 }
                 else
                 {
-                    graphics.bigprint( -1, 10, "Survive for", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
-                    graphics.bigprint( -1, 30, "60 seconds!", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
+                    y1 = 10;
+                    y2 = 30;
                 }
+                // TODO LOC: wrapped bigprint.
+                graphics.bigprint( -1, y1, "Survive for", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
+                graphics.bigprint( -1, y2, "60 seconds!", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
             }
         }
         else if(game.swngame==7)

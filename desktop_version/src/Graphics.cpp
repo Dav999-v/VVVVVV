@@ -8,6 +8,7 @@
 #include "Entity.h"
 #include "Exit.h"
 #include "FileSystemUtils.h"
+#include "GraphicsUtil.h"
 #include "Localization.h"
 #include "Map.h"
 #include "Music.h"
@@ -36,8 +37,7 @@ void Graphics::init(void)
     trinketcolset = false;
 
     showcutscenebars = false;
-    cutscenebarspos = 0;
-    oldcutscenebarspos = 0;
+    setbars(0);
     notextoutline = false;
 
     flipmode = false;
@@ -97,8 +97,7 @@ void Graphics::init(void)
     //Fading stuff
     SDL_memset(fadebars, 0, sizeof(fadebars));
 
-    fadeamount = 0;
-    oldfadeamount = 0;
+    setfade(0);
     fademode = 0;
 
     // initialize everything else to zero
@@ -1019,71 +1018,89 @@ void Graphics::drawtowertile3( int x, int y, int t, TowerBG& bg_obj )
 
 void Graphics::drawgui(void)
 {
+    int text_sign;
+    int crew_yp;
+    int crew_sprite;
+    if (flipmode)
+    {
+        text_sign = -1;
+        crew_yp = 64 + 48 + 4;
+        crew_sprite = 6;
+    }
+    else
+    {
+        text_sign = 1;
+        crew_yp = 64 + 32 + 4;
+        crew_sprite = 0;
+    }
+
     //Draw all the textboxes to the screen
     for (size_t i = 0; i<textbox.size(); i++)
     {
+        int text_yoff;
+        int yp;
+        bool opaque;
+        if (flipmode)
+        {
+            text_yoff = textbox[i].line.size() * 8;
+        }
+        else
+        {
+            text_yoff = 8;
+        }
+
+        yp = textbox[i].yp;
+        if (flipmode && textbox[i].flipme)
+        {
+            yp += 2 * (120 - yp) - 8 * (textbox[i].line.size() + 2);
+        }
+
         //This routine also updates textbox colors
         float tl_lerp = lerp(textbox[i].prev_tl, textbox[i].tl);
         textbox[i].setcol(textbox[i].tr * tl_lerp, textbox[i].tg * tl_lerp, textbox[i].tb * tl_lerp);
 
-        if (textbox[i].r == 0 && textbox[i].g == 0 && textbox[i].b == 0)
+        if (textbox[i].tr == 0 && textbox[i].tg == 0 && textbox[i].tb == 0)
         {
-            if(flipmode)
+            for (size_t j = 0; j < textbox[i].line.size(); j++)
             {
-                for (size_t j = 0; j < textbox[i].line.size(); j++)
-                {
-                    Print(textbox[i].xp + 8, textbox[i].yp + (textbox[i].line.size()*8) - (j * 8), textbox[i].line[j], 196, 196, 255 - help.glow);
-                }
-            }
-            else
-            {
-                for (size_t j = 0; j < textbox[i].line.size(); j++)
-                {
-                    Print(textbox[i].xp + 8, textbox[i].yp + 8 + (j * 8), textbox[i].line[j], 196, 196, 255 - help.glow);
-                }
+                Print(textbox[i].xp + 8, yp + text_yoff + text_sign * (j * 8), textbox[i].line[j], 196, 196, 255 - help.glow);
             }
         }
         else
         {
+            SDL_Rect textrect = {textbox[i].xp, yp, textbox[i].w, textbox[i].h};
 
-            FillRect(backBuffer,textbox[i].textrect, textbox[i].r/6, textbox[i].g/6, textbox[i].b / 6 );
+            FillRect(backBuffer, textrect, textbox[i].r/6, textbox[i].g/6, textbox[i].b / 6 );
 
-            drawcoloredtile(textbox[i].xp, textbox[i].yp, 40, textbox[i].r, textbox[i].g, textbox[i].b);
-            drawcoloredtile(textbox[i].xp+textbox[i].w-8, textbox[i].yp, 42, textbox[i].r, textbox[i].g, textbox[i].b);
-            drawcoloredtile(textbox[i].xp, textbox[i].yp+textbox[i].h-8, 45, textbox[i].r, textbox[i].g, textbox[i].b);
-            drawcoloredtile(textbox[i].xp+textbox[i].w-8, textbox[i].yp+textbox[i].h-8, 47, textbox[i].r, textbox[i].g, textbox[i].b);
+            drawcoloredtile(textbox[i].xp, yp, 40, textbox[i].r, textbox[i].g, textbox[i].b);
+            drawcoloredtile(textbox[i].xp+textbox[i].w-8, yp, 42, textbox[i].r, textbox[i].g, textbox[i].b);
+            drawcoloredtile(textbox[i].xp, yp+textbox[i].h-8, 45, textbox[i].r, textbox[i].g, textbox[i].b);
+            drawcoloredtile(textbox[i].xp+textbox[i].w-8, yp+textbox[i].h-8, 47, textbox[i].r, textbox[i].g, textbox[i].b);
             for (int k = 0; k < textbox[i].lw; k++)
             {
-                drawcoloredtile(textbox[i].xp + 8 + (k * 8), textbox[i].yp, 41, textbox[i].r, textbox[i].g, textbox[i].b);
-                drawcoloredtile(textbox[i].xp + 8 + (k * 8), textbox[i].yp+textbox[i].h-8, 46, textbox[i].r, textbox[i].g, textbox[i].b);
+                drawcoloredtile(textbox[i].xp + 8 + (k * 8), yp, 41, textbox[i].r, textbox[i].g, textbox[i].b);
+                drawcoloredtile(textbox[i].xp + 8 + (k * 8), yp+textbox[i].h-8, 46, textbox[i].r, textbox[i].g, textbox[i].b);
             }
             for (size_t k = 0; k < textbox[i].line.size(); k++)
             {
-                drawcoloredtile(textbox[i].xp, textbox[i].yp + 8 + (k * 8), 43, textbox[i].r, textbox[i].g, textbox[i].b);
-                drawcoloredtile(textbox[i].xp + textbox[i].w-8, textbox[i].yp + 8 + (k * 8), 44, textbox[i].r, textbox[i].g, textbox[i].b);
+                drawcoloredtile(textbox[i].xp, yp + 8 + (k * 8), 43, textbox[i].r, textbox[i].g, textbox[i].b);
+                drawcoloredtile(textbox[i].xp + textbox[i].w-8, yp + 8 + (k * 8), 44, textbox[i].r, textbox[i].g, textbox[i].b);
             }
 
-            if(flipmode)
+            for (size_t j = 0; j < textbox[i].line.size(); j++)
             {
-                for (size_t j = 0; j < textbox[i].line.size(); j++)
-                {
-                    Print(textbox[i].xp + 8, textbox[i].yp  + (textbox[i].line.size()*8) - (j * 8), textbox[i].line[j], textbox[i].r, textbox[i].g, textbox[i].b);
-                }
-            }
-            else
-            {
-                for (size_t j = 0; j < textbox[i].line.size(); j++)
-                {
-                    Print(textbox[i].xp + 8, textbox[i].yp +8 + (j * 8), textbox[i].line[j], textbox[i].r, textbox[i].g, textbox[i].b);
-                }
+                Print(textbox[i].xp + 8, yp + text_yoff + text_sign * (j * 8), textbox[i].line[j], textbox[i].r, textbox[i].g, textbox[i].b);
             }
         }
 
-        // Only draw special images when fully opaque
-        // This prevents flashes of special images during delta frames
-        bool drawspecial = textbox[i].tl >= 1.0;
+        opaque = textbox[i].tl >= 1.0;
 
-        if ((textbox[i].yp == 12 || textbox[i].yp == 180) && textbox[i].r == 165 && drawspecial)
+        if (!opaque)
+        {
+            continue;
+        }
+
+        if (textbox[i].yp == 12 && textbox[i].tr == 165)
         {
             if (flipmode)
             {
@@ -1094,7 +1111,7 @@ void Graphics::drawgui(void)
                 drawimage(0, 0, 12, true);
             }
         }
-        else if ((textbox[i].yp == 12 || textbox[i].yp == 180) && textbox[i].g == 165 && drawspecial)
+        else if (textbox[i].yp == 12 && textbox[i].tg == 165)
         {
             if (flipmode)
             {
@@ -1105,61 +1122,30 @@ void Graphics::drawgui(void)
                 drawimage(4, 0, 12, true);
             }
         }
-        if (flipmode)
+        if (textbox[i].tr == 175 && textbox[i].tg == 175)
         {
-            if (textbox[i].r == 175 && textbox[i].g == 175 && drawspecial)
-            {
-                //purple guy
-                drawsprite(80 - 6, 64 + 48 + 4, 6, 220- help.glow/4 - int(fRandom()*20), 120- help.glow/4, 210 - help.glow/4);
-            }
-            else if (textbox[i].r == 175 && textbox[i].b == 175 && drawspecial)
-            {
-                //red guy
-                drawsprite(80 - 6, 64 + 48+ 4, 6, 255 - help.glow/8, 70 - help.glow/4, 70 - help.glow / 4);
-            }
-            else if (textbox[i].r == 175 && drawspecial)
-            {
-                //green guy
-                drawsprite(80 - 6, 64 + 48 + 4, 6, 120 - help.glow / 4 - int(fRandom() * 20), 220 - help.glow / 4, 120 - help.glow / 4);
-            }
-            else if (textbox[i].g == 175 && drawspecial)
-            {
-                //yellow guy
-                drawsprite(80 - 6, 64 + 48+ 4, 6, 220- help.glow/4 - int(fRandom()*20), 210 - help.glow/4, 120- help.glow/4);
-            }
-            else if (textbox[i].b == 175 && drawspecial)
-            {
-                //blue guy
-                drawsprite(80 - 6, 64 + 48+ 4, 6, 75, 75, 255- help.glow/4 - int(fRandom()*20));
-            }
+            //purple guy
+            drawsprite(80 - 6, crew_yp, crew_sprite, 220- help.glow/4 - int(fRandom()*20), 120- help.glow/4, 210 - help.glow/4);
         }
-        else
+        else if (textbox[i].tr == 175 && textbox[i].tb == 175)
         {
-            if (textbox[i].r == 175 && textbox[i].g == 175 && drawspecial)
-            {
-                //purple guy
-                drawsprite(80 - 6, 64 + 32 + 4, 0, 220- help.glow/4 - int(fRandom()*20), 120- help.glow/4, 210 - help.glow/4);
-            }
-            else if (textbox[i].r == 175 && textbox[i].b == 175 && drawspecial)
-            {
-                //red guy
-                drawsprite(80 - 6, 64 + 32 + 4, 0, 255 - help.glow/8, 70 - help.glow/4, 70 - help.glow / 4);
-            }
-            else if (textbox[i].r == 175 && drawspecial)
-            {
-                //green guy
-                drawsprite(80 - 6, 64 + 32 + 4, 0, 120 - help.glow / 4 - int(fRandom() * 20), 220 - help.glow / 4, 120 - help.glow / 4);
-            }
-            else if (textbox[i].g == 175 && drawspecial)
-            {
-                //yellow guy
-                drawsprite(80 - 6, 64 + 32 + 4, 0, 220- help.glow/4 - int(fRandom()*20), 210 - help.glow/4, 120- help.glow/4);
-            }
-            else if (textbox[i].b == 175 && drawspecial)
-            {
-                //blue guy
-                drawsprite(80 - 6, 64 + 32 + 4, 0, 75, 75, 255- help.glow/4 - int(fRandom()*20));
-            }
+            //red guy
+            drawsprite(80 - 6, crew_yp, crew_sprite, 255 - help.glow/8, 70 - help.glow/4, 70 - help.glow / 4);
+        }
+        else if (textbox[i].tr == 175)
+        {
+            //green guy
+            drawsprite(80 - 6, crew_yp, crew_sprite, 120 - help.glow / 4 - int(fRandom() * 20), 220 - help.glow / 4, 120 - help.glow / 4);
+        }
+        else if (textbox[i].tg == 175)
+        {
+            //yellow guy
+            drawsprite(80 - 6, crew_yp, crew_sprite, 220- help.glow/4 - int(fRandom()*20), 210 - help.glow/4, 120- help.glow/4);
+        }
+        else if (textbox[i].tb == 175)
+        {
+            //blue guy
+            drawsprite(80 - 6, crew_yp, crew_sprite, 75, 75, 255- help.glow/4 - int(fRandom()*20));
         }
     }
 }
@@ -1296,6 +1282,12 @@ void Graphics::cutscenebarstimer(void)
         cutscenebarspos -= 25;
         cutscenebarspos = VVV_max(cutscenebarspos, 0);
     }
+}
+
+void Graphics::setbars(const int position)
+{
+    cutscenebarspos = position;
+    oldcutscenebarspos = position;
 }
 
 void Graphics::drawcrewman( int x, int y, int t, bool act, bool noshift /*=false*/ )
@@ -1499,8 +1491,15 @@ void Graphics::textboxadjust(void)
 }
 
 
-void Graphics::createtextbox( std::string t, int xp, int yp, int r/*= 255*/, int g/*= 255*/, int b /*= 255*/ )
-{
+void Graphics::createtextboxreal(
+    std::string t,
+    int xp,
+    int yp,
+    int r,
+    int g,
+    int b,
+    bool flipme
+) {
     m = textbox.size();
 
     if(m<20)
@@ -1512,9 +1511,32 @@ void Graphics::createtextbox( std::string t, int xp, int yp, int r/*= 255*/, int
         if (xp == -1) text.xp = 160 - (((length / 2) + 1) * 8);
         text.yp = yp;
         text.initcol(r, g, b);
+        text.flipme = flipme;
         text.resize();
         textbox.push_back(text);
     }
+}
+
+void Graphics::createtextbox(
+    std::string t,
+    int xp,
+    int yp,
+    int r,
+    int g,
+    int b
+) {
+    createtextboxreal(t, xp, yp, r, g, b, false);
+}
+
+void Graphics::createtextboxflipme(
+    std::string t,
+    int xp,
+    int yp,
+    int r,
+    int g,
+    int b
+) {
+    createtextboxreal(t, xp, yp, r, g, b, true);
 }
 
 void Graphics::drawfade(void)
@@ -1553,7 +1575,7 @@ void Graphics::processfade(void)
             {
                 fadebars[i] = -int(fRandom() * 12) * 8;
             }
-            fadeamount = 0;
+            setfade(0);
             fademode = 3;
         }
         else if (fademode == 3)
@@ -1571,7 +1593,7 @@ void Graphics::processfade(void)
             {
                 fadebars[i] = 320 + int(fRandom() * 12) * 8;
             }
-            fadeamount = 416;
+            setfade(416);
             fademode = 5;
         }
         else if (fademode == 5)
@@ -1583,6 +1605,12 @@ void Graphics::processfade(void)
             }
         }
     }
+}
+
+void Graphics::setfade(const int amount)
+{
+    fadeamount = amount;
+    oldfadeamount = amount;
 }
 
 void Graphics::drawmenu( int cr, int cg, int cb, bool levelmenu /*= false*/ )
@@ -1718,7 +1746,7 @@ void Graphics::drawgravityline( int t )
         return;
     }
 
-    if (obj.entities[t].life == 0 || obj.entities[t].onentity == 1) // FIXME: Remove 'onentity == 1' when game loop order is fixed!
+    if (obj.entities[t].life == 0)
     {
         switch(linestate)
         {
@@ -2199,7 +2227,7 @@ void Graphics::drawentity(const int i, const int yoff)
 
         tpoint.x = xp; tpoint.y = yp - yoff;
         setcolreal(obj.entities[i].realcol);
-        setRect(drawRect, Sint16(obj.entities[i].xp ), Sint16(obj.entities[i].yp - yoff), Sint16(sprites_rect.x * 6), Sint16(sprites_rect.y * 6 ) );
+        setRect(drawRect, Sint16(xp), Sint16(yp - yoff), Sint16(sprites_rect.x * 6), Sint16(sprites_rect.y * 6 ) );
         SDL_Surface* TempSurface = ScaleSurface( spritesvec[obj.entities[i].drawframe], 6 * sprites_rect.w,6* sprites_rect.h );
         BlitSurfaceColoured(TempSurface, NULL , backBuffer,  &drawRect, ct );
         SDL_FreeSurface(TempSurface);
@@ -3246,6 +3274,32 @@ void Graphics::renderwithscreeneffects(void)
 	}
 }
 
+void Graphics::renderfixedpre(void)
+{
+	if (game.screenshake > 0)
+	{
+		updatescreenshake();
+	}
+
+	if (screenbuffer != NULL && screenbuffer->badSignalEffect)
+	{
+		UpdateFilter();
+	}
+}
+
+void Graphics::renderfixedpost(void)
+{
+	/* Screen effects timers */
+	if (game.flashlight > 0)
+	{
+		--game.flashlight;
+	}
+	if (game.screenshake > 0)
+	{
+		--game.screenshake;
+	}
+}
+
 void Graphics::bigrprint(int x, int y, std::string& t, int r, int g, int b, bool cen, float sc)
 {
 	std::vector<SDL_Surface*>& font = flipmode ? flipbfont : bfont;
@@ -3437,7 +3491,7 @@ bool Graphics::onscreen(int t)
 	return (t >= -40 && t <= 280);
 }
 
-void Graphics::reloadresources()
+void Graphics::reloadresources(void)
 {
 	grphx.destroy();
 	grphx.init();

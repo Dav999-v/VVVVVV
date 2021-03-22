@@ -177,14 +177,14 @@
     <string english="Screen Effects are OFF." explanation="" max="38*3" comment=""></string>
     <string english="text outline" explanation="menu option" comment=""></string>
     <string english="Text Outline" explanation="title" max="20" comment=""></string>
-    <string english="Disables outline on game text" explanation="" max="38*2" comment=""></string>
+    <string english="Disables outline on game text." explanation="" max="38*2" comment=""></string>
     <string english="Text outlines are ON." explanation="" max="38*3" comment=""></string>
     <string english="Text outlines are OFF." explanation="" max="38*3" comment=""></string>
     <string english="invincibility" explanation="menu option" comment=""></string>
     <string english="Invincibility" explanation="title" max="20" comment=""></string>
     <string english="Provided to help disabled gamers explore the game. Can cause glitches." explanation="invincibility mode" max="38*3" comment=""></string>
     <string english="Invincibility is ON." explanation="" max="38*2" comment=""></string>
-    <string english="Invincibility is off." explanation="" max="38*2" comment=""></string>
+    <string english="Invincibility is OFF." explanation="" max="38*2" comment=""></string>
     <string english="Are you sure you want to enable invincibility?" explanation="" max="38*7" comment=""></string>
     <string english="no, return to options" explanation="menu option" comment=""></string>
     <string english="yes, enable" explanation="menu option" comment=""></string>

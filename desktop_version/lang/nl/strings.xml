@@ -177,14 +177,14 @@
     <string english="Screen Effects are OFF." explanation="" max="38*3" comment="">Schermeffecten staan UIT.</string>
     <string english="text outline" explanation="menu option" comment="">tekstomtrek</string>
     <string english="Text Outline" explanation="title" max="20" comment="">Tekstomtrek</string>
-    <string english="Disables outline on game text" explanation="" max="38*2" comment="">Schakelt de omtrek om tekst in het spel uit</string>
+    <string english="Disables outline on game text." explanation="" max="38*2" comment="">Schakelt de omtrek om tekst in het spel uit.</string>
     <string english="Text outlines are ON." explanation="" max="38*3" comment="">Tekstomtrek staat AAN.</string>
     <string english="Text outlines are OFF." explanation="" max="38*3" comment="">Tekstomtrek staat UIT.</string>
     <string english="invincibility" explanation="menu option" comment="">onkwetsbaarheid</string>
     <string english="Invincibility" explanation="title" max="20" comment="">Onkwetsbaarheid</string>
     <string english="Provided to help disabled gamers explore the game. Can cause glitches." explanation="invincibility mode" max="38*3" comment="">Beschikbaar om gehandicapte spelers te helpen het spel te verkennen. Kan glitches veroorzaken.</string>
     <string english="Invincibility is ON." explanation="" max="38*2" comment="">Onkwetsbaarheid staat AAN.</string>
-    <string english="Invincibility is off." explanation="" max="38*2" comment="">Onkwetsbaarheid staat uit.</string>
+    <string english="Invincibility is OFF." explanation="" max="38*2" comment="">Onkwetsbaarheid staat UIT.</string>
     <string english="Are you sure you want to enable invincibility?" explanation="" max="38*7" comment="">Weet je zeker dat je onkwetsbaarheid wilt inschakelen?</string>
     <string english="no, return to options" explanation="menu option" comment="">nee, terug naar opties</string>
     <string english="yes, enable" explanation="menu option" comment="">ja, inschakelen</string>

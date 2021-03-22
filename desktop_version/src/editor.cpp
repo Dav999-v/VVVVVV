@@ -9,6 +9,7 @@
 #include <tinyxml2.h>
 #include <utf8/unchecked.h>
 
+#include "DeferCallbacks.h"
 #include "Entity.h"
 #include "Enums.h"
 #include "FileSystemUtils.h"
@@ -2456,11 +2457,6 @@ static void editormenurender(int tr, int tg, int tb)
 void editorrender(void)
 {
     extern editorclass ed;
-    if (game.shouldreturntoeditor)
-    {
-        graphics.backgrounddrawn = false;
-    }
-
     //Draw grid
 
     ClearSurface(graphics.backBuffer);
@@ -2687,47 +2683,17 @@ void editorrender(void)
             case 11: //Gravity lines
                 if(edentity[i].p1==0)  //Horizontal
                 {
-                    int tx=edentity[i].x-(ed.levx*40);
-                    int tx2=edentity[i].x-(ed.levx*40);
-                    int ty=edentity[i].y-(ed.levy*30);
-                    if (edentity[i].p4 != 1)
-                    {
-                        // Unlocked
-                        while(ed.spikefree(tx,ty)==0) tx--;
-                        while(ed.spikefree(tx2,ty)==0) tx2++;
-                        tx++;
-                        edentity[i].p2=tx;
-                        edentity[i].p3=(tx2-tx)*8;
-                    }
-                    else
-                    {
-                        // Locked
-                        tx = edentity[i].p2;
-                        tx2 = tx + edentity[i].p3/8;
-                    }
+                    int tx = edentity[i].p2;
+                    int tx2 = tx + edentity[i].p3/8;
+                    int ty = edentity[i].y % 30;
                     FillRect(graphics.backBuffer, (tx*8),(ty*8)+4, (tx2-tx)*8,1, graphics.getRGB(194,194,194));
                     fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),8,8,graphics.getRGB(164,255,164));
                 }
                 else  //Vertical
                 {
-                    int tx=edentity[i].x-(ed.levx*40);
-                    int ty=edentity[i].y-(ed.levy*30);
-                    int ty2=edentity[i].y-(ed.levy*30);
-                    if (edentity[i].p4 != 1)
-                    {
-                        // Unlocked
-                        while(ed.spikefree(tx,ty)==0) ty--;
-                        while(ed.spikefree(tx,ty2)==0) ty2++;
-                        ty++;
-                        edentity[i].p2=ty;
-                        edentity[i].p3=(ty2-ty)*8;
-                    }
-                    else
-                    {
-                        // Locked
-                        ty = edentity[i].p2;
-                        ty2 = ty + edentity[i].p3/8;
-                    }
+                    int tx = edentity[i].x % 40;
+                    int ty = edentity[i].p2;
+                    int ty2 = ty + edentity[i].p3/8;
                     FillRect(graphics.backBuffer, (tx*8)+3,(ty*8), 1,(ty2-ty)*8, graphics.getRGB(194,194,194));
                     fillboxabs((edentity[i].x*8)- (ed.levx*40*8),(edentity[i].y*8)- (ed.levy*30*8),8,8,graphics.getRGB(164,255,164));
                 }
@@ -3028,10 +2994,9 @@ void editorrender(void)
         int t2=0;
         if(ed.dmtileeditor>0)
         {
-            ed.dmtileeditor--;
             if(ed.dmtileeditor<=4)
             {
-                t2=(4-ed.dmtileeditor)*12;
+                t2=graphics.lerp((4-ed.dmtileeditor+1)*12, (4-ed.dmtileeditor)*12);
             }
 
             //Draw five lines of the editor
@@ -3466,14 +3431,6 @@ void editorrender(void)
             //FillRect(graphics.backBuffer, 0,231,71,240, graphics.RGB(0,0,0));
             if(ed.level[ed.levx+(ed.maxwidth*ed.levy)].roomname!="")
             {
-                if(ed.tiley<28)
-                {
-                    if(ed.roomnamehide>0) ed.roomnamehide--;
-                }
-                else
-                {
-                    if(ed.roomnamehide<12) ed.roomnamehide++;
-                }
                 if (graphics.translucentroomname)
                 {
                     graphics.footerrect.y = 230+ed.roomnamehide;
@@ -3665,6 +3622,98 @@ void editorrenderfixed(void)
     {
         graphics.updatetowerbackground(graphics.titlebg);
     }
+
+    /* Correct gravity lines */
+    for (size_t i = 0; i < edentity.size(); ++i)
+    {
+        if (edentity[i].x / 40 != ed.levx
+        || edentity[i].y / 30 != ed.levy
+        || edentity[i].t != 11
+        /* Is the gravity line locked? */
+        || edentity[i].p4 == 1)
+        {
+            continue;
+        }
+
+        if (edentity[i].p1 == 0)
+        {
+            /* Horizontal */
+            int tx = edentity[i].x % 40;
+            int tx2 = tx;
+            int ty = edentity[i].y % 30;
+            while (!ed.spikefree(tx, ty))
+            {
+                --tx;
+            }
+            while (!ed.spikefree(tx2, ty))
+            {
+                ++tx2;
+            }
+            ++tx;
+            edentity[i].p2 = tx;
+            edentity[i].p3 = (tx2 - tx) * 8;
+        }
+        else
+        {
+            /* Vertical */
+            int tx = edentity[i].x % 40;
+            int ty = edentity[i].y % 30;
+            int ty2 = ty;
+            /* Unlocked */
+            while (!ed.spikefree(tx, ty))
+            {
+                --ty;
+            }
+            while (!ed.spikefree(tx, ty2))
+            {
+                ++ty2;
+            }
+            ++ty;
+            edentity[i].p2 = ty;
+            edentity[i].p3 = (ty2 - ty) * 8;
+        }
+    }
+
+    if (ed.level[ed.levx + ed.maxwidth*ed.levy].directmode == 1)
+    {
+        if (ed.dmtileeditor > 0)
+        {
+            ed.dmtileeditor--;
+        }
+    }
+    else
+    {
+        ed.dmtileeditor = 0;
+    }
+
+    if (ed.level[ed.levx + ed.maxwidth*ed.levy].roomname != "")
+    {
+        if (ed.tiley < 28)
+        {
+            if (ed.roomnamehide > 0)
+            {
+                ed.roomnamehide--;
+            }
+        }
+        else
+        {
+            if (ed.roomnamehide < 12)
+            {
+                ed.roomnamehide++;
+            }
+        }
+    }
+    else
+    {
+        if (ed.tiley < 28)
+        {
+            ed.roomnamehide = 0;
+        }
+        else
+        {
+            ed.roomnamehide = 12;
+        }
+    }
 }
 
 void editorlogic(void)
@@ -3672,11 +3721,6 @@ void editorlogic(void)
     extern editorclass ed;
     //Misc
     help.updateglow();
-
-    if (game.shouldreturntoeditor)
-    {
-        game.shouldreturntoeditor = false;
-    }
 
     graphics.titlebg.bypos -= 2;
     graphics.titlebg.bscroll = -2;
@@ -3705,8 +3749,22 @@ void editorlogic(void)
     }
 }
 
+static void creategraphicoptions(void)
+{
+    game.createmenu(Menu::graphicoptions);
+}
 
-static void editormenuactionpress()
+static void creategameoptions(void)
+{
+    game.createmenu(Menu::options);
+}
+
+static void nextbgcolor(void)
+{
+    map.nexttowercolour();
+}
+
+static void editormenuactionpress(void)
 {
     extern editorclass ed;
     switch (game.currentmenuname)
@@ -3795,6 +3853,25 @@ static void editormenuactionpress()
             graphics.backgrounddrawn=false;
             break;
         case 6:
+        case 7:
+            /* Graphic options and game options */
+            music.playef(11);
+            game.gamestate = TITLEMODE;
+            game.ingame_titlemode = true;
+            game.ingame_editormode = true;
+
+            if (game.currentmenuoption == 6)
+            {
+                DEFER_CALLBACK(creategraphicoptions);
+            }
+            else
+            {
+                DEFER_CALLBACK(creategameoptions);
+            }
+
+            DEFER_CALLBACK(nextbgcolor);
+            break;
+        default:
             music.playef(11);
             game.createmenu(Menu::ed_quit);
             map.nexttowercolour();
@@ -3954,7 +4031,30 @@ void editorinput(void)
         else
         {
 
-            ed.settingsmod=!ed.settingsmod;
+            music.playef(11);
+            if (ed.settingsmod)
+            {
+                if (ed.scripteditmod)
+                {
+                    ed.scripteditmod = false;
+                }
+                else if (ed.settingsmod)
+                {
+                    if (game.currentmenuname == Menu::ed_settings)
+                    {
+                        ed.settingsmod = false;
+                    }
+                    else
+                    {
+                        game.returnmenu();
+                        map.nexttowercolour();
+                    }
+                }
+            }
+            else
+            {
+                ed.settingsmod = true;
+            }
             graphics.backgrounddrawn=false;
 
             if (ed.settingsmod)
@@ -4062,12 +4162,6 @@ void editorinput(void)
                     }
                     key.keybuffer=ed.sb[ed.pagey+ed.sby];
                     ed.sbx = utf8::unchecked::distance(ed.sb[ed.pagey+ed.sby].begin(), ed.sb[ed.pagey+ed.sby].end());
-                }
-
-                if (key.isDown(27))
-                {
-                    ed.scripteditmod=false;
-                    ed.settingsmod=false;
                 }
             }
         }
