@@ -37,7 +37,6 @@ public:
 
 	bool resetWindow;
 
-	bool quitProgram;
 	void toggleFullscreen(void);
 
 	int sensitivity;
@@ -68,8 +67,6 @@ public:
 	std::string keybuffer;
 
 	bool linealreadyemptykludge;
-
-	Uint64 pauseStart;
 
 private:
 	std::map<SDL_JoystickID, SDL_GameController*> controllers;

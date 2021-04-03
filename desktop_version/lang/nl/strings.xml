@@ -160,9 +160,14 @@
     <string english="Room name background is OPAQUE" explanation="" max="38*2" comment="">Kamernaamachtergrond is ONDOORZICHTIG</string>
     <string english="glitchrunner mode" explanation="menu option, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" comment="">glitchrunnermodus</string>
     <string english="Glitchrunner Mode" explanation="title, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" max="20" comment="">Glitchrunnermodus</string>
-    <string english="Re-enable glitches that existed in previous versions of the game" explanation="glitchrunner mode" max="38*3" comment="">Herstel glitches die bestonden in vorige versies van het spel</string>
+    <string english="Re-enable glitches that existed in previous versions of the game." explanation="glitchrunner mode" max="38*3" comment="">Herstel glitches die bestonden in vorige versies van het spel.</string>
     <string english="Glitchrunner mode is ON" explanation="" max="38*2" comment="">Glitchrunnermodus staat AAN</string>
     <string english="Glitchrunner mode is OFF" explanation="" max="38*2" comment="">Glitchrunnermodus staat UIT</string>
+    <string english="input delay" explanation="menu option, enable 1 frame of delay after pressing input" comment=""></string>
+    <string english="Input Delay" explanation="title, enable 1 frame of delay after pressing input" max="20" comment=""></string>
+    <string english="Re-enable the 1-frame input delay from previous versions of the game." explanation="input delay" max="38*2" comment=""></string>
+    <string english="Input delay is ON" explanation="" max="38*2" comment=""></string>
+    <string english="Input delay is OFF" explanation="" max="38*2" comment=""></string>
     <string english="accessibility options" explanation="menu option" comment="">toegankelijkheidsopties</string>
     <string english="Accessibility" explanation="title" max="20" comment="">Toegankelijkheid</string>
     <string english="Disable screen effects, enable slowdown modes or invincibility" explanation="" max="38*5" comment="">Schakel schermeffecten uit, schakel vertraging of onkwetsbaarheid in</string>
@@ -460,10 +465,6 @@
     <string english="ERROR: No checkpoint to spawn at" explanation="we cannot playtest because there is no checkpoint in this room that the player could start (be spawned) at" max="38*3" comment="">FOUT: Geen checkpoint om op te starten</string>
     <string english="ERROR: Max number of trinkets is 100" explanation="" max="38*3" comment="">FOUT: Maximumaantal trinkets is 100</string>
     <string english="ERROR: Max number of crewmates is 100" explanation="" max="38*3" comment="">FOUT: Maximumaantal bemanningsleden is 100</string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>

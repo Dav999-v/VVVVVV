@@ -360,8 +360,21 @@ static void menurender(void)
         int totalheight = (endidx - startidx) * 14;
         int emptyspace = maxheight - totalheight;
 
-        int xofs = 80 - 16;
-        int yofs = 40 + 20 + (emptyspace / 2);
+        int xofs, yofs;
+
+        if (startidx == 0)
+        {
+            graphics.Print(-1, 60, Credits::githubfriends[0], tr, tg, tb, true);
+            graphics.Print(-1, 80, Credits::githubfriends[2], tr, tg, tb, true);
+            startidx += 4; // Skip the superfriends now that we've drawn them...
+            xofs = 80 - 28;
+            yofs = 80 + 20 + (emptyspace / 2);
+        }
+        else
+        {
+            xofs = 80 - 16;
+            yofs = 40 + 20 + (emptyspace / 2);
+        }
 
         for (int i = startidx; i < endidx; ++i)
         {
@@ -519,7 +532,7 @@ static void menurender(void)
             break;
         case 4:
             graphics.bigprint( -1, 30, loc::gettext("Glitchrunner Mode"), tr, tg, tb, true);
-            graphics.PrintWrap( -1, 65, loc::gettext("Re-enable glitches that existed in previous versions of the game"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Re-enable glitches that existed in previous versions of the game."), tr, tg, tb, true);
             if (game.glitchrunnermode)
             {
                 graphics.PrintWrap( -1, 95, loc::gettext("Glitchrunner mode is ON"), tr, tg, tb, true);
@@ -527,6 +540,18 @@ static void menurender(void)
             else
             {
                 graphics.PrintWrap( -1, 95, loc::gettext("Glitchrunner mode is OFF"), tr/2, tg/2, tb/2, true);
+            }
+            break;
+        case 5:
+            graphics.bigprint(-1, 30, loc::gettext("Input Delay"), tr, tg, tb, true);
+            graphics.PrintWrap(-1, 65, loc::gettext("Re-enable the 1-frame input delay from previous versions of the game."), tr, tg, tb, true);
+            if (game.inputdelay)
+            {
+                graphics.PrintWrap(-1, 95, loc::gettext("Input delay is ON"), tr, tg, tb, true);
+            }
+            else
+            {
+                graphics.PrintWrap(-1, 95, loc::gettext("Input delay is OFF"), tr/2, tg/2, tb/2, true);
             }
             break;
         }
@@ -1527,20 +1552,20 @@ void gamerender(void)
         if (game.swngame == 0)
         {
             std::string tempstring = help.timestring(game.swntimer);
-            graphics.bigprint( -1, 20, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
+            graphics.bigbprint( -1, 20, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
         }
         else if (game.swngame == 1)
         {
             if (game.swnmessage == 0)
             {
                 std::string tempstring = help.timestring(game.swntimer);
-                graphics.Print( 10, 10, loc::gettext("Current Time"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false);
-                graphics.bigprint( 25, 24, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false, 2);
+                graphics.bprint( 10, 10, loc::gettext("Current Time"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false);
+                graphics.bigbprint( 25, 24, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false, 2);
                 tempstring = help.timestring(game.swnrecord);
                 #define BESTTIMELABEL loc::gettext("Best Time")
-                graphics.Print( 320-graphics.len(BESTTIMELABEL)-8, 10, BESTTIMELABEL, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false);
+                graphics.bprint( 320-graphics.len(BESTTIMELABEL)-8, 10, BESTTIMELABEL, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false);
                 #undef BESTTIMELABEL
-                graphics.bigrprint( 300, 24, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false, 2);
+                graphics.bigbrprint( 300, 24, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false, 2);
 
                 switch(game.swnbestrank)
                 {
@@ -1570,17 +1595,17 @@ void gamerender(void)
             else if (game.swnmessage == 1)
             {
                 std::string tempstring = help.timestring(game.swntimer);
-                graphics.Print( 10, 10, loc::gettext("Current Time"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false);
-                graphics.bigprint( 25, 24, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false, 2);
+                graphics.bprint( 10, 10, loc::gettext("Current Time"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false);
+                graphics.bigbprint( 25, 24, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false, 2);
                 tempstring = help.timestring(game.swnrecord);
                 if (int(game.deathseq / 5) % 2 == 1)
                 {
                     #define BESTTIMELABEL loc::gettext("Best Time")
-                    graphics.Print( 320-graphics.len(BESTTIMELABEL)-8, 10, BESTTIMELABEL, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false);
+                    graphics.bprint( 320-graphics.len(BESTTIMELABEL)-8, 10, BESTTIMELABEL, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false);
                     #undef BESTTIMELABEL
-                    graphics.bigrprint( 300, 24, tempstring, 128 - (help.glow), 220 - (help.glow), 128 - (help.glow / 2), false, 2);
+                    graphics.bigbrprint( 300, 24, tempstring, 128 - (help.glow), 220 - (help.glow), 128 - (help.glow / 2), false, 2);
 
-                    graphics.bigprint( -1, 200, loc::gettext("New Record!"), 128 - (help.glow), 220 - (help.glow), 128 - (help.glow / 2), true, 2);
+                    graphics.bigbprint( -1, 200, loc::gettext("New Record!"), 128 - (help.glow), 220 - (help.glow), 128 - (help.glow / 2), true, 2);
                 }
             }
             else if (game.swnmessage >= 2)
@@ -1588,21 +1613,21 @@ void gamerender(void)
                 game.swnmessage--;
                 if (game.swnmessage == 2) game.swnmessage = 0;
                 std::string tempstring = help.timestring(game.swntimer);
-                graphics.Print( 10, 10, loc::gettext("Current Time"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false);
-                graphics.bigprint( 25, 24, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false, 2);
+                graphics.bprint( 10, 10, loc::gettext("Current Time"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false);
+                graphics.bigbprint( 25, 24, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false, 2);
                 tempstring = help.timestring(game.swnrecord);
                 #define BESTTIMELABEL loc::gettext("Best Time")
-                graphics.Print( 320-graphics.len(BESTTIMELABEL)-8, 10, BESTTIMELABEL, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false);
+                graphics.bprint( 320-graphics.len(BESTTIMELABEL)-8, 10, BESTTIMELABEL, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false);
                 #undef BESTTIMELABEL
-                graphics.bigrprint( 300, 24, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false, 2);
+                graphics.bigbrprint( 300, 24, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), false, 2);
 
                 if (int(game.swnmessage / 5) % 2 == 1)
                 {
-                    graphics.bigprint( -1, 200, loc::gettext("New Trophy!"), 220 - (help.glow), 128 - (help.glow), 128 - (help.glow / 2), true, 2);
+                    graphics.bigbprint( -1, 200, loc::gettext("New Trophy!"), 220 - (help.glow), 128 - (help.glow), 128 - (help.glow / 2), true, 2);
                 }
             }
 
-            graphics.Print( 20, 228, loc::gettext("[Press ENTER to stop]"), 160 - (help.glow/2), 160 - (help.glow/2), 160 - (help.glow/2), true);
+            graphics.bprint( 20, 228, loc::gettext("[Press ENTER to stop]"), 160 - (help.glow/2), 160 - (help.glow/2), 160 - (help.glow/2), true);
         }
         else if(game.swngame==2)
         {
@@ -1621,24 +1646,24 @@ void gamerender(void)
                     y2 = 30;
                 }
                 // TODO LOC: wrapped bigprint.
-                graphics.bigprint( -1, y1, "Survive for", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
-                graphics.bigprint( -1, y2, "60 seconds!", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
+                graphics.bigbprint( -1, y1, "Survive for", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
+                graphics.bigbprint( -1, y2, "60 seconds!", 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
             }
         }
         else if(game.swngame==7)
         {
             if (game.swndelay >= 60)
             {
-                graphics.bigprint( -1, 20, loc::gettext("SUPER GRAVITRON"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
+                graphics.bigbprint( -1, 20, loc::gettext("SUPER GRAVITRON"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
 
                 std::string tempstring = help.timestring(game.swnrecord);
-                graphics.Print( 240, 190, loc::gettext("Best Time"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
-                graphics.bigrprint( 300, 205, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
+                graphics.bprint( 240, 190, loc::gettext("Best Time"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true);
+                graphics.bigbrprint( 300, 205, tempstring, 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
             }
             else	if (int(game.swndelay / 10) % 2 == 1)
             {
-                graphics.bigprint( -1, 20, loc::gettext("SUPER GRAVITRON"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
-                graphics.bigprint( -1, 200, loc::gettext("GO!"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 3);
+                graphics.bigbprint( -1, 20, loc::gettext("SUPER GRAVITRON"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 2);
+                graphics.bigbprint( -1, 200, loc::gettext("GO!"), 220 - (help.glow), 220 - (help.glow), 255 - (help.glow / 2), true, 3);
             }
         }
     }
@@ -1847,7 +1872,7 @@ void maprender(void)
           if(map.customzoom==4){
             for (int j = 0; j < map.customheight; j++){
               for (int i = 0; i < map.customwidth; i++){
-                if(map.explored[i+(j*20)]==0){
+                if(!map.isexplored(i, j)){
                   //Draw the fog of war on the map
                   graphics.drawimage(2, map.custommmxoff+40 + (i * 48), map.custommmyoff+21 + (j * 36), false);
                   graphics.drawimage(2, map.custommmxoff+40 + 12 + (i * 48), map.custommmyoff+21 + (j * 36), false);
@@ -1874,7 +1899,7 @@ void maprender(void)
           }else if(map.customzoom==2){
             for (int j = 0; j < map.customheight; j++){
               for (int i = 0; i < map.customwidth; i++){
-                if(map.explored[i+(j*20)]==0){
+                if(!map.isexplored(i, j)){
                   //Draw the fog of war on the map
                   graphics.drawimage(2, map.custommmxoff+40 + (i * 24), map.custommmyoff+21 + (j * 18), false);
                   graphics.drawimage(2, map.custommmxoff+40 + 12 + (i * 24), map.custommmyoff+21 + (j * 18), false);
@@ -1886,7 +1911,7 @@ void maprender(void)
           }else{
             for (int j = 0; j < map.customheight; j++){
               for (int i = 0; i < map.customwidth; i++){
-                if(map.explored[i+(j*20)]==0){
+                if(!map.isexplored(i, j)){
                   //Draw the fog of war on the map
                   graphics.drawimage(2, map.custommmxoff+40 + (i * 12), map.custommmyoff+21 + (j * 9), false);
                 }
@@ -1957,7 +1982,7 @@ void maprender(void)
             {
                 for (int i = 0; i < 20; i++)
                 {
-                    if(map.explored[i+(j*20)]==0)
+                    if(!map.isexplored(i, j))
                     {
                         //Draw the fog of war on the map
                         graphics.drawimage(2, 40 + (i * 12), 21 + (j * 9), false);
@@ -2007,15 +2032,15 @@ void maprender(void)
             //draw legend details
             for (size_t i = 0; i < map.teleporters.size(); i++)
             {
-                if (map.showteleporters && map.explored[map.teleporters[i].x + (20 * map.teleporters[i].y)] > 0)
+                if (map.showteleporters && map.isexplored(map.teleporters[i].x, map.teleporters[i].y))
                 {
-                    int temp = 1126 + map.explored[map.teleporters[i].x + (20 * map.teleporters[i].y)];
+                    int temp = 1126 + (int) map.isexplored(map.teleporters[i].x, map.teleporters[i].y);
                     if (graphics.flipmode) temp += 3;
                     graphics.drawtile(40 + 3 + (map.teleporters[i].x * 12), 22 + (map.teleporters[i].y * 9), temp);
                 }
-                else if(map.showtargets && map.explored[map.teleporters[i].x+(20*map.teleporters[i].y)]==0)
+                else if(map.showtargets && !map.isexplored(map.teleporters[i].x, map.teleporters[i].y))
                 {
-                    int temp = 1126 + map.explored[map.teleporters[i].x + (20 * map.teleporters[i].y)];
+                    int temp = 1126 + (int) map.isexplored(map.teleporters[i].x, map.teleporters[i].y);
                     if (graphics.flipmode) temp += 3;
                     graphics.drawtile(40 + 3 + (map.teleporters[i].x * 12), 22 + (map.teleporters[i].y * 9), temp);
                 }
@@ -2522,9 +2547,8 @@ void teleporterrender(void)
     {
         for (int i = 0; i < 20; i++)
         {
-            if(map.explored[i+(j*20)]==0)
+            if(!map.isexplored(i, j))
             {
-                //graphics.drawfillrect(10 + (i * 12), 21 + (j * 9), 12, 9, 16, 16, 16);
                 graphics.drawimage(2, 40 + (i * 12), 21 + (j * 9), false);
             }
         }
@@ -2555,15 +2579,15 @@ void teleporterrender(void)
     //draw legend details
     for (size_t i = 0; i < map.teleporters.size(); i++)
     {
-        if (map.showteleporters && map.explored[map.teleporters[i].x + (20 * map.teleporters[i].y)] > 0)
+        if (map.showteleporters && map.isexplored(map.teleporters[i].x, map.teleporters[i].y))
         {
-            temp = 1126 + map.explored[map.teleporters[i].x + (20 * map.teleporters[i].y)];
+            temp = 1126 + (int) map.isexplored(map.teleporters[i].x, map.teleporters[i].y);
             if (graphics.flipmode) temp += 3;
             graphics.drawtile(40 + 3 + (map.teleporters[i].x * 12), 22 + (map.teleporters[i].y * 9), temp);
         }
-        else if(map.showtargets && map.explored[map.teleporters[i].x+(20*map.teleporters[i].y)]==0)
+        else if(map.showtargets && !map.isexplored(map.teleporters[i].x, map.teleporters[i].y))
         {
-            temp = 1126 + map.explored[map.teleporters[i].x + (20 * map.teleporters[i].y)];
+            temp = 1126 + (int) map.isexplored(map.teleporters[i].x, map.teleporters[i].y);
             if (graphics.flipmode) temp += 3;
             graphics.drawtile(40 + 3 + (map.teleporters[i].x * 12), 22 + (map.teleporters[i].y * 9), temp);
         }

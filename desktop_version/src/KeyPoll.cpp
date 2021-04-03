@@ -5,6 +5,7 @@
 #include <string.h>
 #include <utf8/unchecked.h>
 
+#include "Exit.h"
 #include "Game.h"
 #include "Graphics.h"
 #include "Music.h"
@@ -36,7 +37,6 @@ KeyPoll::KeyPoll(void)
 	// 0..5
 	sensitivity = 2;
 
-	quitProgram = 0;
 	keybuffer="";
 	leftbutton=0; rightbutton=0; middlebutton=0;
 	mx=0; my=0;
@@ -55,8 +55,6 @@ KeyPoll::KeyPoll(void)
 	}
 
 	linealreadyemptykludge = false;
-
-	pauseStart = 0;
 
 	isActive = true;
 }
@@ -141,7 +139,12 @@ void KeyPoll::Poll(void)
 				else if (	evt.key.keysym.sym == SDLK_v &&
 						keymap[SDLK_LCTRL]	)
 				{
-					keybuffer += SDL_GetClipboardText();
+					char* text = SDL_GetClipboardText();
+					if (text != NULL)
+					{
+						keybuffer += text;
+						SDL_free(text);
+					}
 				}
 			}
 			break;
@@ -282,6 +285,8 @@ void KeyPoll::Poll(void)
 				if (!game.disablepause)
 				{
 					isActive = true;
+					music.resume();
+					music.resumeef();
 				}
 				if (!useFullscreenSpaces)
 				{
@@ -295,16 +300,13 @@ void KeyPoll::Poll(void)
 					}
 				}
 				SDL_DisableScreenSaver();
-				if (!game.disablepause && Mix_PlayingMusic())
-				{
-					// Correct songStart for how long we were paused
-					music.songStart += SDL_GetPerformanceCounter() - pauseStart;
-				}
 				break;
 			case SDL_WINDOWEVENT_FOCUS_LOST:
 				if (!game.disablepause)
 				{
 					isActive = false;
+					music.pause();
+					music.pauseef();
 				}
 				if (!useFullscreenSpaces)
 				{
@@ -316,10 +318,6 @@ void KeyPoll::Poll(void)
 					);
 				}
 				SDL_EnableScreenSaver();
-				if (!game.disablepause)
-				{
-					pauseStart = SDL_GetPerformanceCounter();
-				}
 				break;
 
 			/* Mouse Focus */
@@ -334,7 +332,7 @@ void KeyPoll::Poll(void)
 
 		/* Quit Event */
 		case SDL_QUIT:
-			quitProgram = true;
+			VVV_exit(0);
 			break;
 		}
 	}

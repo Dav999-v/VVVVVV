@@ -150,6 +150,7 @@ public:
 	std::string unwordwrap(const std::string& _s);
 
 	void bigprint( int _x, int _y, std::string _s, int r, int g, int b, bool cen = false, int sc = 2 );
+	void bigbprint(int x, int y, std::string s, int r, int g, int b, bool cen = false, int sc = 2);
 	void drawspritesetcol(int x, int y, int t, int c);
 
 
@@ -174,6 +175,7 @@ public:
 	void drawtrophytext(void);
 
 	void bigrprint(int x, int y, std::string& t, int r, int g, int b, bool cen = false, float sc = 2);
+	void bigbrprint(int x, int y, std::string& t, int r, int g, int b, bool cen = false, float sc = 2);
 
 
 	void drawtele(int x, int y, int t, Uint32 c);
@@ -301,6 +303,7 @@ public:
 	int fadeamount;
 	int oldfadeamount;
 	int fadebars[15];
+	int ingame_fademode;
 
 	bool trinketcolset;
 	int trinketr, trinketg, trinketb;

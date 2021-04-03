@@ -292,6 +292,11 @@ void Game::init(void)
             const char* pKey = pElem->Value();
             const char* pText = pElem->GetText() ;
 
+            if (pText == NULL)
+            {
+                pText = "";
+            }
+
             if (SDL_strcmp(pKey, "summary") == 0)
             {
                 quicksummary = pText;
@@ -331,6 +336,11 @@ void Game::init(void)
         {
             const char* pKey = pElem->Value();
             const char* pText = pElem->GetText() ;
+
+            if (pText == NULL)
+            {
+                pText = "";
+            }
 
             if (SDL_strcmp(pKey, "summary") == 0)
             {
@@ -375,6 +385,7 @@ void Game::init(void)
     kludge_ingametemp = Menu::mainmenu;
 
     disablepause = false;
+    inputdelay = false;
 }
 
 void Game::lifesequence(void)
@@ -4016,6 +4027,11 @@ void Game::loadstats(ScreenSettings* screen_settings)
         const char* pKey = pElem->Value();
         const char* pText = pElem->GetText() ;
 
+        if (pText == NULL)
+        {
+            pText = "";
+        }
+
         LOAD_ARRAY(unlock)
 
         LOAD_ARRAY(unlocknotify)
@@ -4072,6 +4088,11 @@ void Game::deserializesettings(tinyxml2::XMLElement* dataNode, ScreenSettings* s
     {
         const char* pKey = pElem->Value();
         const char* pText = pElem->GetText();
+
+        if (pText == NULL)
+        {
+            pText = "";
+        }
 
         if (SDL_strcmp(pKey, "fullscreen") == 0)
         {
@@ -4151,6 +4172,11 @@ void Game::deserializesettings(tinyxml2::XMLElement* dataNode, ScreenSettings* s
         if (SDL_strcmp(pKey, "over30mode") == 0)
         {
             over30mode = help.Int(pText);
+        }
+
+        if (SDL_strcmp(pKey, "inputdelay") == 0)
+        {
+            inputdelay = help.Int(pText);
         }
 
         if (SDL_strcmp(pKey, "glitchrunnermode") == 0)
@@ -4407,6 +4433,8 @@ void Game::serializesettings(tinyxml2::XMLElement* dataNode, const ScreenSetting
     xml::update_tag(dataNode, "showmousecursor", (int) graphics.showmousecursor);
 
     xml::update_tag(dataNode, "over30mode", (int) over30mode);
+
+    xml::update_tag(dataNode, "inputdelay", (int) inputdelay);
 
     xml::update_tag(dataNode, "glitchrunnermode", (int) glitchrunnermode);
 
@@ -5139,6 +5167,11 @@ void Game::loadsummary(void)
             const char* pKey = pElem->Value();
             const char* pText = pElem->GetText() ;
 
+            if (pText == NULL)
+            {
+                pText = "";
+            }
+
             if (SDL_strcmp(pKey, "summary") == 0)
             {
                 telesummary = pText;
@@ -5215,6 +5248,11 @@ void Game::loadsummary(void)
         {
             const char* pKey = pElem->Value();
             const char* pText = pElem->GetText() ;
+
+            if (pText == NULL)
+            {
+                pText = "";
+            }
 
             if (SDL_strcmp(pKey, "summary") == 0)
             {
@@ -5995,6 +6033,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("fake load screen"));
         option(loc::gettext("room name background"));
         option(loc::gettext("glitchrunner mode"));
+        option(loc::gettext("input delay"));
         option(loc::gettext("return"));
         menuyoff = 0;
         break;
@@ -6658,6 +6697,11 @@ static void nextbgcolor(void)
     map.nexttowercolour();
 }
 
+static void setfademode(void)
+{
+    graphics.fademode = graphics.ingame_fademode;
+}
+
 void Game::returntoingame(void)
 {
     ingame_titlemode = false;
@@ -6676,6 +6720,7 @@ void Game::returntoingame(void)
         DEFER_CALLBACK(returntoingametemp);
         gamestate = MAPMODE;
         graphics.flipmode = graphics.setflipmode;
+        DEFER_CALLBACK(setfademode);
         if (!map.custommode && !graphics.flipmode)
         {
             obj.flags[73] = true;
@@ -6718,4 +6763,34 @@ void Game::copyndmresults(void)
     ndmresulttrinkets = trinkets();
     ndmresulthardestroom = hardestroom;
     SDL_memcpy(ndmresultcrewstats, crewstats, sizeof(ndmresultcrewstats));
+}
+
+static inline int get_framerate(const int slowdown)
+{
+    switch (slowdown)
+    {
+    case 30:
+        return 34;
+    case 24:
+        return 41;
+    case 18:
+        return 55;
+    case 12:
+        return 83;
+    }
+
+    return 34;
+}
+
+int Game::get_timestep(void)
+{
+    switch (gamestate)
+    {
+    case EDITORMODE:
+        return 24;
+    case GAMEMODE:
+        return get_framerate(slowdown);
+    default:
+        return 34;
+    }
 }

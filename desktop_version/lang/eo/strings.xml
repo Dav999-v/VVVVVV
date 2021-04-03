@@ -160,9 +160,14 @@
     <string english="Room name background is OPAQUE" explanation="" max="38*2" comment="">Ĉambronoma fono estas NETRAVIDEBLA</string>
     <string english="glitchrunner mode" explanation="menu option, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" comment="">cimkuranta reĝimo</string>
     <string english="Glitchrunner Mode" explanation="title, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" max="20" comment="">Cimkuranta reĝimo</string>
-    <string english="Re-enable glitches that existed in previous versions of the game" explanation="glitchrunner mode" max="38*3" comment="">Reebligi cimojn, kiuj ekzistis en antaŭaj versioj de la ludo</string>
+    <string english="Re-enable glitches that existed in previous versions of the game." explanation="glitchrunner mode" max="38*3" comment="">Reebligi cimojn, kiuj ekzistis en antaŭaj versioj de la ludo.</string>
     <string english="Glitchrunner mode is ON" explanation="" max="38*2" comment="">Cimkuranta reĝimo estas ŜALTA</string>
     <string english="Glitchrunner mode is OFF" explanation="" max="38*2" comment="">Cimkuranta reĝimo estas MALŜALTA</string>
+    <string english="input delay" explanation="menu option, enable 1 frame of delay after pressing input" comment=""></string>
+    <string english="Input Delay" explanation="title, enable 1 frame of delay after pressing input" max="20" comment=""></string>
+    <string english="Re-enable the 1-frame input delay from previous versions of the game." explanation="input delay" max="38*2" comment=""></string>
+    <string english="Input delay is ON" explanation="" max="38*2" comment=""></string>
+    <string english="Input delay is OFF" explanation="" max="38*2" comment=""></string>
     <string english="accessibility options" explanation="menu option" comment="">alireblecaj agordoj</string>
     <string english="Accessibility" explanation="title" max="20" comment="">Alirebleco</string>
     <string english="Disable screen effects, enable slowdown modes or invincibility" explanation="" max="38*5" comment="">Malebligi ekranefikojn, ebligi malrapidigreĝimon aŭ nevundeblecon</string>
@@ -460,10 +465,6 @@
     <string english="ERROR: No checkpoint to spawn at" explanation="we cannot playtest because there is no checkpoint in this room that the player could start (be spawned) at" max="38*3" comment="">ERARO: Ne estas konservpunkto ĉi-ĉambre</string>
     <string english="ERROR: Max number of trinkets is 100" explanation="" max="38*3" comment="">ERARO: Altlimo de kolektaĵoj estas 100</string>
     <string english="ERROR: Max number of crewmates is 100" explanation="" max="38*3" comment="">ERARO: Altlimo de ŝipanoj estas 100</string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>

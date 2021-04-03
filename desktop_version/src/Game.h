@@ -245,7 +245,6 @@ public:
     bool startscript;
     std::string newscript;
 
-    int mainmenu;
     bool menustart;
 
     //Teleporting
@@ -301,6 +300,7 @@ public:
     bool  colourblindmode;
     bool noflashingmode;
     int slowdown;
+    int get_timestep(void);
 
     bool nodeathmode;
     int gameoverdelay;
@@ -461,6 +461,7 @@ public:
     void unlockAchievement(const char *name);
 
     bool disablepause;
+    bool inputdelay;
 };
 
 #ifndef GAME_DEFINITION
