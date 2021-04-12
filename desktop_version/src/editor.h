@@ -41,15 +41,29 @@ public:
 };
 
 
+#define ROOM_PROPERTIES \
+  FOREACH_PROP(tileset, int) \
+  FOREACH_PROP(tilecol, int) \
+  FOREACH_PROP(roomname, std::string) \
+  FOREACH_PROP(warpdir, int) \
+  FOREACH_PROP(platx1, int) \
+  FOREACH_PROP(platy1, int) \
+  FOREACH_PROP(platx2, int) \
+  FOREACH_PROP(platy2, int) \
+  FOREACH_PROP(platv, int) \
+  FOREACH_PROP(enemyx1, int) \
+  FOREACH_PROP(enemyy1, int) \
+  FOREACH_PROP(enemyx2, int) \
+  FOREACH_PROP(enemyy2, int) \
+  FOREACH_PROP(enemytype, int) \
+  FOREACH_PROP(directmode, int)
+
 class edlevelclass{
 public:
-  edlevelclass();
-  int tileset, tilecol;
-  std::string roomname;
-  int warpdir;
-  int platx1, platy1, platx2, platy2, platv;
-  int enemyx1, enemyy1, enemyx2, enemyy2, enemytype;
-  int directmode;
+  edlevelclass(void);
+#define FOREACH_PROP(NAME, TYPE) TYPE NAME;
+  ROOM_PROPERTIES
+#undef FOREACH_PROP
 };
 
 struct LevelMetaData
@@ -76,7 +90,7 @@ class EditorData
 {
   public:
 
-  static EditorData& GetInstance()
+  static EditorData& GetInstance(void)
   {
     static EditorData  instance; // Guaranteed to be destroyed.
     // Instantiated on first use.
@@ -103,23 +117,50 @@ struct GhostInfo {
 class editorclass{
   //Special class to handle ALL editor variables locally
   public:
-  editorclass();
+  editorclass(void);
 
   std::string Desc1;
   std::string Desc2;
   std::string Desc3;
   std::string website;
 
-  std::vector<std::string> directoryList;
   std::vector<LevelMetaData> ListOfMetaData;
 
-  void loadZips();
-  void getDirectoryData();
+  void loadZips(void);
+  void getDirectoryData(void);
   bool getLevelMetaData(std::string& filename, LevelMetaData& _data );
 
-  void reset();
+  void reset(void);
   void getlin(const enum textmode mode, const std::string& prompt, std::string* ptr);
   const short* loadlevel(int rxi, int ryi);
+
+  int gettileidx(
+    const int rx,
+    const int ry,
+    const int x,
+    const int y
+  );
+  void settile(
+    const int rx,
+    const int ry,
+    const int x,
+    const int y,
+    const int t
+  );
+  int gettile(
+    const int rx,
+    const int ry,
+    const int x,
+    const int y
+  );
+  int getabstile(const int x, const int y);
+
+  int getroompropidx(const int rx, const int ry);
+  const edlevelclass* getroomprop(const int rx, const int ry);
+#define FOREACH_PROP(NAME, TYPE) \
+  void setroom##NAME(const int rx, const int ry, const TYPE NAME);
+  ROOM_PROPERTIES
+#undef FOREACH_PROP
 
   void placetilelocal(int x, int y, int t);
 
@@ -152,7 +193,7 @@ class editorclass{
 
   bool load(std::string& _path);
   bool save(std::string& _path);
-  void generatecustomminimap();
+  void generatecustomminimap(void);
   int edgetile(int x, int y);
   int outsideedgetile(int x, int y);
 
@@ -163,8 +204,8 @@ class editorclass{
   int findtrinket(int t);
   int findcrewmate(int t);
   int findwarptoken(int t);
-  void findstartpoint();
-  int getlevelcol(int t);
+  void findstartpoint(void);
+  int getlevelcol(const int tileset, const int tilecol);
   int getenemycol(int t);
   int entcol;
   Uint32 entcolreal;
@@ -177,8 +218,8 @@ class editorclass{
   static const int numrooms = maxwidth * maxheight;
   short contents[40 * 30 * numrooms];
   int vmult[30 * maxheight];
-  int numtrinkets();
-  int numcrewmates();
+  int numtrinkets(void);
+  int numcrewmates(void);
   edlevelclass level[numrooms]; //Maxwidth*maxheight
   int kludgewarpdir[numrooms]; //Also maxwidth*maxheight
 
@@ -243,8 +284,8 @@ class editorclass{
   void addhooktoscript(std::string t);
   void removehookfromscript(std::string t);
   void loadhookineditor(std::string t);
-  void clearscriptbuffer();
-  void gethooks();
+  void clearscriptbuffer(void);
+  void gethooks(void);
   bool checkhook(std::string t);
   std::vector<std::string> hooklist;
 
@@ -255,7 +296,7 @@ class editorclass{
   int dmtileeditor;
 
   Uint32 getonewaycol(const int rx, const int ry);
-  Uint32 getonewaycol();
+  Uint32 getonewaycol(void);
   bool onewaycol_override;
 
   int returneditoralpha;
@@ -266,13 +307,13 @@ class editorclass{
 };
 
 #if !defined(NO_EDITOR)
-void editorrender();
+void editorrender(void);
 
-void editorrenderfixed();
+void editorrenderfixed(void);
 
-void editorlogic();
+void editorlogic(void);
 
-void editorinput();
+void editorinput(void);
 #endif
 
 #ifndef ED_DEFINITION

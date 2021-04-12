@@ -1,6 +1,7 @@
 #include "SoundSystem.h"
 
 #include <SDL.h>
+#include <stdio.h>
 
 #include "FileSystemUtils.h"
 
@@ -32,13 +33,13 @@ SoundTrack::SoundTrack(const char* fileName)
 
 	unsigned char *mem;
 	size_t length = 0;
-	FILESYSTEM_loadFileToMemory(fileName, &mem, &length);
+	FILESYSTEM_loadAssetToMemory(fileName, &mem, &length, false);
 	if (mem == NULL)
 	{
 		fprintf(stderr, "Unable to load WAV file %s\n", fileName);
 		return;
 	}
-	SDL_RWops *fileIn = SDL_RWFromMem(mem, length);
+	SDL_RWops *fileIn = SDL_RWFromConstMem(mem, length);
 	sound = Mix_LoadWAV_RW(fileIn, 1);
 	FILESYSTEM_freeMemory(&mem);
 
@@ -48,7 +49,7 @@ SoundTrack::SoundTrack(const char* fileName)
 	}
 }
 
-SoundSystem::SoundSystem()
+SoundSystem::SoundSystem(void)
 {
 	int audio_rate = 44100;
 	Uint16 audio_format = AUDIO_S16SYS;

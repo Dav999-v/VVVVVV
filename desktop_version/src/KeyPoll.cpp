@@ -5,11 +5,12 @@
 #include <string.h>
 #include <utf8/unchecked.h>
 
+#include "Exit.h"
 #include "Game.h"
 #include "Graphics.h"
 #include "Music.h"
 
-int inline KeyPoll::getThreshold()
+int inline KeyPoll::getThreshold(void)
 {
 	switch (sensitivity)
 	{
@@ -29,58 +30,61 @@ int inline KeyPoll::getThreshold()
 
 }
 
-KeyPoll::KeyPoll()
+KeyPoll::KeyPoll(void)
 {
 	xVel = 0;
 	yVel = 0;
 	// 0..5
 	sensitivity = 2;
 
-	quitProgram = 0;
 	keybuffer="";
 	leftbutton=0; rightbutton=0; middlebutton=0;
 	mx=0; my=0;
 	resetWindow = 0;
-	toggleFullscreen = false;
 	pressedbackspace=false;
 
-	useFullscreenSpaces = false;
-	if (SDL_strcmp(SDL_GetPlatform(), "Mac OS X") == 0)
-	{
-		useFullscreenSpaces = true;
-		const char *hint = SDL_GetHint(SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES);
-		if (hint != NULL)
-		{
-			useFullscreenSpaces = (SDL_strcmp(hint, "1") == 0);
-		}
-	}
-
 	linealreadyemptykludge = false;
-
-	pauseStart = 0;
 
 	isActive = true;
 }
 
-void KeyPoll::enabletextentry()
+void KeyPoll::enabletextentry(void)
 {
 	keybuffer="";
 	SDL_StartTextInput();
 }
 
-void KeyPoll::disabletextentry()
+void KeyPoll::disabletextentry(void)
 {
 	SDL_StopTextInput();
 }
 
-bool KeyPoll::textentry()
+bool KeyPoll::textentry(void)
 {
 	return SDL_IsTextInputActive() == SDL_TRUE;
 }
 
-void KeyPoll::Poll()
+void KeyPoll::toggleFullscreen(void)
+{
+	if (graphics.screenbuffer != NULL)
+	{
+		graphics.screenbuffer->toggleFullScreen();
+	}
+
+	keymap.clear(); /* we lost the input due to a new window. */
+	if (game.glitchrunnermode)
+	{
+		game.press_left = false;
+		game.press_right = false;
+		game.press_action = true;
+		game.press_map = false;
+	}
+}
+
+void KeyPoll::Poll(void)
 {
 	bool altpressed = false;
+	bool fullscreenkeybind = false;
 	SDL_Event evt;
 	while (SDL_PollEvent(&evt))
 	{
@@ -106,7 +110,7 @@ void KeyPoll::Poll()
 			bool f11pressed = evt.key.keysym.sym == SDLK_F11;
 			if ((altpressed && (returnpressed || fpressed)) || f11pressed)
 			{
-				toggleFullscreen = true;
+				fullscreenkeybind = true;
 			}
 
 			if (textentry())
@@ -124,7 +128,12 @@ void KeyPoll::Poll()
 				else if (	evt.key.keysym.sym == SDLK_v &&
 						keymap[SDLK_LCTRL]	)
 				{
-					keybuffer += SDL_GetClipboardText();
+					char* text = SDL_GetClipboardText();
+					if (text != NULL)
+					{
+						keybuffer += text;
+						SDL_free(text);
+					}
 				}
 			}
 			break;
@@ -265,8 +274,10 @@ void KeyPoll::Poll()
 				if (!game.disablepause)
 				{
 					isActive = true;
+					music.resume();
+					music.resumeef();
 				}
-				if (!useFullscreenSpaces)
+				if (SDL_strcmp(SDL_GetCurrentVideoDriver(), "x11") == 0)
 				{
 					if (wasFullscreen)
 					{
@@ -278,18 +289,15 @@ void KeyPoll::Poll()
 					}
 				}
 				SDL_DisableScreenSaver();
-				if (!game.disablepause && Mix_PlayingMusic())
-				{
-					// Correct songStart for how long we were paused
-					music.songStart += SDL_GetPerformanceCounter() - pauseStart;
-				}
 				break;
 			case SDL_WINDOWEVENT_FOCUS_LOST:
 				if (!game.disablepause)
 				{
 					isActive = false;
+					music.pause();
+					music.pauseef();
 				}
-				if (!useFullscreenSpaces)
+				if (SDL_strcmp(SDL_GetCurrentVideoDriver(), "x11") == 0)
 				{
 					wasFullscreen = !graphics.screenbuffer->isWindowed;
 					graphics.screenbuffer->isWindowed = true;
@@ -299,10 +307,6 @@ void KeyPoll::Poll()
 					);
 				}
 				SDL_EnableScreenSaver();
-				if (!game.disablepause)
-				{
-					pauseStart = SDL_GetPerformanceCounter();
-				}
 				break;
 
 			/* Mouse Focus */
@@ -317,9 +321,14 @@ void KeyPoll::Poll()
 
 		/* Quit Event */
 		case SDL_QUIT:
-			quitProgram = true;
+			VVV_exit(0);
 			break;
 		}
+	}
+
+	if (fullscreenkeybind)
+	{
+		toggleFullscreen();
 	}
 }
 
@@ -345,7 +354,7 @@ bool KeyPoll::isDown(SDL_GameControllerButton button)
 	return buttonmap[button];
 }
 
-bool KeyPoll::controllerButtonDown()
+bool KeyPoll::controllerButtonDown(void)
 {
 	for (
 		SDL_GameControllerButton button = SDL_CONTROLLER_BUTTON_A;

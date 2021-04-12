@@ -10,7 +10,7 @@
 #include "Script.h"
 #include "UtilityClass.h"
 
-void titlelogic()
+void titlelogic(void)
 {
     //Misc
     //map.updatetowerglow(graphics.titlebg);
@@ -41,14 +41,14 @@ void titlelogic()
     }
 }
 
-void maplogic()
+void maplogic(void)
 {
     //Misc
     help.updateglow();
 }
 
 
-void gamecompletelogic()
+void gamecompletelogic(void)
 {
     //Misc
     map.updatetowerglow(graphics.titlebg);
@@ -71,8 +71,7 @@ void gamecompletelogic()
     {
         //Fix some graphical things
         graphics.showcutscenebars = false;
-        graphics.cutscenebarspos = 0;
-        graphics.oldcutscenebarspos = 0;
+        graphics.setbars(0);
         graphics.titlebg.scrolldir = 0;
         graphics.titlebg.bypos = 0;
         //Return to game
@@ -81,7 +80,7 @@ void gamecompletelogic()
     }
 }
 
-void gamecompletelogic2()
+void gamecompletelogic2(void)
 {
     //Misc
     map.updatetowerglow(graphics.titlebg);
@@ -104,7 +103,7 @@ void gamecompletelogic2()
     {
         //Fix some graphical things
         graphics.showcutscenebars = false;
-        graphics.cutscenebarspos = 0;
+        graphics.setbars(0);
         //Fix the save thingy
         game.deletequick();
         int tmp=music.currentsong;
@@ -121,8 +120,41 @@ void gamecompletelogic2()
 }
 
 
-void gamelogic()
+void gamelogic(void)
 {
+    /* Update old lerp positions of entities */
+    {size_t i; for (i = 0; i < obj.entities.size(); ++i)
+    {
+        obj.entities[i].lerpoldxp = obj.entities[i].xp;
+        obj.entities[i].lerpoldyp = obj.entities[i].yp;
+    }}
+
+    if (!game.blackout && !game.completestop)
+    {
+        size_t i;
+        for (i = 0; i < obj.entities.size(); ++i)
+        {
+            /* Is this entity on the ground? (needed for jumping) */
+            if (obj.entitycollidefloor(i))
+            {
+                obj.entities[i].onground = 2;
+            }
+            else
+            {
+                --obj.entities[i].onground;
+            }
+
+            if (obj.entitycollideroof(i))
+            {
+                obj.entities[i].onroof = 2;
+            }
+            else
+            {
+                --obj.entities[i].onroof;
+            }
+        }
+    }
+
     //Misc
     if (map.towermode)
     {
@@ -347,7 +379,7 @@ void gamelogic()
                         //(and if the tile wasn't there it would pass straight through again)
                         int prevx = obj.entities[i].xp;
                         int prevy = obj.entities[i].yp;
-                        obj.nocollisionat(prevx, prevy);
+                        obj.disableblockat(prevx, prevy);
 
                         obj.entities[i].xp = 152;
                         obj.entities[i].newxp = 152;
@@ -374,21 +406,6 @@ void gamelogic()
             {
                 //ok, unfortunate case where the disappearing platform hasn't fully disappeared. Accept a little
                 //graphical uglyness to avoid breaking the room!
-                bool entitygone = false;
-                while (obj.entities[i].state == 2)
-                {
-                    entitygone = obj.updateentities(i);
-                    if (entitygone)
-                    {
-                        i--;
-                        break;
-                    }
-                }
-                if (!entitygone) obj.entities[i].state = 4;
-            }
-            else if (map.finalstretch && obj.entities[i].type == 2)
-            {
-                //for the final level. probably something 99% of players won't see.
                 bool entitygone = false;
                 while (obj.entities[i].state == 2)
                 {
@@ -668,7 +685,7 @@ void gamelogic()
                     obj.entities[line].xp += 24;
                     if (obj.entities[line].xp > 320)
                     {
-                        obj.removeentity(line);
+                        obj.disableentity(line);
                         game.swngame = 8;
                     }
                 }
@@ -783,7 +800,7 @@ void gamelogic()
 
                     int prevx = obj.entities[i].xp;
                     int prevy = obj.entities[i].yp;
-                    obj.nocollisionat(prevx, prevy);
+                    obj.disableblockat(prevx, prevy);
 
                     bool entitygone = obj.updateentities(i);                // Behavioral logic
                     if (entitygone) continue;
@@ -811,7 +828,7 @@ void gamelogic()
 
                     int prevx = obj.entities[ie].xp;
                     int prevy = obj.entities[ie].yp;
-                    obj.nocollisionat(prevx, prevy);
+                    obj.disableblockat(prevx, prevy);
 
                     bool entitygone = obj.updateentities(ie);                // Behavioral logic
                     if (entitygone) continue;
@@ -1527,8 +1544,17 @@ void gamelogic()
 
     game.activeactivity = obj.checkactivity();
 
+    if (game.hascontrol && !script.running
+    && INBOUNDS_VEC(game.activeactivity, obj.entities))
+    {
+        game.activity_lastprompt = obj.blocks[game.activeactivity].prompt;
+        game.activity_r = obj.blocks[game.activeactivity].r;
+        game.activity_g = obj.blocks[game.activeactivity].g;
+        game.activity_b = obj.blocks[game.activeactivity].b;
+    }
+
     game.oldreadytotele = game.readytotele;
-    if (game.activetele && !game.advancetext && game.hascontrol && !script.running && !game.intimetrial)
+    if (game.activetele && game.hascontrol && !script.running && !game.intimetrial)
     {
         int i = obj.getplayer();
         SDL_Rect temprect = SDL_Rect();
@@ -1561,11 +1587,4 @@ void gamelogic()
 
     if (game.teleport_to_new_area)
         script.teleport();
-
-#if !defined(NO_CUSTOM_LEVELS)
-    if (game.shouldreturntoeditor)
-    {
-        game.returntoeditor();
-    }
-#endif
 }

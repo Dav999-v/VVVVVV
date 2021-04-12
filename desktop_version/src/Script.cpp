@@ -13,12 +13,11 @@
 #include "Music.h"
 #include "UtilityClass.h"
 
-scriptclass::scriptclass()
+scriptclass::scriptclass(void)
 {
 	position = 0;
 	scriptdelay = 0;
 	running = false;
-	dontrunnextframe = false;
 
 	b = 0;
 	g = 0;
@@ -30,9 +29,10 @@ scriptclass::scriptclass()
 	r = 0;
 	textx = 0;
 	texty = 0;
+	textflipme = false;
 }
 
-void scriptclass::clearcustom()
+void scriptclass::clearcustom(void)
 {
 	customscripts.clear();
 }
@@ -76,7 +76,7 @@ void scriptclass::tokenize( const std::string& t )
 	}
 }
 
-void scriptclass::run()
+void scriptclass::run(void)
 {
 	if (!running)
 	{
@@ -107,6 +107,8 @@ void scriptclass::run()
 				{
 					obj.entities[player].xp += ss_toi(words[1]);
 					obj.entities[player].yp += ss_toi(words[2]);
+					obj.entities[player].lerpoldxp = obj.entities[player].xp;
+					obj.entities[player].lerpoldyp = obj.entities[player].yp;
 				}
 				scriptdelay = 1;
 			}
@@ -115,38 +117,36 @@ void scriptclass::run()
 			{
 				int temprx=ss_toi(words[1])-1;
 				int tempry=ss_toi(words[2])-1;
-				int curlevel=temprx+(ed.maxwidth*(tempry));
-				bool inbounds = INBOUNDS_ARR(curlevel, ed.level);
-				if (inbounds)
-				{
-					ed.level[curlevel].warpdir=ss_toi(words[3]);
-				}
+				const edlevelclass* room;
+				ed.setroomwarpdir(temprx, tempry, ss_toi(words[3]));
+
+				room = ed.getroomprop(temprx, tempry);
 
 				//Do we update our own room?
-				if(inbounds && game.roomx-100==temprx && game.roomy-100==tempry){
+				if(game.roomx-100==temprx && game.roomy-100==tempry){
 					//If screen warping, then override all that:
 					graphics.backgrounddrawn = false;
 					map.warpx=false; map.warpy=false;
-					if(ed.level[curlevel].warpdir==0){
+					if(room->warpdir==0){
 						map.background = 1;
 						//Be careful, we could be in a Lab or Warp Zone room...
-						if(ed.level[curlevel].tileset==2){
+						if(room->tileset==2){
 							//Lab
 							map.background = 2;
-							graphics.rcol = ed.level[curlevel].tilecol;
-						}else if(ed.level[curlevel].tileset==3){
+							graphics.rcol = room->tilecol;
+						}else if(room->tileset==3){
 							//Warp Zone
 							map.background = 6;
 						}
-					}else if(ed.level[curlevel].warpdir==1){
+					}else if(room->warpdir==1){
 						map.warpx=true;
 						map.background=3;
 						graphics.rcol = ed.getwarpbackground(temprx,tempry);
-					}else if(ed.level[curlevel].warpdir==2){
+					}else if(room->warpdir==2){
 						map.warpy=true;
 						map.background=4;
 						graphics.rcol = ed.getwarpbackground(temprx,tempry);
-					}else if(ed.level[curlevel].warpdir==3){
+					}else if(room->warpdir==3){
 						map.warpx=true; map.warpy=true;
 						map.background = 5;
 						graphics.rcol = ed.getwarpbackground(temprx,tempry);
@@ -155,8 +155,8 @@ void scriptclass::run()
 			}
 			if (words[0] == "ifwarp")
 			{
-				int room = ss_toi(words[1])-1+(ed.maxwidth*(ss_toi(words[2])-1));
-				if (INBOUNDS_ARR(room, ed.level) && ed.level[room].warpdir == ss_toi(words[3]))
+				const edlevelclass* const room = ed.getroomprop(ss_toi(words[1])-1, ss_toi(words[2])-1);
+				if (room->warpdir == ss_toi(words[3]))
 				{
 					load("custom_"+words[4]);
 					position--;
@@ -167,16 +167,16 @@ void scriptclass::run()
 			{
 				if(words[1]=="gravitylines"){
 					for(size_t edi=0; edi<obj.entities.size(); edi++){
-						if(obj.entities[edi].type==9) removeentity_iter(edi);
-						if(obj.entities[edi].type==10) removeentity_iter(edi);
+						if(obj.entities[edi].type==9) obj.disableentity(edi);
+						if(obj.entities[edi].type==10) obj.disableentity(edi);
 					}
 				}else if(words[1]=="warptokens"){
 					for(size_t edi=0; edi<obj.entities.size(); edi++){
-						if(obj.entities[edi].type==11) removeentity_iter(edi);
+						if(obj.entities[edi].type==11) obj.disableentity(edi);
 					}
 				}else if(words[1]=="platforms"){
 					for(size_t edi=0; edi<obj.entities.size(); edi++){
-						if(obj.entities[edi].rule==2 && obj.entities[edi].animate==100) removeentity_iter(edi);
+						if(obj.entities[edi].rule==2 && obj.entities[edi].animate==100) obj.disableentity(edi);
 					}
 				}
 			}
@@ -284,7 +284,7 @@ void scriptclass::run()
 			}
 			if (words[0] == "resumemusic")
 			{
-				music.resume();
+				music.resumefade(0);
 			}
 			if (words[0] == "musicfadeout")
 			{
@@ -306,6 +306,8 @@ void scriptclass::run()
 				{
 					obj.entities[player].xp = ss_toi(words[1]);
 					obj.entities[player].yp = ss_toi(words[2]);
+					obj.entities[player].lerpoldxp = obj.entities[player].xp;
+					obj.entities[player].lerpoldyp = obj.entities[player].yp;
 				}
 				game.gravitycontrol = ss_toi(words[3]);
 
@@ -624,7 +626,7 @@ void scriptclass::run()
 			}
 			else if (words[0] == "flipme")
 			{
-				if(graphics.flipmode) texty += 2*(120 - texty) - 8*(txt.size()+2);
+				textflipme = !textflipme;
 			}
 			else if (words[0] == "speak_active" || words[0] == "speak")
 			{
@@ -634,7 +636,8 @@ void scriptclass::run()
 				{
 					txt.resize(1);
 				}
-				graphics.createtextbox(txt[0], textx, texty, r, g, b);
+				graphics.createtextboxreal(txt[0], textx, texty, r, g, b, textflipme);
+				textflipme = false;
 				if ((int) txt.size() > 1)
 				{
 					for (i = 1; i < (int) txt.size(); i++)
@@ -1333,8 +1336,7 @@ void scriptclass::run()
 			}
 			else if (words[0] == "ifexplored")
 			{
-				int room = ss_toi(words[1]) + (20 * ss_toi(words[2]));
-				if (INBOUNDS_ARR(room, map.explored) && map.explored[room] == 1)
+				if (map.isexplored(ss_toi(words[1]), ss_toi(words[2])))
 				{
 					load(words[3]);
 					position--;
@@ -1392,19 +1394,11 @@ void scriptclass::run()
 			}
 			else if (words[0] == "hidecoordinates")
 			{
-				int room = ss_toi(words[1]) + (20 * ss_toi(words[2]));
-				if (INBOUNDS_ARR(room, map.explored))
-				{
-					map.explored[room] = false;
-				}
+				map.setexplored(ss_toi(words[1]), ss_toi(words[2]), false);
 			}
 			else if (words[0] == "showcoordinates")
 			{
-				int room = ss_toi(words[1]) + (20 * ss_toi(words[2]));
-				if (INBOUNDS_ARR(room, map.explored))
-				{
-					map.explored[room] = true;
-				}
+				map.setexplored(ss_toi(words[1]), ss_toi(words[2]), true);
 			}
 			else if (words[0] == "hideship")
 			{
@@ -1416,25 +1410,25 @@ void scriptclass::run()
 			}
 			else if (words[0] == "showsecretlab")
 			{
-				map.explored[16 + (20 * 5)] = 1;
-				map.explored[17 + (20 * 5)] = 1;
-				map.explored[18 + (20 * 5)] = 1;
-				map.explored[17 + (20 * 6)] = 1;
-				map.explored[18 + (20 * 6)] = 1;
-				map.explored[19 + (20 * 6)] = 1;
-				map.explored[19 + (20 * 7)] = 1;
-				map.explored[19 + (20 * 8)] = 1;
+				map.setexplored(16, 5, true);
+				map.setexplored(17, 5, true);
+				map.setexplored(18, 5, true);
+				map.setexplored(17, 6, true);
+				map.setexplored(18, 6, true);
+				map.setexplored(19, 6, true);
+				map.setexplored(19, 7, true);
+				map.setexplored(19, 8, true);
 			}
 			else if (words[0] == "hidesecretlab")
 			{
-				map.explored[16 + (20 * 5)] = 0;
-				map.explored[17 + (20 * 5)] = 0;
-				map.explored[18 + (20 * 5)] = 0;
-				map.explored[17 + (20 * 6)] = 0;
-				map.explored[18 + (20 * 6)] = 0;
-				map.explored[19 + (20 * 6)] = 0;
-				map.explored[19 + (20 * 7)] = 0;
-				map.explored[19 + (20 * 8)] = 0;
+				map.setexplored(16, 5, false);
+				map.setexplored(17, 5, false);
+				map.setexplored(18, 5, false);
+				map.setexplored(17, 6, false);
+				map.setexplored(18, 6, false);
+				map.setexplored(19, 6, false);
+				map.setexplored(19, 7, false);
+				map.setexplored(19, 8, false);
 			}
 			else if (words[0] == "showteleporters")
 			{
@@ -1498,7 +1492,7 @@ void scriptclass::run()
 			}
 			else if (words[0] == "befadein")
 			{
-				graphics.fadeamount = 0;
+				graphics.setfade(0);
 				graphics.fademode= 0;
 			}
 			else if (words[0] == "fadein")
@@ -1953,7 +1947,6 @@ void scriptclass::run()
 			}
 			else if (words[0] == "foundtrinket")
 			{
-				//music.silencedasmusik();
 				music.haltdasmusik();
 				music.playef(3);
 
@@ -1965,7 +1958,7 @@ void scriptclass::run()
 
 				graphics.textboxremovefast();
 
-				graphics.createtextbox("        Congratulations!       ", 50, 85, 174, 174, 174);
+				graphics.createtextboxflipme("        Congratulations!       ", 50, 85, 174, 174, 174);
 				graphics.addline("");
 				graphics.addline("You have found a shiny trinket!");
 				graphics.textboxcenterx();
@@ -1981,7 +1974,7 @@ void scriptclass::run()
 				{
 					usethisnum = "Twenty";
 				}
-				graphics.createtextbox(" " + help.number(game.trinkets()) + " out of " + usethisnum + " ", 50, 135, 174, 174, 174);
+				graphics.createtextboxflipme(" " + help.number(game.trinkets()) + " out of " + usethisnum + " ", 50, 135, 174, 174, 174);
 				graphics.textboxcenterx();
 
 				if (!game.backgroundtext)
@@ -2624,7 +2617,7 @@ void scriptclass::run()
 	}
 }
 
-void scriptclass::resetgametomenu()
+void scriptclass::resetgametomenu(void)
 {
 	obj.entities.clear();
 	game.quittomenu();
@@ -2641,8 +2634,7 @@ void scriptclass::startgamemode( int t )
 		game.start();
 		game.jumpheld = true;
 		graphics.showcutscenebars = true;
-		graphics.cutscenebarspos = 320;
-		graphics.oldcutscenebarspos = 320;
+		graphics.setbars(320);
 
 		//set flipmode
 		if (graphics.setflipmode) graphics.flipmode = true;
@@ -2908,8 +2900,7 @@ void scriptclass::startgamemode( int t )
 		game.start();
 		game.jumpheld = true;
 		graphics.showcutscenebars = true;
-		graphics.cutscenebarspos = 320;
-		graphics.oldcutscenebarspos = 320;
+		graphics.setbars(320);
 
 		//set flipmode
 		if (graphics.setflipmode) graphics.flipmode = true;
@@ -2937,8 +2928,7 @@ void scriptclass::startgamemode( int t )
 		game.start();
 		game.jumpheld = true;
 		graphics.showcutscenebars = true;
-		graphics.cutscenebarspos = 320;
-		graphics.oldcutscenebarspos = 320;
+		graphics.setbars(320);
 
 		//set flipmode
 		if (graphics.setflipmode) graphics.flipmode = true;
@@ -2970,7 +2960,7 @@ void scriptclass::startgamemode( int t )
 			obj.collect[j] = true;
 			for (i = 0; i < 20; i++)
 			{
-				map.explored[i + (j * 20)] = 1;
+				map.setexplored(i, j, true);
 			}
 		}
 		game.insecretlab = true;
@@ -3400,7 +3390,7 @@ void scriptclass::startgamemode( int t )
 	}
 }
 
-void scriptclass::teleport()
+void scriptclass::teleport(void)
 {
 	//er, ok! Teleport to a new area, so!
 	//A general rule of thumb: if you teleport with a companion, get rid of them!
@@ -3494,10 +3484,6 @@ void scriptclass::teleport()
 		game.state = 0;
 		load(game.teleportscript);
 		game.teleportscript = "";
-
-		// FIXME: Remove this once game loop order is fixed in 2.4!
-		run();
-		dontrunnextframe = true;
 	}
 	else
 	{
@@ -3510,23 +3496,11 @@ void scriptclass::teleport()
 		{
 			music.changemusicarea(game.teleport_to_x, game.teleport_to_y);
 		}
-		if (!game.intimetrial && !game.nodeathmode && !game.inintermission)
-		{
-			if (game.savetele())
-			{
-				graphics.createtextbox("    Game Saved    ", -1, graphics.flipmode ? 202 : 12, 174, 174, 174);
-				graphics.textboxtimer(25);
-			}
-			else
-			{
-				graphics.createtextbox("  ERROR: Could not save game!  ", -1, graphics.flipmode ? 202 : 12, 255, 60, 60);
-				graphics.textboxtimer(50);
-			}
-		}
+		game.savetele_textbox();
 	}
 }
 
-void scriptclass::hardreset()
+void scriptclass::hardreset(void)
 {
 	//Game:
 	game.hascontrol = true;
@@ -3632,6 +3606,7 @@ void scriptclass::hardreset()
 	}
 
 	game.pausescript = false;
+	game.completestop = false;
 
 	game.flashlight = 0;
 	game.screenshake = 0;
@@ -3644,7 +3619,7 @@ void scriptclass::hardreset()
 	graphics.textbox.clear();
 	graphics.flipmode = false; //This will be reset if needs be elsewhere
 	graphics.showcutscenebars = false;
-	graphics.cutscenebarspos = 0;
+	graphics.setbars(0);
 
 	//mapclass
 	map.warpx = false;
@@ -3701,13 +3676,12 @@ void scriptclass::hardreset()
 		obj.entities[theplayer].tile = 0;
 	}
 
-	// Remove duplicate player entities
+	/* Disable duplicate player entities */
 	for (int i = 0; i < (int) obj.entities.size(); i++)
 	{
 		if (obj.entities[i].rule == 0 && i != theplayer)
 		{
-			removeentity_iter(i);
-			theplayer--; // just in case indice of player is not 0
+			obj.disableentity(i);
 		}
 	}
 
