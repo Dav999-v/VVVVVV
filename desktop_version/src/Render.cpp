@@ -100,7 +100,7 @@ static void volumesliderrender(void)
         SDL_snprintf(buffer, sizeof(buffer), "[ %s ]", slider);
     }
 
-    graphics.Print(-1, 85, buffer, tr, tg, tb, true);
+    graphics.Print(-1, 95, buffer, tr, tg, tb, true);
 }
 
 static void menurender(void)
@@ -206,9 +206,8 @@ static void menurender(void)
         else if (game.currentmenuoption == gameplayoptionsoffset + 1)
         {
             //Speedrunner options
-            graphics.bigprint(-1, 30, "Speedrunner Options", tr, tg, tb, true);
-            graphics.Print(-1, 65, "Access some advanced settings that", tr, tg, tb, true);
-            graphics.Print(-1, 75, "might be of interest to speedrunners", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Speedrunner Options"), tr, tg, tb, true);
+            graphics.PrintWrap(-1, 65, loc::gettext("Access some advanced settings that might be of interest to speedrunners"), tr, tg, tb, true);
         }
         else if (game.currentmenuoption == gameplayoptionsoffset + 2)
         {
@@ -218,10 +217,6 @@ static void menurender(void)
         }
         else if (game.currentmenuoption == gameplayoptionsoffset + 3)
         {
-/* TODO TODO TODO TODO TODO
-            graphics.bigprint( -1, 30, loc::gettext("Language"), tr, tg, tb, true);
-            graphics.PrintWrap( -1, 65, loc::gettext("Change the language"), tr, tg, tb, true);
-*/
             //Clear Data
             graphics.bigprint(-1, 30, loc::gettext("Clear Data"), tr, tg, tb, true);
             graphics.PrintWrap(-1, 65, loc::gettext("Delete your save data and unlocked play modes"), tr, tg, tb, true);
@@ -233,19 +228,22 @@ static void menurender(void)
         switch (game.currentmenuoption)
         {
         case 0:
-            graphics.bigprint(-1, 30, "Gameplay Options", tr, tg, tb, true);
-            graphics.Print(-1, 65, "Adjust various gameplay options", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Gameplay Options"), tr, tg, tb, true);
+            graphics.PrintWrap(-1, 65, loc::gettext("Adjust various gameplay options"), tr, tg, tb, true);
             break;
         case 1:
-            graphics.bigprint(-1, 30, "Graphics Options", tr, tg, tb, true);
-            graphics.Print(-1, 65, "Adjust screen settings", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Graphics Options"), tr, tg, tb, true);
+            graphics.PrintWrap(-1, 65, loc::gettext("Adjust screen settings"), tr, tg, tb, true);
             break;
         case 2:
-            graphics.bigprint(-1, 30, "Audio Options", tr, tg, tb, true);
-            graphics.Print(-1, 65, "Adjust volume settings", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Audio Options"), tr, tg, tb, true);
             if (music.mmmmmm)
             {
-                graphics.Print(-1, 75, "and soundtrack", tr, tg, tb, true);
+                graphics.PrintWrap(-1, 65, loc::gettext("Adjust volume settings and soundtrack"), tr, tg, tb, true);
+            }
+            else
+            {
+                graphics.PrintWrap(-1, 65, loc::gettext("Adjust volume settings"), tr, tg, tb, true);
             }
             break;
         case 3:
@@ -256,6 +254,9 @@ static void menurender(void)
             graphics.bigprint( -1, 30, loc::gettext("Accessibility"), tr, tg, tb, true);
             graphics.PrintWrap( -1, 65, loc::gettext("Disable screen effects, enable slowdown modes or invincibility"), tr, tg, tb, true);
             break;
+        case 5:
+            graphics.bigprint( -1, 30, loc::gettext("Language"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Change the language"), tr, tg, tb, true);
         }
         break;
     case Menu::graphicoptions:
@@ -341,13 +342,13 @@ static void menurender(void)
         switch (game.currentmenuoption)
         {
         case 0:
-            graphics.bigprint(-1, 30, "Music Volume", tr, tg, tb, true);
-            graphics.Print(-1, 65, "Change the volume of the music.", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Music Volume"), tr, tg, tb, true);
+            graphics.PrintWrap(-1, 65, loc::gettext("Change the volume of the music."), tr, tg, tb, true);
             volumesliderrender();
             break;
         case 1:
-            graphics.bigprint(-1, 30, "Sound Volume", tr, tg, tb, true);
-            graphics.Print(-1, 65, "Change the volume of sound effects.", tr, tg, tb, true);
+            graphics.bigprint(-1, 30, loc::gettext("Sound Volume"), tr, tg, tb, true);
+            graphics.PrintWrap(-1, 65, loc::gettext("Change the volume of sound effects."), tr, tg, tb, true);
             volumesliderrender();
             break;
         case 2:
@@ -369,7 +370,7 @@ static void menurender(void)
                 letter = 'P';
             }
             VVV_fillstring(soundtrack, sizeof(soundtrack), letter);
-            SDL_snprintf(buffer, sizeof(buffer), loc::gettext("Current soundtrack: %s"), soundtrack);
+            SDL_snprintf(buffer, sizeof(buffer), loc::gettext("Current soundtrack: %s").c_str(), soundtrack);
 
             graphics.bigprint(-1, 30, loc::gettext("Soundtrack"), tr, tg, tb, true);
             graphics.PrintWrap(-1, 65, loc::gettext("Toggle between MMMMMM and PPPPPP"), tr, tg, tb, true);
@@ -458,7 +459,7 @@ static void menurender(void)
         if (startidx == 0)
         {
             graphics.Print(-1, 60, Credits::githubfriends[0], tr, tg, tb, true);
-            graphics.Print(-1, 80, Credits::githubfriends[2], tr, tg, tb, true);
+            graphics.Print(-1, 80, loc::gettext(Credits::githubfriends[2]), tr, tg, tb, true); // "and"
             startidx += 4; // Skip the superfriends now that we've drawn them...
             xofs = 80 - 28;
             yofs = 80 + 20 + (emptyspace / 2);
@@ -582,30 +583,6 @@ static void menurender(void)
     case Menu::language_maint_sync:
         graphics.PrintWrap(-1, 80, loc::gettext("If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case."), tr, tg, tb, true);
         break;
-    case Menu::advancedoptions:
-        switch (game.currentmenuoption)
-        {
-        case 0:
-            graphics.bigprint(-1, 30, loc::gettext("Toggle Mouse Cursor"), tr, tg, tb, true);
-            graphics.PrintWrap(-1, 65, loc::gettext("Show/hide the system mouse cursor."), tr, tg, tb, true);
-
-            if (graphics.showmousecursor) {
-                graphics.PrintWrap(-1, 95, loc::gettext("Current mode: SHOW"), tr, tg, tb, true);
-            }
-            else {
-                graphics.PrintWrap(-1, 95, loc::gettext("Current mode: HIDE"), tr/2, tg/2, tb/2, true);
-            }
-            break;
-        case 1:
-            graphics.bigprint( -1, 30, loc::gettext("Unfocus Pause"), tr, tg, tb, true);
-            graphics.PrintWrap( -1, 65, loc::gettext("Toggle if the game will pause when the window is unfocused."), tr, tg, tb, true);
-            if (game.disablepause)
-            {
-                graphics.PrintWrap(-1, 95, loc::gettext("Unfocus pause is OFF"), tr/2, tg/2, tb/2, true);
-            }
-            else
-            {
-                graphics.PrintWrap(-1, 95, loc::gettext("Unfocus pause is ON"), tr, tg, tb, true);
     case Menu::speedrunneroptions:
         switch (game.currentmenuoption)
         {
@@ -646,16 +623,15 @@ static void menurender(void)
         switch (game.currentmenuoption)
         {
         case 0:
-            graphics.bigprint( -1, 30, "Unfocus Pause", tr, tg, tb, true);
-            graphics.Print( -1, 65, "Toggle if the game will pause", tr, tg, tb, true);
-            graphics.Print( -1, 75, "when the window is unfocused.", tr, tg, tb, true);
+            graphics.bigprint( -1, 30, loc::gettext("Unfocus Pause"), tr, tg, tb, true);
+            graphics.PrintWrap( -1, 65, loc::gettext("Toggle if the game will pause when the window is unfocused."), tr, tg, tb, true);
             if (game.disablepause)
             {
-                graphics.Print(-1, 95, "Unfocus pause is OFF", tr/2, tg/2, tb/2, true);
+                graphics.PrintWrap(-1, 95, loc::gettext("Unfocus pause is OFF"), tr/2, tg/2, tb/2, true);
             }
             else
             {
-                graphics.Print(-1, 95, "Unfocus pause is ON", tr, tg, tb, true);
+                graphics.PrintWrap(-1, 95, loc::gettext("Unfocus pause is ON"), tr, tg, tb, true);
             }
             break;
         case 1:

@@ -7,12 +7,21 @@
     <string english="Press N to mute music only" explanation="pause screen" max="40" comment="">Presiona N para silenciar la musica</string>
     <string english="MAKE AND PLAY EDITION" explanation="" comment="">EDICION MAKE AND PLAY</string>
     <string english="[MMMMMM Mod Installed]" explanation="" max="32" comment="">[MMMMMM Mod Instalado]</string>
-    <string english="start game" explanation="main menu option" comment="">iniciar Juego</string>
-    <string english="player levels" explanation="main menu option" comment="">niveles de jugadores</string>
-    <string english="graphic options" explanation="main menu option" comment="">opciones graficas</string>
-    <string english="game options" explanation="main menu option" comment="">opciones de juego</string>
-    <string english="view credits" explanation="main menu option" comment="">ver creditos</string>
-    <string english="quit game" explanation="main menu option" comment="">salir del juego</string>
+    <string english="play" explanation="main menu option" comment=""></string>
+    <string english="levels" explanation="main menu option" comment=""></string>
+    <string english="options" explanation="main menu option" comment=""></string>
+    <string english="credits" explanation="main menu option" comment=""></string>
+    <string english="quit" explanation="main menu option" comment=""></string>
+    <string english="gameplay" explanation="options menu option" comment=""></string>
+    <string english="Gameplay Options" explanation="title" max="20" comment=""></string>
+    <string english="Adjust various gameplay options" explanation="" max="38*5" comment=""></string>
+    <string english="graphics" explanation="options menu option" comment=""></string>
+    <string english="Graphics Options" explanation="title" max="20" comment=""></string>
+    <string english="Adjust screen settings" explanation="" max="38*5" comment=""></string>
+    <string english="audio" explanation="options menu option" comment=""></string>
+    <string english="Audio Options" explanation="title" max="20" comment=""></string>
+    <string english="Adjust volume settings and soundtrack" explanation="" max="38*5" comment=""></string>
+    <string english="Adjust volume settings" explanation="" max="38*5" comment=""></string>
     <string english="continue" explanation="menu option" comment="">continuar</string>
     <string english="continue from teleporter" explanation="menu option, game save that was made at a teleporter" comment="">continuar desde teletransportador</string>
     <string english="Tele Save" explanation="title, game save that was made at a teleporter" max="20" comment="">Tele guardado</string>
@@ -32,7 +41,7 @@
     <string english="From here, you may unlock parts of the game that are normally unlocked as you play." explanation="" max="38*5" comment="">Desde aquí podras liberar partes del juego que normalmente se desbloquean al progresar.</string>
     <string english="unlock ship jukebox" explanation="menu option" comment="">desbloquear caja de musica en la nave</string>
     <string english="unlock secret lab" explanation="menu option" comment="">desbloquear laboratorio secreto</string>
-    <string english="game pad options" explanation="menu option" comment="">opciones de mando</string>
+    <string english="game pad" explanation="menu option" comment=""></string>
     <string english="Game Pad Options" explanation="title" max="20" comment="">Opciones de mando</string>
     <string english="Game Pad" explanation="title" max="20" comment="">Mando</string>
     <string english="Rebind your controller&apos;s buttons and adjust sensitivity" explanation="" max="38*5" comment="">Restablece los botones del mando y ajusta le sensibilidad</string>
@@ -84,6 +93,12 @@
     <string english="Turn VSync on or off." explanation="" max="38*3" comment="">Acitvar o desactivar VSync.</string>
     <string english="Current mode: VSYNC OFF" explanation="" max="38*2" comment="">Modo actual: VSYNC DESACTIVADO</string>
     <string english="Current mode: VSYNC ON" explanation="" max="38*2" comment="">Modo actual: VSYNC ACTIVADO</string>
+    <string english="music volume" explanation="audio menu option" comment=""></string>
+    <string english="Music Volume" explanation="title" max="20" comment=""></string>
+    <string english="Change the volume of the music." explanation="" max="38*3" comment=""></string>
+    <string english="sound volume" explanation="audio menu option" comment=""></string>
+    <string english="Sound Volume" explanation="title" max="20" comment=""></string>
+    <string english="Change the volume of sound effects." explanation="" max="38*3" comment=""></string>
     <string english="VVVVVV is a game by" explanation="credits" max="40" comment="">VVVVVV es un juego por</string>
     <string english="Terry Cavanagh" explanation="credits" max="20" comment="">Terry Cavanagh</string>
     <string english="and features music by" explanation="credits" max="40" comment="">y presenta música por</string>
@@ -100,6 +115,7 @@
     <string english="VVVVVV is supported by the following patrons" explanation="credits" max="38*3" comment="">VVVVVV es apoyado por las siguientes personas</string>
     <string english="and also by" explanation="credits, VVVVVV is also supported by the following people" max="38*2" comment="">y también por</string>
     <string english="With contributions on GitHub from" explanation="credits" max="38*3" comment="">Con contribuciones de GitHub desde</string>
+    <string english="and" explanation="This person, AND furthermore, these other persons" max="38" comment=""></string>
     <string english="and thanks also to:" explanation="credits, and thanks also to ... you!" max="38*3" comment="">Y también gracias a:</string>
     <string english="You!" explanation="credits, and thanks also to ... you!" comment="">Ti!</string>
     <string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." explanation="credits" max="38*5" comment="">Tu apoyo me hace posible el poder continuar creando los juegos que quiero hacer, ahora y en el futuro.</string>
@@ -137,12 +153,7 @@
     <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." explanation="translation maintenance menu" max="38*12" comment="">Si nuevos textos se añadieron a los archivos de la plantilla de Ingles, esta caracteristica los insertara en los archivos de todos los idiomas, solo los idiomas que estan en la capreta VVVVVV se pueden actualizar. Hacer un respaldo, por si acaso.</string>
     <string english="advanced options" explanation="menu option" comment=""></string>
     <string english="Advanced Options" explanation="title" max="20" comment=""></string>
-    <string english="Hide the mouse cursor, remove the loading screen, turn on glitchrunner mode and more" explanation="description for advanced options" max="38*5" comment=""></string>
-    <string english="toggle mouse" explanation="menu option" comment="">alternar cursor</string>
-    <string english="Toggle Mouse Cursor" explanation="title" max="20" comment="">Alternar Cursor</string>
-    <string english="Show/hide the system mouse cursor." explanation="" max="38*3" comment="">Mostrar/Ocultar el cursor.</string>
-    <string english="Current mode: SHOW" explanation="show cursor" max="38*2" comment="">Modo actual: MOSTRAR</string>
-    <string english="Current mode: HIDE" explanation="hide cursor" max="38*2" comment="">Modo actual: OCULTAR</string>
+    <string english="All other settings" explanation="description for advanced options" max="38*5" comment=""></string>
     <string english="unfocus pause" explanation="menu option. Turns the pause screen on/off, which shows up when the window is unfocused/inactive (only one window is normally in focus/active at a time). Possible alternative: auto pause screen" comment=""></string>
     <string english="Unfocus Pause" explanation="title. Turns the pause screen on/off, which shows up when the window is unfocused/inactive (only one window is normally in focus/active at a time). Possible alternative: auto pause screen" max="20" comment=""></string>
     <string english="Toggle if the game will pause when the window is unfocused." explanation="" max="38*3" comment=""></string>
@@ -157,6 +168,9 @@
     <string english="Lets you see through what is behind the name at the bottom of the screen." explanation="" max="38*3" comment="">Te deja ver a través de lo que está detrás del nombre en la base de la pantalla.</string>
     <string english="Room name background is TRANSLUCENT" explanation="" max="38*2" comment="">El nombre de la habitación es TRANSLÚCIDO</string>
     <string english="Room name background is OPAQUE" explanation="" max="38*2" comment="">El nombre de la habitación es OPACO</string>
+    <string english="speedrun options" explanation="menu option" comment=""></string>
+    <string english="Speedrunner Options" explanation="title" max="20" comment=""></string>
+    <string english="Access some advanced settings that might be of interest to speedrunners" explanation="description for speedrunner options" max="38*5" comment=""></string>
     <string english="glitchrunner mode" explanation="menu option, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" comment=""></string>
     <string english="Glitchrunner Mode" explanation="title, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" max="20" comment=""></string>
     <string english="Re-enable glitches that existed in previous versions of the game." explanation="glitchrunner mode" max="38*3" comment=""></string>
@@ -167,7 +181,7 @@
     <string english="Re-enable the 1-frame input delay from previous versions of the game." explanation="input delay" max="38*2" comment=""></string>
     <string english="Input delay is ON" explanation="" max="38*2" comment=""></string>
     <string english="Input delay is OFF" explanation="" max="38*2" comment=""></string>
-    <string english="accessibility options" explanation="menu option" comment="">opciones de acesibilidad</string>
+    <string english="accessibility" explanation="menu option" comment=""></string>
     <string english="Accessibility" explanation="title" max="20" comment="">Acesibilidad</string>
     <string english="Disable screen effects, enable slowdown modes or invincibility" explanation="" max="38*5" comment="">Desactivar efectos de pantalla, activar desaceleración o invicibilidad</string>
     <string english="animated backgrounds" explanation="menu option" comment="">fondos animados</string>
@@ -186,15 +200,16 @@
     <string english="Text outlines are OFF." explanation="" max="38*3" comment="">Contorno de texto está DESACTIVADO.</string>
     <string english="invincibility" explanation="menu option" comment="">invicibilidad</string>
     <string english="Invincibility" explanation="title" max="20" comment="">Invincibilidad</string>
-    <string english="Provided to help disabled gamers explore the game. Can cause glitches." explanation="invincibility mode" max="38*3" comment="">Proveído para ayudar a jugadores discapacitados a explorar el juego. Puede causar errores.</string>
+    <string english="Explore the game freely without dying. (Can cause glitches.)" explanation="invincibility mode" max="38*3" comment=""></string>
     <string english="Invincibility is ON." explanation="" max="38*2" comment="">Invincibilidad está ACTIVADO.</string>
     <string english="Invincibility is OFF." explanation="" max="38*2" comment="">Invincibilidad está DESACTIVADO.</string>
     <string english="Are you sure you want to enable invincibility?" explanation="" max="38*7" comment="">Estás seguro que quieres activar la invicibilidad?</string>
     <string english="no, return to options" explanation="menu option" comment="">no, regresar a opciones</string>
     <string english="yes, enable" explanation="menu option" comment="">si, activar</string>
     <string english="slowdown" explanation="menu option" comment="">aceleracion</string>
+    <string english="Slowdown" explanation="title" max="20" comment=""></string>
     <string english="Game Speed" explanation="title" max="20" comment="">Velocidad del juego</string>
-    <string english="May be useful for disabled gamers using one switch devices." explanation="" max="38*3" comment="">Podría ser útil para jugadores discapacitados.</string>
+    <string english="Reduce the game speed." explanation="" max="38*3" comment=""></string>
     <string english="Select a new game speed below." explanation="" max="38*3" comment="">Selecciona la velocidad del juego abajo.</string>
     <string english="Game speed is normal." explanation="" max="38*2" comment="">La velocidad esta normal.</string>
     <string english="Game speed is at 80%" explanation="" max="38*2" comment="">La velocidad esta al 80%</string>
@@ -272,6 +287,7 @@
     <string english="open level folder" explanation="menu option" comment="">abrir carpeta de niveles</string>
     <string english="return" explanation="menu option" comment="">volver</string>
     <string english="return to play menu" explanation="menu option" max="36" comment="">volver al menu de juego</string>
+    <string english="try again" explanation="menu option, retry time trial" max="36" comment=""></string>
     <string english="ok" explanation="button" comment="">ok</string>
     <string english="next page" explanation="menu option" comment="">siguiente pagina</string>
     <string english="previous page" explanation="menu option" comment="">pagina anterior</string>
@@ -464,12 +480,6 @@
     <string english="ERROR: No checkpoint to spawn at" explanation="we cannot playtest because there is no checkpoint in this room that the player could start (be spawned) at" max="38*3" comment=""></string>
     <string english="ERROR: Max number of trinkets is 100" explanation="" max="38*3" comment=""></string>
     <string english="ERROR: Max number of crewmates is 100" explanation="" max="38*3" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
-    <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>
     <string english="" explanation="" comment=""></string>

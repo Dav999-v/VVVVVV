@@ -5969,13 +5969,13 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         if (ingame_titlemode && unlock[18])
 #endif
         {
-                option("flip mode");
+                option(loc::gettext("flip mode"));
         }
-        option("toggle fps");
-        option("speedrun options");
-        option("advanced options");
-        option("clear data");
-        option("return");
+        option(loc::gettext("toggle fps"));
+        option(loc::gettext("speedrun options"));
+        option(loc::gettext("advanced options"));
+        option(loc::gettext("clear data"));
+        option(loc::gettext("return"));
         menuyoff = -10;
         maxspacing = 15;
         break;
@@ -6033,6 +6033,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("audio"));
         option(loc::gettext("game pad"));
         option(loc::gettext("accessibility"));
+        option(loc::gettext("language"));
         option(loc::gettext("return"));
         menuyoff = 0;
         maxspacing = 15;
@@ -6053,8 +6054,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         maxspacing = 15;
         break;
     case Menu::audiooptions:
-        option("music volume");
-        option("sound volume");
+        option(loc::gettext("music volume"));
+        option(loc::gettext("sound volume"));
         if (music.mmmmmm)
         {
             option(loc::gettext("soundtrack"));
@@ -6398,7 +6399,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         break;
     case Menu::timetrialcomplete3:
         option(loc::gettext("return to play menu"));
-        option("try again");
+        option(loc::gettext("try again"));
         menuyoff = 70;
         break;
     case Menu::gamecompletecontinue:

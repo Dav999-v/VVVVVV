@@ -758,15 +758,6 @@ static void menuactionpress(void)
         }
         else if (game.currentmenuoption == gameplayoptionsoffset + 3)
         {
-            //language options
-/* TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-            music.playef(11);
-            loc::loadlanguagelist();
-            game.createmenu(Menu::language);
-            game.currentmenuoption = loc::languagelist_curlang;
-            map.nexttowercolour();
-            break;
-*/
             //Clear Data
             music.playef(11);
             game.createmenu(Menu::cleardatamenu);
@@ -812,6 +803,14 @@ static void menuactionpress(void)
             //accessibility options
             music.playef(11);
             game.createmenu(Menu::accessibility);
+            map.nexttowercolour();
+            break;
+        case 5:
+            //language options
+            music.playef(11);
+            loc::loadlanguagelist();
+            game.createmenu(Menu::language);
+            game.currentmenuoption = loc::languagelist_curlang;
             map.nexttowercolour();
             break;
         default:
