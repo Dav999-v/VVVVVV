@@ -1,6 +1,9 @@
 #ifndef FILESYSTEMUTILS_H
 #define FILESYSTEMUTILS_H
 
+/* Forward declaration */
+class binaryBlob;
+
 #include <stddef.h>
 #include <string>
 #include <vector>
@@ -17,15 +20,23 @@ char *FILESYSTEM_getUserLevelDirectory(void);
 bool FILESYSTEM_isFile(const char* filename);
 bool FILESYSTEM_isMounted(const char* filename);
 
-void FILESYSTEM_mount(const char *fname);
 void FILESYSTEM_loadZip(const char* filename);
-void FILESYSTEM_mountassets(const char *path);
-void FILESYSTEM_unmountassets(void);
+void FILESYSTEM_mountAssets(const char *path);
+void FILESYSTEM_unmountAssets(void);
 bool FILESYSTEM_isAssetMounted(const char* filename);
 
 void FILESYSTEM_loadFileToMemory(const char *name, unsigned char **mem,
-                                 size_t *len, bool addnull = false);
+                                 size_t *len, bool addnull);
+void FILESYSTEM_loadAssetToMemory(
+    const char* name,
+    unsigned char** mem,
+    size_t* len,
+    const bool addnull
+);
 void FILESYSTEM_freeMemory(unsigned char **mem);
+
+bool FILESYSTEM_loadBinaryBlob(binaryBlob* blob, const char* filename);
+
 bool FILESYSTEM_saveTiXml2Document(const char *name, tinyxml2::XMLDocument& doc);
 bool FILESYSTEM_loadTiXml2Document(const char *name, tinyxml2::XMLDocument& doc);
 

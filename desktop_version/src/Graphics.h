@@ -226,6 +226,7 @@ public:
 #ifndef NO_CUSTOM_LEVELS
 	bool tiles1_mounted;
 	bool tiles2_mounted;
+	bool minimap_mounted;
 #endif
 
 
@@ -328,8 +329,6 @@ public:
 	int warpskip, warpfcol, warpbcol;
 
 	bool translucentroomname;
-
-	bool showmousecursor;
 
 	std::map<int, int> font_positions;
 

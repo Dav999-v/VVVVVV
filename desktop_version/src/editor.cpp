@@ -214,14 +214,14 @@ static std::string NAME(const std::string& buf) \
     return find_tag(buf, "<" TAG ">", "</" TAG ">"); \
 }
 
-TAG_FINDER(find_metadata, "MetaData"); //only for checking that it exists
+TAG_FINDER(find_metadata, "MetaData") //only for checking that it exists
 
-TAG_FINDER(find_creator, "Creator");
-TAG_FINDER(find_title, "Title");
-TAG_FINDER(find_desc1, "Desc1");
-TAG_FINDER(find_desc2, "Desc2");
-TAG_FINDER(find_desc3, "Desc3");
-TAG_FINDER(find_website, "website");
+TAG_FINDER(find_creator, "Creator")
+TAG_FINDER(find_title, "Title")
+TAG_FINDER(find_desc1, "Desc1")
+TAG_FINDER(find_desc2, "Desc2")
+TAG_FINDER(find_desc3, "Desc3")
+TAG_FINDER(find_website, "website")
 
 #undef TAG_FINDER
 
@@ -231,7 +231,9 @@ static void levelMetaDataCallback(const char* filename)
     LevelMetaData temp;
     std::string filename_ = filename;
 
-    if (!FILESYSTEM_isFile(filename) || FILESYSTEM_isMounted(filename))
+    if (!endsWith(filename, ".vvvvvv")
+    || !FILESYSTEM_isFile(filename)
+    || FILESYSTEM_isMounted(filename))
     {
         return;
     }
@@ -268,7 +270,7 @@ void editorclass::getDirectoryData(void)
 }
 bool editorclass::getLevelMetaData(std::string& _path, LevelMetaData& _data )
 {
-    unsigned char *uMem = NULL;
+    unsigned char *uMem;
     FILESYSTEM_loadFileToMemory(_path.c_str(), &uMem, NULL, true);
 
     if (uMem == NULL)
@@ -1774,14 +1776,14 @@ bool editorclass::load(std::string& _path)
         _path = levelDir + _path;
     }
 
-    FILESYSTEM_unmountassets();
-    if (game.playassets != "")
+    FILESYSTEM_unmountAssets();
+    if (game.cliplaytest && game.playassets != "")
     {
-        FILESYSTEM_mountassets(game.playassets.c_str());
+        FILESYSTEM_mountAssets(game.playassets.c_str());
     }
     else
     {
-        FILESYSTEM_mountassets(_path.c_str());
+        FILESYSTEM_mountAssets(_path.c_str());
     }
 
     tinyxml2::XMLDocument doc;
@@ -3860,11 +3862,6 @@ void editorlogic(void)
     }
 }
 
-static void creategraphicoptions(void)
-{
-    game.createmenu(Menu::graphicoptions);
-}
-
 static void creategameoptions(void)
 {
     game.createmenu(Menu::options);
@@ -3964,22 +3961,13 @@ static void editormenuactionpress(void)
             graphics.backgrounddrawn=false;
             break;
         case 6:
-        case 7:
-            /* Graphic options and game options */
+            /* Game options */
             music.playef(11);
             game.gamestate = TITLEMODE;
             game.ingame_titlemode = true;
             game.ingame_editormode = true;
 
-            if (game.currentmenuoption == 6)
-            {
-                DEFER_CALLBACK(creategraphicoptions);
-            }
-            else
-            {
-                DEFER_CALLBACK(creategameoptions);
-            }
-
+            DEFER_CALLBACK(creategameoptions);
             DEFER_CALLBACK(nextbgcolor);
             break;
         default:
@@ -4170,13 +4158,17 @@ void editorinput(void)
 
             if (ed.settingsmod)
             {
-                bool edsettings_in_stack = false;
-                for (size_t i = 0; i < game.menustack.size(); i++)
+                bool edsettings_in_stack = game.currentmenuname == Menu::ed_settings;
+                if (!edsettings_in_stack)
                 {
-                    if (game.menustack[i].name == Menu::ed_settings)
+                    size_t i;
+                    for (i = 0; i < game.menustack.size(); ++i)
                     {
-                        edsettings_in_stack = true;
-                        break;
+                        if (game.menustack[i].name == Menu::ed_settings)
+                        {
+                            edsettings_in_stack = true;
+                            break;
+                        }
                     }
                 }
                 if (edsettings_in_stack)

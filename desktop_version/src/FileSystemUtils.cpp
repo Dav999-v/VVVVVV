@@ -7,19 +7,29 @@
 #include <tinyxml2.h>
 #include <vector>
 
+#include "BinaryBlob.h"
 #include "Exit.h"
 #include "Graphics.h"
+#include "Maths.h"
 #include "UtilityClass.h"
 
 /* These are needed for PLATFORM_* crap */
 #if defined(_WIN32)
 #include <windows.h>
 #include <shlobj.h>
+int mkdir(char* path, int mode)
+{
+	WCHAR utf16_path[MAX_PATH];
+	MultiByteToWideChar(CP_UTF8, 0, path, -1, utf16_path, MAX_PATH);
+	return CreateDirectoryW(utf16_path, NULL);
+}
+#define VNEEDS_MIGRATION (mkdirResult != 0)
 #elif defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__HAIKU__) || defined(__DragonFly__)
 #include <unistd.h>
 #include <dirent.h>
 #include <limits.h>
 #include <sys/stat.h>
+#define VNEEDS_MIGRATION (mkdirResult == 0)
 #define MAX_PATH PATH_MAX
 #endif
 
@@ -27,8 +37,9 @@ static char saveDir[MAX_PATH] = {'\0'};
 static char levelDir[MAX_PATH] = {'\0'};
 
 static char assetDir[MAX_PATH] = {'\0'};
+static char virtualMountPath[MAX_PATH] = {'\0'};
 
-static void PLATFORM_getOSDirectory(char* output);
+static int PLATFORM_getOSDirectory(char* output, const size_t output_size);
 static void PLATFORM_migrateSaveData(char* output);
 static void PLATFORM_copyFile(const char *oldLocation, const char *newLocation);
 
@@ -59,7 +70,16 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
 	char* basePath;
 
 	PHYSFS_setAllocator(&allocator);
-	PHYSFS_init(argvZero);
+
+	if (!PHYSFS_init(argvZero))
+	{
+		printf(
+			"Unable to initialize PhysFS: %s\n",
+			PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())
+		);
+		return 0;
+	}
+
 	PHYSFS_permitSymbolicLinks(1);
 
 	/* Determine the OS user directory */
@@ -73,41 +93,52 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
 			!trailing_pathsep ? pathSep : ""
 		);
 	}
-	else
+	else if (!PLATFORM_getOSDirectory(output, sizeof(output)))
 	{
-		PLATFORM_getOSDirectory(output);
+		return 0;
 	}
 
-	/* Create base user directory, mount */
-	mkdirResult = PHYSFS_mkdir(output);
-
 	/* Mount our base user directory */
-	PHYSFS_mount(output, NULL, 0);
-	PHYSFS_setWriteDir(output);
+	if (!PHYSFS_mount(output, NULL, 0))
+	{
+		printf(
+			"Could not mount %s: %s\n",
+			output,
+			PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())
+		);
+		return 0;
+	}
+	if (!PHYSFS_setWriteDir(output))
+	{
+		printf(
+			"Could not set write dir to %s: %s\n",
+			output,
+			PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())
+		);
+		return 0;
+	}
 	printf("Base directory: %s\n", output);
-
-	/* Create the save/level folders */
-	mkdirResult |= PHYSFS_mkdir("saves");
-	mkdirResult |= PHYSFS_mkdir("levels");
 
 	/* Store full save directory */
 	SDL_snprintf(saveDir, sizeof(saveDir), "%s%s%s",
 		output,
 		"saves",
-		PHYSFS_getDirSeparator()
+		pathSep
 	);
+	mkdir(saveDir, 0777); /* FIXME: Why did I not | this? -flibit */
 	printf("Save directory: %s\n", saveDir);
 
 	/* Store full level directory */
 	SDL_snprintf(levelDir, sizeof(levelDir), "%s%s%s",
 		output,
 		"levels",
-		PHYSFS_getDirSeparator()
+		pathSep
 	);
+	mkdirResult = mkdir(levelDir, 0777);
 	printf("Level directory: %s\n", levelDir);
 
 	/* We didn't exist until now, migrate files! */
-	if (mkdirResult == 0)
+	if (VNEEDS_MIGRATION)
 	{
 		PLATFORM_migrateSaveData(output);
 	}
@@ -213,10 +244,36 @@ static bool FILESYSTEM_exists(const char *fname)
 	return PHYSFS_exists(fname);
 }
 
-void FILESYSTEM_mount(const char *fname)
+static void generateVirtualMountPath(char* path, const size_t path_size)
+{
+	char random[6 + 1] = {'\0'};
+	size_t i;
+	for (i = 0; i < SDL_arraysize(random) - 1; ++i)
+	{
+		/* Generate a-z0-9 (base 36) */
+		char randchar = fRandom() * 36;
+		if (randchar <= 26)
+		{
+			randchar += 'a';
+		}
+		else
+		{
+			randchar -= 26;
+			randchar += '0';
+		}
+		random[i] = randchar;
+	}
+	SDL_snprintf(
+		path,
+		path_size,
+		".vvv-mnt-virtual-%s/custom-assets/",
+		random
+	);
+}
+
+static bool FILESYSTEM_mountAssetsFrom(const char *fname)
 {
 	const char* real_dir = PHYSFS_getRealDir(fname);
-	const char* dir_separator;
 	char path[MAX_PATH];
 
 	if (real_dir == NULL)
@@ -225,21 +282,25 @@ void FILESYSTEM_mount(const char *fname)
 			"Could not mount %s: real directory doesn't exist\n",
 			fname
 		);
-		return;
+		return false;
 	}
 
-	dir_separator = PHYSFS_getDirSeparator();
+	SDL_snprintf(path, sizeof(path), "%s/%s", real_dir, fname);
 
-	SDL_snprintf(path, sizeof(path), "%s%s%s", real_dir, dir_separator, fname);
+	generateVirtualMountPath(virtualMountPath, sizeof(virtualMountPath));
 
-	if (!PHYSFS_mount(path, NULL, 0))
+	if (!PHYSFS_mount(path, virtualMountPath, 0))
 	{
-		printf("Error mounting: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+		printf(
+			"Error mounting %s: %s\n",
+			fname,
+			PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())
+		);
+		return false;
 	}
-	else
-	{
-		SDL_strlcpy(assetDir, path, sizeof(assetDir));
-	}
+
+	SDL_strlcpy(assetDir, path, sizeof(assetDir));
+	return true;
 }
 
 void FILESYSTEM_loadZip(const char* filename)
@@ -256,7 +317,7 @@ void FILESYSTEM_loadZip(const char* filename)
 	}
 }
 
-void FILESYSTEM_mountassets(const char* path)
+void FILESYSTEM_mountAssets(const char* path)
 {
 	const size_t path_size = SDL_strlen(path);
 	char filename[MAX_PATH];
@@ -298,40 +359,20 @@ void FILESYSTEM_mountassets(const char* path)
 	{
 		printf("Custom asset directory is .data.zip at %s\n", zip_data);
 
-		FILESYSTEM_mount(zip_data);
+		if (!FILESYSTEM_mountAssetsFrom(zip_data))
+		{
+			return;
+		}
 
 		graphics.reloadresources();
 	}
 	else if (zip_normal != NULL && endsWith(zip_normal, ".zip"))
 	{
-		PHYSFS_File* zip = PHYSFS_openRead(zip_normal);
-
 		printf("Custom asset directory is .zip at %s\n", zip_normal);
 
-		SDL_snprintf(
-			zip_data,
-			sizeof(zip_data),
-			"%s.data.zip",
-			zip_normal
-		);
-
-		if (zip == NULL)
+		if (!FILESYSTEM_mountAssetsFrom(zip_normal))
 		{
-			printf(
-				"Error loading .zip: %s\n",
-				PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())
-			);
-		}
-		else if (PHYSFS_mountHandle(zip, zip_data, "/", 0) == 0)
-		{
-			printf(
-				"Error mounting .zip: %s\n",
-				PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())
-			);
-		}
-		else
-		{
-			SDL_strlcpy(assetDir, zip_data, sizeof(assetDir));
+			return;
 		}
 
 		graphics.reloadresources();
@@ -340,7 +381,10 @@ void FILESYSTEM_mountassets(const char* path)
 	{
 		printf("Custom asset directory exists at %s\n", dir);
 
-		FILESYSTEM_mount(dir);
+		if (!FILESYSTEM_mountAssetsFrom(dir))
+		{
+			return;
+		}
 
 		graphics.reloadresources();
 	}
@@ -350,7 +394,7 @@ void FILESYSTEM_mountassets(const char* path)
 	}
 }
 
-void FILESYSTEM_unmountassets(void)
+void FILESYSTEM_unmountAssets(void)
 {
 	if (assetDir[0] != '\0')
 	{
@@ -365,9 +409,42 @@ void FILESYSTEM_unmountassets(void)
 	}
 }
 
+static void getMountedPath(
+	char* buffer,
+	const size_t buffer_size,
+	const char* filename
+) {
+	const char* path;
+	const bool assets_mounted = assetDir[0] != '\0';
+	char mounted_path[MAX_PATH];
+
+	if (assets_mounted)
+	{
+		SDL_snprintf(
+			mounted_path,
+			sizeof(mounted_path),
+			"%s%s",
+			virtualMountPath,
+			filename
+		);
+	}
+
+	if (assets_mounted && PHYSFS_exists(mounted_path))
+	{
+		path = mounted_path;
+	}
+	else
+	{
+		path = filename;
+	}
+
+	SDL_strlcpy(buffer, path, buffer_size);
+}
+
 bool FILESYSTEM_isAssetMounted(const char* filename)
 {
 	const char* realDir;
+	char path[MAX_PATH];
 
 	/* Fast path */
 	if (assetDir[0] == '\0')
@@ -375,7 +452,9 @@ bool FILESYSTEM_isAssetMounted(const char* filename)
 		return false;
 	}
 
-	realDir = PHYSFS_getRealDir(filename);
+	getMountedPath(path, sizeof(path), filename);
+
+	realDir = PHYSFS_getRealDir(path);
 
 	if (realDir == NULL)
 	{
@@ -393,11 +472,21 @@ void FILESYSTEM_loadFileToMemory(
 	size_t *len,
 	bool addnull
 ) {
+	PHYSFS_File *handle;
+	PHYSFS_sint64 length;
+	PHYSFS_sint64 success;
+
+	if (name == NULL || mem == NULL)
+	{
+		goto fail;
+	}
+
 	if (SDL_strcmp(name, "levels/special/stdin.vvvvvv") == 0)
 	{
 		// this isn't *technically* necessary when piping directly from a file, but checking for that is annoying
 		static std::vector<char> STDIN_BUFFER;
 		static bool STDIN_LOADED = false;
+		size_t stdin_length;
 		if (!STDIN_LOADED)
 		{
 			std::istreambuf_iterator<char> begin(std::cin), end;
@@ -406,14 +495,14 @@ void FILESYSTEM_loadFileToMemory(
 			STDIN_LOADED = true;
 		}
 
-		size_t length = STDIN_BUFFER.size() - 1;
+		stdin_length = STDIN_BUFFER.size() - 1;
 		if (len != NULL)
 		{
-			*len = length;
+			*len = stdin_length;
 		}
 
-		++length;
-		*mem = static_cast<unsigned char*>(SDL_malloc(length)); // STDIN_BUFFER.data() causes double-free
+		++stdin_length;
+		*mem = static_cast<unsigned char*>(SDL_malloc(stdin_length)); // STDIN_BUFFER.data() causes double-free
 		if (*mem == NULL)
 		{
 			VVV_exit(1);
@@ -422,12 +511,12 @@ void FILESYSTEM_loadFileToMemory(
 		return;
 	}
 
-	PHYSFS_File *handle = PHYSFS_openRead(name);
+	handle = PHYSFS_openRead(name);
 	if (handle == NULL)
 	{
-		return;
+		goto fail;
 	}
-	PHYSFS_sint64 length = PHYSFS_fileLength(handle);
+	length = PHYSFS_fileLength(handle);
 	if (len != NULL)
 	{
 		if (length < 0)
@@ -453,18 +542,130 @@ void FILESYSTEM_loadFileToMemory(
 			VVV_exit(1);
 		}
 	}
-	PHYSFS_sint64 success = PHYSFS_readBytes(handle, *mem, length);
+	success = PHYSFS_readBytes(handle, *mem, length);
 	if (success == -1)
 	{
 		FILESYSTEM_freeMemory(mem);
 	}
 	PHYSFS_close(handle);
+	return;
+
+fail:
+	if (mem != NULL)
+	{
+		*mem = NULL;
+	}
+	if (len != NULL)
+	{
+		*len = 0;
+	}
+}
+
+void FILESYSTEM_loadAssetToMemory(
+	const char* name,
+	unsigned char** mem,
+	size_t* len,
+	const bool addnull
+) {
+	char path[MAX_PATH];
+
+	getMountedPath(path, sizeof(path), name);
+
+	FILESYSTEM_loadFileToMemory(path, mem, len, addnull);
 }
 
 void FILESYSTEM_freeMemory(unsigned char **mem)
 {
 	SDL_free(*mem);
 	*mem = NULL;
+}
+
+bool FILESYSTEM_loadBinaryBlob(binaryBlob* blob, const char* filename)
+{
+	PHYSFS_sint64 size;
+	PHYSFS_File* handle;
+	int offset;
+	size_t i;
+	char path[MAX_PATH];
+
+	if (blob == NULL || filename == NULL)
+	{
+		return false;
+	}
+
+	getMountedPath(path, sizeof(path), filename);
+
+	handle = PHYSFS_openRead(path);
+	if (handle == NULL)
+	{
+		printf("Unable to open file %s\n", filename);
+		return false;
+	}
+
+	size = PHYSFS_fileLength(handle);
+
+	PHYSFS_readBytes(
+		handle,
+		&blob->m_headers,
+		sizeof(blob->m_headers)
+	);
+
+	offset = sizeof(blob->m_headers);
+
+	for (i = 0; i < SDL_arraysize(blob->m_headers); ++i)
+	{
+		resourceheader* header = &blob->m_headers[i];
+		char** memblock = &blob->m_memblocks[i];
+
+		/* Name can be stupid, just needs to be terminated */
+		static const size_t last_char = sizeof(header->name) - 1;
+		header->name[last_char] = '\0';
+
+		if (header->valid & ~0x1 || !header->valid)
+		{
+			goto fail; /* Must be EXACTLY 1 or 0 */
+		}
+		if (header->size < 1)
+		{
+			goto fail; /* Must be nonzero and positive */
+		}
+		if (offset + header->size > size)
+		{
+			goto fail; /* Bogus size value */
+		}
+
+		PHYSFS_seek(handle, offset);
+		*memblock = (char*) SDL_malloc(header->size);
+		if (*memblock == NULL)
+		{
+			VVV_exit(1); /* Oh god we're out of memory, just bail */
+		}
+		PHYSFS_readBytes(handle, *memblock, header->size);
+		offset += header->size;
+
+		continue;
+
+fail:
+		header->valid = false;
+	}
+
+	PHYSFS_close(handle);
+
+	printf("The complete reloaded file size: %lli\n", size);
+
+	for (i = 0; i < SDL_arraysize(blob->m_headers); ++i)
+	{
+		const resourceheader* header = &blob->m_headers[i];
+
+		if (!header->valid)
+		{
+			continue;
+		}
+
+		printf("%s unpacked\n", header->name);
+	}
+
+	return true;
 }
 
 bool FILESYSTEM_saveTiXml2Document(const char *name, tinyxml2::XMLDocument& doc)
@@ -485,7 +686,7 @@ bool FILESYSTEM_saveTiXml2Document(const char *name, tinyxml2::XMLDocument& doc)
 bool FILESYSTEM_loadTiXml2Document(const char *name, tinyxml2::XMLDocument& doc)
 {
 	/* XMLDocument.LoadFile doesn't account for Unicode paths, PHYSFS does */
-	unsigned char *mem = NULL;
+	unsigned char *mem;
 	FILESYSTEM_loadFileToMemory(name, &mem, NULL, true);
 	if (mem == NULL)
 	{
@@ -556,16 +757,63 @@ bool FILESYSTEM_langsAreModded(void)
 	return langdir.compare(langdir.size()-4, 4, ".zip") != 0;
 }
 
-static void PLATFORM_getOSDirectory(char* output)
+static int PLATFORM_getOSDirectory(char* output, const size_t output_size)
 {
 #ifdef _WIN32
 	/* This block is here for compatibility, do not touch it! */
 	WCHAR utf16_path[MAX_PATH];
-	SHGetFolderPathW(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, utf16_path);
-	WideCharToMultiByte(CP_UTF8, 0, utf16_path, -1, output, MAX_PATH, NULL, NULL);
+	HRESULT retcode = SHGetFolderPathW(
+		NULL,
+		CSIDL_PERSONAL,
+		NULL,
+		SHGFP_TYPE_CURRENT,
+		utf16_path
+	);
+	int num_bytes;
+
+	if (FAILED(retcode))
+	{
+		printf(
+			"Could not get OS directory: SHGetFolderPathW returned 0x%08x\n",
+			retcode
+		);
+		return 0;
+	}
+
+	num_bytes = WideCharToMultiByte(
+		CP_UTF8,
+		0,
+		utf16_path,
+		-1,
+		output,
+		output_size,
+		NULL,
+		NULL
+	);
+	if (num_bytes == 0)
+	{
+		printf(
+			"Could not get OS directory: UTF-8 conversion failed with %d\n",
+			GetLastError()
+		);
+		return 0;
+	}
+
 	SDL_strlcat(output, "\\VVVVVV\\", MAX_PATH);
+	mkdir(output, 0777);
+	return 1;
 #else
-	SDL_strlcpy(output, PHYSFS_getPrefDir("distractionware", "VVVVVV"), MAX_PATH);
+	const char* prefDir = PHYSFS_getPrefDir("distractionware", "VVVVVV");
+	if (prefDir == NULL)
+	{
+		printf(
+			"Could not get OS directory: %s\n",
+			PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())
+		);
+		return 0;
+	}
+	SDL_strlcpy(output, prefDir, output_size);
+	return 1;
 #endif
 }
 

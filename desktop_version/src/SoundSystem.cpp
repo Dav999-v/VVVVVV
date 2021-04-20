@@ -29,14 +29,16 @@ MusicTrack::MusicTrack(SDL_RWops *rw)
 
 SoundTrack::SoundTrack(const char* fileName)
 {
+	unsigned char *mem;
+	size_t length;
+
 	sound = NULL;
 
-	unsigned char *mem;
-	size_t length = 0;
-	FILESYSTEM_loadFileToMemory(fileName, &mem, &length);
+	FILESYSTEM_loadAssetToMemory(fileName, &mem, &length, false);
 	if (mem == NULL)
 	{
 		fprintf(stderr, "Unable to load WAV file %s\n", fileName);
+		SDL_assert(0 && "WAV file missing!");
 		return;
 	}
 	SDL_RWops *fileIn = SDL_RWFromConstMem(mem, length);

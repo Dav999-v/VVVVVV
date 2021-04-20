@@ -214,10 +214,7 @@ void Game::init(void)
 
     deathcounts = 0;
     gameoverdelay = 0;
-    frames = 0;
-    seconds = 0;
-    minutes = 0;
-    hours = 0;
+    resetgameclock();
     gamesaved = false;
     gamesavefailed = false;
     savetime = "00:00";
@@ -375,7 +372,7 @@ void Game::init(void)
     fadetolab = false;
     fadetolabdelay = 0;
 
-    over30mode = false;
+    over30mode = true;
     glitchrunnermode = false;
 
     ingame_titlemode = false;
@@ -383,6 +380,7 @@ void Game::init(void)
     ingame_editormode = false;
 #endif
     kludge_ingametemp = Menu::mainmenu;
+    slidermode = SLIDER_NONE;
 
     disablepause = false;
     inputdelay = false;
@@ -414,8 +412,6 @@ void Game::clearcustomlevelstats(void)
 {
     //just clearing the array
     customlevelstats.clear();
-
-    customlevelstatsloaded=false; //To ensure we don't load it where it isn't needed
 }
 
 
@@ -477,11 +473,6 @@ void Game::updatecustomlevelstats(std::string clevel, int cscore)
 
 void Game::loadcustomlevelstats(void)
 {
-    if(customlevelstatsloaded)
-    {
-        return;
-    }
-
     tinyxml2::XMLDocument doc;
     if (!FILESYSTEM_loadTiXml2Document("saves/levelstats.vvv", doc))
     {
@@ -556,7 +547,16 @@ void Game::loadcustomlevelstats(void)
             pText = "";
         }
 
-        LOAD_ARRAY_RENAME(customlevelscore, customlevelscores)
+        if (SDL_strcmp(pKey, "customlevelscore") == 0 && pText[0] != '\0')
+        {
+            char buffer[16];
+            size_t start = 0;
+
+            while (next_split_s(buffer, sizeof(buffer), &start, pText, ','))
+            {
+                customlevelscores.push_back(help.Int(buffer));
+            }
+        }
 
         if (SDL_strcmp(pKey, "customlevelstats") == 0 && pText[0] != '\0')
         {
@@ -726,10 +726,19 @@ void Game::updatestate(void)
         case 0:
             //Do nothing here! Standard game state
 
-            //Prevent softlocks if there's no cutscene running right now
-            if (!script.running)
+            if (script.running)
             {
+                if (pausescript && !advancetext)
+                {
+                    /* Prevent softlocks if we somehow don't have advancetext */
+                    pausescript = false;
+                }
+            }
+            else
+            {
+                /* Prevent softlocks if there's no cutscene running right now */
                 hascontrol = true;
+                completestop = false;
             }
             break;
         case 1:
@@ -4199,9 +4208,14 @@ void Game::deserializesettings(tinyxml2::XMLElement* dataNode, ScreenSettings* s
             graphics.translucentroomname = help.Int(pText);
         }
 
-        if (SDL_strcmp(pKey, "showmousecursor") == 0)
+        if (SDL_strcmp(pKey, "musicvolume") == 0)
         {
-            graphics.showmousecursor = help.Int(pText);
+            music.user_music_volume = help.Int(pText);
+        }
+
+        if (SDL_strcmp(pKey, "soundvolume") == 0)
+        {
+            music.user_sound_volume = help.Int(pText);
         }
 
         if (SDL_strcmp(pKey, "flipButton") == 0)
@@ -4250,15 +4264,6 @@ void Game::deserializesettings(tinyxml2::XMLElement* dataNode, ScreenSettings* s
             loc::lang = std::string(pText);
         }
 
-    }
-
-    if (graphics.showmousecursor)
-    {
-        SDL_ShowCursor(SDL_ENABLE);
-    }
-    else
-    {
-        SDL_ShowCursor(SDL_DISABLE);
     }
 
     if (controllerButton_flip.size() < 1)
@@ -4430,8 +4435,6 @@ void Game::serializesettings(tinyxml2::XMLElement* dataNode, const ScreenSetting
 
     xml::update_tag(dataNode, "translucentroomname", (int) graphics.translucentroomname);
 
-    xml::update_tag(dataNode, "showmousecursor", (int) graphics.showmousecursor);
-
     xml::update_tag(dataNode, "over30mode", (int) over30mode);
 
     xml::update_tag(dataNode, "inputdelay", (int) inputdelay);
@@ -4439,6 +4442,10 @@ void Game::serializesettings(tinyxml2::XMLElement* dataNode, const ScreenSetting
     xml::update_tag(dataNode, "glitchrunnermode", (int) glitchrunnermode);
 
     xml::update_tag(dataNode, "vsync", (int) screen_settings->useVsync);
+
+    xml::update_tag(dataNode, "musicvolume", music.user_music_volume);
+
+    xml::update_tag(dataNode, "soundvolume", music.user_sound_volume);
 
     // Delete all controller buttons we had previously.
     // dataNode->FirstChildElement() shouldn't be NULL at this point...
@@ -4888,7 +4895,6 @@ void Game::readmaingamesave(tinyxml2::XMLDocument& doc)
         else if (SDL_strcmp(pKey, "frames") == 0)
         {
             frames = help.Int(pText);
-            frames = 0;
         }
         else if (SDL_strcmp(pKey, "seconds") == 0)
         {
@@ -5083,7 +5089,6 @@ void Game::customloadquick(std::string savfile)
         else if (SDL_strcmp(pKey, "frames") == 0)
         {
             frames = help.Int(pText);
-            frames = 0;
         }
         else if (SDL_strcmp(pKey, "seconds") == 0)
         {
@@ -5660,6 +5665,11 @@ std::string Game::unrescued(void)
 
 void Game::gameclock(void)
 {
+    if (timetrialcountdown > 0)
+    {
+        return;
+    }
+
     frames++;
     if (frames >= 30)
     {
@@ -5825,17 +5835,16 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
     {
     case Menu::mainmenu:
 #if !defined(MAKEANDPLAY)
-        option(loc::gettext("start game"));
+        option(loc::gettext("play"));
 #endif
 #if !defined(NO_CUSTOM_LEVELS)
-        option(loc::gettext("player levels"));
+        option(loc::gettext("levels"));
 #endif
-        option(loc::gettext("graphic options"));
-        option(loc::gettext("game options"));
+        option(loc::gettext("options"));
 #if !defined(MAKEANDPLAY)
-        option(loc::gettext("view credits"));
+        option(loc::gettext("credits"));
 #endif
-        option(loc::gettext("quit game"));
+        option(loc::gettext("quit"));
         menuyoff = -10;
         maxspacing = 15;
         break;
@@ -5955,16 +5964,31 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("ok"));
         menuyoff = -20;
         break;
+    case Menu::gameplayoptions:
+#if !defined(MAKEANDPLAY)
+        if (ingame_titlemode && unlock[18])
+#endif
+        {
+                option("flip mode");
+        }
+        option("toggle fps");
+        option("speedrun options");
+        option("advanced options");
+        option("clear data");
+        option("return");
+        menuyoff = -10;
+        maxspacing = 15;
+        break;
     case Menu::graphicoptions:
         option(loc::gettext("toggle fullscreen"));
         option(loc::gettext("scaling mode"));
         option(loc::gettext("resize to nearest"), graphics.screenbuffer->isWindowed);
         option(loc::gettext("toggle filter"));
         option(loc::gettext("toggle analogue"));
-        option(loc::gettext("toggle fps"));
         option(loc::gettext("toggle vsync"));
         option(loc::gettext("return"));
         menuyoff = -10;
+        maxspacing = 15;
         break;
     case Menu::ed_settings:
         option(loc::gettext("change description"));
@@ -5973,8 +5997,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("editor ghosts"));
         option(loc::gettext("load level"));
         option(loc::gettext("save level"));
-        option(loc::gettext("graphic options"));
-        option(loc::gettext("game options"));
+        option(loc::gettext("options"));
         option(loc::gettext("quit to main menu"));
 
         menuyoff = -20;
@@ -6005,46 +6028,53 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         maxspacing = 15;
         break;
     case Menu::options:
-        option(loc::gettext("accessibility options"));
-        option(loc::gettext("advanced options"));
-#if !defined(MAKEANDPLAY)
-        if (ingame_titlemode && unlock[18])
-#endif
+        option(loc::gettext("gameplay"));
+        option(loc::gettext("graphics"));
+        option(loc::gettext("audio"));
+        option(loc::gettext("game pad"));
+        option(loc::gettext("accessibility"));
+        option(loc::gettext("return"));
+        menuyoff = 0;
+        maxspacing = 15;
+        break;
+    case Menu::speedrunneroptions:
+        option(loc::gettext("glitchrunner mode"));
+        option(loc::gettext("input delay"));
+        option(loc::gettext("fake load screen"));
+        option(loc::gettext("return"));
+        menuyoff = 0;
+        maxspacing = 15;
+        break;
+    case Menu::advancedoptions:
+        option(loc::gettext("unfocus pause"));
+        option(loc::gettext("room name background"));
+        option(loc::gettext("return"));
+        menuyoff = 0;
+        maxspacing = 15;
+        break;
+    case Menu::audiooptions:
+        option("music volume");
+        option("sound volume");
+        if (music.mmmmmm)
         {
-            option(loc::gettext("flip mode"));
+            option(loc::gettext("soundtrack"));
         }
+        option(loc::gettext("return"));
+        menuyoff = 0;
+        maxspacing = 15;
+        break;
+    case Menu::accessibility:
 #if !defined(MAKEANDPLAY)
         option(loc::gettext("unlock play modes"));
 #endif
-        option(loc::gettext("game pad options"));
-        option(loc::gettext("language"));
-        option(loc::gettext("clear data"));
-        //Add extra menu for mmmmmm mod
-        if(music.mmmmmm){
-            option(loc::gettext("soundtrack"));
-        }
-
-        option(loc::gettext("return"));
-        menuyoff = 0;
-        break;
-    case Menu::advancedoptions:
-        option(loc::gettext("toggle mouse"));
-        option(loc::gettext("unfocus pause"));
-        option(loc::gettext("fake load screen"));
-        option(loc::gettext("room name background"));
-        option(loc::gettext("glitchrunner mode"));
-        option(loc::gettext("input delay"));
-        option(loc::gettext("return"));
-        menuyoff = 0;
-        break;
-    case Menu::accessibility:
+        option(loc::gettext("invincibility"), !ingame_titlemode || (!insecretlab && !intimetrial && !nodeathmode));
+        option(loc::gettext("slowdown"), !ingame_titlemode || (!insecretlab && !intimetrial && !nodeathmode));
         option(loc::gettext("animated backgrounds"));
         option(loc::gettext("screen effects"));
         option(loc::gettext("text outline"));
-        option(loc::gettext("invincibility"), !ingame_titlemode || (!insecretlab && !intimetrial && !nodeathmode));
-        option(loc::gettext("slowdown"), !ingame_titlemode || (!insecretlab && !intimetrial && !nodeathmode));
         option(loc::gettext("return"));
         menuyoff = 0;
+        maxspacing = 15;
         break;
     case Menu::controller:
         option(loc::gettext("analog stick sensitivity"));
@@ -6053,7 +6083,8 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("bind menu"));
         option(loc::gettext("bind restart"));
         option(loc::gettext("return"));
-        menuyoff = 10;
+        menuyoff = 0;
+        maxspacing = 10;
         break;
     case Menu::language:
         if (loc::languagelist.empty())
@@ -6566,7 +6597,8 @@ void Game::quittomenu(void)
 {
     gamestate = TITLEMODE;
     graphics.fademode = 4;
-    FILESYSTEM_unmountassets();
+    FILESYSTEM_unmountAssets();
+    cliplaytest = false;
     graphics.titlebg.tdrawback = true;
     graphics.flipmode = false;
     //Don't be stuck on the summary screen,

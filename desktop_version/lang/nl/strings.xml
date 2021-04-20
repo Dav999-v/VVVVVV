@@ -50,8 +50,7 @@
     <string english="soundtrack" explanation="menu option" comment="">soundtrack</string>
     <string english="Soundtrack" explanation="title" max="20" comment="">Soundtrack</string>
     <string english="Toggle between MMMMMM and PPPPPP" explanation="" max="38*2" comment="">Schakel tussen MMMMMM en PPPPPP</string>
-    <string english="Current soundtrack: MMMMMM" explanation="" max="38*3" comment="">Huidige soundtrack: MMMMMM</string>
-    <string english="Current soundtrack: PPPPPP" explanation="" max="38*3" comment="">Huidige soundtrack: PPPPPP</string>
+    <string english="Current soundtrack: %s" explanation="" max="38*3" comment="">Huidige soundtrack: %s</string>
     <string english="toggle fullscreen" explanation="menu option" comment="">volledig scherm</string>
     <string english="Toggle Fullscreen" explanation="title" max="20" comment="">Volledig scherm</string>
     <string english="Change to fullscreen/windowed mode." explanation="" max="38*3" comment="">Schakel tussen venster en volledig scherm.</string>

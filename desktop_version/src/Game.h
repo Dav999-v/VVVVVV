@@ -41,7 +41,10 @@ namespace Menu
         ed_music,
         ed_quit,
         options,
+        gameplayoptions,
+        speedrunneroptions,
         advancedoptions,
+        audiooptions,
         accessibility,
         controller,
         language,
@@ -80,8 +83,15 @@ namespace Menu
         timetrialcomplete,
         timetrialcomplete2,
         timetrialcomplete3,
-        gamecompletecontinue,
+        gamecompletecontinue
     };
+}
+
+enum SLIDERMODE
+{
+    SLIDER_NONE,
+    SLIDER_MUSICVOLUME,
+    SLIDER_SOUNDVOLUME
 };
 
 struct MenuStackFrame
@@ -259,6 +269,7 @@ public:
     int currentmenuoption ;
     enum Menu::MenuName currentmenuname;
     enum Menu::MenuName kludge_ingametemp;
+    enum SLIDERMODE slidermode;
     int current_credits_list_index;
     int menuxoff, menuyoff;
     int menuspacing;
@@ -413,7 +424,6 @@ public:
     void updatecustomlevelstats(std::string clevel, int cscore);
 
     std::vector<CustomLevelStat> customlevelstats;
-    bool customlevelstatsloaded;
 
 
     std::vector<SDL_GameControllerButton> controllerButton_map;

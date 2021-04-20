@@ -50,8 +50,7 @@
     <string english="soundtrack" explanation="menu option" comment="">banda sonora</string>
     <string english="Soundtrack" explanation="title" max="20" comment="">Banda Sonora</string>
     <string english="Toggle between MMMMMM and PPPPPP" explanation="" max="38*2" comment="">Cambiar entre MMMMMM y PPPPPP</string>
-    <string english="Current soundtrack: MMMMMM" explanation="" max="38*3" comment="">Banda sonora actual: MMMMMM</string>
-    <string english="Current soundtrack: PPPPPP" explanation="" max="38*3" comment="">Banda sonora actual: PPPPPP</string>
+    <string english="Current soundtrack: %s" explanation="" max="38*3" comment="">Banda sonora actual: %s</string>
     <string english="toggle fullscreen" explanation="menu option" comment="">pantalla completa</string>
     <string english="Toggle Fullscreen" explanation="title" max="20" comment="">Pantalla Completa</string>
     <string english="Change to fullscreen/windowed mode." explanation="" max="38*3" comment="">Cambiar a Pantalla Completa/Ventana.</string>

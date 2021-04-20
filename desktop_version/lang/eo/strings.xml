@@ -50,8 +50,7 @@
     <string english="soundtrack" explanation="menu option" comment="">sontrako</string>
     <string english="Soundtrack" explanation="title" max="20" comment="">Sontrako</string>
     <string english="Toggle between MMMMMM and PPPPPP" explanation="" max="38*2" comment="">Baskuligi inter MMMMMM kaj PPPPPP</string>
-    <string english="Current soundtrack: MMMMMM" explanation="" max="38*3" comment="">Nuna sontrako: MMMMMM</string>
-    <string english="Current soundtrack: PPPPPP" explanation="" max="38*3" comment="">Nuna sontrako: PPPPPP</string>
+    <string english="Current soundtrack: %s" explanation="" max="38*3" comment="">Nuna sontrako: %s</string>
     <string english="toggle fullscreen" explanation="menu option" comment="">baskuligi plenekranecon</string>
     <string english="Toggle Fullscreen" explanation="title" max="20" comment="">Plenekraneco</string>
     <string english="Change to fullscreen/windowed mode." explanation="" max="38*3" comment="">Ŝanĝi al plenekrana/fenestra reĝimo.</string>
