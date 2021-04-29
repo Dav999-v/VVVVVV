@@ -446,15 +446,17 @@ static void menuactionpress(void)
         map.nexttowercolour();
         break;
     case Menu::graphicoptions:
+        if (graphics.screenbuffer == NULL)
+        {
+            SDL_assert(0 && "Screenbuffer is NULL!");
+            break;
+        }
+
         switch (game.currentmenuoption)
         {
         case 0:
             music.playef(11);
             graphics.screenbuffer->toggleFullScreen();
-
-            // Recreate menu to update "resize to nearest"
-            game.createmenu(game.currentmenuname, true);
-
             game.savestatsandsettings_menu();
             break;
         case 1:
