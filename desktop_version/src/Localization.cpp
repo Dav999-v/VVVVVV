@@ -20,6 +20,7 @@ namespace loc
 	bool show_lang_maint_menu;
 
 	std::map<std::string, std::string> translation;
+	std::map<std::string, std::map<std::string, std::string> > translation_cutscenes;
 	std::string number[102];
 
 	bool load_doc(std::string cat, tinyxml2::XMLDocument& doc, std::string langcode = lang)
@@ -86,6 +87,7 @@ namespace loc
 	{
 		// Reset/Initialize strings
 		translation.clear();
+		translation_cutscenes.clear();
 
 		for (size_t i = 0; i <= 101; i++)
 		{
@@ -127,6 +129,55 @@ namespace loc
 					printf("Warning: \"%s\" appears in language file multiple times\n", eng.c_str());
 				}
 				translation[eng] = std::string(pText);
+			}
+		}
+	}
+
+	void loadtext_cutscenes(void)
+	{
+		tinyxml2::XMLDocument doc;
+		if (!load_doc("cutscenes", doc))
+		{
+			return;
+		}
+
+		tinyxml2::XMLHandle hDoc(&doc);
+		tinyxml2::XMLElement* pElem;
+		tinyxml2::XMLHandle hRoot(NULL);
+
+		{
+			pElem=hDoc.FirstChildElement().ToElement();
+			hRoot=tinyxml2::XMLHandle(pElem);
+		}
+
+		for (pElem = hRoot.FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
+		{
+			const char* pKey = pElem->Value();
+
+			if (SDL_strcmp(pKey, "cutscene") == 0)
+			{
+				std::string script_id = std::string(pElem->Attribute("id"));
+				if (translation_cutscenes.count(script_id) != 0)
+				{
+					printf("Warning: cutscene \"%s\" appears in language file multiple times\n", script_id.c_str());
+				}
+				translation_cutscenes[script_id] = std::map<std::string, std::string>();
+
+				for (tinyxml2::XMLElement* subElem = pElem->FirstChildElement(); subElem; subElem=subElem->NextSiblingElement())
+				{
+					const char* pSubKey = subElem->Value();
+					const char* pSubText = subElem->GetText();
+					if (pSubText == NULL)
+					{
+						pSubText = "";
+					}
+
+					if (SDL_strcmp(pSubKey, "dialogue") == 0)
+					{
+						std::string eng = std::string(subElem->Attribute("english"));
+						translation_cutscenes[script_id][eng] = std::string(pSubText);
+					}
+				}
 			}
 		}
 	}
@@ -181,6 +232,7 @@ namespace loc
 		}
 
 		loadtext_strings();
+		loadtext_cutscenes();
 		loadtext_numbers();
 	}
 
@@ -285,6 +337,23 @@ namespace loc
 		return tra;
 	}
 
+	std::string gettext_cutscene(const std::string& script_id, const std::string& eng)
+	{
+		if (!is_cutscene_translated(script_id) || translation_cutscenes[script_id].count(eng) == 0)
+		{
+			return eng;
+		}
+
+		std::string& tra = translation_cutscenes[script_id][eng];
+
+		if (tra.empty())
+		{
+			return eng;
+		}
+
+		return tra;
+	}
+
 	std::string getnumber(int n)
 	{
 		if (n < 0)
@@ -302,6 +371,11 @@ namespace loc
 			return help.String(n);
 		}
 		return number[ix];
+	}
+
+	bool is_cutscene_translated(const std::string& script_id)
+	{
+		return lang != "en" && translation_cutscenes.count(script_id) != 0;
 	}
 
 	uint32_t toupper(uint32_t ch)

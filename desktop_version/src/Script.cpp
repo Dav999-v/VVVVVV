@@ -9,6 +9,7 @@
 #include "Exit.h"
 #include "Graphics.h"
 #include "KeyPoll.h"
+#include "Localization.h"
 #include "Map.h"
 #include "Music.h"
 #include "UtilityClass.h"
@@ -429,6 +430,32 @@ void scriptclass::run(void)
 					{
 						txt.push_back(commands[position]);
 					}
+				}
+
+				if (loc::is_cutscene_translated(scriptname))
+				{
+					// English text needs to be un-wordwrapped, translated, and re-wordwrapped
+					std::string eng = std::string();
+					for (size_t i = 0; i < txt.size(); i++)
+					{
+						if (i != 0)
+						{
+							eng.append("\n");
+						}
+						eng.append(txt[i]);
+					}
+
+					eng = graphics.unwordwrap(eng);
+					std::string tra = graphics.wordwrap_balanced(loc::gettext_cutscene(scriptname, eng), 20*8, 32*8);
+
+					txt.clear();
+					size_t startline = 0;
+					size_t newline;
+					do {
+						newline = tra.find('\n', startline);
+						txt.push_back(tra.substr(startline, newline-startline));
+						startline = newline+1;
+					} while (newline != std::string::npos);
 				}
 			}
 			else if (words[0] == "position")

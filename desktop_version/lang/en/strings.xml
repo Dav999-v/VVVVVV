@@ -395,6 +395,7 @@
     <string english="next song" explanation="level editor menu option" comment=""></string>
     <string english="previous song" explanation="level editor menu option" comment=""></string>
     <string english="back" explanation="level editor menu option" comment=""></string>
+    <string english="Save before quitting?" explanation="level editor" max="38*4" comment=""></string>
     <string english="yes, save and quit" explanation="level editor menu option" comment=""></string>
     <string english="no, quit without saving" explanation="level editor menu option" comment=""></string>
     <string english="return to editor" explanation="level editor menu option" comment=""></string>

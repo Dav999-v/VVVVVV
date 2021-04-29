@@ -2565,8 +2565,7 @@ static void editormenurender(int tr, int tg, int tb)
         break;
     }
     case Menu::ed_quit:
-        graphics.bigprint( -1, 90, "Save before", tr, tg, tb, true); // TODO LOC
-        graphics.bigprint( -1, 110, "quitting?", tr, tg, tb, true);
+        graphics.PrintWrap(-1, 90, loc::gettext("Save before quitting?"), tr, tg, tb, true);
         break;
     default:
         break;
