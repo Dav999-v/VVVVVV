@@ -5636,7 +5636,8 @@ void Game::loadtele(void)
 std::string Game::unrescued(void)
 {
     //Randomly return the name of an unrescued crewmate
-    if (fRandom() * 100 > 50) // TODO LOC
+    //Localization is handled with regular cutscene dialogue
+    if (fRandom() * 100 > 50)
     {
         if (!crewstats[5]) return "Victoria";
         if (!crewstats[2]) return "Vitellary";

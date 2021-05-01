@@ -37,6 +37,8 @@ public:
 
     void run(void);
 
+    void translate_dialogue(void);
+
     void resetgametomenu(void);
 
     void startgamemode(int t);

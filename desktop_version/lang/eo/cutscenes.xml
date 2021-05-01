@@ -86,7 +86,11 @@
     </cutscene>
     <cutscene id="talkpurple_3" explanation="">
         <dialogue speaker="purple" english="Are you doing ok, Captain?"></dialogue>
-        <dialogue speaker="player" english=""></dialogue>
+        <dialogue speaker="player" english="I&apos;m worried about Victoria, Doctor!"></dialogue>
+        <dialogue speaker="player" english="I&apos;m worried about Vitellary, Doctor!"></dialogue>
+        <dialogue speaker="player" english="I&apos;m worried about Verdigris, Doctor!"></dialogue>
+        <dialogue speaker="player" english="I&apos;m worried about Vermilion, Doctor!"></dialogue>
+        <dialogue speaker="player" english="I&apos;m worried about you, Doctor!"></dialogue>
         <dialogue speaker="purple" english="Oh - well, don&apos;t worry, they&apos;ll show up!"></dialogue>
         <dialogue speaker="purple" english="Here! Have a lollipop!"></dialogue>
     </cutscene>
@@ -371,7 +375,12 @@
     </cutscene>
     <cutscene id="talkpurple_5" explanation="">
         <dialogue speaker="purple" english="Vermilion called in to say hello!"></dialogue>
-        <dialogue speaker="purple" english="He&apos;s really looking forward"></dialogue>
+        <dialogue speaker="purple" english="He&apos;s really looking forward to helping you find the rest of the crew!"></dialogue>
+        <dialogue speaker="purple" english="He&apos;s really looking forward to helping you find Victoria!"></dialogue>
+        <dialogue speaker="purple" english="He&apos;s really looking forward to helping you find Vitellary!"></dialogue>
+        <dialogue speaker="purple" english="He&apos;s really looking forward to helping you find Verdigris!"></dialogue>
+        <dialogue speaker="purple" english="He&apos;s really looking forward to helping you find Vermilion!"></dialogue>
+        <dialogue speaker="purple" english="He&apos;s really looking forward to helping you find you!"></dialogue>
     </cutscene>
     <cutscene id="talkpurple_6" explanation="">
         <dialogue speaker="purple" english="Captain! You found Verdigris!"></dialogue>
