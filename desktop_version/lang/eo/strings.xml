@@ -7,21 +7,21 @@
     <string english="Press N to mute music only" explanation="pause screen" max="40" comment="">Premu N por silentigi nur muzikon</string>
     <string english="MAKE AND PLAY EDITION" explanation="" comment="">ELDONO MAKE AND PLAY</string>
     <string english="[MMMMMM Mod Installed]" explanation="" max="32" comment="">[MMMMMM instalita]</string>
-    <string english="play" explanation="main menu option" comment=""></string>
-    <string english="levels" explanation="main menu option" comment=""></string>
-    <string english="options" explanation="main menu option" comment=""></string>
-    <string english="credits" explanation="main menu option" comment=""></string>
-    <string english="quit" explanation="main menu option" comment=""></string>
-    <string english="gameplay" explanation="options menu option" comment=""></string>
-    <string english="Gameplay Options" explanation="title" max="20" comment=""></string>
-    <string english="Adjust various gameplay options" explanation="" max="38*5" comment=""></string>
-    <string english="graphics" explanation="options menu option" comment=""></string>
-    <string english="Graphics Options" explanation="title" max="20" comment=""></string>
-    <string english="Adjust screen settings" explanation="" max="38*5" comment=""></string>
-    <string english="audio" explanation="options menu option" comment=""></string>
-    <string english="Audio Options" explanation="title" max="20" comment=""></string>
-    <string english="Adjust volume settings and soundtrack" explanation="" max="38*5" comment=""></string>
-    <string english="Adjust volume settings" explanation="" max="38*5" comment=""></string>
+    <string english="play" explanation="main menu option" comment="">ludi</string>
+    <string english="levels" explanation="main menu option" comment="">niveloj</string>
+    <string english="options" explanation="main menu option" comment="">agordoj</string>
+    <string english="credits" explanation="main menu option" comment="">kreditoj</string>
+    <string english="quit" explanation="main menu option" comment="">eliri</string>
+    <string english="gameplay" explanation="options menu option" comment="">ludado</string>
+    <string english="Gameplay Options" explanation="title" max="20" comment="">Agordoj de ludado</string>
+    <string english="Adjust various gameplay options" explanation="" max="38*5" comment="">Diversaj agordoj pri ludmaniero</string>
+    <string english="graphics" explanation="options menu option" comment="">grafikoj</string>
+    <string english="Graphics Options" explanation="title" max="20" comment="">Agordoj de grafikoj</string>
+    <string english="Adjust screen settings" explanation="" max="38*5" comment="">Agordi la ekranon</string>
+    <string english="audio" explanation="options menu option" comment="">sono</string>
+    <string english="Audio Options" explanation="title" max="20" comment="">Agordoj de sono</string>
+    <string english="Adjust volume settings and soundtrack" explanation="" max="38*5" comment="">Agordi laŭtecon kaj muzikaĵon</string>
+    <string english="Adjust volume settings" explanation="" max="38*5" comment="">Agordi laŭtecon</string>
     <string english="continue" explanation="menu option" comment="">daŭrigi</string>
     <string english="continue from teleporter" explanation="menu option, game save that was made at a teleporter" comment="">daŭrigi de teleportilo</string>
     <string english="Tele Save" explanation="title, game save that was made at a teleporter" max="20" comment="">Tele-konservaĵo</string>
@@ -41,10 +41,10 @@
     <string english="From here, you may unlock parts of the game that are normally unlocked as you play." explanation="" max="38*5" comment="">Ĉi tie, vi povas malŝlosi partojn de la ludo, kiuj normale malŝlosiĝas laŭprogrese.</string>
     <string english="unlock ship jukebox" explanation="menu option" comment="">malŝlosi ŝipmuzikilon</string>
     <string english="unlock secret lab" explanation="menu option" comment="">malŝlosi sekretan labon</string>
-    <string english="game pad" explanation="menu option" comment=""></string>
+    <string english="game pad" explanation="menu option" comment="">regilo</string>
     <string english="Game Pad Options" explanation="title" max="20" comment="">Regilaj agordoj</string>
     <string english="Game Pad" explanation="title" max="20" comment="">Regilo</string>
-    <string english="Rebind your controller&apos;s buttons and adjust sensitivity" explanation="" max="38*5" comment="">Reagordu viajn butonojn kaj ŝanĝi sentemon</string>
+    <string english="Rebind your controller&apos;s buttons and adjust sensitivity" explanation="" max="38*5" comment="">Reagordi butonojn kaj ŝanĝi sentemon</string>
     <string english="Change controller options." explanation="" max="38*2" comment="">Ŝanĝi regilajn agordojn.</string>
     <string english="language" explanation="menu option" comment="">lingvo</string>
     <string english="Language" explanation="title" max="20" comment="">Lingvo</string>
@@ -93,12 +93,12 @@
     <string english="Turn VSync on or off." explanation="" max="38*3" comment="">Baskuligi vertikalan sinkronigon.</string>
     <string english="Current mode: VSYNC OFF" explanation="" max="38*2" comment="">Nuna reĝimo: V-sink. malŝalta</string>
     <string english="Current mode: VSYNC ON" explanation="" max="38*2" comment="">Nuna reĝimo: V-sink. ŝalta</string>
-    <string english="music volume" explanation="audio menu option" comment=""></string>
-    <string english="Music Volume" explanation="title" max="20" comment=""></string>
-    <string english="Change the volume of the music." explanation="" max="38*3" comment=""></string>
-    <string english="sound volume" explanation="audio menu option" comment=""></string>
-    <string english="Sound Volume" explanation="title" max="20" comment=""></string>
-    <string english="Change the volume of sound effects." explanation="" max="38*3" comment=""></string>
+    <string english="music volume" explanation="audio menu option" comment="">muzik-laŭteco</string>
+    <string english="Music Volume" explanation="title" max="20" comment="">Laŭteco de muziko</string>
+    <string english="Change the volume of the music." explanation="" max="38*3" comment="">Ŝanĝi la laŭtecon de la muziko.</string>
+    <string english="sound volume" explanation="audio menu option" comment="">son-laŭteco</string>
+    <string english="Sound Volume" explanation="title" max="20" comment="">Laŭteco de sonoj</string>
+    <string english="Change the volume of sound effects." explanation="" max="38*3" comment="">Ŝanĝi la laŭtecon de sonefikoj.</string>
     <string english="VVVVVV is a game by" explanation="credits" max="40" comment="">VVVVVV estas ludo de</string>
     <string english="Terry Cavanagh" explanation="credits" max="20" comment="">Terry Cavanagh</string>
     <string english="and features music by" explanation="credits" max="40" comment="">kaj enhavas muzikon de</string>
@@ -115,7 +115,7 @@
     <string english="VVVVVV is supported by the following patrons" explanation="credits" max="38*3" comment="">VVVVVV estas subtenata de la sekvaj homoj</string>
     <string english="and also by" explanation="credits, VVVVVV is also supported by the following people" max="38*2" comment="">kaj ankaŭ de</string>
     <string english="With contributions on GitHub from" explanation="credits" max="38*3" comment="">Kun kontribuoj ĉe GitHub de</string>
-    <string english="and" explanation="This person, AND furthermore, these other persons" max="38" comment=""></string>
+    <string english="and" explanation="This person, AND furthermore, these other persons" max="38" comment="">kaj</string>
     <string english="and thanks also to:" explanation="credits, and thanks also to ... you!" max="38*3" comment="">kaj dankon ankaŭ al:</string>
     <string english="You!" explanation="credits, and thanks also to ... you!" comment="">Vi!</string>
     <string english="Your support makes it possible for me to continue making the games I want to make, now and into the future." explanation="credits" max="38*5" comment="">Via subteno ebligas por mi daŭrigi fari la ludojn, kiujn mi volas fari, nun kaj estontecen.</string>
@@ -153,7 +153,7 @@
     <string english="If new strings were added to the English template language files, this feature will insert them in the translation files for all languages. Only languages that are in the VVVVVV folder can be updated. Make a backup, just in case." explanation="translation maintenance menu" max="38*12" comment="">Se novaj ĉenoj aldoniĝis al la anglalingvaj ŝablonaj lingvodosieroj, tiu ĉi trajto enigos ilin en la tradukdosierojn por ĉiuj lingvoj. Nur lingvoj kiuj estas en la dosierujo de VVVVVV povas esti ĝisdatigitaj. Faru savkopion, por certeco.</string>
     <string english="advanced options" explanation="menu option" comment="">altnivelaj agordoj</string>
     <string english="Advanced Options" explanation="title" max="20" comment="">Altnivelaj agordoj</string>
-    <string english="All other settings" explanation="description for advanced options" max="38*5" comment=""></string>
+    <string english="All other settings" explanation="description for advanced options" max="38*5" comment="">Ĉiuj aliaj agordoj</string>
     <string english="unfocus pause" explanation="menu option. Turns the pause screen on/off, which shows up when the window is unfocused/inactive (only one window is normally in focus/active at a time). Possible alternative: auto pause screen" comment="">elfokusiĝ-paŭzo</string>
     <string english="Unfocus Pause" explanation="title. Turns the pause screen on/off, which shows up when the window is unfocused/inactive (only one window is normally in focus/active at a time). Possible alternative: auto pause screen" max="20" comment="">Elfokusiĝ-paŭzo</string>
     <string english="Toggle if the game will pause when the window is unfocused." explanation="" max="38*3" comment="">Baskuligi ĉu la ludo paŭziĝos kiam la fenestro elfokusiĝas.</string>
@@ -168,20 +168,20 @@
     <string english="Lets you see through what is behind the name at the bottom of the screen." explanation="" max="38*3" comment="">Ebligas vidi tion, kio estas malantaŭ la nomo ĉe la ekranmalsupro</string>
     <string english="Room name background is TRANSLUCENT" explanation="" max="38*2" comment="">Ĉambronoma fono estas TRAVIDEBLA</string>
     <string english="Room name background is OPAQUE" explanation="" max="38*2" comment="">Ĉambronoma fono estas NETRAVIDEBLA</string>
-    <string english="speedrun options" explanation="menu option" comment=""></string>
-    <string english="Speedrunner Options" explanation="title" max="20" comment=""></string>
-    <string english="Access some advanced settings that might be of interest to speedrunners" explanation="description for speedrunner options" max="38*5" comment=""></string>
+    <string english="speedrun options" explanation="menu option" comment="">agordoj de rapidkurado</string>
+    <string english="Speedrunner Options" explanation="title" max="20" comment="">Rapidkuragordoj</string>
+    <string english="Access some advanced settings that might be of interest to speedrunners" explanation="description for speedrunner options" max="38*5" comment="">Aliri iujn altnivelajn agordojn utilajn por rapidkurantoj</string>
     <string english="glitchrunner mode" explanation="menu option, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" comment="">cimkuranta reĝimo</string>
     <string english="Glitchrunner Mode" explanation="title, a glitchrunner is a speedrunner who takes advantage of glitches to run through the game faster" max="20" comment="">Cimkuranta reĝimo</string>
     <string english="Re-enable glitches that existed in previous versions of the game." explanation="glitchrunner mode" max="38*3" comment="">Reebligi cimojn, kiuj ekzistis en antaŭaj versioj de la ludo.</string>
     <string english="Glitchrunner mode is ON" explanation="" max="38*2" comment="">Cimkuranta reĝimo estas ŜALTA</string>
     <string english="Glitchrunner mode is OFF" explanation="" max="38*2" comment="">Cimkuranta reĝimo estas MALŜALTA</string>
-    <string english="input delay" explanation="menu option, enable 1 frame of delay after pressing input" comment=""></string>
-    <string english="Input Delay" explanation="title, enable 1 frame of delay after pressing input" max="20" comment=""></string>
-    <string english="Re-enable the 1-frame input delay from previous versions of the game." explanation="input delay" max="38*2" comment=""></string>
-    <string english="Input delay is ON" explanation="" max="38*2" comment=""></string>
-    <string english="Input delay is OFF" explanation="" max="38*2" comment=""></string>
-    <string english="accessibility" explanation="menu option" comment=""></string>
+    <string english="input delay" explanation="menu option, enable 1 frame of delay after pressing input" comment="">enig-prokrasto</string>
+    <string english="Input Delay" explanation="title, enable 1 frame of delay after pressing input" max="20" comment="">Prokrasto de enigoj</string>
+    <string english="Re-enable the 1-frame input delay from previous versions of the game." explanation="input delay" max="38*2" comment="">Reebligi la 1-kadran enigprokraston de pli-fruaj versioj de la ludo.</string>
+    <string english="Input delay is ON" explanation="" max="38*2" comment="">Enigprokrasto estas ŜALTA</string>
+    <string english="Input delay is OFF" explanation="" max="38*2" comment="">Enigprokrasto estas MALŜALTA</string>
+    <string english="accessibility" explanation="menu option" comment="">alirebleco</string>
     <string english="Accessibility" explanation="title" max="20" comment="">Alirebleco</string>
     <string english="Disable screen effects, enable slowdown modes or invincibility" explanation="" max="38*5" comment="">Malebligi ekranefikojn, ebligi malrapidigreĝimon aŭ nevundeblecon</string>
     <string english="animated backgrounds" explanation="menu option" comment="">animaciitaj fonoj</string>
@@ -200,16 +200,16 @@
     <string english="Text outlines are OFF." explanation="" max="38*3" comment="">Tekstkonturoj estas MALŜALTAJ.</string>
     <string english="invincibility" explanation="menu option" comment="">nevundebleco</string>
     <string english="Invincibility" explanation="title" max="20" comment="">Nevundebleco</string>
-    <string english="Explore the game freely without dying. (Can cause glitches.)" explanation="invincibility mode" max="38*3" comment=""></string>
+    <string english="Explore the game freely without dying. (Can cause glitches.)" explanation="invincibility mode" max="38*3" comment="">Esplori la ludon libere sen morti. (Cimoj eble okazos.)</string>
     <string english="Invincibility is ON." explanation="" max="38*2" comment="">Nevundebleco estas ŜALTA.</string>
     <string english="Invincibility is OFF." explanation="" max="38*2" comment="">Nevundebleco estas MALŜALTA.</string>
     <string english="Are you sure you want to enable invincibility?" explanation="" max="38*7" comment="">Ĉu vi certas, ke vi volas ebligi nevundeblecon?</string>
     <string english="no, return to options" explanation="menu option" comment="">ne, reen al agordoj</string>
     <string english="yes, enable" explanation="menu option" comment="">jes, ebligu</string>
     <string english="slowdown" explanation="menu option" comment="">malrapidigo</string>
-    <string english="Slowdown" explanation="title" max="20" comment=""></string>
+    <string english="Slowdown" explanation="title" max="20" comment="">Malrapidigo</string>
     <string english="Game Speed" explanation="title" max="20" comment="">Ludrapido</string>
-    <string english="Reduce the game speed." explanation="" max="38*3" comment=""></string>
+    <string english="Reduce the game speed." explanation="" max="38*3" comment="">Plimalrapidigi la ludon.</string>
     <string english="Select a new game speed below." explanation="" max="38*3" comment="">Elektu novan ludrapidon sube.</string>
     <string english="Game speed is normal." explanation="" max="38*2" comment="">Ludrapido normalas.</string>
     <string english="Game speed is at 80%" explanation="" max="38*2" comment="">Ludrapido estas 80%</string>
@@ -227,7 +227,7 @@
     <string english="Replay any level in the game in a competitive time trial mode." explanation="" max="38*4" comment="">Reludi ajnan nivelon en la ludo en konkura tempoprova reĝimo.</string>
     <string english="Time Trials are not available with slowdown or invincibility." explanation="" max="38*3" comment="">Tempoprovoj ne disponeblas kun malrapidigo aŭ nevundebleco.</string>
     <string english="unlock time trials" explanation="menu option" comment="">malŝlosi tempoprovojn</string>
-    <string english="Unlock Time Trials" explanation="title" max="20" comment="">malŝlosi tempoprovojn</string>
+    <string english="Unlock Time Trials" explanation="title" max="20" comment="">Tempoprovoj</string>
     <string english="You can unlock each time trial separately." explanation="" max="38*5" comment="">Vi povas malŝlosi ĉiun tempoprovon aparte.</string>
     <string english="intermissions" explanation="menu option" comment="">interaktoj</string>
     <string english="Intermissions" explanation="title" max="20" comment="">Interaktoj</string>
@@ -287,13 +287,13 @@
     <string english="open level folder" explanation="menu option" comment="">malfermi nivelujon</string>
     <string english="return" explanation="menu option" comment="">reen</string>
     <string english="return to play menu" explanation="menu option" max="36" comment="">reen al ludmenuo</string>
-    <string english="try again" explanation="menu option, retry time trial" max="36" comment=""></string>
+    <string english="try again" explanation="menu option, retry time trial" max="36" comment="">reprovi</string>
     <string english="ok" explanation="button" comment="">bone</string>
     <string english="next page" explanation="menu option" comment="">sekva paĝo</string>
     <string english="previous page" explanation="menu option" comment="">antaŭa paĝo</string>
     <string english="first page" explanation="menu option" comment="">unua paĝo</string>
     <string english="last page" explanation="menu option" comment="">lasta paĝo</string>
-    <string english="silence" explanation="menu option, silence error message - do not show this message again" comment=""></string>
+    <string english="silence" explanation="menu option, silence error message - do not show this message again" comment="">silento</string>
     <string english="continue from save" explanation="menu option" comment="">daŭrigi de konservaĵo</string>
     <string english="start from beginning" explanation="menu option" comment="">ludi dekomence</string>
     <string english="back to levels" explanation="menu option" comment="">reen al niveloj</string>
@@ -302,7 +302,7 @@
     <string english="ACTION = Space, Z, or V" explanation="title screen" max="38*3" comment="">AGBUTONO = Spaceto, Z aŭ V</string>
     <string english="[Press ENTER to return to editor]" explanation="`to editor` is sorta redundant" max="40" comment="">[Premu ENTER por reveni al redaktilo]</string>
     <string english="- Press ACTION to advance text -" explanation="to dismiss a textbox" max="40" comment="">- Premu AGBUTONON por daŭrigi -</string>
-    <string english="- Press ENTER to Teleport -" explanation="" max="40" comment="">- Premu ENTER por teleporti -</string>
+    <string english="- Press ENTER to Teleport -" explanation="" max="40" comment="">- Premu ENTER por teleportiĝi -</string>
     <string english="Current Time" explanation="super gravitron, stopwatch time" max="20" comment="">Nuna tempo</string>
     <string english="Best Time" explanation="super gravitron, best stopwatch time" max="20" comment="">Plej bona tempo</string>
     <string english="Next Trophy at 5 seconds" explanation="" max="38*2" comment="">Sekva trofeo je 5 sekundoj</string>
@@ -327,20 +327,20 @@
     <string english="GRAV" explanation="in-game menu, Gravitron" max="8" comment="">GRAV</string>
     <string english="SHIP" explanation="in-game menu, spaceship" max="8" comment="">ŜIPO</string>
     <string english="CREW" explanation="in-game menu" max="8" comment="">ANOJ</string>
-    <string english="STATS" explanation="in-game menu" max="8" comment="">STAT.</string>
-    <string english="SAVE" explanation="in-game menu" max="8" comment="">KONS.</string>
-    <string english="[ PAUSE ]" explanation="in-game menu" max="40" comment="">[ PAŬZI ]</string>
+    <string english="STATS" explanation="in-game menu" max="8" comment="">STAT.OJ</string>
+    <string english="SAVE" explanation="in-game menu" max="8" comment="">KONSERVI</string>
+    <string english="[ PAUSE ]" explanation="in-game menu" max="40" comment="">[ PAŬZO ]</string>
     <string english="[ QUIT ]" explanation="in-game menu" max="40" comment="">[ ELIRI ]</string>
     <string english="[ GRAVITRON ]" explanation="in-game menu" max="40" comment="">[ GRAVITRON ]</string>
     <string english="NO SIGNAL" explanation="" comment="">NENIU SIGNALO</string>
-    <string english="Press ACTION to warp to the ship." explanation="spaceship. Warp = teleport" max="38*7" comment="">Premu AGBUTONON por teleporti al la ŝipo.</string>
+    <string english="Press ACTION to warp to the ship." explanation="spaceship. Warp = teleport" max="38*7" comment="">Premu AGBUTONON por teleportiĝi al la ŝipo.</string>
     <string english="Missing..." explanation="" max="15" comment="">Mankanta...</string>
     <string english="Cannot Save in Level Replay" explanation="" max="38*7" comment="">Ne eblas konservi en nivel-reludado</string>
     <string english="Cannot Save in No Death Mode" explanation="" max="38*7" comment="">Ne eblas konservi en mortula reĝimo</string>
     <string english="Cannot Save in Time Trial" explanation="" max="38*7" comment="">Ne eblas konservi en tempoprovo</string>
     <string english="Cannot Save in Secret Lab" explanation="" max="38*7" comment="">Ne eblas konservi en sekreta labo</string>
     <string english="ERROR: Could not save game!" explanation="" max="38*7" comment="">ERARO: Ne povis konservi ludon!</string>
-    <string english="ERROR: Could not save settings file!" explanation="" max="38*4" comment=""></string>
+    <string english="ERROR: Could not save settings file!" explanation="" max="38*4" comment="">ERARO: Ne povis konservi agordodosieron!</string>
     <string english="Game saved ok!" explanation="" max="38*2" comment="">Ludo konservita sukcese!</string>
     <string english="[Press ACTION to save your game]" explanation="" max="38*7" comment="">[Premu AGBUTONO por konservi la ludon]</string>
     <string english="(Note: The game is autosaved at every teleporter.)" explanation="" max="38*3" comment="">(Notu: la ludo estas aŭtomate konservita ĉe ĉiu teleportilo.)</string>
@@ -359,7 +359,7 @@
     <string english="return to game" explanation="pause menu option" comment="">reveni al ludo</string>
     <string english="quit to menu" explanation="pause menu option" comment="">eliri al menuo</string>
     <string english="Press Left/Right to choose a Teleporter" explanation="tight fit, so maybe `Left/Right: choose teleporter`" max="40" comment="">Dekstro/Mald.: elekti teleportilon</string>
-    <string english="Press ENTER to Teleport" explanation="" max="40" comment="">Premu ENTER por teleporti</string>
+    <string english="Press ENTER to Teleport" explanation="" max="40" comment="">Premu ENTER por teleportiĝi</string>
     <string english="Map Settings" explanation="title, editor, Level Settings, map is kinda inconsistent with everything else" max="20" comment="">Mapagordoj</string>
     <string english="edit scripts" explanation="level editor menu option" comment="">redakti skriptojn</string>
     <string english="change music" explanation="level editor menu option" comment="">ŝanĝi muzikon</string>
@@ -393,9 +393,9 @@
     <string english="N/A: Predestined Fate Remix" explanation="editor, song name should probably not be translated" max="38*2" comment="">N/A: Predestined Fate (rearanĝo)</string>
     <string english="?: something else" explanation="editor, song was not recognized" max="38*2" comment="">?: io alia</string>
     <string english="next song" explanation="level editor menu option" comment="">sekva melodio</string>
-    <string english="previous song" explanation="level editor menu option" comment=""></string>
+    <string english="previous song" explanation="level editor menu option" comment="">antaŭa melodio</string>
     <string english="back" explanation="level editor menu option" comment="">reen</string>
-    <string english="Save before quitting?" explanation="level editor" max="38*4" comment=""></string>
+    <string english="Save before quitting?" explanation="level editor" max="38*4" comment="">Ĉu konservi antaŭ ol eliri?</string>
     <string english="yes, save and quit" explanation="level editor menu option" comment="">jes, konservu kaj eliru</string>
     <string english="no, quit without saving" explanation="level editor menu option" comment="">ne, eliru sen konservi</string>
     <string english="return to editor" explanation="level editor menu option" comment="">reen al redaktilo</string>
@@ -444,7 +444,7 @@
     <string english="F3: Change Enemies" explanation="editor shortcut, change enemy appearance" max="25" comment="">F3: Ŝanĝi malamikojn</string>
     <string english="F4: Enemy Bounds" explanation="editor shortcut, invisible box which enemies always stay inside of" max="25" comment="">F4: Malamiklimoj</string>
     <string english="F5: Platform Bounds" explanation="editor shortcut, invisible box which platforms always stay inside of" max="25" comment="">F5: Platformlimoj</string>
-    <string english="F9: Reload Resources" explanation="editor shortcut, reload tilesets, sprites, music, etc" max="25" comment=""></string>
+    <string english="F9: Reload Resources" explanation="editor shortcut, reload tilesets, sprites, music, etc" max="25" comment="">F9: Reŝargi rimedojn</string>
     <string english="F10: Direct Mode" explanation="editor shortcut, direct mode is manual tile placing mode, where walls are not automatically made nice" max="25" comment="">F10: Rekta reĝimo</string>
     <string english="W: Change Warp Dir" explanation="editor shortcut, dir=direction, change which edges of the room wrap around. Can be horizontal, vertical or all sides" max="25" comment="">W: Teleportdirekto</string>
     <string english="E: Change Roomname" explanation="editor shortcut, the name of the room appears at the bottom" max="25" comment="">E: Ĉambronomo</string>
@@ -464,7 +464,7 @@
     <string english="Now using %s Tileset" explanation="level editor, user changed the tileset of the room to %s (like Ship, Lab, etc)" max="38*3" comment="">Nun uzas kahelaron de %s</string>
     <string english="Tileset Colour Changed" explanation="level editor, user changed the tileset colour/variant of the room" max="38*3" comment="">Kahelara koloro ŝanĝita</string>
     <string english="Enemy Type Changed" explanation="level editor, user changed enemy appearance for the room" max="38*3" comment="">Malamik-tipo ŝanĝita</string>
-    <string english="Reloaded resources" explanation="level editor, reloaded graphics assets/resources, music and sound effects" max="38*3" comment="">Reŝargis resursojn</string>
+    <string english="Reloaded resources" explanation="level editor, reloaded graphics assets/resources, music and sound effects" max="38*3" comment="">Rimedoj reŝargitaj</string>
     <string english="ERROR: Invalid format" explanation="user was supposed to enter something like `12,12`, but entered `as@df`" max="38*3" comment="">ERARO: malĝusta formo</string>
     <string english="Loaded map: %s.vvvvvv" explanation="successfully loaded level file" max="38*3" comment="">Ŝargis mapon: %s.vvvvvv</string>
     <string english="Saved map: %s.vvvvvv" explanation="successfully saved level file" max="38*3" comment="">Konservis mapon: %s.vvvvvv</string>
@@ -474,10 +474,10 @@
     <string english="Direct Mode Disabled" explanation="editor, manual tile placing mode where walls are not automatically made nice, now changed to automatic mode" max="38*3" comment="">Rektan reĝimon malebligita</string>
     <string english="Direct Mode Enabled" explanation="editor, manual tile placing mode where walls are not automatically made nice, now changed to manual mode" max="38*3" comment="">Rektan reĝimon ebligita</string>
     <string english="ERROR: Warp lines must be on edges" explanation="level editor, warp lines make a room edge be connected to its opposite edge. So they must be placed on one of the edges, not in the middle" max="38*3" comment="">ERARO: teleportlinioj estu sur randoj</string>
-    <string english="Room warps in all directions" explanation="level editor, all edges of the room are connected with each other. If the player leaves the room they end up on the other side of the same room." max="38*3" comment="">Ĉambro teleportigas ĉiudirekte</string>
-    <string english="Room warps horizontally" explanation="level editor, the left and right edges of the room are connected with each other. The player can still go to other rooms on the top and bottom" max="38*3" comment="">Ĉambro teleportigas horizontale</string>
-    <string english="Room warps vertically" explanation="level editor, the top and bottom edges of the room are connected with each other. The player can still go to other rooms on the left and right" max="38*3" comment="">Ĉambro teleportigas vertikale</string>
-    <string english="Room warping disabled" explanation="level editor, no edges are connected and the player can go to other rooms" max="38*3" comment="">Ĉambro-teleportigo malebligita</string>
+    <string english="Room warps in all directions" explanation="level editor, all edges of the room are connected with each other. If the player leaves the room they end up on the other side of the same room." max="38*3" comment="">Ĉambro volviĝas ĉiudirekte</string>
+    <string english="Room warps horizontally" explanation="level editor, the left and right edges of the room are connected with each other. The player can still go to other rooms on the top and bottom" max="38*3" comment="">Ĉambro volviĝas horizontale</string>
+    <string english="Room warps vertically" explanation="level editor, the top and bottom edges of the room are connected with each other. The player can still go to other rooms on the left and right" max="38*3" comment="">Ĉambro volviĝas vertikale</string>
+    <string english="Room warping disabled" explanation="level editor, no edges are connected and the player can go to other rooms" max="38*3" comment="">Ĉambro-volviĝo malebligita</string>
     <string english="ERROR: No checkpoint to spawn at" explanation="we cannot playtest because there is no checkpoint in this room that the player could start (be spawned) at" max="38*3" comment="">ERARO: Ne estas konservpunkto ĉi-ĉambre</string>
     <string english="ERROR: Max number of trinkets is 100" explanation="" max="38*3" comment="">ERARO: Altlimo de kolektaĵoj estas 100</string>
     <string english="ERROR: Max number of crewmates is 100" explanation="" max="38*3" comment="">ERARO: Altlimo de ŝipanoj estas 100</string>
