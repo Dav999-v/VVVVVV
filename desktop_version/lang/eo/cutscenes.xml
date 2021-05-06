@@ -86,8 +86,12 @@
     </cutscene>
     <cutscene id="talkpurple_3" explanation="">
         <dialogue speaker="purple" english="Are you doing ok, Captain?">Ĉu vi enordas, Kapitano?</dialogue>
-        <dialogue speaker="player" english=""></dialogue>
-        <dialogue speaker="purple" english="Oh - well, don&apos;t worry, they&apos;ll show up!">Ho - nu, ne ĉagrenu, ili aperos!</dialogue>
+        <dialogue speaker="player" english="I&apos;m worried about Victoria, Doctor!">Mi maltrankviliĝas pri Viktoria, Doktoro!</dialogue>
+        <dialogue speaker="player" english="I&apos;m worried about Vitellary, Doctor!">Mi maltrankviliĝas pri Vitelario, Doktoro!</dialogue>
+        <dialogue speaker="player" english="I&apos;m worried about Verdigris, Doctor!">Mi maltrankviliĝas pri Verdigriso, Doktoro!</dialogue>
+        <dialogue speaker="player" english="I&apos;m worried about Vermilion, Doctor!">Mi maltrankviliĝas pri Vermiljo, Doktoro!</dialogue>
+        <dialogue speaker="player" english="I&apos;m worried about you, Doctor!">Mi maltrankviliĝas pri vi, Doktoro!</dialogue>
+        <dialogue speaker="purple" english="Oh - well, don&apos;t worry, they&apos;ll show up!">Ho - nu, ne ĉagrenu, ĉiuj aperos!</dialogue>
         <dialogue speaker="purple" english="Here! Have a lollipop!">Jen! Havu bombonon!</dialogue>
     </cutscene>
     <cutscene id="trinketcollector" explanation="">
